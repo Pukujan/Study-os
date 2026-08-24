@@ -1,9 +1,9 @@
-manifest_version: "0.1.2"
+manifest_version: "0.1.3"
 project:
   name: Study OS
   repository: Pukujan/Study-os
   status: research-first
-  phase: research harness readying
+  phase: local-runtime foundation + research harness readying
   current_gate: R0
   mission: >-
     Convert AI-assisted study sessions into auditable evidence about where
@@ -45,11 +45,12 @@ canonical_paths:
   domain: domains/dsa/
   sessions: sessions/
   subjects: subjects/
-  current_subject_checkpoint: subjects/subject-001/CURRENT.json
+  bootstrap_subject_checkpoint: subjects/subject-001/CURRENT.json
   datasets: datasets/
   plugins: plugins/
   fossil_exports: fossil/exports/
   checkpointing: docs/CHECKPOINTING.md
+  local_runtime_architecture: docs/LOCAL_RUNTIME_ARCHITECTURE.md
   research_foundations: docs/RESEARCH_FOUNDATIONS.md
   failure_modes: docs/FAILURE_MODES.md
   research_plan: docs/RESEARCH_PLAN.md
@@ -58,6 +59,31 @@ canonical_paths:
   source_index: docs/SOURCE_INDEX.md
   handoff: docs/HANDOFF.md
   decisions: docs/DECISIONS.md
+
+runtime:
+  topology: local_first
+  initial_host: wsl
+  live_state_in_github: false
+  operational_database:
+    engine: sqlite
+    role: canonical_live_learner_state
+    migration_target_if_needed: postgres
+  private_evidence_store:
+    default_root: ~/.study-os/evidence/
+    raw_artifacts_immutable: true
+    content_hashing_required: true
+  app_surface:
+    intended_name: "@StudyOS"
+    protocol: mcp
+    semantic_tools_only: true
+    direct_localhost_from_chatgpt: false
+    remote_access: secure_mcp_tunnel_or_equivalent_authenticated_private_path
+    plan_workspace_capability_must_be_verified: true
+  validation:
+    local_runtime_validation_required: true
+    health_doctor_required: true
+  checkpoint_source_of_truth_when_runtime_active: local_database
+  github_checkpoint_role_when_runtime_active: optional_curated_or_reproducibility_export
 
 privacy:
   repository_visibility: public
@@ -68,7 +94,7 @@ privacy:
     - redacted_fixtures
     - schemas
     - curated_derived_findings
-    - public_safe_learner_checkpoints
+    - public_safe_checkpoint_exports
   public_repo_must_not_contain:
     - full_private_chat_exports
     - secrets
@@ -84,6 +110,7 @@ fossil:
   resume_dependency: false
   promotion_candidates:
     - curated_learning_trajectory
+    - repeated_representation_finding
     - lesson_hypothesis
     - validated_domain_knowledge
     - research_conclusion
@@ -138,10 +165,15 @@ learning:
     - production_audio_pipeline
 
 engineering:
-  ci_required: true
-  ci_workflow: .github/workflows/ci.yml
+  repository_checks_required: true
+  github_actions:
+    configured: true
+    workflow: .github/workflows/ci.yml
+    runtime_dependency: false
+    optional_during_R0: true
+  local_runtime_validation_required: true
   cd_status: deferred_until_R0
-  required_checks:
+  required_repository_checks:
     - python_compile
     - repository_validation
     - unit_tests
@@ -179,8 +211,12 @@ open_risks:
   - scope_expansion_before_evidence_loop
   - cross_session_resume_without_checkpoint
   - checkpoint_drift_from_canonical_events
+  - local_runtime_backup_failure
+  - insecure_remote_exposure_of_wsl_service
+  - chatgpt_plan_missing_required_mcp_write_actions
 
 next_milestone: >-
-  Verify CI, define the first Sliding Window baseline/state model, execute the
-  first instrumented learning session for Subject 001, and produce the first
-  accepted learner checkpoint before continuing in a new tutor session.
+  Build and validate the project-agnostic local SQLite/evidence foundation with
+  canonical local checkpoint/resume, then expose only semantic Study OS MCP
+  operations and verify fresh-chat continuity before the first full R0 learning
+  trajectory.
