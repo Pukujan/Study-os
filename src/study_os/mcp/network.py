@@ -80,6 +80,12 @@ def build_network_mcp_server(service: StudyOSService) -> SDKMCPServer:
     Every network tool delegates to the existing P0 ``SemanticMCPServer`` so
     validation, idempotency, evidence provenance, checkpoint gating, and stable
     error payloads remain single-sourced in the already accepted runtime.
+
+    The MCP handlers are deliberately ``async`` even though the underlying
+    service calls are synchronous. MCP 2 runs synchronous tool handlers in a
+    worker thread; Study OS intentionally owns a thread-affine SQLite connection.
+    Async handlers therefore keep dispatch on the server event-loop/owner thread
+    instead of weakening SQLite safety with cross-thread connection access.
     """
 
     semantic = SemanticMCPServer(service)
@@ -94,19 +100,19 @@ def build_network_mcp_server(service: StudyOSService) -> SDKMCPServer:
     )
 
     @server.tool(name="doctor")
-    def doctor() -> dict[str, Any]:
+    async def doctor() -> dict[str, Any]:
         """Check Study OS database, evidence, checkpoint, and contract health."""
 
         return semantic.call_tool("doctor")
 
     @server.tool(name="status")
-    def status(subject_id: str) -> dict[str, Any]:
+    async def status(subject_id: str) -> dict[str, Any]:
         """Read lightweight current learner/session/checkpoint status."""
 
         return semantic.call_tool("status", {"subject_id": subject_id})
 
     @server.tool(name="start_session")
-    def start_session(
+    async def start_session(
         idempotency_key: str,
         subject_id: str,
         project_id: str,
@@ -129,7 +135,7 @@ def build_network_mcp_server(service: StudyOSService) -> SDKMCPServer:
         return semantic.call_tool("start_session", arguments)
 
     @server.tool(name="record_learning_event")
-    def record_learning_event(
+    async def record_learning_event(
         idempotency_key: str,
         session_id: str,
         subject_id: str,
@@ -155,7 +161,7 @@ def build_network_mcp_server(service: StudyOSService) -> SDKMCPServer:
         return semantic.call_tool("record_learning_event", arguments)
 
     @server.tool(name="record_attempt")
-    def record_attempt(
+    async def record_attempt(
         idempotency_key: str,
         session_id: str,
         subject_id: str,
@@ -179,7 +185,7 @@ def build_network_mcp_server(service: StudyOSService) -> SDKMCPServer:
         return semantic.call_tool("record_attempt", arguments)
 
     @server.tool(name="record_assessment")
-    def record_assessment(
+    async def record_assessment(
         idempotency_key: str,
         session_id: str,
         subject_id: str,
@@ -204,7 +210,7 @@ def build_network_mcp_server(service: StudyOSService) -> SDKMCPServer:
         )
 
     @server.tool(name="record_representation_intervention")
-    def record_representation_intervention(
+    async def record_representation_intervention(
         idempotency_key: str,
         session_id: str,
         subject_id: str,
@@ -229,7 +235,7 @@ def build_network_mcp_server(service: StudyOSService) -> SDKMCPServer:
         )
 
     @server.tool(name="record_representation_outcome")
-    def record_representation_outcome(
+    async def record_representation_outcome(
         idempotency_key: str,
         intervention_id: str,
         subject_id: str,
@@ -250,7 +256,7 @@ def build_network_mcp_server(service: StudyOSService) -> SDKMCPServer:
         )
 
     @server.tool(name="checkpoint")
-    def checkpoint(
+    async def checkpoint(
         idempotency_key: str,
         subject_id: str,
         source_session_ids: list[str],
@@ -275,13 +281,13 @@ def build_network_mcp_server(service: StudyOSService) -> SDKMCPServer:
         )
 
     @server.tool(name="resume")
-    def resume(subject_id: str) -> dict[str, Any]:
+    async def resume(subject_id: str) -> dict[str, Any]:
         """Recover the accepted checkpoint and next action for an existing learner."""
 
         return semantic.call_tool("resume", {"subject_id": subject_id})
 
     @server.tool(name="schedule_retention_probe")
-    def schedule_retention_probe(
+    async def schedule_retention_probe(
         idempotency_key: str,
         subject_id: str,
         concept_id: str,
@@ -302,13 +308,13 @@ def build_network_mcp_server(service: StudyOSService) -> SDKMCPServer:
         )
 
     @server.tool(name="get_next_probe")
-    def get_next_probe(subject_id: str) -> dict[str, Any]:
+    async def get_next_probe(subject_id: str) -> dict[str, Any]:
         """Read the learner's next due retention probe, if any."""
 
         return semantic.call_tool("get_next_probe", {"subject_id": subject_id})
 
     @server.tool(name="export_fossil")
-    def export_fossil(
+    async def export_fossil(
         idempotency_key: str,
         subject_id: str,
         artifact_type: str,
