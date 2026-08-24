@@ -1,4 +1,4 @@
-manifest_version: "0.1.5"
+manifest_version: "0.1.6"
 project:
   name: Study OS
   repository: Pukujan/Study-os
@@ -55,6 +55,7 @@ canonical_paths:
   plugins: plugins/
   fossil_exports: fossil/exports/
   checkpointing: docs/CHECKPOINTING.md
+  learning_control_model: docs/LEARNING_CONTROL_MODEL.md
   local_runtime_architecture: docs/LOCAL_RUNTIME_ARCHITECTURE.md
   parallel_execution: docs/PARALLEL_EXECUTION_PLAN.md
   validation_strategy: docs/VALIDATION_STRATEGY.md
@@ -142,6 +143,37 @@ schemas:
   current_checkpoint: "0.1.0"
 
 learning:
+  active_research_scope:
+    track: algorithmic_foundations
+    domain: dsa
+    language: python
+    concept_family: sliding-window
+  planned_competency_tracks:
+    - algorithmic_foundations
+    - software_systems_foundations
+    - system_design_reliability
+    - ai_systems_evaluation_reliability
+    - technical_problem_framing_diagnosis
+  track_scope_rule: >-
+    Planned competency tracks are curriculum architecture only and do not expand
+    the active R0 research scope unless the manifest, handoff, and decision log
+    explicitly activate a new learning/research slice.
+  control_model:
+    sequence:
+      - goal
+      - plan
+      - task_or_episode
+      - attempt
+      - test_or_assessment
+      - evidence
+      - capability_state
+      - diagnosis_or_next_action
+      - plan_update
+      - transfer_or_delayed_test
+    first_class_goal_schema: false
+    first_class_study_plan_schema: false
+    scoring_model: multidimensional_evidence_backed_capability_state
+    global_mastery_scalar: false
   checkpoint_policy:
     canonical: derived_from_events_and_episodes
     immutable_snapshots: true
@@ -259,6 +291,7 @@ open_risks:
   - local_cloud_contract_drift
   - retry_duplicate_learning_events
   - partial_checkpoint_commit
+  - curriculum_architecture_mistaken_for_validated_research_scope
 
 next_milestone: >-
   Luna implements P0 local SQLite/evidence/service/MCP runtime against the
