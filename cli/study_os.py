@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -24,6 +25,7 @@ if str(SRC) not in sys.path:
 
 from study_os.config import RuntimeConfig  # noqa: E402
 from study_os.db.connection import migrate_database  # noqa: E402
+from study_os.mcp.http_server import serve_http  # noqa: E402
 from study_os.mcp.server import MCPServer  # noqa: E402
 from study_os.services.runtime import StudyOSService  # noqa: E402
 
@@ -42,6 +44,11 @@ def parser() -> argparse.ArgumentParser:
     sub.add_parser("restore").add_argument("backup_path")
     sub.add_parser("list-tools")
     sub.add_parser("mcp")
+    http = sub.add_parser("mcp-http")
+    http.add_argument("--host", default="127.0.0.1")
+    http.add_argument("--port", type=int, default=8765)
+    http.add_argument("--path", default="/mcp")
+    http.add_argument("--allowed-origin", action="append", default=[])
     return command
 
 
@@ -55,6 +62,16 @@ def main(argv: list[str] | None = None) -> int:
         server = MCPServer(StudyOSService(config))
         print(json.dumps(server.list_tool_names(), indent=2))
         server.service.close()
+        return 0
+    if args.command == "mcp-http":
+        serve_http(
+            config,
+            host=args.host,
+            port=args.port,
+            mcp_path=args.path,
+            allowed_origins=args.allowed_origin,
+            bearer_token=os.environ.get("STUDY_OS_HTTP_BEARER_TOKEN"),
+        )
         return 0
     service = StudyOSService(config)
     try:

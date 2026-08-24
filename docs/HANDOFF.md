@@ -4,9 +4,14 @@ Last updated: 2026-08-24
 
 ## Current phase
 
-**Research Gate R0 — P0 implementation under final target-machine validation.**
+**Research Gate R0 — P1 ChatGPT-to-WSL transport and cross-session acceptance.**
 
-Study OS is not yet a production learning application. The local runtime has now been implemented and cloud/repo review findings have been remediated. The remaining P0 gate is to rerun the updated validation suite and `doctor` on the target WSL machine before merging PR #6 and attempting real cross-chat learning continuity.
+Study OS is not yet a production learning application. P0 is merged and the
+ target WSL validation is green: the P0 suite passed 35 tests, and the P1
+ transport suite adds 4 tests; repository validation passes,
+and `doctor` is healthy. The active gate is now connecting the unchanged local
+semantic runtime to ChatGPT through a secure tunnel and proving fresh-chat
+checkpoint/resume continuity.
 
 ## Current experiment
 
@@ -18,11 +23,15 @@ Study OS is not yet a production learning application. The local runtime has now
 - Bootstrap cross-session state: `subjects/subject-001/CURRENT.json`
 - Current learner checkpoint status: **not started**; no DSA learning episode has been run yet.
 - Target live-state architecture: local WSL Study OS service + SQLite + private evidence store.
-- Current implementation tracker: Issue #5; implementation PR #6; branch `codex/issue-5-p0-runtime`.
+- Current implementation tracker: Issue #5; P0 implementation PR #6 is merged; P1 transport branch `codex/p1-http-mcp-transport`.
 - P0 local runtime implementation is present under `src/study_os/` with migration `0001` and CLI `cli/study_os.py`.
-- Original WSL validation at `a280eb4` passed 28 tests, repository validator, compile checks, CLI migrate/doctor, and backup/restore.
-- Cloud review remediation head is `ffeaa24`; GitHub Actions CI run #44 passes with the added adversarial regression tests.
-- **Pending P0 merge gate:** rerun the updated suite, repository validator, and CLI `doctor` on the target WSL machine.
+- P0 validation passed on WSL after merge: 35 tests, repository validator,
+  compile checks, CLI `migrate`, `doctor`, and `list-tools`; the P1 branch adds
+  4 HTTP transport tests. The runtime reports
+  schema version `1` and all 13 approved semantic MCP tools.
+- P1 adds only `src/study_os/mcp/http_server.py`, the `mcp-http` CLI command,
+  transport tests, and the integration handoff; the database, service layer,
+  migration version, and MCP contract remain unchanged.
 
 ## Canonical state
 
@@ -103,6 +112,10 @@ Key contracts:
 - Implemented the project-agnostic SQLite/evidence/service/MCP runtime for Issue #5.
 - Added migration `0001`, configurable private runtime root, SHA-256 evidence verification, doctor, backup/restore, idempotent semantic operations, atomic checkpoints, and MCP stdio wrappers.
 - Added repository-level MCP/runtime layout validation and local integration/failure tests.
+- Added a loopback-only Streamable HTTP adapter around the existing MCP server,
+  with optional bearer authentication and exact Origin allowlisting.
+- Added `docs/P1_CHATGPT_MCP_INTEGRATION.md` with tunnel/app setup and the
+  two-fresh-chat acceptance sequence.
 - Reviewed PR #6 against the database, validation, handoff, error/idempotency, and failure-mode contracts.
 - Changed PR #6 linkage from `Fixes #5` to `Refs #5` so merging P0 does not auto-close the tracker before P1/P2.
 - Remediated subject provenance, representation-outcome evidence, checkpoint source-session doctor checks, restore rollback, and failed-export cleanup in `a2b77ec`.
@@ -111,24 +124,20 @@ Key contracts:
 
 ## Next recommended tasks
 
-### Local Luna / WSL — final P0 target validation
+### Local Luna / WSL — P1 transport
 
-1. Pull branch `codex/issue-5-p0-runtime` at `ffeaa24` or later.
-2. Run `python3 -m compileall tools tests`.
-3. Run `python3 tools/validate_repo.py`.
-4. Run `PYTHONPATH=src python3 -m unittest discover -s tests -v`.
-5. Run the CLI against a temporary/private runtime root: `migrate`, `doctor`, and `list-tools`.
-6. Confirm `doctor` is healthy and report the updated test count/results on PR #6.
-7. If all target-machine checks pass, merge PR #6 without closing Issue #5, then begin P1.
+1. Start `cli/study_os.py mcp-http` on `127.0.0.1` using the private runtime root.
+2. Configure Secure MCP Tunnel to forward its HTTPS endpoint to `/mcp`.
+3. Register/rescan the custom Study OS MCP app in a workspace with MCP write permission.
+4. Verify the exact 13-tool list and record the P1 Chat A/Chat B evidence.
 
-### Cloud/repo — P0 review complete pending WSL gate
+### Cloud/repo — P1 review
 
-1. Keep contract `0.1.0` and schema version `1` unchanged unless a new explicit contract decision is required.
-2. Do not merge solely from GitHub CI; wait for the post-remediation WSL validation result because local runtime behavior is the P0 target.
-3. If WSL exposes a platform-specific failure, add a deterministic regression test before accepting P0.
-4. After P0 merges, update manifest/handoff to make P1 cross-session continuity the active milestone.
+1. Keep contract `0.1.0` and schema version `1` unchanged during transport integration.
+2. Review the P1 adapter and exact-tool-list tests, then merge the P1 branch if accepted.
+3. Complete the external tunnel/app setup and fresh-chat continuity test; do not claim P1 acceptance from local HTTP tests alone.
 
-### After P0
+### After P1
 
 1. Connect WSL MCP through a secure/private path supported by the active ChatGPT plan/workspace.
 2. Run P1: fresh Chat A -> checkpoint -> fresh Chat B resume without transcript replay or GitHub runtime writes.
@@ -168,6 +177,9 @@ Do not accept the local runtime until:
 - Whether hidden transfer fixtures live in a separate access-controlled local store/repo.
 - Exact ChatGPT plan/workspace capabilities available for the custom MCP app, especially write/modify actions.
 - Exact Secure MCP Tunnel setup/auth model for the WSL runtime.
+- The Secure MCP Tunnel client/credentials are not present in this WSL checkout;
+  external tunnel provisioning and ChatGPT app registration remain operational
+  setup, not repository implementation.
 - Whether the first Study OS MCP service also exposes a local FastAPI/admin API or MCP only.
 - Whether FOSSIL export is direct package generation or a separate adapter/service.
 - Exact first alternating-representation experimental design.
