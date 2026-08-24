@@ -3,7 +3,7 @@ project:
   name: Study OS
   repository: Pukujan/Study-os
   status: research-first
-  phase: P0 parallel cloud-contract + local-runtime implementation
+  phase: P1 ChatGPT-to-WSL MCP transport + cross-session acceptance
   current_gate: R0
   mission: >-
     Convert AI-assisted study sessions into auditable evidence about where
@@ -61,6 +61,7 @@ canonical_paths:
   luna_local_handoff: docs/LUNA_LOCAL_HANDOFF.md
   database_contract: docs/DATABASE_CONTRACT.md
   error_idempotency_contract: docs/ERROR_IDEMPOTENCY_CONTRACT.md
+  p1_chatgpt_mcp_integration: docs/P1_CHATGPT_MCP_INTEGRATION.md
   research_foundations: docs/RESEARCH_FOUNDATIONS.md
   failure_modes: docs/FAILURE_MODES.md
   research_plan: docs/RESEARCH_PLAN.md
@@ -87,6 +88,10 @@ runtime:
   app_surface:
     intended_name: "@StudyOS"
     protocol: mcp
+    transports:
+      - stdio
+      - streamable_http
+    loopback_http_endpoint: "http://127.0.0.1:8765/mcp"
     semantic_tools_only: true
     semantic_contract_version: "0.1.0"
     direct_localhost_from_chatgpt: false
@@ -219,6 +224,14 @@ engineering:
     - backup_restore_roundtrip
     - mcp_contract_conformance
     - prohibited_generic_tools_absent
+  p1_transport_deliverables:
+    - loopback_only_streamable_http_adapter
+    - origin_and_optional_bearer_guards
+    - exact_13_tool_http_surface
+    - plus_gpt_actions_wrapper
+    - contract_derived_openapi_action_schema
+    - secure_mcp_tunnel_configuration
+    - fresh_chat_cross_session_acceptance
   agent_files:
     - AGENTS.md
     - PROJECT_MANIFEST.yaml
@@ -261,7 +274,8 @@ open_risks:
   - partial_checkpoint_commit
 
 next_milestone: >-
-  Luna implements P0 local SQLite/evidence/service/MCP runtime against the
-  repository contracts while cloud/repo work expands conformance and failure
-  tests; then review the pushed implementation and pass P0 before attempting
-  secure ChatGPT-to-WSL cross-session continuity.
+  Connect the loopback-only MCP HTTP transport through Secure MCP Tunnel,
+  register the approved semantic Study OS app in ChatGPT, and pass the fresh
+  Chat A/checkpoint -> fresh Chat B/resume/checkpoint continuity acceptance;
+  keep SQLite, evidence, service semantics, schema version 1, and MCP contract
+  version 0.1.0 unchanged during this integration stage.
