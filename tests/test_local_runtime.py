@@ -119,7 +119,7 @@ class LocalRuntimeTests(unittest.TestCase):
             subject_id="subject-001",
             source_session_ids=[session["session_id"]],
             evidence_ids=[artifact["artifact_id"], event["event_id"]],
-            capability_state={"state_prediction": "pass_unaided", "python_implementation": "not_tested"},
+            capability_state={"state_prediction": "not_tested", "python_implementation": "not_tested"},
             assistance_state={"level": "none"},
             resume={"current_focus": "sliding-window", "next_action": "predict the next trace"},
         )
@@ -148,7 +148,7 @@ class LocalRuntimeTests(unittest.TestCase):
             subject_id="subject-001",
             source_session_ids=[session["session_id"]],
             evidence_ids=[artifact["artifact_id"], event["event_id"]],
-            capability_state={"state_prediction": "pass_unaided"},
+            capability_state={"state_prediction": "not_tested"},
             assistance_state={},
             resume={"current_focus": "trace", "next_action": "retest"},
         )
@@ -158,7 +158,7 @@ class LocalRuntimeTests(unittest.TestCase):
                 subject_id="subject-001",
                 source_session_ids=[session["session_id"]],
                 evidence_ids=[artifact["artifact_id"], event["event_id"]],
-                capability_state={"state_prediction": "pass_unaided"},
+                capability_state={"state_prediction": "not_tested"},
                 assistance_state={},
                 resume={"current_focus": "trace", "next_action": "transfer"},
             )
@@ -168,7 +168,7 @@ class LocalRuntimeTests(unittest.TestCase):
             subject_id="subject-001",
             source_session_ids=[session["session_id"]],
             evidence_ids=[artifact["artifact_id"], event["event_id"]],
-            capability_state={"state_prediction": "pass_unaided"},
+            capability_state={"state_prediction": "not_tested"},
             assistance_state={},
             resume={
                 "current_focus": "trace",
@@ -217,7 +217,7 @@ class LocalRuntimeTests(unittest.TestCase):
             idempotency_key="checkpoint-ops",
             subject_id="subject-001",
             source_session_ids=[session["session_id"]],
-            evidence_ids=[artifact["artifact_id"], event["event_id"], outcome["outcome_id"]],
+            evidence_ids=[artifact["artifact_id"], event["event_id"], assessment["assessment_id"], outcome["outcome_id"]],
             capability_state={"state_prediction": "pass_unaided", "python_implementation": "not_tested"},
             assistance_state={"level": "none"},
             resume={"current_focus": "sliding-window", "next_action": "implement without scaffold"},
@@ -246,7 +246,7 @@ class LocalRuntimeTests(unittest.TestCase):
             subject_id="subject-001",
             source_session_ids=[session["session_id"]],
             evidence_ids=[artifact["artifact_id"], event["event_id"]],
-            capability_state={"state_prediction": "pass_unaided", "python_implementation": "not_tested"},
+            capability_state={"state_prediction": "not_tested", "python_implementation": "not_tested"},
             assistance_state={"level": "none"},
             resume={"current_focus": "sliding-window", "next_action": "resume trace"},
         )
@@ -312,7 +312,7 @@ class LocalRuntimeTests(unittest.TestCase):
                     subject_id="subject-001",
                     source_session_ids=[session["session_id"]],
                     evidence_ids=[artifact["artifact_id"], event["event_id"]],
-                    capability_state={"state_prediction": "pass_unaided"},
+                    capability_state={"state_prediction": "not_tested"},
                     assistance_state={},
                     resume={"current_focus": "trace", "next_action": "retry"},
                 )
