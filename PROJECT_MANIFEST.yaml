@@ -1,9 +1,9 @@
-manifest_version: "0.1.5"
+manifest_version: "0.1.6"
 project:
   name: Study OS
   repository: Pukujan/Study-os
   status: research-first
-  phase: P0 parallel cloud-contract + local-runtime implementation
+  phase: P1 secure ChatGPT-to-WSL MCP continuity
   current_gate: R0
   mission: >-
     Convert AI-assisted study sessions into auditable evidence about where
@@ -47,6 +47,7 @@ canonical_paths:
   local_runtime_source: src/study_os/
   local_runtime_cli: cli/study_os.py
   local_runtime_migrations: src/study_os/db/migrations/
+  p1_secure_mcp: docs/P1_SECURE_MCP.md
   domain: domains/dsa/
   sessions: sessions/
   subjects: subjects/
@@ -89,8 +90,18 @@ runtime:
     protocol: mcp
     semantic_tools_only: true
     semantic_contract_version: "0.1.0"
+    stdio_transport: available
+    network_transport: streamable_http
+    network_dependency: "mcp==2.0.0"
+    local_network_endpoint: "http://127.0.0.1:8765/mcp"
+    local_network_loopback_only: true
+    bearer_token_env: STUDY_OS_MCP_BEARER_TOKEN
+    bearer_required: true
+    max_mcp_request_body_bytes: 1048576
+    public_non_mcp_routes: false
     direct_localhost_from_chatgpt: false
-    remote_access: secure_mcp_tunnel_or_equivalent_authenticated_private_path
+    remote_access: openai_secure_mcp_tunnel
+    public_quick_tunnel_allowed: false
     plan_workspace_capability_must_be_verified: true
   validation:
     local_runtime_validation_required: true
@@ -98,6 +109,7 @@ runtime:
     backup_restore_test_required: true
     idempotency_required_for_mutating_tools: true
     failure_injection_required: true
+    p1_cross_client_resume_required: true
   checkpoint_source_of_truth_when_runtime_active: local_database
   github_checkpoint_role_when_runtime_active: optional_curated_or_reproducibility_export
 
@@ -117,6 +129,8 @@ privacy:
     - secrets
     - account_identifiers
     - hidden_eval_answers_exposed_to_tutor
+    - tunnel_credentials
+    - bearer_tokens
 
 fossil:
   role: optional_export_and_promotion_layer
@@ -185,6 +199,10 @@ engineering:
   parallel_execution_issue: 5
   architecture_issue: 4
   repository_checks_required: true
+  p0_status: accepted_merged
+  p0_merge_commit: 19735a507ccdf9b29451a66bbd65b4dbff7ff84d
+  p0_target_wsl_tests_passed: 35
+  p1_branch: codex/issue-5-p1-secure-mcp
   github_actions:
     configured: true
     workflow: .github/workflows/ci.yml
@@ -197,6 +215,8 @@ engineering:
     - repository_validation
     - unit_tests
     - runtime_contract_tests
+    - mcp_network_auth_tests
+    - mcp_cross_client_resume_test
   p0_cloud_deliverables:
     - parallel_execution_plan
     - validation_strategy
@@ -219,6 +239,16 @@ engineering:
     - backup_restore_roundtrip
     - mcp_contract_conformance
     - prohibited_generic_tools_absent
+  p1_required_acceptance:
+    - secure_private_authenticated_chatgpt_to_wsl_path
+    - exact_13_tool_discovery
+    - chat_a_session_and_evidence_writes
+    - chat_a_checkpoint
+    - fresh_chat_b_resume_without_transcript_replay
+    - exact_next_action_match
+    - chat_b_subsequent_write_and_checkpoint
+    - resume_after_service_restart
+    - no_github_or_fossil_live_runtime_dependency
   agent_files:
     - AGENTS.md
     - PROJECT_MANIFEST.yaml
@@ -256,12 +286,13 @@ open_risks:
   - local_runtime_backup_failure
   - insecure_remote_exposure_of_wsl_service
   - chatgpt_plan_missing_required_mcp_write_actions
+  - secure_tunnel_workspace_org_association_failure
   - local_cloud_contract_drift
   - retry_duplicate_learning_events
   - partial_checkpoint_commit
 
 next_milestone: >-
-  Luna implements P0 local SQLite/evidence/service/MCP runtime against the
-  repository contracts while cloud/repo work expands conformance and failure
-  tests; then review the pushed implementation and pass P0 before attempting
-  secure ChatGPT-to-WSL cross-session continuity.
+  Validate the P1 loopback MCP network branch, establish an OpenAI Secure MCP
+  Tunnel from the WSL tunnel client to 127.0.0.1:8765/mcp, register the private
+  Study OS custom MCP app, and pass Chat A -> checkpoint -> fresh Chat B resume
+  plus subsequent write and process-restart continuity without transcript replay.
