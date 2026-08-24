@@ -68,7 +68,7 @@ Generated images/video may later illustrate a concept, but canonical DSA state t
 
 ## D007 — CI now; CD deferred
 
-**Status:** accepted
+**Status:** accepted, clarified by D011
 
 CI validates schemas, Python utilities, unit tests, data-boundary rules, and repository invariants on pushes/PRs.
 
@@ -98,3 +98,39 @@ Before broad UI/multimodal expansion, R0 requires:
 Agents use root `AGENTS.md`, `PROJECT_MANIFEST.yaml`, and `docs/HANDOFF.md`.
 
 Agents may update project state but may not silently relax invariants. Changes to boundaries/gates require this decision log or a future ADR.
+
+## D010 — Local runtime owns live learner state
+
+**Status:** accepted
+
+Study OS v0.1 is local-first. The canonical operational learner state will live in a local Study OS runtime (initially WSL) backed by SQLite plus a private evidence store.
+
+GitHub remains the source for code, schemas/migrations, research, issue logs, plugin/app definitions, tests, Lesson IR, and curated/redacted artifacts. GitHub is not the operational learner database.
+
+The existing repository checkpoint files are bootstrap/research artifacts. Once the local runtime exists, canonical live checkpoints and current learner state belong in the local database; GitHub checkpoint snapshots become optional curated/reproducibility exports.
+
+**Why:** high-frequency attempts, representation switches, scores, checkpoints, and private transcripts require structured low-latency storage and should not create commits or expose private data.
+
+**Architecture:** see `docs/LOCAL_RUNTIME_ARCHITECTURE.md` and Issue #4.
+
+## D011 — GitHub Actions is repository CI, never runtime infrastructure
+
+**Status:** accepted
+
+Study sessions, event recording, scoring, checkpointing, and resume must not depend on GitHub Actions.
+
+Repository CI may remain useful for schemas, migrations, tests, app/plugin contracts, and public-data/privacy rules, but the local Study OS runtime must enforce its own startup/write-time invariants and provide a health/doctor check.
+
+If Actions becomes distracting during R0, it may be reduced or disabled without changing Study OS runtime semantics.
+
+## D012 — One semantic `@StudyOS` app surface
+
+**Status:** accepted
+
+The intended ChatGPT-facing integration is one `@StudyOS` app/plugin surface backed by semantic MCP tools such as `resume`, `record_attempt`, `record_assessment`, `record_representation_outcome`, `checkpoint`, and `status`.
+
+Do not expose arbitrary SQL, shell execution, or unrestricted file mutation to the conversational model.
+
+ChatGPT cannot directly reach a WSL-only `localhost` service. Integration must use a supported secure/private MCP tunnel or another deliberately secured remote path. The exact write-action capability is plan/workspace dependent and must be verified at integration time.
+
+**Why:** the tutor should decide how to teach while Study OS owns deterministic persistence, provenance, scoring, checkpointing, and validation.
