@@ -8,6 +8,12 @@ version = "0.1.0"
 description = "Local-first Study OS semantic runtime"
 requires-python = ">=3.11"
 
+[project.optional-dependencies]
+network = [
+  "mcp==2.0.0",
+  "uvicorn>=0.35,<1",
+]
+
 [tool.setuptools.packages.find]
 where = ["src"]
 
