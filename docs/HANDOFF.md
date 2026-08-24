@@ -4,9 +4,9 @@ Last updated: 2026-08-23
 
 ## Current phase
 
-**Research Gate R0 — local-runtime foundation + research harness readying.**
+**Research Gate R0 — P0 parallel cloud-contract + local-runtime implementation.**
 
-Study OS is not yet a production learning application. Broad product/UI work is gated on one complete auditable Sliding Window learning trajectory.
+Study OS is not yet a production learning application. The immediate goal is to make the local runtime implementation satisfy versioned repository contracts and extensive validation before attempting real cross-chat learning continuity.
 
 ## Current experiment
 
@@ -18,6 +18,7 @@ Study OS is not yet a production learning application. Broad product/UI work is 
 - Bootstrap cross-session state: `subjects/subject-001/CURRENT.json`
 - Current learner checkpoint status: **not started**; no DSA learning episode has been run yet.
 - Target live-state architecture: local WSL Study OS service + SQLite + private evidence store.
+- Current implementation tracker: Issue #5.
 
 ## Canonical state
 
@@ -37,6 +38,12 @@ Key contracts:
 - `docs/BUILD_GATES.md`
 - `docs/CHECKPOINTING.md`
 - `docs/LOCAL_RUNTIME_ARCHITECTURE.md`
+- `docs/PARALLEL_EXECUTION_PLAN.md`
+- `docs/VALIDATION_STRATEGY.md`
+- `docs/LUNA_LOCAL_HANDOFF.md`
+- `docs/DATABASE_CONTRACT.md`
+- `docs/ERROR_IDEMPOTENCY_CONTRACT.md`
+- `contracts/study-os-mcp-tools.v0.1.json`
 - `docs/FOSSIL_INTEGRATION.md`
 - `docs/CI_CD.md`
 - `docs/DECISIONS.md`
@@ -45,7 +52,9 @@ Key contracts:
 - `plugins/study-os-ingest/skill.md`
 - `plugins/study-os-checkpoint/skill.md`
 - `schemas/*.schema.json`
+- Issue #3 — v0.1 mobile adaptive learning loop
 - Issue #4 — local-first runtime / `@StudyOS` orchestration
+- Issue #5 — P0 parallel implementation + validation
 
 ## Important decisions
 
@@ -61,58 +70,83 @@ Key contracts:
 10. Agents must keep manifest/handoff/decisions synchronized when project state changes.
 11. Cross-session continuity uses derived, provenance-backed checkpoints; ChatGPT memory is never canonical state.
 12. The repo defines Study OS ingest/checkpoint skill contracts, but there is not yet an installed @-mentionable Study OS ChatGPT app/plugin.
-13. **Live learner state is moving off GitHub into a local Study OS runtime**. WSL + SQLite + a private evidence store is the v0.1 target.
-14. GitHub owns code/schemas/research/plugin architecture/curated artifacts, not high-frequency live learning telemetry.
-15. GitHub Actions is repository CI only and must never be required to study, score, checkpoint, or resume. Local runtime validation is mandatory regardless of Actions.
-16. The intended ChatGPT integration is one semantic `@StudyOS` MCP-backed app surface. Do not expose arbitrary SQL/shell/file mutation tools.
-17. ChatGPT cannot directly reach a WSL-only localhost service; use a supported secure/private MCP tunnel or equivalent authenticated remote path. Verify current plan/workspace write capabilities during integration.
+13. Live learner state belongs in the local Study OS runtime; GitHub owns source/spec/research, not live telemetry.
+14. GitHub Actions is repository CI only and must never be required to study, score, checkpoint, or resume.
+15. The intended ChatGPT integration is one semantic `@StudyOS` MCP-backed app surface. Do not expose arbitrary SQL/shell/file mutation tools.
+16. ChatGPT cannot directly reach a WSL-only localhost service; use a supported secure/private MCP tunnel or equivalent authenticated path.
+17. P0 is contract-first and parallel: cloud/repo defines versioned contracts/tests while Luna implements locally against them.
+18. Durable mutating semantic tools require idempotency keys; retry duplication is treated as evidence corruption risk.
+19. Checkpoint creation + current pointer update is atomic.
+20. Backup/restore and failure-injection tests are required before trusting longitudinal learner data.
 
 ## Recent changes
 
-- Established repository/folder boundaries and public/private data boundary.
-- Added versioned schemas for sessions, events, episodes, representations, lesson IR, learner checkpoints, and current-checkpoint pointers.
-- Added minimal deterministic transcript preservation CLI and unit tests.
-- Added `@study-os-ingest` and `@study-os-checkpoint` skill contracts (not yet packaged/installed as actual ChatGPT plugins).
-- Added `docs/CHECKPOINTING.md` and initialized `subjects/subject-001/CURRENT.json` as a bootstrap resume entry point.
-- Added academic research foundations, failure-mode catalog, measurement model, and R0/R1/R2 gates.
-- Added root `AGENTS.md`, `PROJECT_MANIFEST.yaml`, decision log, and agent research protocol.
-- Added repository/research-integrity validator and GitHub Actions CI; Actions is now explicitly non-runtime/optional during R0.
-- Added `docs/LOCAL_RUNTIME_ARCHITECTURE.md` and Issue #4 defining WSL/SQLite/private evidence storage and the unified `@StudyOS` semantic tool boundary.
-- Updated manifest/decision log to make the local DB the future canonical live checkpoint/state store.
+- Added local-first runtime architecture and Issue #4.
+- Added `docs/PARALLEL_EXECUTION_PLAN.md` defining cloud/repo and local Luna tracks.
+- Added `docs/VALIDATION_STRATEGY.md` with V0–V10 validation layers: contracts, migrations, evidence integrity, services, MCP, checkpoint/resume, backup/restore, failure injection, privacy, cross-session, and learning validity.
+- Added `docs/LUNA_LOCAL_HANDOFF.md` as the exact local WSL implementation handoff.
+- Added `docs/DATABASE_CONTRACT.md` for project-agnostic SQLite semantics and invariants.
+- Added `docs/ERROR_IDEMPOTENCY_CONTRACT.md` for stable error categories, retries, idempotency, checkpoint atomicity, and concurrency behavior.
+- Added `contracts/study-os-mcp-tools.v0.1.json` defining the semantic MCP surface.
+- Added a synthetic reference learning trajectory under `tests/fixtures/`.
+- Added `tests/test_runtime_contracts.py` so the repo checks required semantic tools, idempotency, prohibited generic machine access, evidence-backed representation scoring, and checkpoint semantics.
+- Created Issue #5 as the P0 shared cloud/local implementation tracker.
+- Updated `PROJECT_MANIFEST.yaml` to make P0 parallel implementation the current milestone.
 
 ## Next recommended tasks
 
-### Local runtime foundation (next local coding session)
+### Local Luna / WSL — hand off now
 
-1. Create a project-agnostic SQLite schema + migrations for subjects/projects/domains/concepts/sessions/events/episodes/attempts/assessments/representations/interventions/outcomes/checkpoints/retention probes.
-2. Create the private evidence store under a non-Git path such as `~/.study-os/evidence/`; raw artifacts immutable + hashed.
-3. Implement repository/service layer so domain logic does not issue ad-hoc SQL everywhere.
-4. Implement canonical local checkpoint/resume and a single current checkpoint pointer per subject/project context.
-5. Implement `doctor`/health validation and enforce schema/provenance/checkpoint invariants at startup/write time.
-6. Implement DB/evidence backup + restore test before valuable longitudinal data accumulates.
+1. Pull latest `main` and read `docs/LUNA_LOCAL_HANDOFF.md`.
+2. Implement project-agnostic SQLite schema + ordered migrations.
+3. Implement configurable private evidence store outside Git and SHA-256 verification.
+4. Implement repository/service layer and `doctor`/health.
+5. Implement durable semantic methods with idempotency and stable errors.
+6. Implement canonical local checkpoint/resume with atomic current-pointer update.
+7. Implement backup/export/restore and prove restore in tests.
+8. Implement MCP wrappers matching `contracts/study-os-mcp-tools.v0.1.json` exactly.
+9. Run local unit/integration/failure tests from `docs/VALIDATION_STRATEGY.md`.
+10. Push a branch/PR referencing Issue #5 with test results and MCP tool list.
 
-### MCP/app boundary
+### Cloud/repo — continue in parallel
 
-7. Expose semantic MCP operations only: status/start/resume/record event/attempt/assessment/intervention/outcome/checkpoint/next probe/retention/export-fossil.
-8. Add deterministic integration fixtures and strict schemas for tool inputs/outputs.
-9. Package one unified `@StudyOS` custom app/plugin surface.
-10. Connect the local WSL MCP server using Secure MCP Tunnel or an equivalent authenticated private path supported by the active ChatGPT plan/workspace.
-11. Verify `@StudyOS status`, write operations, `checkpoint`, and fresh-chat `resume` against the same local DB.
+1. Review Luna's pushed implementation against the machine-readable contract and P0 failure modes.
+2. Extend cloud-side conformance tests as implementation details reveal ambiguous contracts.
+3. Add contract version migration tests once Luna introduces runtime/migration versions.
+4. Add a generated-vs-expected MCP tool-list comparison test once the server implementation exists.
+5. Add fixture-driven checkpoint/resume integration test callable against a local test service implementation in CI if practical.
+6. Keep contracts authoritative; if a contract is wrong, update it explicitly with rationale rather than silently accepting drift.
 
-### Learning experiment
+### After P0
 
-12. Implement transcript normalization/event extraction needed by the first Study OS session.
-13. Define first Sliding Window Lesson IR + deterministic state model.
-14. Define matched baseline/intervention/transfer/retention problem fixtures and hidden-eval boundary.
-15. Run first instrumented learning session with Subject 001.
-16. Produce first canonical local checkpoint; start a fresh tutor/chat and resume from it.
-17. Run delayed retention and assemble first Golden Learning Trajectory.
-18. Only then expand the product/UI/modalities.
+1. Connect WSL MCP through a secure/private path supported by the active ChatGPT plan/workspace.
+2. Run P1: fresh Chat A -> checkpoint -> fresh Chat B resume without transcript replay or GitHub runtime writes.
+3. Implement first deterministic Sliding Window Lesson IR/state model and hidden transfer boundary.
+4. Run the first instrumented learning trajectory.
+5. Complete fading, transfer, delayed retention, representation scoring, and first Golden Learning Trajectory.
+
+## P0 technical acceptance highlights
+
+Do not accept the local runtime until:
+
+- empty DB migration works;
+- migration command is repeat-safe;
+- foreign keys are enforced;
+- exact write retries do not duplicate events;
+- idempotency key reuse with changed content conflicts;
+- derived learner claims without evidence are rejected;
+- raw evidence mutation is detected;
+- checkpoint + current pointer update is atomic;
+- resume survives process restart;
+- broken pointer/evidence is detected by `doctor`;
+- backup -> destroy/move -> restore reproduces checkpoint + evidence hashes;
+- MCP tool surface conforms to the repo contract;
+- SQL/shell/generic file-write/code-exec tools are absent.
 
 ## Unresolved decisions
 
-- Exact SQLite migration/tooling library and repository-layer implementation.
-- Exact DB backup cadence and whether private evidence backups are local-only or encrypted off-device.
+- Exact SQLite migration/tooling library and Python packaging chosen by Luna.
+- Exact DB backup cadence and whether private evidence backups are encrypted off-device.
 - Whether hidden transfer fixtures live in a separate access-controlled local store/repo.
 - Exact ChatGPT plan/workspace capabilities available for the custom MCP app, especially write/modify actions.
 - Exact Secure MCP Tunnel setup/auth model for the WSL runtime.
@@ -128,15 +162,17 @@ Key contracts:
 - Do not use GitHub as the live operational learner database after the local runtime exists.
 - Do not make GitHub Actions part of the study/checkpoint/resume path.
 - Do not publicly expose an unauthenticated local/WSL service.
-- Do not expose arbitrary SQL/shell/file-write tools through `@StudyOS`.
+- Do not expose arbitrary SQL/shell/file-write/code-execution tools through `@StudyOS`.
+- Do not allow retry behavior to duplicate learner evidence.
+- Do not allow checkpoint/current-pointer partial commits.
+- Do not trust backups until a restore test passes.
 - Do not let an LLM-derived label overwrite learner self-report or observed events.
 - Do not let AI generate authoritative algorithm state without deterministic validation.
 - Do not expand scope into a full DSA curriculum yet.
 - Do not describe Subject 001 results as universal evidence.
 - Do not optimize solely for “felt clearer” or immediate completion speed.
-- Do not interpret representation preference as a fixed sensory learning style.
 - Do not resume from ChatGPT memory when a Study OS checkpoint exists; read the canonical checkpoint.
 
 ## Completion definition for the next agent
 
-A task is not complete until relevant local/repository checks pass and this handoff + manifest are updated if the task changed project state, gates, paths, schemas, runtime ownership, or open decisions.
+A task is not complete until relevant local/repository checks pass and this handoff + manifest are updated if the task changed project state, gates, paths, schemas, contracts, runtime ownership, or open decisions.
