@@ -1,0 +1,14 @@
+# Study OS raw learning evidence may contain private/sensitive conversation data.
+# Keep canonical raw transcripts in a local/private evidence store by default.
+sessions/**/raw/*
+!sessions/**/raw/.gitkeep
+
+# Local/private evidence root if used.
+.study-os-private/
+
+# Common local artifacts
+__pycache__/
+*.pyc
+.venv/
+.env
+.env.*
