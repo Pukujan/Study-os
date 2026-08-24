@@ -1,6 +1,6 @@
 # Agent Handoff
 
-Last updated: 2026-08-23
+Last updated: 2026-08-24
 
 ## Current phase
 
@@ -18,7 +18,9 @@ Study OS is not yet a production learning application. The immediate goal is to 
 - Bootstrap cross-session state: `subjects/subject-001/CURRENT.json`
 - Current learner checkpoint status: **not started**; no DSA learning episode has been run yet.
 - Target live-state architecture: local WSL Study OS service + SQLite + private evidence store.
-- Current implementation tracker: Issue #5.
+- Current implementation tracker: Issue #5, branch `codex/issue-5-p0-runtime`.
+- P0 local runtime implementation is present under `src/study_os/` with migration `0001` and CLI `cli/study_os.py`.
+- Local validation currently passes: 28 WSL tests, repository validator, and compile checks.
 
 ## Canonical state
 
@@ -92,21 +94,17 @@ Key contracts:
 - Added `tests/test_runtime_contracts.py` so the repo checks required semantic tools, idempotency, prohibited generic machine access, evidence-backed representation scoring, and checkpoint semantics.
 - Created Issue #5 as the P0 shared cloud/local implementation tracker.
 - Updated `PROJECT_MANIFEST.yaml` to make P0 parallel implementation the current milestone.
+- Implemented the project-agnostic SQLite/evidence/service/MCP runtime for Issue #5.
+- Added migration `0001`, configurable private runtime root, SHA-256 evidence verification, doctor, backup/restore, idempotent semantic operations, atomic checkpoints, and MCP stdio wrappers.
+- Added repository-level MCP/runtime layout validation and local integration/failure tests.
 
 ## Next recommended tasks
 
-### Local Luna / WSL — hand off now
+### Local Luna / WSL — P0 implementation complete; review next
 
-1. Pull latest `main` and read `docs/LUNA_LOCAL_HANDOFF.md`.
-2. Implement project-agnostic SQLite schema + ordered migrations.
-3. Implement configurable private evidence store outside Git and SHA-256 verification.
-4. Implement repository/service layer and `doctor`/health.
-5. Implement durable semantic methods with idempotency and stable errors.
-6. Implement canonical local checkpoint/resume with atomic current-pointer update.
-7. Implement backup/export/restore and prove restore in tests.
-8. Implement MCP wrappers matching `contracts/study-os-mcp-tools.v0.1.json` exactly.
-9. Run local unit/integration/failure tests from `docs/VALIDATION_STRATEGY.md`.
-10. Push a branch/PR referencing Issue #5 with test results and MCP tool list.
+1. Review the pushed Issue #5 PR against the versioned contracts and failure modes.
+2. Confirm the local WSL runtime on the target machine with `cli/study_os.py doctor`.
+3. Connect the MCP stdio/server boundary through a supported authenticated private path when integration work begins.
 
 ### Cloud/repo — continue in parallel
 
@@ -145,7 +143,7 @@ Do not accept the local runtime until:
 
 ## Unresolved decisions
 
-- Exact SQLite migration/tooling library and Python packaging chosen by Luna.
+- Exact SQLite migration/tooling library is now Python stdlib SQLite with ordered SQL files; future Postgres migration remains open.
 - Exact DB backup cadence and whether private evidence backups are encrypted off-device.
 - Whether hidden transfer fixtures live in a separate access-controlled local store/repo.
 - Exact ChatGPT plan/workspace capabilities available for the custom MCP app, especially write/modify actions.

@@ -1,4 +1,4 @@
-manifest_version: "0.1.4"
+manifest_version: "0.1.5"
 project:
   name: Study OS
   repository: Pukujan/Study-os
@@ -44,6 +44,9 @@ canonical_paths:
   schemas: schemas/
   contracts: contracts/
   mcp_contract: contracts/study-os-mcp-tools.v0.1.json
+  local_runtime_source: src/study_os/
+  local_runtime_cli: cli/study_os.py
+  local_runtime_migrations: src/study_os/db/migrations/
   domain: domains/dsa/
   sessions: sessions/
   subjects: subjects/
@@ -74,6 +77,7 @@ runtime:
   operational_database:
     engine: sqlite
     role: canonical_live_learner_state
+    current_schema_version: 1
     migrations_required: true
     migration_target_if_needed: postgres
   private_evidence_store:

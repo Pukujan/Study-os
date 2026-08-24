@@ -31,6 +31,14 @@ REQUIRED_FILES = [
     "docs/FOSSIL_INTEGRATION.md",
     "docs/HANDOFF.md",
     "docs/DECISIONS.md",
+    "docs/VALIDATION_STRATEGY.md",
+    "docs/LUNA_LOCAL_HANDOFF.md",
+    "docs/DATABASE_CONTRACT.md",
+    "docs/ERROR_IDEMPOTENCY_CONTRACT.md",
+    "contracts/study-os-mcp-tools.v0.1.json",
+    "src/study_os/services/runtime.py",
+    "src/study_os/mcp/server.py",
+    "src/study_os/db/migrations/0001_initial.sql",
     "plugins/study-os-ingest/skill.md",
     "plugins/study-os-checkpoint/skill.md",
     "schemas/session-manifest.schema.json",
@@ -119,6 +127,60 @@ def check_manifest() -> None:
     }
     if not expected.issubset(prohibited):
         raise ValidationFailure("Manifest lost required prohibited research claims")
+
+
+def check_mcp_contract() -> None:
+    contract_path = ROOT / "contracts" / "study-os-mcp-tools.v0.1.json"
+    contract = load_json(contract_path)
+    if contract.get("contract_version") != "0.1.0":
+        raise ValidationFailure("MCP contract version must remain 0.1.0 for this runtime")
+    principles = contract.get("principles", {})
+    for key in (
+        "semantic_tools_only",
+        "generic_sql_allowed",
+        "generic_shell_allowed",
+        "generic_file_write_allowed",
+        "arbitrary_code_execution_allowed",
+        "github_runtime_dependency",
+        "fossil_runtime_dependency",
+    ):
+        if key not in principles:
+            raise ValidationFailure(f"MCP contract missing principle: {key}")
+    if not principles["semantic_tools_only"]:
+        raise ValidationFailure("MCP surface must remain semantic-tools-only")
+    if any(principles[key] for key in ("generic_sql_allowed", "generic_shell_allowed", "generic_file_write_allowed", "arbitrary_code_execution_allowed", "github_runtime_dependency", "fossil_runtime_dependency")):
+        raise ValidationFailure("MCP contract permits a prohibited generic/runtime dependency")
+    tools = contract.get("tools")
+    if not isinstance(tools, list) or not tools:
+        raise ValidationFailure("MCP contract must declare tools")
+    names = [tool.get("name") for tool in tools]
+    if any(not isinstance(name, str) or not name for name in names) or len(names) != len(set(names)):
+        raise ValidationFailure("MCP tool names must be unique non-empty strings")
+    forbidden_fragments = ("sql", "shell", "terminal", "exec", "execute_code", "run_code", "write_file", "filesystem")
+    if any(any(fragment in name.lower() for fragment in forbidden_fragments) for name in names):
+        raise ValidationFailure("MCP contract exposes a prohibited generic machine tool")
+    for tool in tools:
+        for field in ("mutating", "idempotency_required", "required_input", "required_output"):
+            if field not in tool:
+                raise ValidationFailure(f"MCP tool {tool.get('name')} is missing {field}")
+        if tool["mutating"] and (not tool["idempotency_required"] or "idempotency_key" not in tool["required_input"]):
+            raise ValidationFailure(f"Mutating MCP tool {tool['name']} must require idempotency_key")
+
+
+def check_runtime_layout() -> None:
+    required = [
+        ROOT / "src" / "study_os" / "config.py",
+        ROOT / "src" / "study_os" / "errors.py",
+        ROOT / "src" / "study_os" / "db" / "connection.py",
+        ROOT / "src" / "study_os" / "db" / "repositories" / "sqlite.py",
+        ROOT / "src" / "study_os" / "evidence" / "store.py",
+        ROOT / "src" / "study_os" / "services" / "runtime.py",
+        ROOT / "src" / "study_os" / "mcp" / "server.py",
+        ROOT / "cli" / "study_os.py",
+    ]
+    missing = [str(path.relative_to(ROOT)) for path in required if not path.is_file()]
+    if missing:
+        raise ValidationFailure("Local runtime layout is incomplete: " + ", ".join(missing))
 
 
 def tracked_files() -> list[str]:
@@ -234,6 +296,8 @@ def main() -> int:
     checks = [
         ("required files", check_required_files),
         ("project manifest", check_manifest),
+        ("MCP semantic contract", check_mcp_contract),
+        ("local runtime layout", check_runtime_layout),
         ("public data boundary", check_public_data_boundary),
     ]
 
