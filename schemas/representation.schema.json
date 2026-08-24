@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://study-os.local/schemas/representation.schema.json",
+  "title": "Study OS Representation",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "representation_id",
+    "concept",
+    "family",
+    "operation",
+    "version"
+  ],
+  "properties": {
+    "schema_version": {"type": "string"},
+    "representation_id": {"type": "string"},
+    "concept": {"type": "string"},
+    "lesson_id": {"type": ["string", "null"]},
+    "family": {
+      "type": "string",
+      "enum": ["textual", "structural", "stateful", "formal", "procedural", "auditory", "generative_visual"]
+    },
+    "operation": {
+      "type": "string",
+      "enum": ["translate", "decompose", "expand", "contrast", "trace", "hide", "predict", "reconstruct", "abstract", "specialize", "transfer"]
+    },
+    "version": {"type": "string"},
+    "authoritative": {"type": "boolean", "default": false},
+    "content_path": {"type": ["string", "null"]},
+    "source_representation_ids": {"type": "array", "items": {"type": "string"}},
+    "semantic_claims": {"type": "array", "items": {"type": "string"}},
+    "intended_transition": {
+      "type": ["object", "null"],
+      "properties": {
+        "from": {"type": ["string", "null"]},
+        "to": {"type": ["string", "null"]}
+      },
+      "additionalProperties": false
+    },
+    "generation": {
+      "type": ["object", "null"],
+      "properties": {
+        "generator": {"type": ["string", "null"]},
+        "model": {"type": ["string", "null"]},
+        "prompt_hash": {"type": ["string", "null"]},
+        "validated_against_lesson_ir": {"type": ["boolean", "null"]}
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}
