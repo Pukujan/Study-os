@@ -15,6 +15,8 @@ Study OS is not yet a production learning application. Broad product/UI work is 
 - Language: Python
 - Concept family: Sliding Window
 - Goal: observe a representation-transition failure and test whether an intervention survives fading, transfer, and delayed retrieval.
+- Cross-session state: `subjects/subject-001/CURRENT.json`
+- Current learner checkpoint status: **not started**; no DSA learning episode has been run yet.
 
 ## Canonical state
 
@@ -32,18 +34,20 @@ Key contracts:
 - `docs/RESEARCH_PLAN.md`
 - `docs/MEASUREMENT_MODEL.md`
 - `docs/BUILD_GATES.md`
+- `docs/CHECKPOINTING.md`
 - `docs/FOSSIL_INTEGRATION.md`
 - `docs/CI_CD.md`
 - `docs/DECISIONS.md`
 - `docs/AGENT_RESEARCH_PROTOCOL.md`
 - `docs/SOURCE_INDEX.md`
 - `plugins/study-os-ingest/skill.md`
+- `plugins/study-os-checkpoint/skill.md`
 - `schemas/*.schema.json`
 
 ## Important decisions
 
 1. Study OS canonical learning data uses a dedicated schema.
-2. FOSSIL is optional for promoted durable knowledge; it is not required for every learning event.
+2. FOSSIL is optional for promoted durable knowledge; it is not required for every learning event or learner resume.
 3. Full raw transcripts remain local/private by default because this repository is public.
 4. Subject 001 is the first longitudinal design participant, not a population proxy.
 5. No fixed learning-style model. Representation choice must be based on task/state/outcome.
@@ -52,13 +56,16 @@ Key contracts:
 8. CI is active now; CD/deployment is deferred until Research Gate R0 passes.
 9. Multimodal video/image pipelines are deferred until the evidence loop works end-to-end.
 10. Agents must keep manifest/handoff/decisions synchronized when project state changes.
+11. Cross-session continuity uses derived immutable learner checkpoints plus `subjects/<subject>/CURRENT.json`; ChatGPT memory is never canonical state.
+12. The repo defines Study OS ingest/checkpoint skill contracts, but there is not yet an installed @-mentionable Study OS ChatGPT app/plugin.
 
 ## Recent changes
 
 - Established repository/folder boundaries and public/private data boundary.
-- Added versioned schemas for sessions, events, episodes, representations, and lesson IR.
+- Added versioned schemas for sessions, events, episodes, representations, lesson IR, learner checkpoints, and current-checkpoint pointers.
 - Added minimal deterministic transcript preservation CLI and unit tests.
-- Added `@study-os-ingest` skill contract (not yet packaged/installed as an actual ChatGPT plugin).
+- Added `@study-os-ingest` and `@study-os-checkpoint` skill contracts (not yet packaged/installed as actual ChatGPT plugins).
+- Added `docs/CHECKPOINTING.md` and initialized `subjects/subject-001/CURRENT.json` so a fresh agent has a deterministic resume entry point.
 - Added academic research foundations and durable source index.
 - Added adversarial failure-mode catalog with mitigations.
 - Added falsifiable research questions, measurement model, and R0/R1/R2 gates.
@@ -79,18 +86,21 @@ Key contracts:
 7. Define matched baseline/intervention/transfer/retention problem fixtures.
 8. Decide hidden-eval storage boundary so tutor cannot leak answers.
 9. Run first instrumented learning session with Subject 001.
-10. After delay, run retention probe and assemble first Golden Learning Trajectory.
-11. Only then decide whether an application UI is justified.
+10. At the end of that session, create the first accepted learner checkpoint and update `CURRENT.json`.
+11. Start the next tutor/chat session by reading `CURRENT.json` + referenced checkpoint rather than reteaching from scratch.
+12. After delay, run retention probe and assemble first Golden Learning Trajectory.
+13. Only then decide whether an application UI is justified.
 
 ## Unresolved decisions
 
 - Exact private raw-evidence storage location and backup policy.
 - Whether hidden transfer fixtures live in a private sibling repo, local store, or another access-controlled artifact store.
-- How the actually invokable `@study-os-ingest` plugin/skill will be packaged and connected.
+- How the actually invokable `@StudyOS` / `@study-os-checkpoint` plugin/app will be packaged and connected.
 - Whether FOSSIL export uses direct package generation or a separate adapter/service.
 - Exact experimental design for first alternating-representation comparison.
 - Which deterministic renderer/state format becomes authoritative after Mermaid/static traces.
 - Whether the first delayed-retention schedule should be fixed (for example 24h/72h) or adapt from performance.
+- Whether automated checkpointing should initially be lesson-boundary only or also trigger on breakthroughs/persistent failures once Study OS owns the tutor runtime.
 
 ## Hazards
 
@@ -101,6 +111,7 @@ Key contracts:
 - Do not describe Subject 001 results as universal evidence.
 - Do not optimize solely for “felt clearer” or immediate completion speed.
 - Do not interpret representation preference as a fixed sensory learning style.
+- Do not resume from ChatGPT memory when a Study OS checkpoint exists; read the checkpoint.
 
 ## Completion definition for the next agent
 
