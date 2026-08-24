@@ -1,4 +1,4 @@
-manifest_version: "0.1.1"
+manifest_version: "0.1.2"
 project:
   name: Study OS
   repository: Pukujan/Study-os
@@ -45,9 +45,11 @@ canonical_paths:
   domain: domains/dsa/
   sessions: sessions/
   subjects: subjects/
+  current_subject_checkpoint: subjects/subject-001/CURRENT.json
   datasets: datasets/
   plugins: plugins/
   fossil_exports: fossil/exports/
+  checkpointing: docs/CHECKPOINTING.md
   research_foundations: docs/RESEARCH_FOUNDATIONS.md
   failure_modes: docs/FAILURE_MODES.md
   research_plan: docs/RESEARCH_PLAN.md
@@ -66,6 +68,7 @@ privacy:
     - redacted_fixtures
     - schemas
     - curated_derived_findings
+    - public_safe_learner_checkpoints
   public_repo_must_not_contain:
     - full_private_chat_exports
     - secrets
@@ -76,7 +79,9 @@ fossil:
   role: optional_export_and_promotion_layer
   runtime_dependency: false
   canonical_source_of_learning_events: study_os
+  canonical_source_of_learner_checkpoints: study_os
   automatic_micro_event_ingest: false
+  resume_dependency: false
   promotion_candidates:
     - curated_learning_trajectory
     - lesson_hypothesis
@@ -89,8 +94,23 @@ schemas:
   learning_episode: "0.1.0"
   representation: "0.1.0"
   lesson_ir: "0.1.0"
+  learner_checkpoint: "0.1.0"
+  current_checkpoint: "0.1.0"
 
 learning:
+  checkpoint_policy:
+    canonical: derived_from_events_and_episodes
+    immutable_snapshots: true
+    mutable_current_pointer: true
+    required_boundaries:
+      - session_end
+      - lesson_boundary
+      - breakthrough
+      - persistent_failure
+      - pre_transfer
+      - post_transfer
+      - pre_delay
+      - post_delay
   difficulty_ladder:
     L0: observe
     L1: predict
@@ -130,6 +150,10 @@ engineering:
     - PROJECT_MANIFEST.yaml
     - docs/HANDOFF.md
     - docs/DECISIONS.md
+  assistant_skill_contracts:
+    - plugins/study-os-ingest/skill.md
+    - plugins/study-os-checkpoint/skill.md
+  installed_study_os_chatgpt_plugin: false
   build_gate_requirements:
     - private_raw_evidence_hashed
     - normalized_transcript_with_provenance
@@ -153,7 +177,10 @@ open_risks:
   - agent_repository_drift
   - research_overhead_burnout
   - scope_expansion_before_evidence_loop
+  - cross_session_resume_without_checkpoint
+  - checkpoint_drift_from_canonical_events
 
 next_milestone: >-
-  Verify CI, then execute one complete Sliding Window learning trajectory for
-  Subject 001 and pass Research Gate R0 before expanding product surface.
+  Verify CI, define the first Sliding Window baseline/state model, execute the
+  first instrumented learning session for Subject 001, and produce the first
+  accepted learner checkpoint before continuing in a new tutor session.
