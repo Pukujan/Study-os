@@ -23,7 +23,7 @@ This repository file defines the skill contract. Registering it as an installed 
 
 Study OS is the source of truth.
 
-Write under:
+Logical session layout:
 
 ```text
 sessions/YYYY-MM-DD/<session-id>/
@@ -48,6 +48,14 @@ sessions/YYYY-MM-DD/<session-id>/
 
 Do not write directly to a global FOSSIL pack as the only persistence path.
 
+### Public repository rule
+
+If the target repository is public, **do not upload full raw transcript content by default**. Preserve raw evidence in a local/private evidence root or private artifact store, then commit only its hash/reference plus reviewed/redacted derivatives. See `docs/DATA_POLICY.md`.
+
+A public manifest may refer to raw evidence with a logical URI such as `private://sessions/.../transcript.original.json` plus SHA-256.
+
+Uploading a full raw transcript to a public repository requires explicit user intent for that specific artifact.
+
 ## Ingest workflow
 
 1. **Capture raw evidence**
@@ -55,15 +63,18 @@ Do not write directly to a global FOSSIL pack as the only persistence path.
    - If only visible conversation text is available, preserve a verbatim Markdown capture and mark `capture_method=copy`.
    - Compute and store SHA-256 for every raw artifact.
    - Never edit a raw artifact after ingest. Corrections create a new artifact/version.
+   - For public repositories, put this evidence in private/local storage unless the user explicitly chooses public publication.
 
 2. **Create session manifest**
    - Validate against `schemas/session-manifest.schema.json`.
    - Record provider/model/conversation ID only when actually known.
    - Use pseudonymous subject IDs such as `subject-001`.
+   - In public repositories, reference private raw artifacts by logical URI/hash rather than embedding their contents.
 
 3. **Normalize transcript**
    - Produce JSONL with stable message IDs, role, timestamp when available, content, tool/media references, and source offsets.
    - Normalization is derived and rebuildable from raw evidence.
+   - Redact public derivatives when needed; never overwrite the raw artifact.
 
 4. **Extract learning events**
    - Validate every event against `schemas/learning-event.schema.json`.
@@ -124,8 +135,9 @@ Git history is provenance, but it is not the semantic version model.
 
 After ingest, report:
 
-- session ID and destination path;
+- session ID and destination path/reference;
 - raw artifact hashes;
+- whether raw evidence is private or public;
 - number of normalized messages;
 - counts by evidence class;
 - proposed learning episodes;
@@ -137,4 +149,5 @@ After ingest, report:
 - Never fabricate missing transcript content, timestamps, scores, or learner feedback.
 - Never silently rewrite raw transcripts.
 - Never treat derived labels as observed facts.
-- Never expose private transcript data outside the repository/target chosen by the user.
+- Never expose private transcript data outside the target chosen by the user.
+- Never rely on `.gitignore` to protect data when writing through a GitHub API; enforce the public/private boundary explicitly.
