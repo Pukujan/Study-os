@@ -142,37 +142,57 @@ class StudyOSService:
             raise validation(f"{field_name} must contain non-empty strings")
         return result
 
-    def _resolve_evidence(self, connection: sqlite3.Connection, evidence_ids: Iterable[str] | None) -> list[str]:
+    def _resolve_evidence(
+        self,
+        connection: sqlite3.Connection,
+        evidence_ids: Iterable[str] | None,
+        *,
+        subject_id: str | None = None,
+    ) -> list[str]:
         ids = self._as_ids(evidence_ids, "evidence_ids")
-        tables = (
-            "raw_artifacts",
-            "learning_events",
-            "attempts",
-            "assessments",
-            "representation_outcomes",
-            "checkpoints",
+        lookups = (
+            (
+                "raw_artifact",
+                "SELECT s.subject_id FROM raw_artifacts a "
+                "JOIN sessions s ON s.session_id = a.session_id WHERE a.artifact_id = ?",
+            ),
+            ("learning_event", "SELECT subject_id FROM learning_events WHERE event_id = ?"),
+            ("attempt", "SELECT subject_id FROM attempts WHERE attempt_id = ?"),
+            ("assessment", "SELECT subject_id FROM assessments WHERE assessment_id = ?"),
+            ("intervention", "SELECT subject_id FROM interventions WHERE intervention_id = ?"),
+            ("representation_outcome", "SELECT subject_id FROM representation_outcomes WHERE outcome_id = ?"),
+            ("checkpoint", "SELECT subject_id FROM checkpoints WHERE checkpoint_id = ?"),
         )
-        columns = {
-            "raw_artifacts": "artifact_id",
-            "learning_events": "event_id",
-            "attempts": "attempt_id",
-            "assessments": "assessment_id",
-            "representation_outcomes": "outcome_id",
-            "checkpoints": "checkpoint_id",
-        }
         missing: list[str] = []
+        mismatched: list[dict[str, str]] = []
         for evidence_id in ids:
-            found = False
-            for table in tables:
-                if connection.execute(
-                    f"SELECT 1 FROM {table} WHERE {columns[table]} = ?", (evidence_id,)
-                ).fetchone():
-                    found = True
+            owner_subject_id = None
+            resource_type = None
+            for candidate_type, query in lookups:
+                row = connection.execute(query, (evidence_id,)).fetchone()
+                if row is not None:
+                    owner_subject_id = row["subject_id"]
+                    resource_type = candidate_type
                     break
-            if not found:
+            if owner_subject_id is None:
                 missing.append(evidence_id)
+                continue
+            if subject_id is not None and owner_subject_id != subject_id:
+                mismatched.append(
+                    {
+                        "evidence_id": evidence_id,
+                        "resource_type": str(resource_type),
+                        "actual_subject_id": owner_subject_id,
+                    }
+                )
         if missing:
             raise integrity("Evidence/source IDs do not resolve", missing_evidence_ids=missing)
+        if mismatched:
+            raise integrity(
+                "Evidence/source IDs belong to a different subject",
+                expected_subject_id=subject_id,
+                mismatched_evidence=mismatched,
+            )
         return ids
 
     def capture_evidence(
@@ -185,16 +205,17 @@ class StudyOSService:
         capture_method: str = "local",
         source_metadata: dict | None = None,
     ) -> dict:
-        with self.repository.transaction() as connection:
-            self._session(connection, session_id, subject_id)
-            artifact_id, sha256, storage_path = self.evidence.capture(
-                session_id=session_id,
-                content=content,
-                media_type=media_type,
-                capture_method=capture_method,
-                source_metadata=source_metadata,
-            )
-            try:
+        storage_path: str | None = None
+        try:
+            with self.repository.transaction() as connection:
+                self._session(connection, session_id, subject_id)
+                artifact_id, sha256, storage_path = self.evidence.capture(
+                    session_id=session_id,
+                    content=content,
+                    media_type=media_type,
+                    capture_method=capture_method,
+                    source_metadata=source_metadata,
+                )
                 connection.execute(
                     "INSERT INTO raw_artifacts "
                     "(artifact_id, session_id, sha256, storage_path, media_type, captured_at, capture_method, source_metadata_json) "
@@ -210,11 +231,13 @@ class StudyOSService:
                         canonical_json(source_metadata or {}),
                     ),
                 )
-            except Exception:
+        except Exception:
+            if storage_path is not None:
                 try:
                     self.evidence.resolve(storage_path).unlink(missing_ok=True)
-                finally:
-                    raise
+                except (OSError, StudyOSError):
+                    pass
+            raise
         return {"artifact_id": artifact_id, "sha256": sha256, "storage_path": storage_path}
 
     def start_session(
@@ -297,7 +320,7 @@ class StudyOSService:
                 raise validation("event_type must be a non-empty string")
             resolved_source_ids = self._as_ids(payload_source_ids, "source_ids", required=evidence_class == "derived")
             if resolved_source_ids:
-                self._resolve_evidence(connection, resolved_source_ids)
+                self._resolve_evidence(connection, resolved_source_ids, subject_id=subject_id)
             event_id = new_id()
             connection.execute(
                 "INSERT INTO learning_events "
@@ -415,7 +438,7 @@ class StudyOSService:
             if cached:
                 return cached
             self._session(connection, session_id, subject_id)
-            resolved_ids = self._resolve_evidence(connection, ids)
+            resolved_ids = self._resolve_evidence(connection, ids, subject_id=subject_id)
             assessment_id = new_id()
             connection.execute(
                 "INSERT INTO assessments "
@@ -553,7 +576,21 @@ class StudyOSService:
                 raise not_found("Intervention does not exist", intervention_id=intervention_id)
             if intervention["subject_id"] != subject_id:
                 raise integrity("Intervention belongs to a different subject", intervention_id=intervention_id)
-            resolved_ids = self._resolve_evidence(connection, ids)
+            resolved_ids = self._resolve_evidence(connection, ids, subject_id=subject_id)
+            has_assessment = any(
+                connection.execute(
+                    "SELECT 1 FROM assessments WHERE assessment_id = ? AND subject_id = ?",
+                    (evidence_id, subject_id),
+                ).fetchone()
+                is not None
+                for evidence_id in resolved_ids
+            )
+            if not has_assessment:
+                raise integrity(
+                    "Representation outcome requires behavioral assessment evidence",
+                    intervention_id=intervention_id,
+                    subject_id=subject_id,
+                )
             outcome_id = new_id()
             connection.execute(
                 "INSERT INTO representation_outcomes "
@@ -624,7 +661,7 @@ class StudyOSService:
                 raise not_found("Subject does not exist", subject_id=subject_id)
             for session_id in session_ids:
                 self._session(connection, session_id, subject_id)
-            resolved_ids = self._resolve_evidence(connection, ids)
+            resolved_ids = self._resolve_evidence(connection, ids, subject_id=subject_id)
             current_pointer = connection.execute(
                 "SELECT checkpoint_id FROM subject_current_checkpoint WHERE subject_id = ?", (subject_id,)
             ).fetchone()
@@ -659,7 +696,6 @@ class StudyOSService:
                     utc_now(),
                 ),
             )
-            # This pointer write is in the same transaction as checkpoint insert.
             connection.execute(
                 "INSERT INTO subject_current_checkpoint(subject_id, checkpoint_id, updated_at) VALUES (?, ?, ?) "
                 "ON CONFLICT(subject_id) DO UPDATE SET checkpoint_id = excluded.checkpoint_id, updated_at = excluded.updated_at",
@@ -837,42 +873,52 @@ class StudyOSService:
             raise validation("artifact_type must be a non-empty string")
         ids = self._as_ids(source_ids, "source_ids")
         request = {"subject_id": subject_id, "artifact_type": artifact_type, "source_ids": ids}
-        with self.repository.transaction() as connection:
-            cached = self._idempotency_check(connection, "export_fossil", idempotency_key, request)
-            if cached:
-                return cached
-            if connection.execute("SELECT 1 FROM subjects WHERE subject_id = ?", (subject_id,)).fetchone() is None:
-                raise not_found("Subject does not exist", subject_id=subject_id)
-            resolved_ids = self._resolve_evidence(connection, ids)
-            export_id = new_id()
-            export_dir = self.config.exports_root / "fossil"
-            export_dir.mkdir(parents=True, exist_ok=True)
-            storage_path = (export_dir / f"{export_id}.json").relative_to(self.config.root).as_posix()
-            export_payload = {
-                "export_version": CONTRACT_VERSION,
-                "export_id": export_id,
-                "subject_id": subject_id,
-                "artifact_type": artifact_type,
-                "source_ids": resolved_ids,
-                "created_at": utc_now(),
-            }
-            (self.config.root / storage_path).write_text(json.dumps(export_payload, indent=2) + "\n", encoding="utf-8")
-            connection.execute(
-                "INSERT INTO fossil_exports(export_id, subject_id, artifact_type, source_ids_json, storage_path, idempotency_key, created_at) "
-                "VALUES (?, ?, ?, ?, ?, ?, ?)",
-                (export_id, subject_id, artifact_type, canonical_json(resolved_ids), storage_path, idempotency_key, export_payload["created_at"]),
-            )
-            result = {"export_id": export_id, "created": True, "artifact_type": artifact_type, "source_ids": resolved_ids}
-            self._idempotency_record(
-                connection,
-                operation="export_fossil",
-                key=idempotency_key,
-                request=request,
-                result=result,
-                resource_type="fossil_export",
-                resource_id=export_id,
-            )
-            return result
+        export_path: Path | None = None
+        try:
+            with self.repository.transaction() as connection:
+                cached = self._idempotency_check(connection, "export_fossil", idempotency_key, request)
+                if cached:
+                    return cached
+                if connection.execute("SELECT 1 FROM subjects WHERE subject_id = ?", (subject_id,)).fetchone() is None:
+                    raise not_found("Subject does not exist", subject_id=subject_id)
+                resolved_ids = self._resolve_evidence(connection, ids, subject_id=subject_id)
+                export_id = str(uuid.uuid5(uuid.NAMESPACE_URL, f"study-os:export_fossil:{idempotency_key}"))
+                export_dir = self.config.exports_root / "fossil"
+                export_dir.mkdir(parents=True, exist_ok=True)
+                storage_path = (export_dir / f"{export_id}.json").relative_to(self.config.root).as_posix()
+                export_path = self.config.root / storage_path
+                export_payload = {
+                    "export_version": CONTRACT_VERSION,
+                    "export_id": export_id,
+                    "subject_id": subject_id,
+                    "artifact_type": artifact_type,
+                    "source_ids": resolved_ids,
+                    "created_at": utc_now(),
+                }
+                export_path.write_text(json.dumps(export_payload, indent=2) + "\n", encoding="utf-8")
+                connection.execute(
+                    "INSERT INTO fossil_exports(export_id, subject_id, artifact_type, source_ids_json, storage_path, idempotency_key, created_at) "
+                    "VALUES (?, ?, ?, ?, ?, ?, ?)",
+                    (export_id, subject_id, artifact_type, canonical_json(resolved_ids), storage_path, idempotency_key, export_payload["created_at"]),
+                )
+                result = {"export_id": export_id, "created": True, "artifact_type": artifact_type, "source_ids": resolved_ids}
+                self._idempotency_record(
+                    connection,
+                    operation="export_fossil",
+                    key=idempotency_key,
+                    request=request,
+                    result=result,
+                    resource_type="fossil_export",
+                    resource_id=export_id,
+                )
+                return result
+        except Exception:
+            if export_path is not None:
+                try:
+                    export_path.unlink(missing_ok=True)
+                except OSError:
+                    pass
+            raise
 
     def doctor(self) -> dict:
         checks: dict[str, dict[str, Any]] = {}
@@ -929,25 +975,52 @@ class StudyOSService:
 
         pointer_failures: list[dict[str, str]] = []
         evidence_failures: list[dict[str, str]] = []
+        source_failures: list[dict[str, str]] = []
         try:
             pointers = connection.execute("SELECT subject_id, checkpoint_id FROM subject_current_checkpoint").fetchall()
             for pointer in pointers:
                 checkpoint = connection.execute(
-                    "SELECT evidence_ids_json FROM checkpoints WHERE checkpoint_id = ? AND subject_id = ?",
+                    "SELECT evidence_ids_json, source_session_ids_json FROM checkpoints WHERE checkpoint_id = ? AND subject_id = ?",
                     (pointer["checkpoint_id"], pointer["subject_id"]),
                 ).fetchone()
                 if checkpoint is None:
                     pointer_failures.append({"subject_id": pointer["subject_id"], "checkpoint_id": pointer["checkpoint_id"]})
                     continue
                 try:
-                    self._resolve_evidence(connection, json_load(checkpoint["evidence_ids_json"], []))
-                except StudyOSError as exc:
-                    evidence_failures.append({"checkpoint_id": pointer["checkpoint_id"], "detail": exc.message})
+                    self._resolve_evidence(
+                        connection,
+                        json_load(checkpoint["evidence_ids_json"], []),
+                        subject_id=pointer["subject_id"],
+                    )
+                except (StudyOSError, TypeError, ValueError) as exc:
+                    detail = exc.message if isinstance(exc, StudyOSError) else str(exc)
+                    evidence_failures.append({"checkpoint_id": pointer["checkpoint_id"], "detail": detail})
+                try:
+                    source_session_ids = self._as_ids(
+                        json_load(checkpoint["source_session_ids_json"], []),
+                        "source_session_ids",
+                    )
+                    for source_session_id in source_session_ids:
+                        if connection.execute(
+                            "SELECT 1 FROM sessions WHERE session_id = ? AND subject_id = ?",
+                            (source_session_id, pointer["subject_id"]),
+                        ).fetchone() is None:
+                            source_failures.append(
+                                {
+                                    "checkpoint_id": pointer["checkpoint_id"],
+                                    "source_session_id": source_session_id,
+                                }
+                            )
+                except (StudyOSError, TypeError, ValueError) as exc:
+                    detail = exc.message if isinstance(exc, StudyOSError) else str(exc)
+                    source_failures.append({"checkpoint_id": pointer["checkpoint_id"], "detail": detail})
             check("current_checkpoint_pointers", not pointer_failures, "ok" if not pointer_failures else "current checkpoint pointer is broken", failures=pointer_failures)
             check("checkpoint_evidence", not evidence_failures, "ok" if not evidence_failures else "checkpoint evidence is unresolved", failures=evidence_failures)
+            check("checkpoint_sources", not source_failures, "ok" if not source_failures else "checkpoint source sessions are unresolved", failures=source_failures)
         except sqlite3.DatabaseError as exc:
             check("current_checkpoint_pointers", False, "checkpoint inspection failed", error=str(exc))
             check("checkpoint_evidence", False, "checkpoint inspection failed", error=str(exc))
+            check("checkpoint_sources", False, "checkpoint inspection failed", error=str(exc))
 
         artifact_failures: list[dict[str, str]] = []
         try:
@@ -971,7 +1044,7 @@ class StudyOSService:
 
     def _record_counts(self, connection: sqlite3.Connection) -> dict[str, int]:
         tables = (
-            "subjects", "projects", "domains", "concepts", "sessions", "raw_artifacts", "learning_events",
+            "subjects", "projects", "domains", "concepts", "sessions", "raw_artifacts", "messages", "learning_events",
             "episodes", "attempts", "assessments", "representations", "interventions", "representation_outcomes",
             "checkpoints", "subject_current_checkpoint", "retention_probes", "fossil_exports", "idempotency_records",
         )
@@ -1036,37 +1109,79 @@ class StudyOSService:
             raise integrity("Backup evidence hashes do not match its manifest")
 
         staging = self.config.root / f".restore-staging-{uuid.uuid4().hex}"
+        old_db = self.config.db_path.with_name(f"study-os.sqlite3.restore-previous-{uuid.uuid4().hex}")
+        old_evidence = self.config.evidence_root.with_name(f"evidence.restore-previous-{uuid.uuid4().hex}")
+        db_moved = False
+        evidence_moved = False
+        new_db_installed = False
+        new_evidence_installed = False
+        restored_counts: dict[str, int] = {}
+        health: dict[str, Any] | None = None
         staging.mkdir(parents=True)
         try:
             shutil.copy2(source_db, staging / "study-os.sqlite3")
             shutil.copytree(source_evidence, staging / "evidence")
-            old_db = self.config.db_path.with_name(f"study-os.sqlite3.restore-previous-{uuid.uuid4().hex}")
-            old_evidence = self.config.evidence_root.with_name(f"evidence.restore-previous-{uuid.uuid4().hex}")
             self.repository.close()
-            if self.config.db_path.exists():
-                os.replace(self.config.db_path, old_db)
-            if self.config.evidence_root.exists():
-                os.replace(self.config.evidence_root, old_evidence)
-            os.replace(staging / "study-os.sqlite3", self.config.db_path)
-            os.replace(staging / "evidence", self.config.evidence_root)
-            self.db = Database(self.config)
-            self.repository = SQLiteRepository(self.db)
-            self.evidence = EvidenceStore(self.config)
+            try:
+                if self.config.db_path.exists():
+                    os.replace(self.config.db_path, old_db)
+                    db_moved = True
+                if self.config.evidence_root.exists():
+                    os.replace(self.config.evidence_root, old_evidence)
+                    evidence_moved = True
+                os.replace(staging / "study-os.sqlite3", self.config.db_path)
+                new_db_installed = True
+                os.replace(staging / "evidence", self.config.evidence_root)
+                new_evidence_installed = True
+                self.db = Database(self.config)
+                self.repository = SQLiteRepository(self.db)
+                self.evidence = EvidenceStore(self.config)
+                with self.repository.transaction(immediate=False) as connection:
+                    restored_counts = self._record_counts(connection)
+                expected_counts = manifest.get("record_counts", {})
+                if expected_counts and restored_counts != expected_counts:
+                    raise integrity(
+                        "Restored database record counts do not match the backup manifest",
+                        expected_counts=expected_counts,
+                        actual_counts=restored_counts,
+                    )
+                health = self.doctor()
+                if not health["healthy"]:
+                    raise integrity("Restored runtime failed doctor", checks=health["checks"])
+            except Exception as restore_error:
+                try:
+                    self.repository.close()
+                except Exception:
+                    pass
+                rollback_error: Exception | None = None
+                try:
+                    if new_db_installed and self.config.db_path.exists():
+                        self.config.db_path.unlink()
+                    if new_evidence_installed and self.config.evidence_root.exists():
+                        shutil.rmtree(self.config.evidence_root)
+                    if db_moved and old_db.exists():
+                        os.replace(old_db, self.config.db_path)
+                    if evidence_moved and old_evidence.exists():
+                        os.replace(old_evidence, self.config.evidence_root)
+                    self.db = Database(self.config)
+                    self.repository = SQLiteRepository(self.db)
+                    self.evidence = EvidenceStore(self.config)
+                except Exception as exc:
+                    rollback_error = exc
+                if rollback_error is not None:
+                    raise integrity(
+                        "Restore failed and the previous runtime could not be recovered",
+                        restore_error=type(restore_error).__name__,
+                        rollback_error=type(rollback_error).__name__,
+                    ) from restore_error
+                raise
         finally:
             if staging.exists():
                 shutil.rmtree(staging, ignore_errors=True)
-        with self.repository.transaction(immediate=False) as connection:
-            restored_counts = self._record_counts(connection)
-        expected_counts = manifest.get("record_counts", {})
-        if expected_counts and restored_counts != expected_counts:
-            raise integrity(
-                "Restored database record counts do not match the backup manifest",
-                expected_counts=expected_counts,
-                actual_counts=restored_counts,
-            )
-        health = self.doctor()
-        if not health["healthy"]:
-            raise integrity("Restored runtime failed doctor", checks=health["checks"])
+        if old_db.exists():
+            old_db.unlink()
+        if old_evidence.exists():
+            shutil.rmtree(old_evidence, ignore_errors=True)
         return {
             "restored": True,
             "backup_path": str(source),
