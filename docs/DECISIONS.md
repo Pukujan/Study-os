@@ -134,3 +134,36 @@ Do not expose arbitrary SQL, shell execution, or unrestricted file mutation to t
 ChatGPT cannot directly reach a WSL-only `localhost` service. Integration must use a supported secure/private MCP tunnel or another deliberately secured remote path. The exact write-action capability is plan/workspace dependent and must be verified at integration time.
 
 **Why:** the tutor should decide how to teach while Study OS owns deterministic persistence, provenance, scoring, checkpointing, and validation.
+
+## D013 — Separate active research scope from planned competency tracks
+
+**Status:** accepted
+
+Study OS may plan broader technical-development tracks without treating them as simultaneous research programs or validated learning domains.
+
+The active Research Gate R0 scope remains exactly:
+
+- Subject 001;
+- DSA;
+- Python;
+- Sliding Window.
+
+The planned curriculum architecture contains five competency tracks:
+
+1. algorithmic foundations;
+2. software and systems foundations;
+3. system design and reliability;
+4. AI systems, evaluation, and reliability;
+5. technical problem framing and diagnosis.
+
+The canonical conceptual control loop is:
+
+`goal -> plan -> task/episode -> attempt -> test/assessment -> evidence -> capability state -> diagnosis/next action -> plan update -> transfer/delayed test`
+
+Study OS currently has strong assessment/evidence/capability-state machinery, a partial planning mechanism, and only implicit goal representation. Do not add goal/plan schemas merely for completeness; add first-class runtime objects when the live learning loop requires durable multi-goal planning.
+
+Scoring remains multidimensional and evidence-backed. Planned open-ended diagnosis exercises must score observable problem-framing behavior rather than whether the learner guessed a hidden root cause immediately.
+
+**Why:** recent real interview evidence exposed technical problem framing and AI-systems diagnosis as a meaningful learner-development need, while the R0 research gate still requires scope discipline. Separating curriculum architecture from active research scope allows Study OS to preserve both.
+
+**Specification:** see `docs/LEARNING_CONTROL_MODEL.md`.
