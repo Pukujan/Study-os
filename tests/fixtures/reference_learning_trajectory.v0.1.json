@@ -1,0 +1,70 @@
+{
+  "fixture_version": "0.1.0",
+  "subject_id": "subject-fixture-001",
+  "project_id": "dsa-python",
+  "domain_id": "dsa",
+  "concept_id": "sliding-window",
+  "session_id": "session-fixture-001",
+  "sequence": [
+    {
+      "kind": "learning_event",
+      "id": "evt-001",
+      "evidence_class": "self_reported",
+      "event_type": "confusion_reported",
+      "payload": {
+        "target": "problem_comprehension",
+        "statement": "I do not understand what the question wants."
+      }
+    },
+    {
+      "kind": "intervention",
+      "id": "int-001",
+      "representation_family": "deterministic_state_trace",
+      "operation": "predict",
+      "representation_version": "0.1.0",
+      "target_bottleneck": "problem_to_state"
+    },
+    {
+      "kind": "assessment",
+      "id": "assess-001",
+      "capability": "state_prediction",
+      "result": "pass",
+      "assistance_level": "representation_visible",
+      "evidence_ids": ["evt-001", "int-001"]
+    },
+    {
+      "kind": "assessment",
+      "id": "assess-002",
+      "capability": "state_prediction",
+      "result": "pass",
+      "assistance_level": "none",
+      "evidence_ids": ["assess-001"]
+    },
+    {
+      "kind": "representation_outcome",
+      "id": "outcome-001",
+      "intervention_id": "int-001",
+      "evidence_score": 3,
+      "evidence_ids": ["assess-001", "assess-002"]
+    },
+    {
+      "kind": "checkpoint",
+      "id": "cp-001",
+      "evidence_ids": ["evt-001", "int-001", "assess-001", "assess-002", "outcome-001"],
+      "capability_state": {
+        "problem_comprehension": "partial",
+        "state_prediction": "pass_unaided",
+        "python_implementation": "not_tested"
+      },
+      "assistance_state": {
+        "current_level": "none",
+        "last_effective_representation": "deterministic_state_trace"
+      },
+      "resume": {
+        "current_focus": "Sliding Window: connect state transition to invariant reasoning",
+        "do_not_reteach": ["basic window movement"],
+        "next_action": "Probe why the left pointer moves only when the window violates its rule."
+      }
+    }
+  ]
+}
