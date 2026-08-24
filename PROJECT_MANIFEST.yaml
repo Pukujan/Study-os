@@ -1,0 +1,151 @@
+manifest_version: "0.1.0"
+project:
+  name: Study OS
+  repository: Pukujan/Study-os
+  status: research-first
+  phase: pre-build experiment design
+  current_gate: R0
+  mission: >-
+    Convert AI-assisted study sessions into auditable evidence about where
+    representation translation breaks, what intervention was attempted, and
+    whether improvement survives assistance removal, transfer, and delay.
+  current_scope:
+    subjects:
+      - subject-001
+    domains:
+      - dsa
+    languages:
+      - python
+    concept_families:
+      - sliding-window
+
+research:
+  primary_question: >-
+    Can Study OS observe a representation-transition failure, change the
+    representation or learning operation, and produce measurable improvement
+    that survives fading, transfer, and delayed retrieval?
+  evidence_classes:
+    - observed
+    - self_reported
+    - derived
+  required_outcomes:
+    - immediate_behavior
+    - assistance_removed
+    - transfer
+    - delayed_retention
+  prohibited_claims:
+    - fixed_learning_styles
+    - subject_001_generalizes_to_population
+    - self_report_equals_mastery
+    - more_modalities_always_better
+    - llm_inference_equals_observed_truth
+
+canonical_paths:
+  schemas: schemas/
+  domain: domains/dsa/
+  sessions: sessions/
+  subjects: subjects/
+  datasets: datasets/
+  plugins: plugins/
+  fossil_exports: fossil/exports/
+  handoff: docs/HANDOFF.md
+  decisions: docs/DECISIONS.md
+
+privacy:
+  repository_visibility: public
+  raw_transcript_policy: local_or_private_by_default
+  public_repo_may_contain:
+    - hashes
+    - manifests_without_private_content
+    - redacted_fixtures
+    - schemas
+    - curated_derived_findings
+  public_repo_must_not_contain:
+    - full_private_chat_exports
+    - secrets
+    - account_identifiers
+    - hidden_eval_answers_exposed_to_tutor
+
+fossil:
+  role: optional_export_and_promotion_layer
+  runtime_dependency: false
+  canonical_source_of_learning_events: study_os
+  automatic_micro_event_ingest: false
+  promotion_candidates:
+    - curated_learning_trajectory
+    - lesson_hypothesis
+    - validated_domain_knowledge
+    - research_conclusion
+
+schemas:
+  session_manifest: "0.1.0"
+  learning_event: "0.1.0"
+  learning_episode: "0.1.0"
+  representation: "0.1.0"
+  lesson_ir: "0.1.0"
+
+learning:
+  difficulty_ladder:
+    L0: observe
+    L1: predict
+    L2: explain
+    L3: reconstruct
+    L4: semantic_pseudocode
+    L5: scaffolded_code
+    L6: blank_implementation
+    L7: debug
+    L8: recognize
+    L9: transfer
+    L10: derive_or_modify
+  initial_representation_families:
+    - textual
+    - static_figure
+    - mermaid_flowchart
+    - deterministic_state_trace
+    - invariant
+    - semantic_pseudocode
+    - python_scaffold
+    - blank_python
+  deferred_modalities:
+    - generated_images
+    - generated_video
+    - production_audio_pipeline
+
+engineering:
+  ci_required: true
+  cd_status: deferred_until_R0
+  required_checks:
+    - python_compile
+    - repository_validation
+    - unit_tests
+  agent_files:
+    - AGENTS.md
+    - PROJECT_MANIFEST.yaml
+    - docs/HANDOFF.md
+  build_gate_requirements:
+    - private_raw_evidence_hashed
+    - normalized_transcript_with_provenance
+    - failure_transition_identified
+    - intervention_version_recorded
+    - immediate_behavior_measured
+    - assistance_removed
+    - transfer_measured
+    - delayed_retention_measured
+    - self_report_compared_to_behavior
+    - experiment_reconstructable_by_new_agent
+
+open_risks:
+  - self_report_fluency_confused_with_learning
+  - representation_overload
+  - ai_solution_dependency
+  - hallucinated_or_incorrect_instruction
+  - evaluator_circularity
+  - n_of_1_overgeneralization
+  - transcript_privacy
+  - agent_repository_drift
+  - research_overhead_burnout
+  - scope_expansion_before_evidence_loop
+
+next_milestone: >-
+  Execute one complete Sliding Window learning trajectory for Subject 001 and
+  pass Research Gate R0 before expanding product surface.
