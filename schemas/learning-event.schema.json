@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://study-os.local/schemas/learning-event.schema.json",
+  "title": "Study OS Learning Event",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "event_id",
+    "session_id",
+    "subject_id",
+    "occurred_at",
+    "evidence_class",
+    "event_type"
+  ],
+  "properties": {
+    "schema_version": {"type": "string"},
+    "event_id": {"type": "string"},
+    "session_id": {"type": "string"},
+    "episode_id": {"type": ["string", "null"]},
+    "subject_id": {"type": "string"},
+    "occurred_at": {"type": "string", "format": "date-time"},
+    "domain": {"type": ["string", "null"]},
+    "concept": {"type": ["string", "null"]},
+    "lesson_id": {"type": ["string", "null"]},
+    "evidence_class": {
+      "type": "string",
+      "enum": ["observed", "self_reported", "derived"]
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "attempt_started",
+        "attempt_completed",
+        "answer_submitted",
+        "confusion_reported",
+        "understanding_reported",
+        "hint_requested",
+        "representation_presented",
+        "representation_rejected",
+        "representation_helped",
+        "prediction_submitted",
+        "assessment_completed",
+        "implementation_submitted",
+        "debugging_attempted",
+        "transfer_attempted",
+        "retention_attempted",
+        "derived_failure_proposed",
+        "derived_state_updated",
+        "other"
+      ]
+    },
+    "representation": {
+      "type": ["object", "null"],
+      "properties": {
+        "representation_id": {"type": ["string", "null"]},
+        "family": {"type": ["string", "null"]},
+        "operation": {"type": ["string", "null"]},
+        "version": {"type": ["string", "null"]}
+      },
+      "additionalProperties": true
+    },
+    "transition": {
+      "type": ["object", "null"],
+      "properties": {
+        "from": {"type": ["string", "null"]},
+        "to": {"type": ["string", "null"]}
+      },
+      "additionalProperties": false
+    },
+    "assessment": {
+      "type": ["object", "null"],
+      "properties": {
+        "skill": {"type": ["string", "null"]},
+        "score": {"type": ["number", "null"]},
+        "max_score": {"type": ["number", "null"]},
+        "assistance_level": {"type": ["string", "null"]},
+        "passed": {"type": ["boolean", "null"]}
+      },
+      "additionalProperties": true
+    },
+    "transcript_refs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["artifact", "start"],
+        "properties": {
+          "artifact": {"type": "string"},
+          "start": {"type": "integer", "minimum": 0},
+          "end": {"type": ["integer", "null"], "minimum": 0},
+          "message_id": {"type": ["string", "null"]}
+        },
+        "additionalProperties": false
+      }
+    },
+    "payload": {"type": "object"},
+    "confidence": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+    "confirmed_by_subject": {"type": ["boolean", "null"]}
+  },
+  "additionalProperties": false
+}
