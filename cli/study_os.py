@@ -42,6 +42,11 @@ def parser() -> argparse.ArgumentParser:
     sub.add_parser("restore").add_argument("backup_path")
     sub.add_parser("list-tools")
     sub.add_parser("mcp")
+    mcp_http = sub.add_parser(
+        "mcp-http",
+        help="serve authenticated Streamable HTTP MCP on 127.0.0.1 for Secure MCP Tunnel",
+    )
+    mcp_http.add_argument("--port", type=int, default=8765)
     return command
 
 
@@ -70,6 +75,18 @@ def main(argv: list[str] | None = None) -> int:
             result = service.restore(args.backup_path)
         elif args.command == "mcp":
             MCPServer(service).run_stdio()
+            return 0
+        elif args.command == "mcp-http":
+            if not 1 <= args.port <= 65535:
+                raise ValueError("mcp-http port must be between 1 and 65535")
+            # Import the optional network stack only for this command so the
+            # accepted P0 stdio/runtime path stays usable without extra packages.
+            import uvicorn  # noqa: PLC0415
+
+            from study_os.mcp.network import create_network_app  # noqa: PLC0415
+
+            app = create_network_app(service, host="127.0.0.1")
+            uvicorn.run(app, host="127.0.0.1", port=args.port, access_log=False)
             return 0
         else:
             raise AssertionError(args.command)
