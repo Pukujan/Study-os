@@ -27,21 +27,28 @@ REQUIRED_FILES = [
     "docs/RESEARCH_FOUNDATIONS.md",
     "docs/FAILURE_MODES.md",
     "docs/RESEARCH_PLAN.md",
+    "docs/CHECKPOINTING.md",
     "docs/FOSSIL_INTEGRATION.md",
     "docs/HANDOFF.md",
     "docs/DECISIONS.md",
     "plugins/study-os-ingest/skill.md",
+    "plugins/study-os-checkpoint/skill.md",
     "schemas/session-manifest.schema.json",
     "schemas/learning-event.schema.json",
     "schemas/learning-episode.schema.json",
     "schemas/representation.schema.json",
     "schemas/lesson-ir.schema.json",
+    "schemas/learner-checkpoint.schema.json",
+    "schemas/current-checkpoint.schema.json",
+    "subjects/subject-001/CURRENT.json",
 ]
 
 SCHEMA_FILES = {
     "session": "session-manifest.schema.json",
     "event": "learning-event.schema.json",
     "episode": "learning-episode.schema.json",
+    "checkpoint": "learner-checkpoint.schema.json",
+    "current_checkpoint": "current-checkpoint.schema.json",
 }
 
 
@@ -97,8 +104,12 @@ def check_manifest() -> None:
     fossil = manifest["fossil"]
     if fossil.get("canonical_source_of_learning_events") != "study_os":
         raise ValidationFailure("Study OS must remain canonical source of learning events")
+    if fossil.get("canonical_source_of_learner_checkpoints") != "study_os":
+        raise ValidationFailure("Study OS must remain canonical source of learner checkpoints")
     if fossil.get("runtime_dependency") is not False:
         raise ValidationFailure("FOSSIL must remain optional during the current research phase")
+    if fossil.get("resume_dependency") is not False:
+        raise ValidationFailure("Cross-session resume must not depend on FOSSIL")
 
     prohibited = set(manifest["research"].get("prohibited_claims", []))
     expected = {
@@ -143,7 +154,7 @@ def validate_schemas() -> dict[str, dict[str, Any]]:
     schemas: dict[str, dict[str, Any]] = {}
     for key, filename in SCHEMA_FILES.items():
         schemas[key] = load_schema(filename)
-    # Validate all schema files, not only schemas currently used for session walking.
+    # Validate all schema files, not only schemas currently used for data walking.
     for path in sorted(SCHEMA_DIR.glob("*.schema.json")):
         Draft202012Validator.check_schema(load_json(path))
     return schemas
@@ -171,6 +182,54 @@ def validate_session_tree(schemas: dict[str, dict[str, Any]]) -> None:
         validate_instance(load_json(episode_path), schemas["episode"], episode_path)
 
 
+def validate_subject_checkpoints(schemas: dict[str, dict[str, Any]]) -> None:
+    subjects_root = ROOT / "subjects"
+    if not subjects_root.exists():
+        return
+
+    for subject_dir in subjects_root.iterdir():
+        if not subject_dir.is_dir():
+            continue
+
+        current_path = subject_dir / "CURRENT.json"
+        if current_path.exists():
+            current = load_json(current_path)
+            validate_instance(current, schemas["current_checkpoint"], current_path)
+
+            checkpoint_path = current.get("checkpoint_path")
+            checkpoint_id = current.get("checkpoint_id")
+            status = current.get("status")
+
+            if status == "not_started":
+                if checkpoint_path is not None or checkpoint_id is not None:
+                    raise ValidationFailure(
+                        f"{current_path}: not_started pointer must not reference a checkpoint"
+                    )
+            elif checkpoint_path is None or checkpoint_id is None:
+                raise ValidationFailure(
+                    f"{current_path}: active/paused/retention/completed state requires checkpoint reference"
+                )
+            else:
+                resolved = ROOT / checkpoint_path
+                if not resolved.is_file():
+                    raise ValidationFailure(f"{current_path}: checkpoint does not exist: {checkpoint_path}")
+                checkpoint = load_json(resolved)
+                validate_instance(checkpoint, schemas["checkpoint"], resolved)
+                if checkpoint.get("checkpoint_id") != checkpoint_id:
+                    raise ValidationFailure(
+                        f"{current_path}: checkpoint_id does not match referenced checkpoint"
+                    )
+                if checkpoint.get("subject_id") != current.get("subject_id"):
+                    raise ValidationFailure(
+                        f"{current_path}: subject_id does not match referenced checkpoint"
+                    )
+
+        checkpoints_dir = subject_dir / "checkpoints"
+        if checkpoints_dir.exists():
+            for checkpoint_file in checkpoints_dir.glob("*.json"):
+                validate_instance(load_json(checkpoint_file), schemas["checkpoint"], checkpoint_file)
+
+
 def main() -> int:
     checks = [
         ("required files", check_required_files),
@@ -186,6 +245,8 @@ def main() -> int:
         print("PASS JSON schemas")
         validate_session_tree(schemas)
         print("PASS session data")
+        validate_subject_checkpoints(schemas)
+        print("PASS learner checkpoints")
     except (ValidationFailure, json.JSONDecodeError, yaml.YAMLError) as exc:
         print(f"FAIL {exc}", file=sys.stderr)
         return 1
