@@ -1,12 +1,12 @@
 # Agent Handoff
 
-Last updated: 2026-08-23
+Last updated: 2026-08-24
 
 ## Current phase
 
-**Research Gate R0 — P0 parallel cloud-contract + local-runtime implementation.**
+**Research Gate R0 — P0 implementation under final target-machine validation.**
 
-Study OS is not yet a production learning application. The immediate goal is to make the local runtime implementation satisfy versioned repository contracts and extensive validation before attempting real cross-chat learning continuity.
+Study OS is not yet a production learning application. The local runtime has now been implemented and cloud/repo review findings have been remediated. The remaining P0 gate is to rerun the updated validation suite and `doctor` on the target WSL machine before merging PR #6 and attempting real cross-chat learning continuity.
 
 ## Current experiment
 
@@ -18,7 +18,11 @@ Study OS is not yet a production learning application. The immediate goal is to 
 - Bootstrap cross-session state: `subjects/subject-001/CURRENT.json`
 - Current learner checkpoint status: **not started**; no DSA learning episode has been run yet.
 - Target live-state architecture: local WSL Study OS service + SQLite + private evidence store.
-- Current implementation tracker: Issue #5.
+- Current implementation tracker: Issue #5; implementation PR #6; branch `codex/issue-5-p0-runtime`.
+- P0 local runtime implementation is present under `src/study_os/` with migration `0001` and CLI `cli/study_os.py`.
+- Original WSL validation at `a280eb4` passed 28 tests, repository validator, compile checks, CLI migrate/doctor, and backup/restore.
+- Cloud review remediation head is `ffeaa24`; GitHub Actions CI run #44 passes with the added adversarial regression tests.
+- **Pending P0 merge gate:** rerun the updated suite, repository validator, and CLI `doctor` on the target WSL machine.
 
 ## Canonical state
 
@@ -78,6 +82,10 @@ Key contracts:
 18. Durable mutating semantic tools require idempotency keys; retry duplication is treated as evidence corruption risk.
 19. Checkpoint creation + current pointer update is atomic.
 20. Backup/restore and failure-injection tests are required before trusting longitudinal learner data.
+21. Evidence used to derive learner state is subject-scoped; evidence from another learner cannot support the current learner's derived state.
+22. Representation outcomes require behavioral assessment evidence, not merely any resolvable source ID.
+23. A passing checkpoint capability must cite a same-subject passing assessment; `pass_unaided` additionally requires `assistance_level="none"`.
+24. Restore must recover the previous DB/evidence pair if the replacement swap fails before acceptance.
 
 ## Recent changes
 
@@ -92,30 +100,33 @@ Key contracts:
 - Added `tests/test_runtime_contracts.py` so the repo checks required semantic tools, idempotency, prohibited generic machine access, evidence-backed representation scoring, and checkpoint semantics.
 - Created Issue #5 as the P0 shared cloud/local implementation tracker.
 - Updated `PROJECT_MANIFEST.yaml` to make P0 parallel implementation the current milestone.
+- Implemented the project-agnostic SQLite/evidence/service/MCP runtime for Issue #5.
+- Added migration `0001`, configurable private runtime root, SHA-256 evidence verification, doctor, backup/restore, idempotent semantic operations, atomic checkpoints, and MCP stdio wrappers.
+- Added repository-level MCP/runtime layout validation and local integration/failure tests.
+- Reviewed PR #6 against the database, validation, handoff, error/idempotency, and failure-mode contracts.
+- Changed PR #6 linkage from `Fixes #5` to `Refs #5` so merging P0 does not auto-close the tracker before P1/P2.
+- Remediated subject provenance, representation-outcome evidence, checkpoint source-session doctor checks, restore rollback, and failed-export cleanup in `a2b77ec`.
+- Added adversarial P0 review tests in `5fde05f`.
+- Added commit-time evidence-backed capability-promotion enforcement and aligned checkpoint tests; latest head `ffeaa24` passes GitHub Actions CI #44.
 
 ## Next recommended tasks
 
-### Local Luna / WSL — hand off now
+### Local Luna / WSL — final P0 target validation
 
-1. Pull latest `main` and read `docs/LUNA_LOCAL_HANDOFF.md`.
-2. Implement project-agnostic SQLite schema + ordered migrations.
-3. Implement configurable private evidence store outside Git and SHA-256 verification.
-4. Implement repository/service layer and `doctor`/health.
-5. Implement durable semantic methods with idempotency and stable errors.
-6. Implement canonical local checkpoint/resume with atomic current-pointer update.
-7. Implement backup/export/restore and prove restore in tests.
-8. Implement MCP wrappers matching `contracts/study-os-mcp-tools.v0.1.json` exactly.
-9. Run local unit/integration/failure tests from `docs/VALIDATION_STRATEGY.md`.
-10. Push a branch/PR referencing Issue #5 with test results and MCP tool list.
+1. Pull branch `codex/issue-5-p0-runtime` at `ffeaa24` or later.
+2. Run `python3 -m compileall tools tests`.
+3. Run `python3 tools/validate_repo.py`.
+4. Run `PYTHONPATH=src python3 -m unittest discover -s tests -v`.
+5. Run the CLI against a temporary/private runtime root: `migrate`, `doctor`, and `list-tools`.
+6. Confirm `doctor` is healthy and report the updated test count/results on PR #6.
+7. If all target-machine checks pass, merge PR #6 without closing Issue #5, then begin P1.
 
-### Cloud/repo — continue in parallel
+### Cloud/repo — P0 review complete pending WSL gate
 
-1. Review Luna's pushed implementation against the machine-readable contract and P0 failure modes.
-2. Extend cloud-side conformance tests as implementation details reveal ambiguous contracts.
-3. Add contract version migration tests once Luna introduces runtime/migration versions.
-4. Add a generated-vs-expected MCP tool-list comparison test once the server implementation exists.
-5. Add fixture-driven checkpoint/resume integration test callable against a local test service implementation in CI if practical.
-6. Keep contracts authoritative; if a contract is wrong, update it explicitly with rationale rather than silently accepting drift.
+1. Keep contract `0.1.0` and schema version `1` unchanged unless a new explicit contract decision is required.
+2. Do not merge solely from GitHub CI; wait for the post-remediation WSL validation result because local runtime behavior is the P0 target.
+3. If WSL exposes a platform-specific failure, add a deterministic regression test before accepting P0.
+4. After P0 merges, update manifest/handoff to make P1 cross-session continuity the active milestone.
 
 ### After P0
 
@@ -135,17 +146,24 @@ Do not accept the local runtime until:
 - exact write retries do not duplicate events;
 - idempotency key reuse with changed content conflicts;
 - derived learner claims without evidence are rejected;
+- cross-subject evidence cannot support another learner's derived state;
 - raw evidence mutation is detected;
+- representation outcomes require a real intervention plus behavioral assessment evidence;
+- passing checkpoint capability state is backed by cited assessment evidence;
+- unaided pass state is backed by an unaided assessment;
 - checkpoint + current pointer update is atomic;
 - resume survives process restart;
-- broken pointer/evidence is detected by `doctor`;
+- broken pointer/evidence/source-session references are detected by `doctor`;
 - backup -> destroy/move -> restore reproduces checkpoint + evidence hashes;
+- interrupted restore replacement recovers the previous working runtime;
+- failed export transactions do not leave orphan semantic artifacts;
 - MCP tool surface conforms to the repo contract;
-- SQL/shell/generic file-write/code-exec tools are absent.
+- SQL/shell/generic file-write/code-exec tools are absent;
+- updated validation passes on the target WSL machine.
 
 ## Unresolved decisions
 
-- Exact SQLite migration/tooling library and Python packaging chosen by Luna.
+- Exact SQLite migration/tooling library is now Python stdlib SQLite with ordered SQL files; future Postgres migration remains open.
 - Exact DB backup cadence and whether private evidence backups are encrypted off-device.
 - Whether hidden transfer fixtures live in a separate access-controlled local store/repo.
 - Exact ChatGPT plan/workspace capabilities available for the custom MCP app, especially write/modify actions.
@@ -165,6 +183,8 @@ Do not accept the local runtime until:
 - Do not expose arbitrary SQL/shell/file-write/code-execution tools through `@StudyOS`.
 - Do not allow retry behavior to duplicate learner evidence.
 - Do not allow checkpoint/current-pointer partial commits.
+- Do not let one subject's evidence support another subject's learner state.
+- Do not promote capability to passed without cited behavioral assessment evidence.
 - Do not trust backups until a restore test passes.
 - Do not let an LLM-derived label overwrite learner self-report or observed events.
 - Do not let AI generate authoritative algorithm state without deterministic validation.
