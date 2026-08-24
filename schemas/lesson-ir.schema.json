@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://study-os.local/schemas/lesson-ir.schema.json",
+  "title": "Study OS Lesson IR",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "lesson_id",
+    "lesson_version",
+    "domain",
+    "concept",
+    "goal",
+    "difficulty_targets",
+    "representations",
+    "assessments"
+  ],
+  "properties": {
+    "schema_version": {"type": "string"},
+    "lesson_id": {"type": "string"},
+    "lesson_version": {"type": "string"},
+    "domain": {"type": "string"},
+    "concept": {"type": "string"},
+    "goal": {"type": "string"},
+    "prerequisites": {"type": "array", "items": {"type": "string"}},
+    "trigger_signals": {"type": "array", "items": {"type": "string"}},
+    "state_model": {"type": "object"},
+    "invariants": {"type": "array", "items": {"type": "string"}},
+    "common_misconceptions": {"type": "array", "items": {"type": "string"}},
+    "difficulty_targets": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["L0_observe", "L1_predict", "L2_explain", "L3_reconstruct", "L4_pseudocode", "L5_scaffolded_code", "L6_blank_implementation", "L7_debug", "L8_recognize", "L9_transfer", "L10_derive"]
+      }
+    },
+    "representations": {"type": "array", "items": {"type": "string"}},
+    "assessments": {"type": "array", "items": {"type": "string"}},
+    "transfer_skills": {"type": "array", "items": {"type": "string"}},
+    "source_refs": {"type": "array", "items": {"type": "string"}},
+    "notes": {"type": ["string", "null"]}
+  },
+  "additionalProperties": false
+}
