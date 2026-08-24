@@ -8,10 +8,10 @@ Last updated: 2026-08-24
 
 Study OS is not yet a production learning application. P0 is merged and the
  target WSL validation is green: the P0 suite passed 35 tests, and the P1
- transport suite adds 4 tests; repository validation passes,
-and `doctor` is healthy. The active gate is now connecting the unchanged local
-semantic runtime to ChatGPT through a secure tunnel and proving fresh-chat
-checkpoint/resume continuity.
+ transport/action suite adds 7 tests; repository validation passes,
+and `doctor` is healthy. The controlled Plus GPT Actions integration and
+fresh-chat checkpoint/resume continuity gate also passed; the next gate is the
+first deterministic learning trajectory.
 
 ## Current experiment
 
@@ -29,9 +29,10 @@ checkpoint/resume continuity.
   compile checks, CLI `migrate`, `doctor`, and `list-tools`; the P1 branch adds
   4 HTTP transport tests. The runtime reports
   schema version `1` and all 13 approved semantic MCP tools.
-- P1 adds only `src/study_os/mcp/http_server.py`, the `mcp-http` CLI command,
-  transport tests, and the integration handoff; the database, service layer,
-  migration version, and MCP contract remain unchanged.
+- P1 adds only the loopback HTTP adapter, the `mcp-http` CLI command, the
+  authenticated GPT Actions wrapper/schema generator, transport/schema tests,
+  and the integration handoff; the database, service layer, migration
+  version, and MCP contract remain unchanged.
 
 ## Canonical state
 
@@ -116,6 +117,13 @@ Key contracts:
   with optional bearer authentication and exact Origin allowlisting.
 - Added `docs/P1_CHATGPT_MCP_INTEGRATION.md` with tunnel/app setup and the
   two-fresh-chat acceptance sequence.
+- Added a contract-derived OpenAPI schema generator and authenticated GPT
+  Actions wrapper so a Plus account can exercise the same 13 semantic tools
+  without adding database behavior.
+- Completed the controlled Plus acceptance run: all 13 actions were exposed,
+  Chat A created an accepted checkpoint, Fresh Chat B recovered its exact
+  state without transcript replay, continued learning, and advanced a second
+  checkpoint with the current-pointer expectation.
 - Reviewed PR #6 against the database, validation, handoff, error/idempotency, and failure-mode contracts.
 - Changed PR #6 linkage from `Fixes #5` to `Refs #5` so merging P0 does not auto-close the tracker before P1/P2.
 - Remediated subject provenance, representation-outcome evidence, checkpoint source-session doctor checks, restore rollback, and failed-export cleanup in `a2b77ec`.
@@ -127,8 +135,11 @@ Key contracts:
 ### Local Luna / WSL — P1 transport
 
 1. Start `cli/study_os.py mcp-http` on `127.0.0.1` using the private runtime root.
-2. Configure Secure MCP Tunnel to forward its HTTPS endpoint to `/mcp`.
-3. Register/rescan the custom Study OS MCP app in a workspace with MCP write permission.
+2. Configure Secure MCP Tunnel to forward its HTTPS endpoint to `/mcp`, or use
+   the authenticated `/actions/<tool>` wrapper with GPT Actions for a Plus
+   account.
+3. Register/rescan the custom Study OS MCP app, or create the private Study OS
+   Tutor GPT with the generated OpenAPI schema.
 4. Verify the exact 13-tool list and record the P1 Chat A/Chat B evidence.
 
 ### Cloud/repo — P1 review

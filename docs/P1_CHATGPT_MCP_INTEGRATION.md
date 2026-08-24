@@ -31,11 +31,43 @@ The expected remote URL is supplied by Secure MCP Tunnel. The tunnel must
 forward to the local `/mcp` endpoint and provide the external authentication/
 TLS boundary required by the ChatGPT app connection.
 
+## Plus-compatible GPT Actions alternative
+
+If the account does not expose custom MCP app registration, the same endpoint
+also exposes authenticated JSON operations under `/actions/<tool_name>`. This
+is a GPT Actions wrapper around the existing `MCPServer`; it does not add DB
+behavior or a second service implementation.
+
+After starting the tunnel, generate the OpenAPI schema with the exact HTTPS
+base URL:
+
+```bash
+PYTHONPATH=src python3 tools/generate_gpt_actions_schema.py \
+  --server-url https://YOUR-TUNNEL-HOST
+```
+
+In the GPT editor, choose Configure -> Actions -> Create new action, paste the
+generated JSON, and configure Bearer authentication with the same token used
+by `STUDY_OS_HTTP_BEARER_TOKEN`. The generated schema derives its operation
+names and required inputs from `contracts/study-os-mcp-tools.v0.1.json`, so the
+GPT Action surface remains the same 13 semantic operations.
+
+GPT Actions currently drops unconstrained object inputs from its callable
+surface. The generated Plus schema therefore declares required object inputs
+(`payload`, `response`, `capability_state`, `assistance_state`, and `resume`)
+as JSON-encoded strings. The `/actions` adapter decodes those fields before
+dispatch; the MCP `/mcp` surface and the underlying service continue to use
+native JSON objects.
+
+This route still needs an HTTPS-reachable endpoint. A temporary public tunnel
+is acceptable for a controlled test only when the strong bearer guard is
+enabled; never run the action route unauthenticated.
+
 ## ChatGPT app setup
 
-OpenAI’s current Developer Mode guidance says ChatGPT cannot connect directly
-to a localhost MCP server; a private developer-machine server should use
-Secure MCP Tunnel. In a supported Business or Enterprise/Edu workspace:
+OpenAI’s current guidance says ChatGPT cannot connect directly to a localhost
+MCP server; a private developer-machine server should use Secure MCP Tunnel.
+For a custom MCP app in a supported workspace:
 
 1. Enable Developer Mode for the authorized workspace account.
 2. Create a custom MCP app from the workspace/user Apps settings.
@@ -76,3 +108,12 @@ Acceptance evidence must include the tool calls/results, checkpoint IDs, and
 confirmation that Chat B did not need Chat A transcript replay or a GitHub
 runtime write. ChatGPT confirmation prompts for write actions are expected and
 must be approved during this controlled test.
+
+Controlled Plus verification completed on 2026-08-24: the private Study OS
+Tutor GPT exposed all 13 actions; Chat A created an accepted checkpoint;
+Fresh Chat B recovered the exact checkpoint, capability/assistance state,
+current focus, and next action without transcript replay; it then recorded a
+new learning event and advanced a second checkpoint using
+`expected_current_checkpoint_id`. This proves the integration path; the
+account-less Quick Tunnel used for this run is temporary and is not a
+production-availability claim.

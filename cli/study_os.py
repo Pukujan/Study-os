@@ -48,6 +48,7 @@ def parser() -> argparse.ArgumentParser:
     http.add_argument("--host", default="127.0.0.1")
     http.add_argument("--port", type=int, default=8765)
     http.add_argument("--path", default="/mcp")
+    http.add_argument("--actions-path", default="/actions")
     http.add_argument("--allowed-origin", action="append", default=[])
     return command
 
@@ -69,6 +70,7 @@ def main(argv: list[str] | None = None) -> int:
             host=args.host,
             port=args.port,
             mcp_path=args.path,
+            actions_path=args.actions_path,
             allowed_origins=args.allowed_origin,
             bearer_token=os.environ.get("STUDY_OS_HTTP_BEARER_TOKEN"),
         )

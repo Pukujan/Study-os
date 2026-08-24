@@ -30,6 +30,7 @@ SUPPORTED_PROTOCOL_VERSIONS = {
 }
 DEFAULT_PROTOCOL_VERSION = "2025-03-26"
 MAX_REQUEST_BYTES = 1024 * 1024
+GPT_ACTION_JSON_FIELDS = frozenset({"payload", "response", "capability_state", "assistance_state", "resume"})
 
 
 def _json_error(category: str, message: str, *, details: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -48,12 +49,14 @@ class MCPHTTPServer(ThreadingHTTPServer):
         *,
         config: RuntimeConfig,
         mcp_path: str = "/mcp",
+        actions_path: str = "/actions",
         allowed_origins: Iterable[str] = (),
         bearer_token: str | None = None,
         contract_path: str | Path | None = None,
     ) -> None:
         self.study_os_config = config
         self.mcp_path = "/" + mcp_path.strip("/")
+        self.actions_path = "/" + actions_path.strip("/")
         self.allowed_origins = frozenset(origin for origin in allowed_origins if origin)
         self.bearer_token = bearer_token
         self.contract_path = contract_path
@@ -87,6 +90,16 @@ class _MCPRequestHandler(BaseHTTPRequestHandler):
 
     def _path_matches(self) -> bool:
         return urlsplit(self.path).path.rstrip("/") == self.server.mcp_path.rstrip("/")
+
+    def _action_name(self) -> str | None:
+        path = urlsplit(self.path).path.rstrip("/")
+        prefix = self.server.actions_path.rstrip("/") + "/"
+        if not path.startswith(prefix):
+            return None
+        name = path[len(prefix):]
+        if not name or "/" in name:
+            return None
+        return name
 
     def _authorize(self) -> bool:
         origin = self.headers.get("Origin")
@@ -145,6 +158,63 @@ class _MCPRequestHandler(BaseHTTPRequestHandler):
             if service is not None:
                 service.close()
 
+    def _dispatch_action(self, name: str, arguments: dict[str, Any]) -> dict[str, Any]:
+        service = None
+        try:
+            from ..services.runtime import StudyOSService
+
+            service = StudyOSService(self.server.study_os_config)
+            return MCPServer(service, contract_path=self.server.contract_path).call_tool(name, arguments)
+        finally:
+            if service is not None:
+                service.close()
+
+    def _read_json_body(self) -> dict[str, Any] | None:
+        try:
+            length = int(self.headers.get("Content-Length", "-1"))
+        except ValueError:
+            length = -1
+        if length < 0 or length > MAX_REQUEST_BYTES:
+            self._send_json(HTTPStatus.BAD_REQUEST, {"error": _json_error("validation_error", "Invalid or oversized Content-Length")["error"]})
+            return None
+        try:
+            message = json.loads(self.rfile.read(length).decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+            self._send_json(
+                HTTPStatus.BAD_REQUEST,
+                {"error": _json_error("validation_error", "Request body must be valid UTF-8 JSON", details={"exception": type(exc).__name__})["error"]},
+            )
+            return None
+        if not isinstance(message, dict):
+            self._send_json(HTTPStatus.BAD_REQUEST, {"error": _json_error("validation_error", "Request body must be a JSON object")["error"]})
+            return None
+        return message
+
+    def _handle_action(self, name: str) -> None:
+        if not self._authorize():
+            return
+        accept = self.headers.get("Accept", "")
+        if accept and not any(value in accept for value in ("application/json", "*/*")):
+            self._send_json(HTTPStatus.NOT_ACCEPTABLE, {"error": _json_error("validation_error", "Accept header must allow JSON")["error"]})
+            return
+        arguments = self._read_json_body()
+        if arguments is None:
+            return
+        for field in GPT_ACTION_JSON_FIELDS:
+            value = arguments.get(field)
+            if isinstance(value, str):
+                try:
+                    arguments[field] = json.loads(value)
+                except json.JSONDecodeError:
+                    # Leave malformed JSON as text so the existing semantic
+                    # service returns its normal stable validation error.
+                    pass
+        try:
+            result = self._dispatch_action(name, arguments)
+        except Exception as exc:
+            result = _json_error("internal_error", "Unexpected Study OS service failure", details={"exception": type(exc).__name__})
+        self._send_json(HTTPStatus.OK, result)
+
     def do_GET(self) -> None:
         if not self._path_matches():
             self._send_json(HTTPStatus.NOT_FOUND, {"error": _json_error("not_found", "MCP endpoint not found")["error"]})
@@ -157,8 +227,12 @@ class _MCPRequestHandler(BaseHTTPRequestHandler):
         self.end_headers()
 
     def do_POST(self) -> None:
-        if not self._path_matches():
+        action_name = self._action_name()
+        if not self._path_matches() and action_name is None:
             self._send_json(HTTPStatus.NOT_FOUND, {"error": _json_error("not_found", "MCP endpoint not found")["error"]})
+            return
+        if action_name is not None:
+            self._handle_action(action_name)
             return
         if not self._authorize():
             return
@@ -203,6 +277,7 @@ def create_http_server(
     host: str = "127.0.0.1",
     port: int = 8765,
     mcp_path: str = "/mcp",
+    actions_path: str = "/actions",
     allowed_origins: Iterable[str] = (),
     bearer_token: str | None = None,
     contract_path: str | Path | None = None,
@@ -218,6 +293,7 @@ def create_http_server(
         (host, port),
         config=selected_config,
         mcp_path=mcp_path,
+        actions_path=actions_path,
         allowed_origins=allowed_origins,
         bearer_token=bearer_token,
         contract_path=contract_path,
@@ -230,6 +306,7 @@ def serve_http(
     host: str = "127.0.0.1",
     port: int = 8765,
     mcp_path: str = "/mcp",
+    actions_path: str = "/actions",
     allowed_origins: Iterable[str] = (),
     bearer_token: str | None = None,
     contract_path: str | Path | None = None,
@@ -239,6 +316,7 @@ def serve_http(
         host=host,
         port=port,
         mcp_path=mcp_path,
+        actions_path=actions_path,
         allowed_origins=allowed_origins,
         bearer_token=bearer_token,
         contract_path=contract_path,

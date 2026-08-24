@@ -37,6 +37,7 @@ REQUIRED_FILES = [
     "docs/ERROR_IDEMPOTENCY_CONTRACT.md",
     "contracts/study-os-mcp-tools.v0.1.json",
     "docs/P1_CHATGPT_MCP_INTEGRATION.md",
+    "tools/generate_gpt_actions_schema.py",
     "src/study_os/services/runtime.py",
     "src/study_os/mcp/server.py",
     "src/study_os/mcp/http_server.py",

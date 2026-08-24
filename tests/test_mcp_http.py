@@ -29,7 +29,7 @@ class MCPHTTPTransportTests(unittest.TestCase):
         self.thread.join(timeout=5)
         self.temp_dir.cleanup()
 
-    def post(self, message, *, headers=None):
+    def post(self, message, *, path="/mcp", headers=None):
         connection = HTTPConnection("127.0.0.1", self.port, timeout=5)
         body = json.dumps(message).encode("utf-8")
         request_headers = {
@@ -38,7 +38,7 @@ class MCPHTTPTransportTests(unittest.TestCase):
             "Content-Length": str(len(body)),
         }
         request_headers.update(headers or {})
-        connection.request("POST", "/mcp", body=body, headers=request_headers)
+        connection.request("POST", path, body=body, headers=request_headers)
         response = connection.getresponse()
         payload = response.read()
         connection.close()
@@ -76,6 +76,38 @@ class MCPHTTPTransportTests(unittest.TestCase):
         self.assertEqual(status, 202)
         self.assertEqual(headers["Content-Length"], "0")
         self.assertIsNone(payload)
+
+    def test_gpt_action_route_reuses_the_same_semantic_service(self):
+        status, headers, payload = self.post({}, path="/actions/doctor")
+        self.assertEqual(status, 200)
+        self.assertEqual(headers["Content-Type"], "application/json")
+        self.assertTrue(payload["healthy"])
+
+    def test_gpt_action_route_decodes_json_object_inputs(self):
+        status, _, started = self.post(
+            {
+                "idempotency_key": "action-session-1",
+                "subject_id": "subject-001",
+                "project_id": "study-os",
+                "domain_id": "dsa",
+            },
+            path="/actions/start_session",
+        )
+        self.assertEqual(status, 200)
+        status, _, event = self.post(
+            {
+                "idempotency_key": "action-event-1",
+                "session_id": started["session_id"],
+                "subject_id": "subject-001",
+                "evidence_class": "observed",
+                "event_type": "prediction",
+                "payload": '{"concept":"sliding-window"}',
+            },
+            path="/actions/record_learning_event",
+        )
+        self.assertEqual(status, 200)
+        self.assertTrue(event["created"])
+        self.assertTrue(event["event_id"])
 
     def test_origin_and_bearer_guards_are_enforced(self):
         self.server.shutdown()
