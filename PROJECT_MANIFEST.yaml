@@ -1,9 +1,9 @@
-manifest_version: "0.1.0"
+manifest_version: "0.1.1"
 project:
   name: Study OS
   repository: Pukujan/Study-os
   status: research-first
-  phase: pre-build experiment design
+  phase: research harness readying
   current_gate: R0
   mission: >-
     Convert AI-assisted study sessions into auditable evidence about where
@@ -48,6 +48,12 @@ canonical_paths:
   datasets: datasets/
   plugins: plugins/
   fossil_exports: fossil/exports/
+  research_foundations: docs/RESEARCH_FOUNDATIONS.md
+  failure_modes: docs/FAILURE_MODES.md
+  research_plan: docs/RESEARCH_PLAN.md
+  measurement_model: docs/MEASUREMENT_MODEL.md
+  build_gates: docs/BUILD_GATES.md
+  source_index: docs/SOURCE_INDEX.md
   handoff: docs/HANDOFF.md
   decisions: docs/DECISIONS.md
 
@@ -113,6 +119,7 @@ learning:
 
 engineering:
   ci_required: true
+  ci_workflow: .github/workflows/ci.yml
   cd_status: deferred_until_R0
   required_checks:
     - python_compile
@@ -122,6 +129,7 @@ engineering:
     - AGENTS.md
     - PROJECT_MANIFEST.yaml
     - docs/HANDOFF.md
+    - docs/DECISIONS.md
   build_gate_requirements:
     - private_raw_evidence_hashed
     - normalized_transcript_with_provenance
@@ -147,5 +155,5 @@ open_risks:
   - scope_expansion_before_evidence_loop
 
 next_milestone: >-
-  Execute one complete Sliding Window learning trajectory for Subject 001 and
-  pass Research Gate R0 before expanding product surface.
+  Verify CI, then execute one complete Sliding Window learning trajectory for
+  Subject 001 and pass Research Gate R0 before expanding product surface.
