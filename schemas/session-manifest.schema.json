@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://study-os.local/schemas/session-manifest.schema.json",
+  "title": "Study OS Session Manifest",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "session_id",
+    "subject_id",
+    "started_at",
+    "domain",
+    "source",
+    "raw_artifacts"
+  ],
+  "properties": {
+    "schema_version": {"type": "string"},
+    "session_id": {"type": "string"},
+    "subject_id": {"type": "string"},
+    "started_at": {"type": "string", "format": "date-time"},
+    "ended_at": {"type": ["string", "null"], "format": "date-time"},
+    "domain": {"type": "string"},
+    "concepts": {"type": "array", "items": {"type": "string"}},
+    "lesson_ids": {"type": "array", "items": {"type": "string"}},
+    "source": {
+      "type": "object",
+      "required": ["provider", "capture_method"],
+      "properties": {
+        "provider": {"type": "string"},
+        "model": {"type": ["string", "null"]},
+        "conversation_id": {"type": ["string", "null"]},
+        "capture_method": {"type": "string", "enum": ["export", "copy", "api", "manual", "other"]}
+      },
+      "additionalProperties": true
+    },
+    "raw_artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "sha256"],
+        "properties": {
+          "path": {"type": "string"},
+          "media_type": {"type": ["string", "null"]},
+          "sha256": {"type": "string"}
+        }
+      }
+    },
+    "notes": {"type": ["string", "null"]}
+  },
+  "additionalProperties": false
+}
