@@ -24,6 +24,26 @@ Study OS is not yet a production learning application. The local runtime has now
 - Cloud review remediation head is `ffeaa24`; GitHub Actions CI run #44 passes with the added adversarial regression tests.
 - **Pending P0 merge gate:** rerun the updated suite, repository validator, and CLI `doctor` on the target WSL machine.
 
+## Planned learner-development architecture
+
+The active research study remains only DSA/Python/Sliding Window. Broader curriculum planning is now explicitly separated from research scope.
+
+Planned competency tracks:
+
+1. algorithmic foundations;
+2. software and systems foundations;
+3. system design and reliability;
+4. AI systems, evaluation, and reliability;
+5. technical problem framing and diagnosis.
+
+Canonical conceptual loop:
+
+`goal -> plan -> task/episode -> attempt -> test/assessment -> evidence -> capability state -> diagnosis/next action -> plan update -> transfer/delayed test`
+
+Study OS currently has strong evidence/assessment/capability-state machinery, a partial plan mechanism, and no first-class canonical goal or learner study-plan schema. Do not create those schemas until the live learning loop demonstrates a concrete need for durable multi-goal planning.
+
+See `docs/LEARNING_CONTROL_MODEL.md` and Decision D013.
+
 ## Canonical state
 
 Read `PROJECT_MANIFEST.yaml` first.
@@ -39,6 +59,7 @@ Key contracts:
 - `docs/FAILURE_MODES.md`
 - `docs/RESEARCH_PLAN.md`
 - `docs/MEASUREMENT_MODEL.md`
+- `docs/LEARNING_CONTROL_MODEL.md`
 - `docs/BUILD_GATES.md`
 - `docs/CHECKPOINTING.md`
 - `docs/LOCAL_RUNTIME_ARCHITECTURE.md`
@@ -86,6 +107,7 @@ Key contracts:
 22. Representation outcomes require behavioral assessment evidence, not merely any resolvable source ID.
 23. A passing checkpoint capability must cite a same-subject passing assessment; `pass_unaided` additionally requires `assistance_level="none"`.
 24. Restore must recover the previous DB/evidence pair if the replacement swap fails before acceptance.
+25. Planned competency tracks are curriculum architecture, not automatic expansion of the active research scope; goal/plan/test/evidence/state concepts are explicitly separated and scoring remains multidimensional.
 
 ## Recent changes
 
@@ -108,6 +130,8 @@ Key contracts:
 - Remediated subject provenance, representation-outcome evidence, checkpoint source-session doctor checks, restore rollback, and failed-export cleanup in `a2b77ec`.
 - Added adversarial P0 review tests in `5fde05f`.
 - Added commit-time evidence-backed capability-promotion enforcement and aligned checkpoint tests; latest head `ffeaa24` passes GitHub Actions CI #44.
+- Added `docs/LEARNING_CONTROL_MODEL.md` defining the goal/plan/task/test/evidence/state loop and five planned competency tracks while preserving DSA/Sliding Window as the sole active R0 research slice.
+- Added Decision D013 and manifest v0.1.6 to distinguish curriculum architecture from validated research scope.
 
 ## Next recommended tasks
 
@@ -127,6 +151,13 @@ Key contracts:
 2. Do not merge solely from GitHub CI; wait for the post-remediation WSL validation result because local runtime behavior is the P0 target.
 3. If WSL exposes a platform-specific failure, add a deterministic regression test before accepting P0.
 4. After P0 merges, update manifest/handoff to make P1 cross-session continuity the active milestone.
+
+### Learner-control design — deferred until evidence loop needs it
+
+1. Do not implement first-class goal or study-plan schemas during P0 merely because the conceptual model now exists.
+2. Use the current checkpoint `current_focus`, `next_action`, `next_probe`, capability state, and retention scheduling for the first real trajectory.
+3. After the first instrumented trajectory, review whether durable multi-goal planning would reduce learner/tutor ambiguity.
+4. If T5 technical problem framing is activated, build scenario/eval fixtures that score evidence-gathering and diagnosis behavior rather than hidden-root-cause guessing.
 
 ### After P0
 
@@ -173,6 +204,8 @@ Do not accept the local runtime until:
 - Exact first alternating-representation experimental design.
 - Which deterministic renderer/state format becomes authoritative after Mermaid/static traces.
 - Whether delayed-retention scheduling is fixed or performance-adaptive.
+- Whether/when first-class goal and learner study-plan schemas are justified by actual learning-loop complexity.
+- What rubric/fixture format should represent T5 open-ended technical diagnosis when that track is activated.
 
 ## Hazards
 
@@ -189,6 +222,7 @@ Do not accept the local runtime until:
 - Do not let an LLM-derived label overwrite learner self-report or observed events.
 - Do not let AI generate authoritative algorithm state without deterministic validation.
 - Do not expand scope into a full DSA curriculum yet.
+- Do not confuse planned competency tracks with active/validated research domains.
 - Do not describe Subject 001 results as universal evidence.
 - Do not optimize solely for “felt clearer” or immediate completion speed.
 - Do not resume from ChatGPT memory when a Study OS checkpoint exists; read the canonical checkpoint.
