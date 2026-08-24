@@ -1,0 +1,12 @@
+{
+  "schema_version": "0.1.0",
+  "subject_id": "subject-001",
+  "status": "not_started",
+  "updated_at": "2026-08-24T02:43:00Z",
+  "checkpoint_id": null,
+  "checkpoint_path": null,
+  "current_focus": "DSA / Python / Sliding Window — establish first baseline learning episode",
+  "next_action": "Run the first instrumented Sliding Window baseline session before providing adaptive representations.",
+  "retention_due_at": null,
+  "notes": "Project/research continuity is ready. No learner checkpoint exists yet because the first DSA learning episode has not been run."
+}
