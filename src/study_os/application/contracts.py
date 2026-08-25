@@ -108,6 +108,18 @@ class RuntimeHealthResult(ApplicationContractModel):
     checks: dict[NonEmptyString, RuntimeHealthCheck]
 
 
+class SubjectStatusRequest(ApplicationContractModel):
+    subject_id: NonEmptyString
+
+
+class SubjectStatusResult(ApplicationContractModel):
+    subject_id: NonEmptyString
+    current_session_id: NonEmptyString | None
+    current_checkpoint_id: NonEmptyString | None
+    current_focus: NonEmptyString | None
+    next_action: NonEmptyString | None
+
+
 class StartStudySessionRequest(ApplicationContractModel):
     idempotency_key: NonEmptyString
     subject_id: NonEmptyString
@@ -153,6 +165,8 @@ class StartStudySessionResult(ApplicationContractModel):
 
 CORE_SCHEMA_MODELS: dict[str, type[BaseModel]] = {
     "application_error_envelope": ApplicationErrorEnvelope,
+    "get_subject_status_request": SubjectStatusRequest,
+    "get_subject_status_result": SubjectStatusResult,
     "inspect_runtime_health_request": RuntimeHealthRequest,
     "inspect_runtime_health_result": RuntimeHealthResult,
     "start_study_session_request": StartStudySessionRequest,
