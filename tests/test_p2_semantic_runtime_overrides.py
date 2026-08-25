@@ -25,9 +25,14 @@ class SemanticRuntimeOverrideTests(unittest.TestCase):
             task_id="task-1", response={"answer": 1}, assistance_level="none"
         )
         self.attempt_id = attempt["attempt_id"]
+        baseline = self.service.record_assessment(
+            idempotency_key="baseline-assessment", session_id=self.session, subject_id=self.subject,
+            capability="cap-1", result="pass_unaided", assistance_level="none", evidence_ids=[self.attempt_id]
+        )
+        self.baseline_assessment_id = baseline["assessment_id"]
         checkpoint = self.service.checkpoint(
             idempotency_key="checkpoint-1", subject_id=self.subject,
-            source_session_ids=[self.session], evidence_ids=[self.attempt_id],
+            source_session_ids=[self.session], evidence_ids=[self.baseline_assessment_id],
             capability_state={"cap-1": "pass_unaided"}, assistance_state={"cap-1": "A0"},
             resume={"current_focus": "cap-1", "do_not_reteach": ["cap-0"], "next_action": "probe cap-1"},
             retention_due_at="2026-08-26T06:00:00Z"
