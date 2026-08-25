@@ -32,6 +32,14 @@ FORBIDDEN_PURE_LOGIC_PREFIXES = (
     "study_os.services",
 )
 
+APPLICATION_ROOTS = (STUDY_OS_ROOT / "application",)
+FORBIDDEN_APPLICATION_PREFIXES = (
+    "study_os.db",
+    "study_os.evidence",
+    "study_os.mcp",
+    "study_os.services",
+)
+
 TRANSPORT_ROOTS = (STUDY_OS_ROOT / "mcp",)
 FORBIDDEN_TRANSPORT_PREFIXES = (
     "study_os.adaptive",
@@ -42,6 +50,7 @@ FORBIDDEN_TRANSPORT_PREFIXES = (
 
 TOP_LEVEL_PACKAGES = (
     "adaptive",
+    "application",
     "curriculum",
     "db",
     "evidence",
@@ -147,13 +156,18 @@ def _matches_prefix(module: str, prefixes: tuple[str, ...]) -> bool:
     return any(module == prefix or module.startswith(prefix + ".") for prefix in prefixes)
 
 
-def check_pure_logic_boundaries() -> None:
+def _boundary_violations(roots: tuple[Path, ...], forbidden_prefixes: tuple[str, ...]) -> list[str]:
     violations: list[str] = []
-    for root in PURE_LOGIC_ROOTS:
+    for root in roots:
         for path in sorted(root.rglob("*.py")):
             for module in sorted(_resolved_imported_modules(path)):
-                if _matches_prefix(module, FORBIDDEN_PURE_LOGIC_PREFIXES):
+                if _matches_prefix(module, forbidden_prefixes):
                     violations.append(f"{path.relative_to(ROOT)} -> {module}")
+    return violations
+
+
+def check_pure_logic_boundaries() -> None:
+    violations = _boundary_violations(PURE_LOGIC_ROOTS, FORBIDDEN_PURE_LOGIC_PREFIXES)
     if violations:
         raise BaselineFailure(
             "adaptive/curriculum pure logic crossed persistence/transport boundary: "
@@ -161,15 +175,21 @@ def check_pure_logic_boundaries() -> None:
         )
 
 
+def check_application_boundaries() -> None:
+    """Keep application contracts/use cases independent of transport and concrete persistence."""
+
+    violations = _boundary_violations(APPLICATION_ROOTS, FORBIDDEN_APPLICATION_PREFIXES)
+    if violations:
+        raise BaselineFailure(
+            "application layer reached transport/concrete persistence/legacy service directly: "
+            + "; ".join(violations)
+        )
+
+
 def check_transport_boundaries() -> None:
     """Keep MCP as a transport adapter rather than a semantic/persistence owner."""
 
-    violations: list[str] = []
-    for root in TRANSPORT_ROOTS:
-        for path in sorted(root.rglob("*.py")):
-            for module in sorted(_resolved_imported_modules(path)):
-                if _matches_prefix(module, FORBIDDEN_TRANSPORT_PREFIXES):
-                    violations.append(f"{path.relative_to(ROOT)} -> {module}")
+    violations = _boundary_violations(TRANSPORT_ROOTS, FORBIDDEN_TRANSPORT_PREFIXES)
     if violations:
         raise BaselineFailure(
             "MCP transport reached persistence/pure semantic implementation directly: "
@@ -238,6 +258,7 @@ def main() -> int:
     checks = (
         ("version and 13-tool consistency", check_version_consistency),
         ("adaptive/curriculum architecture boundary", check_pure_logic_boundaries),
+        ("application architecture boundary", check_application_boundaries),
         ("MCP transport architecture boundary", check_transport_boundaries),
         ("top-level package dependency cycles", check_top_level_dependency_cycles),
     )
