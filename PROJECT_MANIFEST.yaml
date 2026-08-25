@@ -1,9 +1,9 @@
-manifest_version: "0.1.6"
+manifest_version: "0.2.0"
 project:
   name: Study OS
   repository: Pukujan/Study-os
   status: research-first
-  phase: P0 parallel cloud-contract + local-runtime implementation
+  phase: P2 adaptive-learning integration + engineering-verification hardening
   current_gate: R0
   mission: >-
     Convert AI-assisted study sessions into auditable evidence about where
@@ -18,6 +18,7 @@ project:
       - python
     concept_families:
       - sliding-window
+      - running-extrema
 
 research:
   primary_question: >-
@@ -39,6 +40,7 @@ research:
     - self_report_equals_mastery
     - more_modalities_always_better
     - llm_inference_equals_observed_truth
+    - synthetic_simulation_equals_human_learning_effect
 
 canonical_paths:
   schemas: schemas/
@@ -47,31 +49,23 @@ canonical_paths:
   local_runtime_source: src/study_os/
   local_runtime_cli: cli/study_os.py
   local_runtime_migrations: src/study_os/db/migrations/
+  adaptive: src/study_os/adaptive/
+  curriculum_runtime: src/study_os/curriculum/
   domain: domains/dsa/
   sessions: sessions/
   subjects: subjects/
-  bootstrap_subject_checkpoint: subjects/subject-001/CURRENT.json
   datasets: datasets/
-  plugins: plugins/
-  fossil_exports: fossil/exports/
   checkpointing: docs/CHECKPOINTING.md
   learning_control_model: docs/LEARNING_CONTROL_MODEL.md
-  local_runtime_architecture: docs/LOCAL_RUNTIME_ARCHITECTURE.md
-  parallel_execution: docs/PARALLEL_EXECUTION_PLAN.md
+  learner_model_audit: docs/LEARNER_MODEL_CURRICULUM_AUDIT.md
+  oss_donor_audit: docs/OSS_TUTORING_DONOR_AUDIT.md
+  p2_integration_test_plan: docs/P2_COMPONENT_INTEGRATION_TEST_PLAN.md
   validation_strategy: docs/VALIDATION_STRATEGY.md
-  luna_local_handoff: docs/LUNA_LOCAL_HANDOFF.md
-  database_contract: docs/DATABASE_CONTRACT.md
-  error_idempotency_contract: docs/ERROR_IDEMPOTENCY_CONTRACT.md
-  research_foundations: docs/RESEARCH_FOUNDATIONS.md
-  failure_modes: docs/FAILURE_MODES.md
-  research_plan: docs/RESEARCH_PLAN.md
-  measurement_model: docs/MEASUREMENT_MODEL.md
-  build_gates: docs/BUILD_GATES.md
-  source_index: docs/SOURCE_INDEX.md
   handoff: docs/HANDOFF.md
   decisions: docs/DECISIONS.md
 
 runtime:
+  package_version: "0.1.0"
   topology: local_first
   initial_host: wsl
   live_state_in_github: false
@@ -79,8 +73,8 @@ runtime:
     engine: sqlite
     role: canonical_live_learner_state
     current_schema_version: 1
+    migration_series: "0001"
     migrations_required: true
-    migration_target_if_needed: postgres
   private_evidence_store:
     default_root: ~/.study-os/evidence/
     raw_artifacts_immutable: true
@@ -90,15 +84,9 @@ runtime:
     protocol: mcp
     semantic_tools_only: true
     semantic_contract_version: "0.1.0"
+    approved_tool_count: 13
     direct_localhost_from_chatgpt: false
-    remote_access: secure_mcp_tunnel_or_equivalent_authenticated_private_path
-    plan_workspace_capability_must_be_verified: true
-  validation:
-    local_runtime_validation_required: true
-    health_doctor_required: true
-    backup_restore_test_required: true
-    idempotency_required_for_mutating_tools: true
-    failure_injection_required: true
+    deployed_private_transport_configuration_in_public_repo: false
   checkpoint_source_of_truth_when_runtime_active: local_database
   github_checkpoint_role_when_runtime_active: optional_curated_or_reproducibility_export
 
@@ -117,7 +105,9 @@ privacy:
     - full_private_chat_exports
     - secrets
     - account_identifiers
+    - tunnel_credentials
     - hidden_eval_answers_exposed_to_tutor
+    - hidden_engineering_holdout_answers_exposed_to_coding_agents
 
 fossil:
   role: optional_export_and_promotion_layer
@@ -141,136 +131,109 @@ schemas:
   lesson_ir: "0.1.0"
   learner_checkpoint: "0.1.0"
   current_checkpoint: "0.1.0"
+  competency_graph: "0.1.0"
+  learner_snapshot: "0.1.0"
+  decision_proposal: "0.1.0"
+  attempt_telemetry: "0.1.0"
 
 learning:
+  execution_tracker: 10
+  verification_tracker: 21
   active_research_scope:
     track: algorithmic_foundations
     domain: dsa
     language: python
-    concept_family: sliding-window
-  planned_competency_tracks:
-    - algorithmic_foundations
-    - software_systems_foundations
-    - system_design_reliability
-    - ai_systems_evaluation_reliability
-    - technical_problem_framing_diagnosis
-  track_scope_rule: >-
-    Planned competency tracks are curriculum architecture only and do not expand
-    the active R0 research scope unless the manifest, handoff, and decision log
-    explicitly activate a new learning/research slice.
-  control_model:
-    sequence:
-      - goal
-      - plan
-      - task_or_episode
-      - attempt
-      - test_or_assessment
-      - evidence
-      - capability_state
-      - diagnosis_or_next_action
-      - plan_update
-      - transfer_or_delayed_test
-    first_class_goal_schema: false
-    first_class_study_plan_schema: false
-    scoring_model: multidimensional_evidence_backed_capability_state
-    global_mastery_scalar: false
-  checkpoint_policy:
-    canonical: derived_from_events_and_episodes
-    immutable_snapshots: true
-    mutable_current_pointer: true
-    required_boundaries:
-      - session_end
-      - lesson_boundary
-      - breakthrough
-      - persistent_failure
-      - pre_transfer
-      - post_transfer
-      - pre_delay
-      - post_delay
-  difficulty_ladder:
-    L0: observe
-    L1: predict
-    L2: explain
-    L3: reconstruct
-    L4: semantic_pseudocode
-    L5: scaffolded_code
-    L6: blank_implementation
-    L7: debug
-    L8: recognize
-    L9: transfer
-    L10: derive_or_modify
-  initial_representation_families:
-    - textual
-    - static_figure
-    - mermaid_flowchart
-    - deterministic_state_trace
-    - invariant
-    - semantic_pseudocode
-    - python_scaffold
-    - blank_python
-  deferred_modalities:
-    - generated_images
-    - generated_video
-    - production_audio_pipeline
+  scoring_model: multidimensional_evidence_backed_capability_state
+  global_mastery_scalar: false
+  adaptive_authority: shadow
+  promotion_ladder:
+    - G0_source_license_assumption_audit
+    - G1_adapter_conformance
+    - G2_donor_reproduction
+    - G3_replay
+    - G4_live_shadow
+    - G5_advisory_canary
+    - G6_bounded_live_authority
+    - G7_within_subject_outcome_comparison
+  promotion_prerequisite: >-
+    Relevant Issue #21 verification gates must pass before a component advances
+    to G5 advisory/canary or later.
+  implemented_foundations:
+    - versioned_learner_snapshot_and_decision_proposal
+    - structured_attempt_hint_representation_telemetry
+    - atomic_running_extrema_curriculum_slice
+    - baseline_and_bkt_diagnostic_selectors
+    - cat_irt_shadow_selection
+    - fsrs_retention_adapter
+    - evidence_gated_scaffold_controller
+    - contextual_representation_policy
+    - learner_relative_complexity
+    - tutor_behavior_regression
+    - shadow_proposal_to_outcome_linkage
+    - atomic_retention_probe_closure
+    - richer_resume_projection
+  remaining_pre_live_authority:
+    - complete_live_shadow_comparisons
+    - hidden_engineering_holdout
+    - property_stateful_reference_model_verification
+    - mutation_negative_controls
+    - seeded_policy_simulation
+    - advisory_canary_accept_reject_logging
 
 engineering:
-  parallel_execution_issue: 5
-  architecture_issue: 4
+  architecture_style: modular_monolith
+  verification_tracker: 21
   repository_checks_required: true
   github_actions:
     configured: true
     workflow: .github/workflows/ci.yml
     runtime_dependency: false
-    optional_during_R0: true
-  local_runtime_validation_required: true
-  cd_status: deferred_until_R0
-  required_repository_checks:
+  current_ci_checks:
     - python_compile
     - repository_validation
     - unit_tests
-    - runtime_contract_tests
-  p0_cloud_deliverables:
-    - parallel_execution_plan
-    - validation_strategy
-    - luna_local_handoff
-    - mcp_semantic_contract
-    - database_contract
-    - error_idempotency_contract
-    - synthetic_reference_trajectory
-    - runtime_contract_tests
-  p0_local_required_validation:
-    - empty_db_migration
-    - migration_repeat_safety
-    - foreign_keys
-    - idempotent_writes
-    - evidence_provenance_enforcement
-    - raw_hash_mutation_detection
-    - checkpoint_atomicity
-    - resume_after_restart
-    - doctor_detects_corruption
-    - backup_restore_roundtrip
-    - mcp_contract_conformance
-    - prohibited_generic_tools_absent
+  planned_pr_checks:
+    - ruff_lint_format
+    - pyright_typecheck
+    - coverage
+    - schema_contract_version_consistency
+    - architecture_import_boundaries
+    - focused_property_tests
+    - relevant_hidden_acceptance
+  planned_post_merge_checks:
+    - broader_integration
+    - replay
+    - reference_model_differential
+  planned_scheduled_checks:
+    - large_property_stateful_runs
+    - mutation_testing
+    - fuzzing
+    - seeded_100x_learner_policy_simulation
+    - dependency_security_sweeps
+  planned_release_checks:
+    - hidden_holdout
+    - backup_restore
+    - performance
+    - selected_chaos
+    - project_state_doc_convergence
+  formal_methods_policy:
+    targeted_only: true
+    candidates:
+      - tla_plus_for_stateful_concurrency_protocols
+      - alloy_for_relational_and_dag_invariants
+      - smt_for_bounded_deterministic_constraints
+      - theorem_provers_for_tiny_high_value_core_semantics_only
+  modular_monolith_target_direction: >-
+    domain/contracts -> curriculum + adaptive pure logic -> application/use-cases
+    -> persistence/adapters -> MCP/HTTP/CLI
+  refactor_guard: >-
+    Do not aggressively decompose the preserved semantic runtime until property,
+    state-machine, and reference-model verification freeze its behavior.
   agent_files:
     - AGENTS.md
     - PROJECT_MANIFEST.yaml
     - docs/HANDOFF.md
     - docs/DECISIONS.md
-  assistant_skill_contracts:
-    - plugins/study-os-ingest/skill.md
-    - plugins/study-os-checkpoint/skill.md
-  installed_study_os_chatgpt_plugin: false
-  build_gate_requirements:
-    - private_raw_evidence_hashed
-    - normalized_transcript_with_provenance
-    - failure_transition_identified
-    - intervention_version_recorded
-    - immediate_behavior_measured
-    - assistance_removed
-    - transfer_measured
-    - delayed_retention_measured
-    - self_report_compared_to_behavior
-    - experiment_reconstructable_by_new_agent
 
 open_risks:
   - self_report_fluency_confused_with_learning
@@ -281,20 +244,22 @@ open_risks:
   - n_of_1_overgeneralization
   - transcript_privacy
   - agent_repository_drift
-  - research_overhead_burnout
-  - scope_expansion_before_evidence_loop
-  - cross_session_resume_without_checkpoint
-  - checkpoint_drift_from_canonical_events
-  - local_runtime_backup_failure
-  - insecure_remote_exposure_of_wsl_service
-  - chatgpt_plan_missing_required_mcp_write_actions
-  - local_cloud_contract_drift
+  - documentation_state_drift
+  - hidden_holdout_leakage
+  - verifier_overfitting
+  - insufficient_test_oracle_independence
   - retry_duplicate_learning_events
   - partial_checkpoint_commit
-  - curriculum_architecture_mistaken_for_validated_research_scope
+  - local_runtime_backup_failure
+  - insecure_remote_exposure_of_wsl_service
+  - deployed_private_transport_drift_from_public_contract
+  - adaptive_component_promoted_before_verification
+  - synthetic_simulation_mistaken_for_human_learning_evidence
 
 next_milestone: >-
-  Luna implements P0 local SQLite/evidence/service/MCP runtime against the
-  repository contracts while cloud/repo work expands conformance and failure
-  tests; then review the pushed implementation and pass P0 before attempting
-  secure ChatGPT-to-WSL cross-session continuity.
+  Establish the Issue #21 SWE/verification baseline (state/doc convergence,
+  Ruff, Pyright, coverage, architecture/version checks, property/state-machine
+  testing, reference-model differential testing, mutation/negative controls,
+  hidden holdout design, and seeded learner-policy simulation), then resume
+  Issue #10 live-shadow to G5 advisory/canary promotion work without changing
+  private deployment secrets or granting unverified adaptive authority.
