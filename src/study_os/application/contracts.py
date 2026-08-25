@@ -120,6 +120,38 @@ class SubjectStatusResult(ApplicationContractModel):
     next_action: NonEmptyString | None
 
 
+class NextRetentionProbeRequest(ApplicationContractModel):
+    subject_id: NonEmptyString
+
+
+class RetentionProbeSummary(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True, strict=True)
+
+    retention_probe_id: NonEmptyString
+    concept_id: NonEmptyString
+    due_at: NonEmptyString
+    status: Literal["scheduled"]
+
+
+class NextRetentionProbeResult(ApplicationContractModel):
+    subject_id: NonEmptyString
+    probe: RetentionProbeSummary | None
+    reason: Literal["no_scheduled_probe", "scheduled_retention_probe"]
+    source_checkpoint_id: NonEmptyString | None
+
+    @field_validator("source_checkpoint_id")
+    @classmethod
+    def validate_probe_state(cls, value: str | None, info: Any) -> str | None:
+        probe = info.data.get("probe")
+        reason = info.data.get("reason")
+        if probe is None:
+            if reason != "no_scheduled_probe" or value is not None:
+                raise ValueError("no scheduled probe must not expose a source checkpoint")
+        elif reason != "scheduled_retention_probe" or value is None:
+            raise ValueError("scheduled probe must expose its source checkpoint")
+        return value
+
+
 class StartStudySessionRequest(ApplicationContractModel):
     idempotency_key: NonEmptyString
     subject_id: NonEmptyString
@@ -165,6 +197,8 @@ class StartStudySessionResult(ApplicationContractModel):
 
 CORE_SCHEMA_MODELS: dict[str, type[BaseModel]] = {
     "application_error_envelope": ApplicationErrorEnvelope,
+    "get_next_retention_probe_request": NextRetentionProbeRequest,
+    "get_next_retention_probe_result": NextRetentionProbeResult,
     "get_subject_status_request": SubjectStatusRequest,
     "get_subject_status_result": SubjectStatusResult,
     "inspect_runtime_health_request": RuntimeHealthRequest,

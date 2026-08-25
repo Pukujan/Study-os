@@ -7,9 +7,14 @@ import sys
 from pathlib import Path
 from typing import Any, TextIO
 
-from ..application.contracts import StartStudySessionRequest, SubjectStatusRequest
+from ..application.contracts import (
+    NextRetentionProbeRequest,
+    StartStudySessionRequest,
+    SubjectStatusRequest,
+)
 from ..application.service import (
     ApplicationService,
+    project_next_retention_probe_to_mcp,
     project_runtime_health_to_mcp,
     project_start_study_session_to_mcp,
     project_subject_status_to_mcp,
@@ -65,6 +70,17 @@ class MCPServer:
                 raise validation("status received unexpected arguments", unexpected=unexpected)
             request = SubjectStatusRequest(**arguments)
             result = project_subject_status_to_mcp(self.application.get_subject_status(request))
+        elif name == "get_next_probe":
+            unexpected = sorted(set(arguments) - {"subject_id"})
+            if unexpected:
+                raise validation(
+                    "get_next_probe received unexpected arguments",
+                    unexpected=unexpected,
+                )
+            request = NextRetentionProbeRequest(**arguments)
+            result = project_next_retention_probe_to_mcp(
+                self.application.get_next_retention_probe(request)
+            )
         elif name == "start_session":
             allowed = {
                 "idempotency_key",
