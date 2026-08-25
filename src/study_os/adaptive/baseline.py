@@ -138,6 +138,7 @@ def propose_instruction_baseline(
         eligible.append((candidate, total))
 
     selected = None
+    selected_competency_id = None
     rationale: str
     if eligible:
         # Stable candidate_id tie-break keeps replay results deterministic.
@@ -149,6 +150,7 @@ def propose_instruction_baseline(
             representation_id=winner.representation_id,
             learning_operation=winner.learning_operation,
         )
+        selected_competency_id = winner.competency_id
         rationale = (
             f"selected {winner.candidate_id} by deterministic instruction baseline "
             f"with score={winner_score:.3f} after prerequisite/independence gates"
@@ -168,7 +170,7 @@ def propose_instruction_baseline(
         selected=selected,
         rationale=rationale,
         expected_evidence={
-            "competencies": [selected.candidate_id] if selected else [],
+            "competencies": [selected_competency_id] if selected_competency_id else [],
             "policy": "baseline_not_validated_for_live_authority",
         },
     )
