@@ -26,6 +26,8 @@ select = ["E4", "E7", "E9", "F"]
 
 [tool.ruff.lint.per-file-ignores]
 "**/__init__.py" = ["F401"]
+"src/study_os/__init__.py" = ["E402", "F401"]
+"tests/test_p2_semantic_runtime_overrides.py" = ["E402"]
 
 [tool.pyright]
 include = ["src/study_os"]
