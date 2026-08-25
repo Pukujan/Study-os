@@ -1,0 +1,70 @@
+{
+  "plan_version": "0.1.0",
+  "plan_id": "running-extrema.second-largest-foundations",
+  "slice_id": "running-extrema",
+  "steps": [
+    {
+      "id": "step.compare-values",
+      "competency_id": "dsa.compare.values",
+      "item_ids": ["re.compare.001"],
+      "complexity_stage": 1,
+      "entry_assistance": "A0",
+      "remediation_assistance": "A1",
+      "advance_requires": "pass_unaided"
+    },
+    {
+      "id": "step.running-max",
+      "competency_id": "dsa.extrema.running_max",
+      "item_ids": ["re.running-max.001"],
+      "complexity_stage": 2,
+      "entry_assistance": "A1",
+      "remediation_assistance": "A2",
+      "advance_requires": "pass_unaided"
+    },
+    {
+      "id": "step.two-candidates",
+      "competency_id": "dsa.extrema.two_candidates",
+      "item_ids": ["re.two-candidate.001"],
+      "complexity_stage": 3,
+      "entry_assistance": "A0",
+      "remediation_assistance": "A2",
+      "advance_requires": "pass_unaided"
+    },
+    {
+      "id": "step.prefix-invariant",
+      "competency_id": "dsa.invariant.two_largest_order",
+      "item_ids": ["re.invariant.001"],
+      "complexity_stage": 4,
+      "entry_assistance": "A1",
+      "remediation_assistance": "A2",
+      "advance_requires": "pass_unaided"
+    },
+    {
+      "id": "step.update-order-scaffolded",
+      "competency_id": "dsa.extrema.update_order",
+      "item_ids": ["re.update-order.001"],
+      "complexity_stage": 5,
+      "entry_assistance": "A2",
+      "remediation_assistance": "A3",
+      "advance_requires": "pass_unaided"
+    },
+    {
+      "id": "step.update-order-faded",
+      "competency_id": "dsa.extrema.update_order",
+      "item_ids": ["re.update-order.002"],
+      "complexity_stage": 5,
+      "entry_assistance": "A0",
+      "remediation_assistance": "A1",
+      "advance_requires": "pass_unaided"
+    },
+    {
+      "id": "step.blank-implementation",
+      "competency_id": "dsa.extrema.second_largest_implement",
+      "item_ids": ["re.implement.001"],
+      "complexity_stage": 6,
+      "entry_assistance": "A1",
+      "remediation_assistance": "A2",
+      "advance_requires": "pass_unaided"
+    }
+  ]
+}
