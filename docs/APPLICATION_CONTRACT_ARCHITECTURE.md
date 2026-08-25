@@ -1,10 +1,10 @@
-# Application Contract Architecture — E11a-0
+# Application Contract Architecture — E11a
 
-Status: architecture decision / pre-implementation contract. This document does not introduce HTTP, frontend, generated clients, or a new runtime authority.
+Status: E11a-0 architecture/inventory is canonical; E11a-1 implements a representative contract core only. HTTP, frontend, generated clients, MCP migration, and new runtime authority remain deferred.
 
 ## Decision
 
-Study OS will introduce a transport-independent application boundary between semantic use cases and transport adapters.
+Study OS uses a transport-independent application boundary between semantic use cases and transport adapters.
 
 ```text
 domain/state
@@ -23,11 +23,18 @@ The existing public MCP surface remains exactly 13 semantic tools until a separa
 
 ## Canonical source of truth
 
-E11a-0 is inventory-only. The machine-readable inventory is `contracts/application-operation-inventory.v0.1.json`; it records the migration target and is mechanically reconciled with the current MCP contract and runtime method surface.
+The single canonical authoring source for implemented application DTOs/results/errors is typed Python in `src/study_os/application/contracts.py`, using Pydantic v2. The E11a-0 migration inventory remains `contracts/application-operation-inventory.v0.1.json` and is mechanically reconciled with the current MCP contract and runtime method surface.
 
-Beginning with E11a-1, the single canonical authoring source for application DTOs/results/errors will be typed Python models in `study_os.application.contracts`, using Pydantic v2. JSON Schema will be generated from those models. OpenAPI and a framework-neutral TypeScript client are later projections from the canonical contract artifacts, not separately hand-authored equivalents.
+E11a-1 intentionally implements only this representative subset:
 
-Until those models exist, the inventory must not be mistaken for an implemented DTO library or used to claim HTTP/frontend readiness.
+- shared application contract version metadata;
+- stable application error category/code/message/retryability/public-detail envelope;
+- `inspect_runtime_health` request/result models corresponding to current MCP `doctor`;
+- `start_study_session` request/result models corresponding to current MCP `start_session`.
+
+JSON Schema is generated deterministically on demand from the canonical Python models and is checked in CI on Python 3.11 and 3.12. No equivalent hand-authored JSON Schema is committed as a competing source of truth. OpenAPI and a framework-neutral TypeScript client remain later projections.
+
+The existence of representative models does not claim MCP conformance migration, HTTP readiness, or frontend readiness. MCP continues using the existing runtime path until a later bounded E11a adapter slice proves semantic equivalence.
 
 ## Authority boundaries
 
@@ -56,23 +63,23 @@ A change in one namespace does not silently imply a change in another. Any compa
 Before a stable 1.x application contract is claimed:
 
 1. Additive response fields are the default compatible same-major evolution.
-2. Requests reject unknown fields unless an explicit extension point declares otherwise. This keeps command semantics fail-closed.
-3. Generated/compatible response decoders may ignore additive same-major fields when that behavior is part of the declared compatibility promise.
+2. Requests reject unknown fields unless an explicit extension point declares otherwise. Current representative Pydantic models enforce `extra="forbid"`.
+3. Generated/compatible response decoders may ignore additive same-major fields only when that behavior is part of the declared compatibility promise.
 4. Removing a field, changing requiredness incompatibly, changing type incompatibly, or changing a field's semantic meaning requires an explicit breaking/major contract change.
 5. A field name is never silently reused for a different meaning.
 6. Deprecation requires a documented removal/version plan; ad-hoc deletion is not permitted.
-7. Compatibility fixtures must cover every application-contract version still claimed as supported.
-8. Generated artifacts must be reproducible and mechanically freshness-checked once generation exists.
+7. Compatibility fixtures must cover every application-contract version still claimed as supported once more than one supported version exists.
+8. Generated artifacts must be reproducible and mechanically freshness-checked.
 
 ## Serialization rules
 
-Canonical application JSON projections will use UTF-8 JSON with deterministic field semantics.
+Canonical application JSON projections use UTF-8 JSON with deterministic field semantics.
 
-- Timestamps cross the application boundary as RFC 3339 UTC timestamps using `Z`.
-- Identifiers are opaque strings. Clients must not infer ordering, type, authorization, or learner semantics from identifier formatting.
-- Non-finite numeric values are forbidden.
-- Missing and explicit `null` are different states; optionality/nullability must be declared per field.
-- When a canonical request fingerprint is needed for idempotency, semantic content is serialized deterministically using sorted keys and compact JSON after transport noise is removed.
+- Timestamps cross the application boundary as RFC 3339 UTC timestamps using `Z`; the representative session result requires an aware UTC value and emits fixed microsecond precision.
+- Identifiers are opaque non-empty strings. Clients must not infer ordering, type, authorization, or learner semantics from identifier formatting.
+- Non-finite numeric values are forbidden in public contract JSON.
+- Missing and explicit `null` are different states; optionality/nullability is declared per field.
+- Canonical model JSON uses sorted keys and compact separators. This is compatible with later semantic request fingerprinting but does not replace the existing runtime idempotency implementation in E11a-1.
 - Serialization must never add private transcript bodies, secrets, credentials, hidden holdout answers, or backend-only authority flags to public/client DTOs.
 
 ## Errors and retries
@@ -87,13 +94,13 @@ The application boundary reuses the existing stable error categories:
 - `unavailable`
 - `internal_error`
 
-E11a-1 will introduce a transport-independent error envelope with machine-readable category/code, safe public message/detail, and retryability metadata. HTTP status codes and MCP error formatting are adapter mappings, not semantic error authority.
+E11a-1 implements a transport-independent error envelope with machine-readable category and lowercase code, safe public message/detail, and retryability metadata. Nested public detail rejects known private/secret field classes and non-finite numbers. HTTP status codes and MCP error formatting remain adapter mappings, not semantic error authority.
 
-Every durable application command corresponding to a mutating MCP tool remains idempotent by required idempotency key. Exact retry returns the same logical durable result; same key with materially different semantic content returns `conflict`; failed transactions must not create successful idempotency records.
+Every durable application command corresponding to a mutating MCP tool remains idempotent by required idempotency key. Exact retry returns the same logical durable result; same key with materially different semantic content returns `conflict`; failed transactions must not create successful idempotency records. E11a-1 models this request metadata but does not replace the proven runtime implementation.
 
 ## Operation inventory
 
-`contracts/application-operation-inventory.v0.1.json` is the E11a-0 executable migration inventory. For each of the 13 current MCP tools it records:
+`contracts/application-operation-inventory.v0.1.json` is the executable migration inventory. For each of the 13 current MCP tools it records:
 
 - current runtime service method;
 - target application operation;
@@ -120,18 +127,19 @@ E11a is an architecture seam only. It does not promote any adaptive component. C
 
 ## Verification ratchet
 
-E11a-0 requires a stdlib-only inventory validator and negative-control tests that fail when:
+E11a-0 retains its stdlib-only inventory validator and negative controls. E11a-1 adds contract tests and deterministic generation checks that fail when:
 
-- any canonical MCP tool is missing, duplicated, or invented;
-- command/query or idempotency classification drifts from the MCP contract;
-- required request/result migration fields drift from the MCP contract;
-- a mapped runtime method no longer exists;
-- HTTP exposure is enabled early;
-- semantic authority moves away from the application boundary;
-- error categories drift from the existing durable error vocabulary.
+- error categories drift from the durable runtime/MCP vocabulary;
+- unsupported application versions or extra request fields are accepted;
+- strict request field types are silently coerced;
+- representative request/result migration fields drift from the operation inventory;
+- timestamps are naive or non-UTC;
+- public error/health detail contains known private fields or non-finite values;
+- generated JSON Schema is invalid or rendering is nondeterministic;
+- representative serialized instances fail their generated schemas.
 
-Later E11a slices add DTO/schema serialization tests, generated-artifact freshness, compatibility fixtures, and direct-application-versus-MCP differential conformance before runtime behavior is moved.
+E11a-2 must prove direct application-versus-MCP differential conformance for a bounded representative adapter migration before any broader runtime behavior is moved.
 
-## Non-goals for E11a-0
+## Current non-goals
 
-This slice does not add Pydantic, DTO implementation code, JSON Schema generation, OpenAPI, HTTP routes, authentication, TypeScript, React, Svelte, browser tests, deployment changes, persistence changes, schema migrations, semantic runtime changes, or adaptive live authority.
+The E11a-1 representative core does not add HTTP routes, authentication, TypeScript, React, Svelte, browser tests, deployment changes, persistence changes, schema migrations, semantic runtime changes, MCP tool-count changes, or adaptive live authority. It also does not yet route MCP calls through the canonical models.
