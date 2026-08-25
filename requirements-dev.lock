@@ -1,0 +1,21 @@
+# Exact CI/dev dependency lock for the current supported Python 3.11/3.12 environment.
+#
+# Direct intent remains in pyproject.toml / requirements-dev.txt. CI installs this
+# file so dependency resolution cannot silently drift between otherwise identical
+# commits. Update deliberately through a reviewed PR with the full verification
+# suite; do not hand-relax versions to make a failing dependency update pass.
+
+attrs==26.1.0
+coverage==7.15.4
+fsrs==6.3.2
+hypothesis==6.165.10
+jsonschema==4.26.0
+jsonschema-specifications==2025.9.1
+nodeenv==1.10.0
+pyright==1.1.411
+PyYAML==6.0.3
+referencing==0.37.0
+rpds-py==2026.6.3
+ruff==0.16.4
+sortedcontainers==2.4.0
+typing-extensions==4.16.0
