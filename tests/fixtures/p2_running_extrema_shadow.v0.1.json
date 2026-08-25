@@ -1,0 +1,101 @@
+{
+  "fixture_version": "0.1.0",
+  "description": "Synthetic running-extrema slice for adapter/shadow tests; not learner evidence.",
+  "snapshot": {
+    "snapshot_version": "0.1.0",
+    "subject_id": "subject-fixture",
+    "checkpoint_id": "checkpoint-fixture-001",
+    "phase": "instruction",
+    "current_focus": "running extrema / second-largest state tracking",
+    "capabilities": {
+      "py.compare_values": {
+        "status": "pass_unaided",
+        "assistance_level": "A0",
+        "evidence_ids": ["assessment-fixture-compare"]
+      },
+      "algo.running_max": {
+        "status": "pass_unaided",
+        "assistance_level": "A0",
+        "evidence_ids": ["assessment-fixture-running-max"]
+      },
+      "algo.two_candidate_state": {
+        "status": "partial",
+        "assistance_level": "A2",
+        "evidence_ids": ["assessment-fixture-two-state"]
+      },
+      "algo.two_candidate_update_order": {
+        "status": "fail",
+        "assistance_level": "A1",
+        "evidence_ids": ["assessment-fixture-update-order"]
+      },
+      "py.blank_implementation": {
+        "status": "not_tested",
+        "assistance_level": null,
+        "evidence_ids": []
+      }
+    },
+    "open_hypotheses": [
+      {
+        "hypothesis_id": "hyp-fixture-001",
+        "text": "Update-order failure may be the main bottleneck rather than comparison semantics."
+      }
+    ],
+    "active_misconceptions": [],
+    "retention_state": {},
+    "recent_exposures": ["item-two-state-trace-v1"],
+    "active_goal_ids": ["goal-dsa-foundations"],
+    "interaction_constraints": {
+      "device_mode": "phone",
+      "allowed_tools": []
+    }
+  },
+  "candidates": [
+    {
+      "candidate_id": "item-two-state-trace-v1",
+      "competency_id": "algo.two_candidate_state",
+      "prerequisites": ["algo.running_max"],
+      "goal_relevance": 0.9,
+      "action_type": "state_prediction",
+      "assistance_target": "A1",
+      "representation_id": "state-table-v1",
+      "learning_operation": "predict"
+    },
+    {
+      "candidate_id": "item-update-order-v1",
+      "competency_id": "algo.two_candidate_update_order",
+      "prerequisites": ["algo.running_max", "py.compare_values"],
+      "goal_relevance": 0.95,
+      "action_type": "state_prediction",
+      "assistance_target": "A1",
+      "representation_id": "state-table-v1",
+      "learning_operation": "predict"
+    },
+    {
+      "candidate_id": "item-blank-implementation-v1",
+      "competency_id": "py.blank_implementation",
+      "prerequisites": ["algo.two_candidate_update_order"],
+      "goal_relevance": 1.0,
+      "action_type": "blank_implementation",
+      "assistance_target": "A0",
+      "representation_id": null,
+      "learning_operation": "reconstruct"
+    },
+    {
+      "candidate_id": "item-running-max-v1",
+      "competency_id": "algo.running_max",
+      "prerequisites": ["py.compare_values"],
+      "goal_relevance": 0.8,
+      "action_type": "practice",
+      "assistance_target": "A0",
+      "representation_id": null,
+      "learning_operation": "reconstruct"
+    }
+  ],
+  "expected": {
+    "selected_candidate_id": "item-update-order-v1",
+    "excluded_reason_by_candidate": {
+      "item-blank-implementation-v1": "prerequisite_not_met",
+      "item-running-max-v1": "instruction_target_already_independent"
+    }
+  }
+}
