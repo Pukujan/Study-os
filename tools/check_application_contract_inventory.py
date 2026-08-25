@@ -52,8 +52,11 @@ def validate_inventory(
     mcp_contract: dict[str, Any],
     runtime_methods: set[str],
 ) -> None:
-    _require(inventory.get("inventory_version") == "0.1.0", "inventory_version must remain 0.1.0 for E11a-0")
-    _require(inventory.get("status") == "pre_implementation", "E11a-0 inventory must remain pre_implementation")
+    _require(inventory.get("inventory_version") == "0.1.0", "inventory_version must remain 0.1.0")
+    _require(
+        inventory.get("status") == "partial_implementation",
+        "application contract inventory must reflect the current partial E11a implementation",
+    )
 
     planned = inventory.get("planned_application_contract")
     _require(isinstance(planned, dict), "planned_application_contract must be an object")
@@ -66,8 +69,8 @@ def validate_inventory(
         "generated projections must remain canonical-schema-first with OpenAPI/TypeScript deferred",
     )
     _require(planned.get("domain_depends_on_contract_library") is False, "domain must not depend on the application contract library")
-    _require(planned.get("http_implementation_status") == "deferred", "HTTP implementation must remain deferred in E11a-0")
-    _require(planned.get("frontend_implementation_status") == "deferred", "frontend implementation must remain deferred in E11a-0")
+    _require(planned.get("http_implementation_status") == "deferred", "HTTP implementation must remain deferred")
+    _require(planned.get("frontend_implementation_status") == "deferred", "frontend implementation must remain deferred")
 
     versioning = inventory.get("versioning")
     _require(isinstance(versioning, dict), "versioning must be an object")
@@ -85,7 +88,11 @@ def validate_inventory(
     _require(serialization.get("timestamps") == "rfc3339-utc-z", "timestamp serialization decision drifted")
     _require(serialization.get("identifiers") == "opaque_strings", "identifier policy drifted")
     _require(serialization.get("non_finite_numbers") == "forbidden", "non-finite numbers must remain forbidden")
-    _require(serialization.get("null_and_absent_are_distinct") is True, "null and absent must remain distinct")
+    _require(serialization.get("null_and_absent_are_distinct") is True, "null and absent must remain distinct by default")
+    _require(
+        serialization.get("operation_specific_normalization_must_be_explicit") is True,
+        "operation-specific compatibility normalization must be explicit",
+    )
     _require(
         serialization.get("canonical_hash_serialization") == "sorted_keys_compact_json_when_fingerprinting",
         "idempotency fingerprint serialization decision drifted",
@@ -114,7 +121,7 @@ def validate_inventory(
     operations = inventory.get("operations")
     _require(isinstance(mcp_tools, list), "MCP tools must be a list")
     _require(isinstance(operations, list), "inventory operations must be a list")
-    _require(len(operations) == len(mcp_tools) == 13, "E11a-0 must map exactly the existing 13 MCP tools")
+    _require(len(operations) == len(mcp_tools) == 13, "inventory must map exactly the existing 13 MCP tools")
 
     mcp_by_name: dict[str, dict[str, Any]] = {}
     for raw_tool in mcp_tools:
@@ -145,16 +152,37 @@ def validate_inventory(
         expected_idempotency = "required" if contract_tool.get("idempotency_required") is True else "not_required"
         _require(raw_operation.get("kind") == expected_kind, f"{mcp_tool}: command/query classification drifted")
         _require(raw_operation.get("idempotency") == expected_idempotency, f"{mcp_tool}: idempotency classification drifted")
+        required_request_fields = _require_string_list(raw_operation.get("required_request_fields"), f"{mcp_tool} required_request_fields")
         _require(
-            _require_string_list(raw_operation.get("required_request_fields"), f"{mcp_tool} required_request_fields")
-            == _require_string_list(contract_tool.get("required_input"), f"{mcp_tool} MCP required_input"),
+            required_request_fields == _require_string_list(contract_tool.get("required_input"), f"{mcp_tool} MCP required_input"),
             f"{mcp_tool}: required request fields drifted from MCP contract",
+        )
+        optional_request_fields = _require_string_list(raw_operation.get("optional_request_fields", []), f"{mcp_tool} optional_request_fields")
+        _require(
+            not (set(required_request_fields) & set(optional_request_fields)),
+            f"{mcp_tool}: request fields cannot be both required and optional",
         )
         _require(
             _require_string_list(raw_operation.get("required_result_fields"), f"{mcp_tool} required_result_fields")
             == _require_string_list(contract_tool.get("required_output"), f"{mcp_tool} MCP required_output"),
             f"{mcp_tool}: required result fields drifted from MCP contract",
         )
+        if mcp_tool == "start_session":
+            _require(
+                optional_request_fields == ["source_client", "metadata"],
+                "start_session optional compatibility fields drifted",
+            )
+            normalization = raw_operation.get("request_normalization")
+            _require(isinstance(normalization, dict), "start_session request_normalization must be an object")
+            _require(
+                normalization.get("source_client") == "absent_or_null_to_null",
+                "start_session source_client normalization drifted",
+            )
+            _require(
+                normalization.get("metadata")
+                == "absent_or_null_to_empty_object_before_runtime_idempotency_fingerprint",
+                "start_session metadata normalization drifted",
+            )
         persistence_effect = raw_operation.get("persistence_effect")
         _require(isinstance(persistence_effect, str) and persistence_effect, f"{mcp_tool}: persistence_effect is required")
         if mutating:
@@ -165,7 +193,7 @@ def validate_inventory(
         _require(isinstance(raw_operation.get("observable_transition"), str) and raw_operation["observable_transition"], f"{mcp_tool}: observable_transition is required")
         _require(raw_operation.get("semantic_authority") == "application", f"{mcp_tool}: semantic authority must remain application")
         _require(raw_operation.get("error_policy") == error_model.get("envelope"), f"{mcp_tool}: error policy drifted")
-        _require(raw_operation.get("http_exposure") == "deferred", f"{mcp_tool}: HTTP exposure must remain deferred in E11a-0")
+        _require(raw_operation.get("http_exposure") == "deferred", f"{mcp_tool}: HTTP exposure must remain deferred")
 
     _require(seen_mcp == set(mcp_by_name), "application inventory does not map the exact MCP tool set")
 

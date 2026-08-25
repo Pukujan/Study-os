@@ -113,6 +113,21 @@ class StartStudySessionRequest(ApplicationContractModel):
     subject_id: NonEmptyString
     project_id: NonEmptyString
     domain_id: NonEmptyString
+    source_client: str | None = None
+    metadata: dict[str, JsonValue] = Field(default_factory=dict)
+
+    @field_validator("metadata", mode="before")
+    @classmethod
+    def normalize_legacy_null_metadata(cls, value: object) -> object:
+        # The existing runtime fingerprints absent/None metadata as an empty object.
+        # Preserve that compatibility before MCP is migrated onto this model.
+        return {} if value is None else value
+
+    @field_validator("metadata")
+    @classmethod
+    def validate_metadata(cls, value: dict[str, JsonValue]) -> dict[str, JsonValue]:
+        _validate_public_json(value)
+        return value
 
 
 class StartStudySessionResult(ApplicationContractModel):

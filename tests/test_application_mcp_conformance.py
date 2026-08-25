@@ -90,6 +90,56 @@ class ApplicationMcpConformanceTests(unittest.TestCase):
         self.assertNotIn("error", result)
         self.assertTrue(result["created"])
 
+    def test_start_session_absent_null_and_empty_metadata_are_same_idempotent_request(self) -> None:
+        server = MCPServer(self.service)
+        base = {
+            "idempotency_key": "start-normalization-1",
+            "subject_id": "subject-normalization",
+            "project_id": "project-normalization",
+            "domain_id": "dsa",
+        }
+        first = server.call_tool("start_session", base)
+        explicit_null = server.call_tool(
+            "start_session",
+            {**base, "source_client": None, "metadata": None},
+        )
+        explicit_empty = server.call_tool("start_session", {**base, "metadata": {}})
+
+        self.assertTrue(first["created"])
+        self.assertFalse(explicit_null["created"])
+        self.assertFalse(explicit_empty["created"])
+        self.assertEqual(first["session_id"], explicit_null["session_id"])
+        self.assertEqual(first["session_id"], explicit_empty["session_id"])
+        count = self.service.db.connection.execute(
+            "SELECT COUNT(*) FROM sessions WHERE subject_id = ?",
+            ("subject-normalization",),
+        ).fetchone()[0]
+        self.assertEqual(count, 1)
+
+    def test_start_session_same_key_with_different_semantic_metadata_conflicts(self) -> None:
+        server = MCPServer(self.service)
+        base = {
+            "idempotency_key": "start-conflict-1",
+            "subject_id": "subject-conflict",
+            "project_id": "project-conflict",
+            "domain_id": "dsa",
+            "metadata": {"surface": "chat"},
+        }
+        first = server.call_tool("start_session", base)
+        conflict = server.call_tool(
+            "start_session",
+            {**base, "metadata": {"surface": "web"}},
+        )
+
+        self.assertTrue(first["created"])
+        self.assertEqual(conflict["error"]["category"], "conflict")
+        self.assertFalse(conflict["error"]["retryable"])
+        count = self.service.db.connection.execute(
+            "SELECT COUNT(*) FROM sessions WHERE subject_id = ?",
+            ("subject-conflict",),
+        ).fetchone()[0]
+        self.assertEqual(count, 1)
+
     def test_public_mcp_tool_set_remains_exactly_thirteen(self) -> None:
         names = MCPServer(self.service).list_tool_names()
         self.assertEqual(len(names), 13)

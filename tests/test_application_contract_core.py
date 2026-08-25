@@ -69,8 +69,11 @@ class ApplicationContractCoreTests(unittest.TestCase):
             item for item in self.inventory["operations"] if item["mcp_tool"] == "start_session"
         )
         request_fields = set(StartStudySessionRequest.model_fields) - {"application_contract_version"}
+        expected_request_fields = set(start_operation["required_request_fields"]) | set(
+            start_operation["optional_request_fields"]
+        )
         result_fields = set(StartStudySessionResult.model_fields) - {"application_contract_version"}
-        self.assertEqual(request_fields, set(start_operation["required_request_fields"]))
+        self.assertEqual(request_fields, expected_request_fields)
         self.assertTrue(set(start_operation["required_result_fields"]) <= result_fields)
 
         doctor_operation = next(
@@ -80,6 +83,53 @@ class ApplicationContractCoreTests(unittest.TestCase):
         health_result_fields = set(RuntimeHealthResult.model_fields) - {"application_contract_version"}
         self.assertEqual(health_request_fields, set(doctor_operation["required_request_fields"]))
         self.assertTrue(set(doctor_operation["required_result_fields"]) <= health_result_fields)
+
+    def test_start_session_optional_compatibility_normalization(self) -> None:
+        absent = StartStudySessionRequest(
+            idempotency_key="key-1",
+            subject_id="subject-001",
+            project_id="dsa-python",
+            domain_id="dsa",
+        )
+        explicit_null = StartStudySessionRequest(
+            idempotency_key="key-1",
+            subject_id="subject-001",
+            project_id="dsa-python",
+            domain_id="dsa",
+            source_client=None,
+            metadata=None,
+        )
+        explicit_empty = StartStudySessionRequest(
+            idempotency_key="key-1",
+            subject_id="subject-001",
+            project_id="dsa-python",
+            domain_id="dsa",
+            metadata={},
+        )
+        self.assertIsNone(absent.source_client)
+        self.assertEqual(absent.metadata, {})
+        self.assertEqual(explicit_null.metadata, {})
+        self.assertEqual(explicit_empty.metadata, {})
+        self.assertEqual(canonical_model_json(absent), canonical_model_json(explicit_null))
+        self.assertEqual(canonical_model_json(absent), canonical_model_json(explicit_empty))
+
+    def test_start_session_metadata_uses_public_privacy_boundary(self) -> None:
+        with self.assertRaises(ValidationError):
+            StartStudySessionRequest(
+                idempotency_key="key-1",
+                subject_id="subject-001",
+                project_id="dsa-python",
+                domain_id="dsa",
+                metadata={"nested": {"secret": "do not expose"}},
+            )
+        with self.assertRaises(ValidationError):
+            StartStudySessionRequest(
+                idempotency_key="key-1",
+                subject_id="subject-001",
+                project_id="dsa-python",
+                domain_id="dsa",
+                metadata=["not", "an", "object"],
+            )
 
     def test_start_session_json_is_deterministic_and_utc_z(self) -> None:
         result = StartStudySessionResult(
@@ -177,6 +227,8 @@ class ApplicationContractCoreTests(unittest.TestCase):
             subject_id="subject-001",
             project_id="dsa-python",
             domain_id="dsa",
+            source_client="mcp",
+            metadata={"surface": "chat"},
         )
         result = RuntimeHealthResult(
             healthy=True,

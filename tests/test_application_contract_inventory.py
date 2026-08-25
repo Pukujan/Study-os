@@ -38,6 +38,11 @@ class ApplicationContractInventoryTests(unittest.TestCase):
     def test_current_inventory_matches_mcp_and_runtime_boundaries(self) -> None:
         check_application_contract_inventory()
 
+    def test_inventory_phase_must_reflect_partial_implementation(self) -> None:
+        mutated = copy.deepcopy(self.inventory)
+        mutated["status"] = "pre_implementation"
+        self.assert_invalid(mutated)
+
     def test_missing_mcp_mapping_is_rejected(self) -> None:
         mutated = copy.deepcopy(self.inventory)
         mutated["operations"].pop()
@@ -47,6 +52,17 @@ class ApplicationContractInventoryTests(unittest.TestCase):
         mutated = copy.deepcopy(self.inventory)
         operation = next(item for item in mutated["operations"] if item["mcp_tool"] == "checkpoint")
         operation["required_request_fields"].remove("evidence_ids")
+        self.assert_invalid(mutated)
+
+    def test_start_session_optional_field_or_normalization_drift_is_rejected(self) -> None:
+        mutated = copy.deepcopy(self.inventory)
+        operation = next(item for item in mutated["operations"] if item["mcp_tool"] == "start_session")
+        operation["optional_request_fields"].remove("metadata")
+        self.assert_invalid(mutated)
+
+        mutated = copy.deepcopy(self.inventory)
+        operation = next(item for item in mutated["operations"] if item["mcp_tool"] == "start_session")
+        operation["request_normalization"]["metadata"] = "null_is_distinct"
         self.assert_invalid(mutated)
 
     def test_command_and_idempotency_drift_is_rejected(self) -> None:
