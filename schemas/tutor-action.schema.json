@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://study-os.local/schemas/tutor-action.schema.json",
+  "title": "Study OS Tutor Action Audit Envelope",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "action_id", "task_id", "action_kind", "assistance_level", "contains_full_solution", "reveals_hidden_answer", "advancement_basis", "advancement_evidence_ids"],
+  "properties": {
+    "schema_version": {"const": "0.1.0"},
+    "action_id": {"type": "string", "minLength": 1},
+    "task_id": {"type": "string", "minLength": 1},
+    "action_kind": {"enum": ["question", "hint", "explanation", "worked_example", "full_solution", "assessment", "feedback", "representation"]},
+    "assistance_level": {"enum": ["A0", "A1", "A2", "A3", "A4", "A5", "A6"]},
+    "contains_full_solution": {"type": "boolean"},
+    "reveals_hidden_answer": {"type": "boolean"},
+    "advancement_claim": {"type": ["string", "null"]},
+    "advancement_basis": {"enum": ["none", "behavioral_assessment", "self_report", "conversation_fluency"]},
+    "advancement_evidence_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "representation_id": {"type": ["string", "null"]},
+    "representation_semantic_validated": {"type": ["boolean", "null"]}
+  }
+}
