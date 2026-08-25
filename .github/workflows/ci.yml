@@ -47,6 +47,15 @@ jobs:
       - name: Pyright type check
         run: python -m pyright src/study_os
 
+      - name: Build Study OS wheel
+        run: python -m pip wheel . --no-deps --wheel-dir dist
+
+      - name: Smoke test installed wheel
+        run: |
+          python -m venv /tmp/study-os-wheel-smoke
+          /tmp/study-os-wheel-smoke/bin/python -m pip install --no-deps dist/*.whl
+          /tmp/study-os-wheel-smoke/bin/python tools/verify_built_package.py
+
       - name: Run tests with branch coverage gate
         run: |
           python -m coverage run --branch -m unittest discover -s tests -v
