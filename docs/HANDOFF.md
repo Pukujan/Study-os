@@ -6,9 +6,9 @@ Last updated: 2026-08-25
 
 **P2 adaptive-learning integration with engineering-verification hardening.**
 
-P0 local runtime is complete and merged. The repository now contains the P2 adaptive foundation: structured telemetry, versioned adapter contracts, atomic curriculum fixtures, BKT/CAT/IRT/FSRS shadow mechanisms, scaffold control, representation policy, learner-relative complexity, tutor-policy regression, proposal-to-outcome linkage, atomic retention-probe closure, and richer resume projection.
+P0 local runtime is complete and merged. The repository contains the P2 adaptive foundation: structured telemetry, versioned adapter contracts, atomic curriculum fixtures, BKT/CAT/IRT/FSRS shadow mechanisms, scaffold control, representation policy, learner-relative complexity, tutor-policy regression, proposal-to-outcome linkage, atomic retention-probe closure, and richer resume projection.
 
-The deployed/local P1 ChatGPT transport remains a separate lineage with private WSL/Cloudflare/GPT Action configuration that is intentionally not stored in this public repository. Do not modify or invent those local secrets/configurations from cloud-only work.
+The deployed/local P1 ChatGPT transport remains a separate lineage with private WSL/Cloudflare/GPT Action configuration intentionally absent from this public repository. Do not modify or invent those local secrets/configurations from cloud-only work.
 
 ## Canonical trackers
 
@@ -23,80 +23,65 @@ Before any P2 component reaches G5 advisory/canary or later, apply the relevant 
 - Runtime/package version: `0.1.0`.
 - MCP semantic contract: `0.1.0`.
 - SQLite schema version: `1` / migration `0001`.
-- Public semantic tool surface remains 13 tools.
+- Public semantic tool surface remains exactly 13 tools.
 - Canonical live learner state remains local SQLite + private evidence store.
 - GitHub is source/spec/research/CI, not the live learner database.
 
 ## Current engineering structure
 
-Study OS is a modular-monolith-in-progress:
+Study OS remains a modular monolith in progress:
 
 - `src/study_os/adaptive/` — pure/adaptive decision mechanisms and shadow policy logic.
 - `src/study_os/curriculum/` — versioned competency/item loading and validation.
 - `src/study_os/db/` — SQLite connection/migrations.
 - `src/study_os/evidence/` — private evidence/hash handling.
-- `src/study_os/services/` — semantic application/runtime facade; currently transitional and still contains a large preserved `runtime_base.py`.
+- `src/study_os/services/` — semantic application/runtime facade; transitional and still contains the large preserved `runtime_base.py`.
 - `src/study_os/mcp/` — MCP transport wrappers.
 
-Do not refactor the large semantic runtime aggressively until property/state-machine/reference-model verification exists. Freeze semantics first, then decompose use cases.
+Do not aggressively refactor the semantic runtime until property/state-machine/reference-model verification freezes its behavior.
 
 ## Verification state
 
-Current mandatory repository CI is still only:
+The first Issue #21 SWE baseline is now mandatory in CI:
 
 1. Python compile;
-2. repository/schema/contract validator;
-3. unittest suite.
+2. repository/schema/privacy/contract validator;
+3. runtime-package/MCP-version consistency and exact 13-tool count;
+4. architecture check preventing `adaptive/` and `curriculum/` pure logic from importing DB/evidence/service/MCP layers;
+5. Ruff lint for critical Python errors;
+6. Pyright basic type checking over `src/study_os`;
+7. branch-aware coverage with a 70% floor;
+8. full unittest suite.
 
-Issue #21 is the canonical plan to add, in order:
+The baseline is configured in `pyproject.toml`, `.github/workflows/ci.yml`, and `tools/check_engineering_baseline.py`. Coverage is a regression floor, not proof of correctness.
 
-1. project-state/doc convergence;
-2. Ruff + Pyright + coverage + reproducible dependency/version checks;
-3. architecture/import-boundary tests;
-4. Hypothesis property/state-machine/metamorphic tests;
-5. executable reference model + differential tests;
-6. mutation/negative controls;
-7. private engineering holdout tests;
-8. seeded 100x learner-policy simulation;
-9. load/failure/chaos tests;
-10. targeted Alloy/TLA+/SMT/formal verification where the state-space risk justifies it.
+Remaining Issue #21 verification order:
+
+1. Ruff format + reproducible dependency lock/project-state convergence;
+2. Hypothesis property/state-machine/metamorphic tests;
+3. independent executable reference model + differential tests;
+4. mutation/negative controls;
+5. protected engineering holdout tests;
+6. seeded >=100x learner-policy simulation;
+7. load/failure/chaos tests;
+8. targeted Alloy/TLA+/SMT/formal verification where state-space risk justifies it.
 
 Do not use theorem proving, mutation score, coverage, an LLM grader, or synthetic learners as a single sufficient correctness oracle.
 
 ## Learner/adaptive state
 
-Issue #10 remains the behavioral authority. Implemented foundations include:
-
-- versioned `LearnerSnapshot` / `DecisionProposal` contracts;
-- standardized attempt/hint/representation telemetry;
-- first atomic running-extrema/second-largest curriculum slice;
-- baseline and BKT diagnostic selectors;
-- CAT/IRT diagnostic/instruction ranking;
-- FSRS retention adapter;
-- evidence-gated scaffold controller;
-- contextual representation policy;
-- learner-relative complexity/load estimator;
-- tutor-behavior policy regression;
-- shadow recommendation -> later assessment outcome linkage;
-- retention-probe closure through assessment;
-- richer resume context including do-not-reteach, retention, and recent representation history.
+Issue #10 remains the behavioral authority. Implemented foundations include versioned `LearnerSnapshot` / `DecisionProposal`, structured attempt/hint/representation telemetry, the first atomic running-extrema/second-largest curriculum slice, baseline/BKT/CAT/IRT/FSRS shadow mechanisms, an evidence-gated scaffold controller, contextual representation policy, learner-relative complexity, tutor-behavior regression, proposal-to-outcome linkage, retention-probe closure, and richer resume context.
 
 These components remain non-authoritative/shadow unless explicitly promoted through the documented G0-G7 ladder.
 
 ## Immediate next work
 
-Engineering verification now precedes further live adaptive promotion:
-
-1. repair manifest/tracker state drift;
-2. add static/type/coverage/version/architecture gates;
-3. add property/state-machine testing around the semantic runtime;
-4. build a small independent executable reference model and differential harness;
-5. add mutation/negative-control verification;
-6. establish a coding-agent-hidden engineering holdout boundary;
-7. run deterministic >=100-trajectory synthetic learner-policy regression before G5;
-8. only then resume live-shadow -> advisory/canary promotion work.
-
-In parallel, Issue #10 should be updated to distinguish already-implemented foundations from remaining live-shadow/outcome-validation work.
+1. Add property/state-machine testing around session/attempt/assessment/checkpoint/resume/probe/retry/restart semantics.
+2. Build a small independent in-memory reference model and differential harness.
+3. Add mutation/negative-control verification.
+4. Establish a coding-agent-hidden engineering holdout boundary.
+5. Run deterministic >=100-trajectory synthetic learner-policy regression before G5.
+6. Only then resume live-shadow -> advisory/canary promotion work.
 
 ## Non-negotiable invariants
 
@@ -114,4 +99,4 @@ In parallel, Issue #10 should be updated to distinguish already-implemented foun
 
 ## Handoff rule
 
-Keep this file concise and current. Git and issues are the history. Update this handoff when the operational phase, current trackers, runtime ownership, versions/contracts, deployment boundary, or next execution priorities materially change.
+Keep this file concise and current. Git and issues are history. Update it when operational phase, current trackers, runtime ownership, versions/contracts, deployment boundary, mandatory verification, or next execution priorities materially change.
