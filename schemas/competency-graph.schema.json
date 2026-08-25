@@ -15,9 +15,20 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["id", "observable_behavior", "prerequisites", "task_modes", "misconceptions", "transfer_targets"],
+        "required": [
+          "id",
+          "version",
+          "title",
+          "observable_behavior",
+          "prerequisites",
+          "task_modes",
+          "misconceptions",
+          "transfer_targets"
+        ],
         "properties": {
           "id": {"type": "string", "minLength": 1},
+          "version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+          "title": {"type": "string", "minLength": 1},
           "observable_behavior": {"type": "string", "minLength": 1},
           "prerequisites": {
             "type": "array",
