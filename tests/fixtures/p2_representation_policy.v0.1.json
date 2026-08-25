@@ -1,0 +1,106 @@
+{
+  "snapshot": {
+    "subject_id": "subject-representation-shadow",
+    "checkpoint_id": "checkpoint-representation-shadow",
+    "phase": "instruction",
+    "current_focus": "debug update ordering",
+    "recent_exposures": ["repr.python-code.debug.v1"]
+  },
+  "selection": {
+    "selected_task_id": "re.update-order.002",
+    "target_competency_id": "dsa.extrema.update_order",
+    "assistance_ceiling": "A1"
+  },
+  "candidates": [
+    {
+      "candidate_id": "rep.state-table.trace.a1",
+      "task_id": "re.update-order.002",
+      "competency_id": "dsa.extrema.update_order",
+      "representation_id": "repr.state-table.v1",
+      "operation": "trace",
+      "assistance_target": "A1",
+      "target_bottleneck": "update_order.clobber_old_max",
+      "bottleneck_match": 1.0,
+      "semantic_validated": true,
+      "outcomes": {
+        "immediate": 0.85,
+        "faded": 0.80,
+        "transfer": 0.75,
+        "delayed": 0.70,
+        "evidence_ids": ["assessment-immediate", "assessment-faded", "assessment-transfer", "assessment-delayed"]
+      }
+    },
+    {
+      "candidate_id": "rep.python-code.debug.a0",
+      "task_id": "re.update-order.002",
+      "competency_id": "dsa.extrema.update_order",
+      "representation_id": "repr.python-code.debug.v1",
+      "operation": "debug",
+      "assistance_target": "A0",
+      "target_bottleneck": "update_order.clobber_old_max",
+      "bottleneck_match": 0.90,
+      "semantic_validated": true,
+      "outcomes": {
+        "immediate": 0.95,
+        "faded": null,
+        "transfer": null,
+        "delayed": null,
+        "evidence_ids": ["assessment-code-immediate"]
+      }
+    },
+    {
+      "candidate_id": "rep.state-table.predict.a0",
+      "task_id": "re.update-order.002",
+      "competency_id": "dsa.extrema.update_order",
+      "representation_id": "repr.state-table.predict.v1",
+      "operation": "predict",
+      "assistance_target": "A0",
+      "target_bottleneck": "update_order.clobber_old_max",
+      "bottleneck_match": 0.80,
+      "semantic_validated": true,
+      "outcomes": {
+        "immediate": null,
+        "faded": null,
+        "transfer": null,
+        "delayed": null,
+        "evidence_ids": []
+      }
+    },
+    {
+      "candidate_id": "rep.generated-visual.a1",
+      "task_id": "re.update-order.002",
+      "competency_id": "dsa.extrema.update_order",
+      "representation_id": "repr.generated-visual.unvalidated.v1",
+      "operation": "trace",
+      "assistance_target": "A1",
+      "target_bottleneck": "update_order.clobber_old_max",
+      "bottleneck_match": 1.0,
+      "semantic_validated": false,
+      "outcomes": {"immediate": null, "faded": null, "transfer": null, "delayed": null, "evidence_ids": []}
+    },
+    {
+      "candidate_id": "rep.state-table.a2-over-ceiling",
+      "task_id": "re.update-order.002",
+      "competency_id": "dsa.extrema.update_order",
+      "representation_id": "repr.state-table.v1",
+      "operation": "trace",
+      "assistance_target": "A2",
+      "target_bottleneck": "update_order.clobber_old_max",
+      "bottleneck_match": 1.0,
+      "semantic_validated": true,
+      "outcomes": {"immediate": 0.90, "faded": 0.85, "transfer": 0.80, "delayed": 0.75, "evidence_ids": ["a", "b", "c", "d"]}
+    },
+    {
+      "candidate_id": "rep.other-task",
+      "task_id": "re.invariant.001",
+      "competency_id": "dsa.extrema.update_order",
+      "representation_id": "repr.causal-text.v1",
+      "operation": "explain",
+      "assistance_target": "A0",
+      "target_bottleneck": "update_order.clobber_old_max",
+      "bottleneck_match": 1.0,
+      "semantic_validated": true,
+      "outcomes": {"immediate": null, "faded": null, "transfer": null, "delayed": null, "evidence_ids": []}
+    }
+  ]
+}
