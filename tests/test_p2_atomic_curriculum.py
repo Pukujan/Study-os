@@ -82,14 +82,11 @@ class AtomicCurriculumTests(unittest.TestCase):
             subject_id="subject-fixture",
             checkpoint_id="checkpoint-fixture",
             phase="instruction",
+            current_focus="running extrema update ordering",
             capabilities=capabilities,
-            assistance_state={},
-            open_hypotheses=(),
-            retention_state={},
-            recent_exposures=(),
-            goals=("implement second-largest independently",),
-            constraints={},
-            evidence_ids=("ev-fail",),
+            recent_exposures=("re.update-order.001",),
+            active_goal_ids=("goal.second-largest-independent",),
+            interaction_constraints={"device": "any"},
         )
         candidates = []
         for item in self.curriculum.item_by_id.values():
