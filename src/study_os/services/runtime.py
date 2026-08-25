@@ -6,7 +6,7 @@ from typing import Iterable
 
 from .retention import retention_result_payload, validate_retention_probe_id, validate_scheduled_probe
 from .runtime_base import StudyOSService as BaseStudyOSService
-from .runtime_base import canonical_json, new_id, os, utc_now
+from .runtime_base import canonical_json, new_id, utc_now
 from ..errors import validation
 
 
@@ -115,6 +115,7 @@ class StudyOSService(BaseStudyOSService):
             ).fetchone()
             if pointer is None:
                 from ..errors import not_found
+
                 raise not_found("Subject has no accepted checkpoint", subject_id=subject_id)
             checkpoint = self._checkpoint_payload(connection, subject_id, pointer["checkpoint_id"])
             probe = connection.execute(
