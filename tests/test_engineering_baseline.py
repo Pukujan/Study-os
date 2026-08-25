@@ -8,6 +8,7 @@ from tools.check_engineering_baseline import (
     _find_dependency_cycle,
     _imported_modules,
     _resolved_imported_modules,
+    check_application_boundaries,
     check_pure_logic_boundaries,
     check_top_level_dependency_cycles,
     check_transport_boundaries,
@@ -21,6 +22,9 @@ class EngineeringBaselineTests(unittest.TestCase):
 
     def test_current_adaptive_and_curriculum_code_respects_boundary(self) -> None:
         check_pure_logic_boundaries()
+
+    def test_current_application_code_respects_boundary(self) -> None:
+        check_application_boundaries()
 
     def test_current_mcp_code_respects_transport_boundary(self) -> None:
         check_transport_boundaries()
@@ -57,7 +61,8 @@ class EngineeringBaselineTests(unittest.TestCase):
     def test_dependency_cycle_detector_finds_cycle(self) -> None:
         cycle = _find_dependency_cycle(
             {
-                "mcp": {"services"},
+                "application": set(),
+                "mcp": {"application", "services"},
                 "services": {"db"},
                 "db": {"mcp"},
             }
@@ -71,7 +76,8 @@ class EngineeringBaselineTests(unittest.TestCase):
         self.assertIsNone(
             _find_dependency_cycle(
                 {
-                    "mcp": {"services"},
+                    "application": set(),
+                    "mcp": {"application", "services"},
                     "services": {"db", "evidence"},
                     "db": set(),
                     "evidence": set(),
