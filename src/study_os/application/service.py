@@ -11,6 +11,8 @@ from .contracts import (
     RuntimeHealthResult,
     StartStudySessionRequest,
     StartStudySessionResult,
+    SubjectStatusRequest,
+    SubjectStatusResult,
 )
 
 
@@ -20,6 +22,8 @@ class ApplicationBoundaryError(RuntimeError):
 
 class ApplicationRuntimePort(Protocol):
     def doctor(self) -> dict[str, Any]: ...
+
+    def status(self, *, subject_id: str) -> dict[str, Any]: ...
 
     def start_session(
         self,
@@ -77,6 +81,21 @@ class ApplicationService:
                 "legacy runtime health result does not satisfy the application contract"
             ) from exc
 
+    def get_subject_status(self, request: SubjectStatusRequest) -> SubjectStatusResult:
+        raw = self.runtime.status(subject_id=request.subject_id)
+        try:
+            return SubjectStatusResult(
+                subject_id=raw["subject_id"],
+                current_session_id=raw["current_session_id"],
+                current_checkpoint_id=raw["current_checkpoint_id"],
+                current_focus=raw["current_focus"],
+                next_action=raw["next_action"],
+            )
+        except (KeyError, TypeError, ValidationError) as exc:
+            raise ApplicationBoundaryError(
+                "legacy status result does not satisfy the application contract"
+            ) from exc
+
     def start_study_session(self, request: StartStudySessionRequest) -> StartStudySessionResult:
         raw = self.runtime.start_session(
             idempotency_key=request.idempotency_key,
@@ -117,6 +136,18 @@ def project_runtime_health_to_mcp(result: RuntimeHealthResult) -> dict[str, Any]
         "runtime_version": result.runtime_version,
         "schema_version": result.schema_version,
         "checks": checks,
+    }
+
+
+def project_subject_status_to_mcp(result: SubjectStatusResult) -> dict[str, Any]:
+    """Project canonical subject status back to the unchanged MCP v0.1 payload."""
+
+    return {
+        "subject_id": result.subject_id,
+        "current_session_id": result.current_session_id,
+        "current_checkpoint_id": result.current_checkpoint_id,
+        "current_focus": result.current_focus,
+        "next_action": result.next_action,
     }
 
 
