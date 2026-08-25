@@ -38,5 +38,16 @@ jobs:
       - name: Validate schemas, manifest, privacy boundary, and session data
         run: python tools/validate_repo.py
 
-      - name: Run unit tests
-        run: python -m unittest discover -s tests -v
+      - name: Validate version and architecture boundaries
+        run: python tools/check_engineering_baseline.py
+
+      - name: Ruff lint
+        run: python -m ruff check src tools tests cli
+
+      - name: Pyright type check
+        run: python -m pyright src/study_os
+
+      - name: Run tests with branch coverage gate
+        run: |
+          python -m coverage run --branch -m unittest discover -s tests -v
+          python -m coverage report --fail-under=70
