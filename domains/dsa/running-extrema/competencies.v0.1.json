@@ -82,7 +82,7 @@
       "title": "Apply correct update ordering",
       "observable_behavior": "When a new maximum is found, preserve the old maximum as the second candidate before replacing the maximum.",
       "prerequisites": ["dsa.extrema.two_candidates", "dsa.invariant.two_largest_order"],
-      "task_modes": ["state_prediction", "parsons_completion", "debug_existing_code", "manual_code_scaffolded"],
+      "task_modes": ["state_prediction", "parsons_completion", "debug_existing_code", "manual_code_scaffolded", "phone_shorthand"],
       "misconceptions": [
         {"id": "update_order.clobber_old_max", "description": "Updates largest first and then copies the new largest into second-largest.", "evidence_signals": ["both candidates become equal after new maximum", "debug trace loses prior maximum"]}
       ],
