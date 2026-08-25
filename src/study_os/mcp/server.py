@@ -51,6 +51,13 @@ class MCPServer:
         if method is None or not callable(method):
             raise StudyOSError("internal_error", f"No service implementation for MCP tool: {name}", False)
         result = method(**arguments)
+        if not isinstance(result, dict):
+            raise StudyOSError(
+                "internal_error",
+                "Service response must be an object",
+                False,
+                {"tool": name, "result_type": type(result).__name__},
+            )
         spec = self.tool_specs[name]
         missing = [field for field in spec["required_output"] if field not in result]
         if missing:
