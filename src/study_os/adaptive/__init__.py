@@ -37,6 +37,14 @@ from .diagnostic import (
     propose_bkt_information_gain,
     propose_uncertainty_baseline,
 )
+from .fsrs_adapter import (
+    FSRS_ADAPTER_VERSION,
+    FSRS_PACKAGE_VERSION,
+    FSRS_RATINGS,
+    FsrsMaintenanceCandidate,
+    propose_fsrs_maintenance,
+    propose_fsrs_review_update,
+)
 from .telemetry import (
     ATTEMPT_CONTEXT_VERSION,
     FEEDBACK_EXPOSURES,
@@ -56,6 +64,9 @@ __all__ = [
     "DEFAULT_TARGET_SUCCESS",
     "DIAGNOSTIC_COMPONENT_VERSION",
     "FEEDBACK_EXPOSURES",
+    "FSRS_ADAPTER_VERSION",
+    "FSRS_PACKAGE_VERSION",
+    "FSRS_RATINGS",
     "INTERACTION_MODES",
     "LEARNER_SNAPSHOT_VERSION",
     "SHADOW_EVENT_PAYLOAD_VERSION",
@@ -67,6 +78,7 @@ __all__ = [
     "DecisionProposal",
     "DiagnosticCandidate",
     "ErrorTag",
+    "FsrsMaintenanceCandidate",
     "HintExposure",
     "InstructionCandidate",
     "LearnerSnapshot",
@@ -76,6 +88,8 @@ __all__ = [
     "irt_fisher_information",
     "irt_probability_correct",
     "propose_bkt_information_gain",
+    "propose_fsrs_maintenance",
+    "propose_fsrs_review_update",
     "propose_instruction_baseline",
     "propose_maximum_fisher_information",
     "propose_target_success_item",
