@@ -1,7 +1,7 @@
 """Shadow-only contextual representation policy.
 
 This module ranks representation interventions *after* a competency and task
-have already been selected.  It does not model fixed learning styles.  The
+have already been selected. It does not model fixed learning styles. The
 heuristic weights are explicit, versioned, and intentionally provisional until
 Study OS has enough within-subject outcome evidence to calibrate them.
 """
@@ -9,7 +9,7 @@ Study OS has enough within-subject outcome evidence to calibrate them.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Mapping, Sequence
+from typing import Any, Mapping, Sequence
 
 from .contracts import (
     ASSISTANCE_LEVELS,
@@ -84,6 +84,16 @@ class RepresentationOutcomeSummary:
             raise ValueError("behavioral outcome scores require canonical evidence_ids")
         object.__setattr__(self, "evidence_ids", evidence)
 
+    @classmethod
+    def from_mapping(cls, value: Mapping[str, Any]) -> "RepresentationOutcomeSummary":
+        return cls(
+            immediate=value.get("immediate"),
+            faded=value.get("faded"),
+            transfer=value.get("transfer"),
+            delayed=value.get("delayed"),
+            evidence_ids=tuple(value.get("evidence_ids", ())),
+        )
+
     def persistent_effect(self) -> tuple[float, int]:
         weighted = []
         for field_name, weight in OUTCOME_WINDOW_WEIGHTS.items():
@@ -105,6 +115,8 @@ class RepresentationCandidate:
     task_id: str
     competency_id: str
     representation_id: str
+    representation_family: str
+    representation_version: str
     operation: str
     assistance_target: str
     target_bottleneck: str
@@ -118,6 +130,8 @@ class RepresentationCandidate:
             "task_id",
             "competency_id",
             "representation_id",
+            "representation_family",
+            "representation_version",
             "operation",
             "target_bottleneck",
         ):
@@ -128,6 +142,23 @@ class RepresentationCandidate:
         if not isinstance(self.semantic_validated, bool):
             raise ValueError("semantic_validated must be boolean")
 
+    @classmethod
+    def from_mapping(cls, value: Mapping[str, Any]) -> "RepresentationCandidate":
+        return cls(
+            candidate_id=str(value.get("candidate_id", "")),
+            task_id=str(value.get("task_id", "")),
+            competency_id=str(value.get("competency_id", "")),
+            representation_id=str(value.get("representation_id", "")),
+            representation_family=str(value.get("representation_family", "")),
+            representation_version=str(value.get("representation_version", "")),
+            operation=str(value.get("operation", "")),
+            assistance_target=str(value.get("assistance_target", "")),
+            target_bottleneck=str(value.get("target_bottleneck", "")),
+            bottleneck_match=value.get("bottleneck_match"),
+            semantic_validated=value.get("semantic_validated"),
+            outcomes=RepresentationOutcomeSummary.from_mapping(value.get("outcomes", {})),
+        )
+
 
 def propose_representation_intervention(
     snapshot: LearnerSnapshot,
@@ -136,6 +167,7 @@ def propose_representation_intervention(
     selected_task_id: str,
     target_competency_id: str,
     assistance_ceiling: str,
+    allowed_representation_families: Sequence[str],
 ) -> DecisionProposal:
     """Rank contextual representation tuples for one already-selected task."""
 
@@ -144,6 +176,9 @@ def propose_representation_intervention(
     _non_empty(selected_task_id, "selected_task_id")
     _non_empty(target_competency_id, "target_competency_id")
     ceiling = _assistance_number(assistance_ceiling)
+    allowed_families = tuple(allowed_representation_families)
+    if not allowed_families or any(not isinstance(value, str) or not value.strip() for value in allowed_families):
+        raise ValueError("allowed_representation_families must contain non-empty strings")
     candidate_ids = tuple(candidate.candidate_id for candidate in candidates)
     if not candidate_ids:
         raise ValueError("representation policy requires at least one candidate")
@@ -162,6 +197,8 @@ def propose_representation_intervention(
             reason, detail = "different_task", "representation policy cannot bypass the upstream task selection"
         elif candidate.competency_id != target_competency_id:
             reason, detail = "different_competency", "representation policy cannot switch the upstream competency target"
+        elif candidate.representation_family not in allowed_families:
+            reason, detail = "representation_not_allowed_for_task", "candidate family is not declared by the selected task"
         elif not candidate.semantic_validated:
             reason, detail = "semantic_not_validated", "representation has not passed semantic fidelity validation"
         elif _assistance_number(candidate.assistance_target) > ceiling:
@@ -215,13 +252,15 @@ def propose_representation_intervention(
         expected = {
             "selected_task_id": selected_task_id,
             "target_competency_id": target_competency_id,
+            "representation_family": selected.representation_family,
+            "representation_version": selected.representation_version,
             "target_bottleneck": selected.target_bottleneck,
             "behavioral_assessment_required": True,
             "outcome_windows": ["immediate", "faded", "transfer", "delayed"],
             "policy_status": "heuristic_shadow_only_not_calibrated",
         }
     else:
-        rationale = "No representation candidate survived task, competency, semantic-fidelity, and assistance hard gates."
+        rationale = "No representation candidate survived task, competency, family, semantic-fidelity, and assistance hard gates."
         expected = {
             "selected_task_id": selected_task_id,
             "target_competency_id": target_competency_id,
