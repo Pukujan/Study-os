@@ -15,6 +15,48 @@
     "http_implementation_status": "deferred",
     "frontend_implementation_status": "deferred"
   },
+  "versioning": {
+    "application_contract_version_is_independent": true,
+    "compatible_same_major_default": "additive_response_fields_only",
+    "breaking_change_requires_major_version": true,
+    "field_semantics_may_not_be_silently_reused": true,
+    "deprecation_requires_removal_plan": true,
+    "request_unknown_fields": "reject_unless_explicit_extension_point",
+    "response_unknown_fields": "clients_may_ignore_additive_same_major_fields"
+  },
+  "serialization": {
+    "encoding": "utf-8-json",
+    "timestamps": "rfc3339-utc-z",
+    "identifiers": "opaque_strings",
+    "non_finite_numbers": "forbidden",
+    "null_and_absent_are_distinct": true,
+    "canonical_hash_serialization": "sorted_keys_compact_json_when_fingerprinting"
+  },
+  "error_model": {
+    "envelope": "application_error_envelope",
+    "categories": [
+      "validation_error",
+      "not_found",
+      "conflict",
+      "integrity_error",
+      "unsupported_version",
+      "unavailable",
+      "internal_error"
+    ],
+    "safe_public_detail_only": true,
+    "transport_status_is_not_semantic_authority": true
+  },
+  "client_privacy_boundary": {
+    "forbidden_fields": [
+      "raw_private_evidence",
+      "private_transcript_body",
+      "secret",
+      "credential",
+      "hidden_holdout_answer"
+    ],
+    "frontend_semantic_authority": false,
+    "transport_semantic_authority": false
+  },
   "operations": [
     {
       "mcp_tool": "doctor",
@@ -22,7 +64,13 @@
       "application_operation": "inspect_runtime_health",
       "kind": "query",
       "idempotency": "not_required",
+      "required_request_fields": [],
+      "required_result_fields": ["healthy", "runtime_version", "schema_version", "checks"],
+      "persistence_effect": "none",
+      "evidence_requirement": "none",
+      "observable_transition": "none",
       "semantic_authority": "application",
+      "error_policy": "application_error_envelope",
       "http_exposure": "deferred"
     },
     {
@@ -31,7 +79,13 @@
       "application_operation": "get_subject_status",
       "kind": "query",
       "idempotency": "not_required",
+      "required_request_fields": ["subject_id"],
+      "required_result_fields": ["subject_id", "current_session_id", "current_checkpoint_id", "current_focus", "next_action"],
+      "persistence_effect": "none",
+      "evidence_requirement": "none",
+      "observable_transition": "none",
       "semantic_authority": "application",
+      "error_policy": "application_error_envelope",
       "http_exposure": "deferred"
     },
     {
@@ -40,7 +94,13 @@
       "application_operation": "start_study_session",
       "kind": "command",
       "idempotency": "required",
+      "required_request_fields": ["idempotency_key", "subject_id", "project_id", "domain_id"],
+      "required_result_fields": ["session_id", "subject_id", "started_at"],
+      "persistence_effect": "create_session_and_idempotency_result",
+      "evidence_requirement": "none",
+      "observable_transition": "subject_gains_current_or_recent_session_context",
       "semantic_authority": "application",
+      "error_policy": "application_error_envelope",
       "http_exposure": "deferred"
     },
     {
@@ -49,7 +109,13 @@
       "application_operation": "record_learning_event",
       "kind": "command",
       "idempotency": "required",
+      "required_request_fields": ["idempotency_key", "session_id", "subject_id", "evidence_class", "event_type", "payload"],
+      "required_result_fields": ["event_id", "created", "evidence_class"],
+      "persistence_effect": "append_learning_event_and_idempotency_result",
+      "evidence_requirement": "evidence_class_and_payload_must_preserve_observed_self_reported_or_derived_provenance",
+      "observable_transition": "durable_learning_history_gains_one_semantic_event_on_first_successful_request",
       "semantic_authority": "application",
+      "error_policy": "application_error_envelope",
       "http_exposure": "deferred"
     },
     {
@@ -58,7 +124,13 @@
       "application_operation": "record_attempt",
       "kind": "command",
       "idempotency": "required",
+      "required_request_fields": ["idempotency_key", "session_id", "subject_id", "task_id", "response"],
+      "required_result_fields": ["attempt_id", "created"],
+      "persistence_effect": "append_attempt_and_idempotency_result",
+      "evidence_requirement": "attempt_response_is_observed_behavioral_input_and_must_remain_subject_scoped",
+      "observable_transition": "durable_attempt_history_gains_one_attempt_on_first_successful_request",
       "semantic_authority": "application",
+      "error_policy": "application_error_envelope",
       "http_exposure": "deferred"
     },
     {
@@ -67,7 +139,13 @@
       "application_operation": "record_assessment",
       "kind": "command",
       "idempotency": "required",
+      "required_request_fields": ["idempotency_key", "session_id", "subject_id", "capability", "result", "assistance_level", "evidence_ids"],
+      "required_result_fields": ["assessment_id", "created", "capability", "result"],
+      "persistence_effect": "append_assessment_and_idempotency_result_and_atomically_close_matching_retention_probe_when_applicable",
+      "evidence_requirement": "evidence_ids_must_resolve_to_admissible_subject_scoped_evidence_for_the_claim",
+      "observable_transition": "assessment_history_changes_and_a_matching_scheduled_retention_probe_may_complete_atomically",
       "semantic_authority": "application",
+      "error_policy": "application_error_envelope",
       "http_exposure": "deferred"
     },
     {
@@ -76,7 +154,13 @@
       "application_operation": "record_representation_intervention",
       "kind": "command",
       "idempotency": "required",
+      "required_request_fields": ["idempotency_key", "session_id", "subject_id", "representation_family", "operation", "representation_version", "target_bottleneck"],
+      "required_result_fields": ["intervention_id", "created"],
+      "persistence_effect": "append_representation_intervention_and_idempotency_result",
+      "evidence_requirement": "representation_version_and_target_bottleneck_must_be_semantically_valid_for_the_subject_session",
+      "observable_transition": "durable_intervention_history_gains_one intervention",
       "semantic_authority": "application",
+      "error_policy": "application_error_envelope",
       "http_exposure": "deferred"
     },
     {
@@ -85,7 +169,13 @@
       "application_operation": "record_representation_outcome",
       "kind": "command",
       "idempotency": "required",
+      "required_request_fields": ["idempotency_key", "intervention_id", "subject_id", "evidence_score", "evidence_ids"],
+      "required_result_fields": ["outcome_id", "created", "evidence_score"],
+      "persistence_effect": "append_representation_outcome_and_idempotency_result",
+      "evidence_requirement": "evidence_ids_must_resolve_to_admissible_behavioral_evidence_for_the_same_subject_and_intervention",
+      "observable_transition": "durable_representation_outcome_history_gains_one evidence_backed_outcome",
       "semantic_authority": "application",
+      "error_policy": "application_error_envelope",
       "http_exposure": "deferred"
     },
     {
@@ -94,7 +184,13 @@
       "application_operation": "advance_checkpoint",
       "kind": "command",
       "idempotency": "required",
+      "required_request_fields": ["idempotency_key", "subject_id", "source_session_ids", "evidence_ids", "capability_state", "assistance_state", "resume"],
+      "required_result_fields": ["checkpoint_id", "accepted", "subject_id", "next_action"],
+      "persistence_effect": "insert_immutable_checkpoint_advance_current_pointer_and_store_idempotency_result_in_one_transaction",
+      "evidence_requirement": "source_sessions_and_evidence_must_resolve_and_support_every_promoted_capability_claim",
+      "observable_transition": "accepted_checkpoint_becomes_current_or_request_fails_without_partial_pointer_advance",
       "semantic_authority": "application",
+      "error_policy": "application_error_envelope",
       "http_exposure": "deferred"
     },
     {
@@ -103,7 +199,13 @@
       "application_operation": "resume_subject",
       "kind": "query",
       "idempotency": "not_required",
+      "required_request_fields": ["subject_id"],
+      "required_result_fields": ["subject_id", "checkpoint_id", "capability_state", "assistance_state", "current_focus", "next_action"],
+      "persistence_effect": "none",
+      "evidence_requirement": "projection_must_only_reflect_durable_checkpoint_and_live_retention_context",
+      "observable_transition": "none",
       "semantic_authority": "application",
+      "error_policy": "application_error_envelope",
       "http_exposure": "deferred"
     },
     {
@@ -112,7 +214,13 @@
       "application_operation": "schedule_retention_probe",
       "kind": "command",
       "idempotency": "required",
+      "required_request_fields": ["idempotency_key", "subject_id", "concept_id", "due_at", "source_checkpoint_id"],
+      "required_result_fields": ["retention_probe_id", "created", "due_at"],
+      "persistence_effect": "create_scheduled_retention_probe_and_idempotency_result",
+      "evidence_requirement": "source_checkpoint_id_must_resolve_to_the_subject_and_support_the_scheduled_concept_context",
+      "observable_transition": "subject_gains_one_scheduled_retention_probe_on_first_successful_request",
       "semantic_authority": "application",
+      "error_policy": "application_error_envelope",
       "http_exposure": "deferred"
     },
     {
@@ -121,7 +229,13 @@
       "application_operation": "get_next_retention_probe",
       "kind": "query",
       "idempotency": "not_required",
+      "required_request_fields": ["subject_id"],
+      "required_result_fields": ["subject_id", "probe", "reason", "source_checkpoint_id"],
+      "persistence_effect": "none",
+      "evidence_requirement": "selection_must_project_only_durable_subject_scoped_retention_state",
+      "observable_transition": "none",
       "semantic_authority": "application",
+      "error_policy": "application_error_envelope",
       "http_exposure": "deferred"
     },
     {
@@ -130,7 +244,13 @@
       "application_operation": "create_fossil_export",
       "kind": "command",
       "idempotency": "required",
+      "required_request_fields": ["idempotency_key", "subject_id", "artifact_type", "source_ids"],
+      "required_result_fields": ["export_id", "created", "artifact_type", "source_ids"],
+      "persistence_effect": "create_curated_export_artifact_and_idempotency_result_without_making_fossil_a_runtime_dependency",
+      "evidence_requirement": "source_ids_must_resolve_to_allowed_subject_scoped_curated_sources",
+      "observable_transition": "one export record_or_artifact_exists_on_first_successful_request",
       "semantic_authority": "application",
+      "error_policy": "application_error_envelope",
       "http_exposure": "deferred"
     }
   ]
