@@ -7,11 +7,12 @@ import sys
 from pathlib import Path
 from typing import Any, TextIO
 
-from ..application.contracts import StartStudySessionRequest
+from ..application.contracts import StartStudySessionRequest, SubjectStatusRequest
 from ..application.service import (
     ApplicationService,
     project_runtime_health_to_mcp,
     project_start_study_session_to_mcp,
+    project_subject_status_to_mcp,
 )
 from ..errors import StudyOSError, validation
 from ..services.runtime import StudyOSService
@@ -58,6 +59,12 @@ class MCPServer:
             if arguments:
                 raise validation("doctor does not accept arguments", unexpected=sorted(arguments))
             result = project_runtime_health_to_mcp(self.application.inspect_runtime_health())
+        elif name == "status":
+            unexpected = sorted(set(arguments) - {"subject_id"})
+            if unexpected:
+                raise validation("status received unexpected arguments", unexpected=unexpected)
+            request = SubjectStatusRequest(**arguments)
+            result = project_subject_status_to_mcp(self.application.get_subject_status(request))
         elif name == "start_session":
             allowed = {
                 "idempotency_key",

@@ -12,11 +12,15 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from study_os import RuntimeConfig, StudyOSService  # noqa: E402
-from study_os.application.contracts import StartStudySessionRequest  # noqa: E402
+from study_os.application.contracts import (  # noqa: E402
+    StartStudySessionRequest,
+    SubjectStatusRequest,
+)
 from study_os.application.service import (  # noqa: E402
     ApplicationService,
     project_runtime_health_to_mcp,
     project_start_study_session_to_mcp,
+    project_subject_status_to_mcp,
 )
 from study_os.mcp.server import MCPServer  # noqa: E402
 
@@ -28,6 +32,17 @@ class MalformedDoctorService:
             "runtime_version": "0.1.0",
             "schema_version": 1,
             "checks": {"broken": {"healthy": True}},
+        }
+
+
+class MalformedStatusService:
+    def status(self, *, subject_id: str) -> dict[str, Any]:
+        return {
+            "subject_id": subject_id,
+            "current_session_id": 123,
+            "current_checkpoint_id": None,
+            "current_focus": None,
+            "next_action": None,
         }
 
 
@@ -87,6 +102,51 @@ class ApplicationMcpConformanceTests(unittest.TestCase):
         self.assertEqual(result["error"]["category"], "internal_error")
         self.assertFalse(result["error"]["retryable"])
         self.assertEqual(result["error"]["details"]["exception"], "ApplicationBoundaryError")
+
+    def test_status_direct_application_and_mcp_are_exactly_equivalent(self) -> None:
+        started = self.service.start_session(
+            idempotency_key="status-seed-1",
+            subject_id="subject-status",
+            project_id="project-status",
+            domain_id="dsa",
+        )
+        direct = self.service.status(subject_id="subject-status")
+        application = project_subject_status_to_mcp(
+            ApplicationService(self.service).get_subject_status(
+                SubjectStatusRequest(subject_id="subject-status")
+            )
+        )
+        mcp = MCPServer(self.service).call_tool("status", {"subject_id": "subject-status"})
+
+        self.assertEqual(application, direct)
+        self.assertEqual(mcp, direct)
+        self.assertEqual(direct["current_session_id"], started["session_id"])
+        self.assertIsNone(direct["current_checkpoint_id"])
+        self.assertIsNone(direct["current_focus"])
+        self.assertIsNone(direct["next_action"])
+
+    def test_status_preserves_not_found_semantics(self) -> None:
+        result = MCPServer(self.service).call_tool("status", {"subject_id": "missing-subject"})
+        self.assertEqual(result["error"]["category"], "not_found")
+        self.assertFalse(result["error"]["retryable"])
+
+    def test_status_malformed_runtime_result_fails_closed(self) -> None:
+        result = MCPServer(MalformedStatusService()).call_tool(  # type: ignore[arg-type]
+            "status",
+            {"subject_id": "subject-broken"},
+        )
+        self.assertEqual(result["error"]["category"], "internal_error")
+        self.assertEqual(result["error"]["details"]["exception"], "ApplicationBoundaryError")
+
+    def test_status_rejects_application_only_transport_fields(self) -> None:
+        result = MCPServer(self.service).call_tool(
+            "status",
+            {
+                "subject_id": "subject-001",
+                "application_contract_version": "0.1.0",
+            },
+        )
+        self.assertEqual(result["error"]["category"], "validation_error")
 
     def test_start_session_direct_application_and_mcp_are_differentially_equivalent(self) -> None:
         roots = [tempfile.TemporaryDirectory() for _ in range(3)]

@@ -23,6 +23,8 @@ from study_os.application.contracts import (  # noqa: E402
     RuntimeHealthResult,
     StartStudySessionRequest,
     StartStudySessionResult,
+    SubjectStatusRequest,
+    SubjectStatusResult,
     application_contract_core_schema_bundle,
     canonical_model_json,
     render_application_contract_core_schema,
@@ -47,6 +49,8 @@ class ApplicationContractCoreTests(unittest.TestCase):
         with self.assertRaises(ValidationError):
             RuntimeHealthRequest(application_contract_version="0.2.0")
         with self.assertRaises(ValidationError):
+            SubjectStatusRequest(subject_id="subject-001", invented=True)
+        with self.assertRaises(ValidationError):
             StartStudySessionRequest(
                 idempotency_key="key-1",
                 subject_id="subject-001",
@@ -56,6 +60,8 @@ class ApplicationContractCoreTests(unittest.TestCase):
             )
 
     def test_strict_request_types_do_not_coerce(self) -> None:
+        with self.assertRaises(ValidationError):
+            SubjectStatusRequest(subject_id=1)
         with self.assertRaises(ValidationError):
             StartStudySessionRequest(
                 idempotency_key="key-1",
@@ -76,6 +82,14 @@ class ApplicationContractCoreTests(unittest.TestCase):
         self.assertEqual(request_fields, expected_request_fields)
         self.assertTrue(set(start_operation["required_result_fields"]) <= result_fields)
 
+        status_operation = next(
+            item for item in self.inventory["operations"] if item["mcp_tool"] == "status"
+        )
+        status_request_fields = set(SubjectStatusRequest.model_fields) - {"application_contract_version"}
+        status_result_fields = set(SubjectStatusResult.model_fields) - {"application_contract_version"}
+        self.assertEqual(status_request_fields, set(status_operation["required_request_fields"]))
+        self.assertEqual(status_result_fields, set(status_operation["required_result_fields"]))
+
         doctor_operation = next(
             item for item in self.inventory["operations"] if item["mcp_tool"] == "doctor"
         )
@@ -83,6 +97,34 @@ class ApplicationContractCoreTests(unittest.TestCase):
         health_result_fields = set(RuntimeHealthResult.model_fields) - {"application_contract_version"}
         self.assertEqual(health_request_fields, set(doctor_operation["required_request_fields"]))
         self.assertTrue(set(doctor_operation["required_result_fields"]) <= health_result_fields)
+
+    def test_subject_status_preserves_explicit_nullable_state(self) -> None:
+        status = SubjectStatusResult(
+            subject_id="subject-001",
+            current_session_id="session-1",
+            current_checkpoint_id=None,
+            current_focus=None,
+            next_action=None,
+        )
+        self.assertEqual(
+            json.loads(canonical_model_json(status)),
+            {
+                "application_contract_version": "0.1.0",
+                "subject_id": "subject-001",
+                "current_session_id": "session-1",
+                "current_checkpoint_id": None,
+                "current_focus": None,
+                "next_action": None,
+            },
+        )
+        with self.assertRaises(ValidationError):
+            SubjectStatusResult(
+                subject_id="subject-001",
+                current_session_id="",
+                current_checkpoint_id=None,
+                current_focus=None,
+                next_action=None,
+            )
 
     def test_start_session_optional_compatibility_normalization(self) -> None:
         absent = StartStudySessionRequest(
@@ -230,6 +272,13 @@ class ApplicationContractCoreTests(unittest.TestCase):
             source_client="mcp",
             metadata={"surface": "chat"},
         )
+        status = SubjectStatusResult(
+            subject_id="subject-001",
+            current_session_id="session-1",
+            current_checkpoint_id=None,
+            current_focus=None,
+            next_action=None,
+        )
         result = RuntimeHealthResult(
             healthy=True,
             runtime_version="0.1.0",
@@ -238,6 +287,9 @@ class ApplicationContractCoreTests(unittest.TestCase):
         )
         Draft202012Validator(bundle["models"]["start_study_session_request"]).validate(
             request.model_dump(mode="json")
+        )
+        Draft202012Validator(bundle["models"]["get_subject_status_result"]).validate(
+            status.model_dump(mode="json")
         )
         Draft202012Validator(bundle["models"]["inspect_runtime_health_result"]).validate(
             result.model_dump(mode="json")
