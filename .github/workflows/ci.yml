@@ -27,10 +27,13 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
-          cache-dependency-path: requirements-dev.txt
+          cache-dependency-path: requirements-dev.lock
 
-      - name: Install validation dependencies
-        run: python -m pip install --upgrade pip && python -m pip install -r requirements-dev.txt
+      - name: Validate dependency lock
+        run: python tools/check_dependency_lock.py
+
+      - name: Install locked validation dependencies
+        run: python -m pip install --upgrade pip && python -m pip install -r requirements-dev.lock
 
       - name: Compile Python utilities and tests
         run: python -m compileall tools tests
@@ -75,10 +78,13 @@ jobs:
         with:
           python-version: "3.11"
           cache: pip
-          cache-dependency-path: requirements-dev.txt
+          cache-dependency-path: requirements-dev.lock
 
-      - name: Install validation dependencies
-        run: python -m pip install --upgrade pip && python -m pip install -r requirements-dev.txt
+      - name: Validate dependency lock
+        run: python tools/check_dependency_lock.py
+
+      - name: Install locked validation dependencies
+        run: python -m pip install --upgrade pip && python -m pip install -r requirements-dev.lock
 
       - name: Compile runtime and tests
         run: python -m compileall src tools tests
