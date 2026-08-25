@@ -16,6 +16,15 @@ class AtomicCurriculumTests(unittest.TestCase):
     def setUpClass(cls):
         cls.curriculum = load_curriculum_slice(ROOT, "domains/dsa/running-extrema")
 
+    def test_all_versioned_curriculum_slices_validate(self):
+        graph_paths = sorted((ROOT / "domains").glob("**/competencies.v*.json"))
+        self.assertTrue(graph_paths)
+        for graph_path in graph_paths:
+            version = graph_path.name.removeprefix("competencies.v").removesuffix(".json")
+            relative_dir = graph_path.parent.relative_to(ROOT).as_posix()
+            with self.subTest(slice=relative_dir, version=version):
+                load_curriculum_slice(ROOT, relative_dir, version=version)
+
     def test_real_slice_has_atomic_dag_and_multiple_task_modes(self):
         curriculum = self.curriculum
         self.assertEqual(curriculum.graph["graph_version"], "0.1.0")
