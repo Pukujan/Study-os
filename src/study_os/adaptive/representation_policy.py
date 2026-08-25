@@ -9,7 +9,7 @@ Study OS has enough within-subject outcome evidence to calibrate them.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Mapping, Sequence
+from typing import Any, Mapping, Sequence, cast
 
 from .contracts import (
     ASSISTANCE_LEVELS,
@@ -104,8 +104,6 @@ class RepresentationOutcomeSummary:
             return 0.0, 0
         mean = sum(value * weight for value, weight in weighted) / sum(weight for _, weight in weighted)
         coverage = len(weighted) / len(OUTCOME_WINDOW_WEIGHTS)
-        # Sparse immediate-only evidence should count less than effects that
-        # survive fade, transfer, and delay.
         return mean * (0.5 + 0.5 * coverage), len(weighted)
 
 
@@ -154,8 +152,8 @@ class RepresentationCandidate:
             operation=str(value.get("operation", "")),
             assistance_target=str(value.get("assistance_target", "")),
             target_bottleneck=str(value.get("target_bottleneck", "")),
-            bottleneck_match=value.get("bottleneck_match"),
-            semantic_validated=value.get("semantic_validated"),
+            bottleneck_match=cast(float, value.get("bottleneck_match")),
+            semantic_validated=cast(bool, value.get("semantic_validated")),
             outcomes=RepresentationOutcomeSummary.from_mapping(value.get("outcomes", {})),
         )
 
