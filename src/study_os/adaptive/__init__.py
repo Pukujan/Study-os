@@ -6,6 +6,15 @@ semantic persistence boundary.
 """
 
 from .baseline import BASELINE_COMPONENT_VERSION, InstructionCandidate, propose_instruction_baseline
+from .cat import (
+    CAT_COMPONENT_VERSION,
+    DEFAULT_TARGET_SUCCESS,
+    CatItemCandidate,
+    irt_fisher_information,
+    irt_probability_correct,
+    propose_maximum_fisher_information,
+    propose_target_success_item,
+)
 from .contracts import (
     ASSISTANCE_LEVELS,
     CAPABILITY_STATUSES,
@@ -42,7 +51,9 @@ __all__ = [
     "ATTEMPT_CONTEXT_VERSION",
     "BASELINE_COMPONENT_VERSION",
     "CAPABILITY_STATUSES",
+    "CAT_COMPONENT_VERSION",
     "DECISION_PROPOSAL_VERSION",
+    "DEFAULT_TARGET_SUCCESS",
     "DIAGNOSTIC_COMPONENT_VERSION",
     "FEEDBACK_EXPOSURES",
     "INTERACTION_MODES",
@@ -52,6 +63,7 @@ __all__ = [
     "CandidateExclusion",
     "CandidateScore",
     "CapabilityState",
+    "CatItemCandidate",
     "DecisionProposal",
     "DiagnosticCandidate",
     "ErrorTag",
@@ -61,8 +73,12 @@ __all__ = [
     "SelectedAction",
     "bernoulli_entropy",
     "bkt_information_gain",
+    "irt_fisher_information",
+    "irt_probability_correct",
     "propose_bkt_information_gain",
     "propose_instruction_baseline",
+    "propose_maximum_fisher_information",
+    "propose_target_success_item",
     "propose_uncertainty_baseline",
     "shadow_learning_event",
 ]
