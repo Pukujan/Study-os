@@ -1,4 +1,4 @@
-manifest_version: "0.2.0"
+manifest_version: "0.2.1"
 project:
   name: Study OS
   repository: Pukujan/Study-os
@@ -191,13 +191,16 @@ engineering:
   current_ci_checks:
     - python_compile
     - repository_validation
+    - version_and_13_tool_consistency
+    - adaptive_curriculum_architecture_boundary
+    - ruff_lint
+    - pyright_basic_typecheck
+    - branch_coverage_minimum_70
     - unit_tests
   planned_pr_checks:
-    - ruff_lint_format
-    - pyright_typecheck
-    - coverage
-    - schema_contract_version_consistency
-    - architecture_import_boundaries
+    - ruff_format_check
+    - dependency_lock_reproducibility
+    - project_state_doc_convergence
     - focused_property_tests
     - relevant_hidden_acceptance
   planned_post_merge_checks:
@@ -257,9 +260,7 @@ open_risks:
   - synthetic_simulation_mistaken_for_human_learning_evidence
 
 next_milestone: >-
-  Establish the Issue #21 SWE/verification baseline (state/doc convergence,
-  Ruff, Pyright, coverage, architecture/version checks, property/state-machine
-  testing, reference-model differential testing, mutation/negative controls,
-  hidden holdout design, and seeded learner-policy simulation), then resume
-  Issue #10 live-shadow to G5 advisory/canary promotion work without changing
-  private deployment secrets or granting unverified adaptive authority.
+  Add property/state-machine verification around canonical semantic transitions,
+  then build an independent in-memory reference model and differential harness;
+  follow with mutation/negative controls, protected engineering holdouts, and
+  seeded learner-policy simulation before Issue #10 can advance to G5.
