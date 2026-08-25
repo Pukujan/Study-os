@@ -152,6 +152,57 @@ class NextRetentionProbeResult(ApplicationContractModel):
         return value
 
 
+class ResumeSubjectRequest(ApplicationContractModel):
+    subject_id: NonEmptyString
+
+
+class ResumeRetentionProbeSummary(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True, strict=True)
+
+    retention_probe_id: NonEmptyString
+    concept_id: NonEmptyString
+    due_at: NonEmptyString
+    status: Literal["scheduled"]
+    source_checkpoint_id: NonEmptyString
+
+
+class RecentRepresentationSummary(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True, strict=True)
+
+    representation_family: NonEmptyString
+    operation: NonEmptyString
+    representation_version: NonEmptyString
+    target_bottleneck: NonEmptyString
+    created_at: NonEmptyString
+
+
+class ResumeSubjectResult(ApplicationContractModel):
+    subject_id: NonEmptyString
+    checkpoint_id: NonEmptyString
+    capability_state: dict[str, JsonValue]
+    assistance_state: dict[str, JsonValue]
+    current_focus: NonEmptyString
+    do_not_reteach: list[NonEmptyString]
+    next_action: NonEmptyString
+    retention_due_at: NonEmptyString | None
+    next_retention_probe: ResumeRetentionProbeSummary | None
+    recent_representation_history: list[RecentRepresentationSummary]
+
+    @field_validator("capability_state")
+    @classmethod
+    def validate_capability_state(cls, value: dict[str, JsonValue]) -> dict[str, JsonValue]:
+        if not value:
+            raise ValueError("capability_state must not be empty")
+        _validate_public_json(value)
+        return value
+
+    @field_validator("assistance_state")
+    @classmethod
+    def validate_assistance_state(cls, value: dict[str, JsonValue]) -> dict[str, JsonValue]:
+        _validate_public_json(value)
+        return value
+
+
 class StartStudySessionRequest(ApplicationContractModel):
     idempotency_key: NonEmptyString
     subject_id: NonEmptyString
@@ -203,6 +254,8 @@ CORE_SCHEMA_MODELS: dict[str, type[BaseModel]] = {
     "get_subject_status_result": SubjectStatusResult,
     "inspect_runtime_health_request": RuntimeHealthRequest,
     "inspect_runtime_health_result": RuntimeHealthResult,
+    "resume_subject_request": ResumeSubjectRequest,
+    "resume_subject_result": ResumeSubjectResult,
     "start_study_session_request": StartStudySessionRequest,
     "start_study_session_result": StartStudySessionResult,
 }
