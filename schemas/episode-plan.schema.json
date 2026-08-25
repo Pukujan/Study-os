@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://study-os.local/schemas/episode-plan.schema.json",
+  "title": "Study OS Evidence-Gated Episode Plan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["plan_version", "plan_id", "slice_id", "steps"],
+  "properties": {
+    "plan_version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "plan_id": {"type": "string", "minLength": 1},
+    "slice_id": {"type": "string", "minLength": 1},
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "competency_id",
+          "item_ids",
+          "complexity_stage",
+          "entry_assistance",
+          "remediation_assistance",
+          "advance_requires"
+        ],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "competency_id": {"type": "string", "minLength": 1},
+          "item_ids": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {"type": "string", "minLength": 1}
+          },
+          "complexity_stage": {"type": "integer", "minimum": 0, "maximum": 10},
+          "entry_assistance": {"enum": ["A0", "A1", "A2", "A3", "A4", "A5", "A6"]},
+          "remediation_assistance": {"enum": ["A0", "A1", "A2", "A3", "A4", "A5", "A6"]},
+          "advance_requires": {"const": "pass_unaided"}
+        }
+      }
+    }
+  }
+}
