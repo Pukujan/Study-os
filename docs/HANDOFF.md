@@ -42,7 +42,7 @@ Do not aggressively refactor the semantic runtime until property/state-machine/r
 
 ## Verification state
 
-The first Issue #21 SWE baseline is now mandatory in CI:
+The first Issue #21 SWE baseline is mandatory in CI:
 
 1. Python compile;
 2. repository/schema/privacy/contract validator;
@@ -53,12 +53,12 @@ The first Issue #21 SWE baseline is now mandatory in CI:
 7. branch-aware coverage with a 70% floor;
 8. full unittest suite.
 
-The baseline is configured in `pyproject.toml`, `.github/workflows/ci.yml`, and `tools/check_engineering_baseline.py`. Coverage is a regression floor, not proof of correctness.
+The first Hypothesis verification slice is also implemented: generated idempotency/conflict properties plus a rule-based durability state machine exercise unique event writes, exact retries, conflicting key reuse, service restarts, durable event cardinality, and continuous `doctor()` health. This is a bounded sequence oracle; it does not yet model the full attempt/assessment/checkpoint/retention lifecycle.
 
 Remaining Issue #21 verification order:
 
 1. Ruff format + reproducible dependency lock/project-state convergence;
-2. Hypothesis property/state-machine/metamorphic tests;
+2. expand Hypothesis state-machine/metamorphic coverage to attempts, assessments, checkpoints, resume, retention probes and rollback boundaries;
 3. independent executable reference model + differential tests;
 4. mutation/negative controls;
 5. protected engineering holdout tests;
@@ -76,7 +76,7 @@ These components remain non-authoritative/shadow unless explicitly promoted thro
 
 ## Immediate next work
 
-1. Add property/state-machine testing around session/attempt/assessment/checkpoint/resume/probe/retry/restart semantics.
+1. Expand the state machine to attempt -> assessment -> checkpoint -> resume -> retention-probe completion/rollback sequences.
 2. Build a small independent in-memory reference model and differential harness.
 3. Add mutation/negative-control verification.
 4. Establish a coding-agent-hidden engineering holdout boundary.
