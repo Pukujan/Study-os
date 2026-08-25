@@ -27,7 +27,7 @@ def _unit(value: float, field_name: str) -> float:
     return result
 
 
-def _level(value: int, field_name: str) -> int:
+def _level(value: object, field_name: str) -> int:
     if isinstance(value, bool) or not isinstance(value, int) or not 0 <= value <= 5:
         raise ValueError(f"{field_name} must be an integer from 0 to 5")
     return value
