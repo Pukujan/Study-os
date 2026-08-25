@@ -68,11 +68,14 @@ class EpisodeStep:
 
     @classmethod
     def from_mapping(cls, value: Mapping[str, Any]) -> "EpisodeStep":
+        complexity_stage = value.get("complexity_stage")
+        if isinstance(complexity_stage, bool) or not isinstance(complexity_stage, int):
+            raise ValueError("step.complexity_stage must be an integer")
         return cls(
             id=str(value.get("id", "")),
             competency_id=str(value.get("competency_id", "")),
             item_ids=tuple(value.get("item_ids", ())),
-            complexity_stage=value.get("complexity_stage"),
+            complexity_stage=complexity_stage,
             entry_assistance=str(value.get("entry_assistance", "")),
             remediation_assistance=str(value.get("remediation_assistance", "")),
             advance_requires=str(value.get("advance_requires", "")),

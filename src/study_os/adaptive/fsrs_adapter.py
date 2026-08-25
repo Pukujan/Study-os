@@ -13,7 +13,7 @@ import math
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from importlib.metadata import version
-from typing import Any, Iterable, Mapping
+from typing import Any, Iterable, Mapping, cast
 
 from fsrs import Card, Rating, Scheduler
 
@@ -49,8 +49,6 @@ def _desired_retention(value: float) -> float:
 
 
 def _scheduler(desired_retention: float) -> Scheduler:
-    # Fuzzing is deliberately disabled for auditable/replayable Study OS
-    # shadow decisions.  We otherwise use the maintained FSRS defaults.
     return Scheduler(desired_retention=_desired_retention(desired_retention), enable_fuzzing=False)
 
 
@@ -75,7 +73,7 @@ def _card_from_state(
             due=_require_utc(initial_due, "initial_due"),
         )
     try:
-        return Card.from_dict(dict(card_state))
+        return Card.from_dict(cast(Any, dict(card_state)))
     except (KeyError, TypeError, ValueError) as exc:
         raise ValueError("card_state is not a valid FSRS card dictionary") from exc
 
@@ -111,13 +109,6 @@ def propose_fsrs_review_update(
     review_duration_ms: int | None = None,
     desired_retention: float = 0.9,
 ) -> DecisionProposal:
-    """Apply one explicit FSRS rating and propose the next due state.
-
-    ``rating`` is deliberately explicit; this adapter never converts a generic
-    Study OS pass/fail result into FSRS semantics.  The source assessment must
-    already be part of the canonical evidence supporting the snapshot.
-    """
-
     if snapshot.phase != "maintenance":
         raise ValueError("FSRS review update requires snapshot.phase='maintenance'")
     if not isinstance(concept_id, str) or not concept_id.strip():
@@ -205,8 +196,6 @@ def propose_fsrs_maintenance(
     current_datetime: datetime,
     desired_retention: float = 0.9,
 ) -> DecisionProposal:
-    """Choose the most urgent *due* reviewed concept for retention probing."""
-
     if snapshot.phase != "maintenance":
         raise ValueError("FSRS maintenance selector requires snapshot.phase='maintenance'")
     now = _require_utc(current_datetime, "current_datetime")
@@ -228,9 +217,7 @@ def propose_fsrs_maintenance(
             initial_due=now,
         )
         if card.last_review is None or card.stability is None:
-            exclusions.append(
-                CandidateExclusion(candidate.concept_id, "fsrs_card_unreviewed")
-            )
+            exclusions.append(CandidateExclusion(candidate.concept_id, "fsrs_card_unreviewed"))
             continue
         if card.due > now:
             exclusions.append(

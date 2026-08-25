@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Iterator
 
 from ..config import RuntimeConfig
-from ..errors import StudyOSError, unavailable, unsupported
+from ..errors import unavailable, unsupported
 
 
 LATEST_SCHEMA_VERSION = 1
@@ -91,6 +91,7 @@ class Database:
         self.connection.row_factory = sqlite3.Row
         self.connection.execute("PRAGMA foreign_keys = ON")
         self.connection.execute("PRAGMA busy_timeout = 5000")
+
     @contextmanager
     def transaction(self, *, immediate: bool = True) -> Iterator[sqlite3.Connection]:
         try:

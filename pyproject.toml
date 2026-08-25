@@ -16,3 +16,30 @@ where = ["src"]
 
 [tool.setuptools.package-data]
 study_os = ["db/migrations/*.sql"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F"]
+
+[tool.ruff.lint.per-file-ignores]
+"**/__init__.py" = ["F401"]
+"src/study_os/__init__.py" = ["E402", "F401"]
+"tests/test_p2_semantic_runtime_overrides.py" = ["E402"]
+
+[tool.pyright]
+include = ["src/study_os"]
+pythonVersion = "3.11"
+typeCheckingMode = "basic"
+reportMissingTypeStubs = false
+
+[tool.coverage.run]
+branch = true
+source = ["src/study_os"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+fail_under = 70
