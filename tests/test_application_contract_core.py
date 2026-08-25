@@ -18,6 +18,9 @@ from study_os.application.contracts import (  # noqa: E402
     ApplicationError,
     ApplicationErrorCategory,
     ApplicationErrorEnvelope,
+    NextRetentionProbeRequest,
+    NextRetentionProbeResult,
+    RetentionProbeSummary,
     RuntimeHealthCheck,
     RuntimeHealthRequest,
     RuntimeHealthResult,
@@ -51,6 +54,8 @@ class ApplicationContractCoreTests(unittest.TestCase):
         with self.assertRaises(ValidationError):
             SubjectStatusRequest(subject_id="subject-001", invented=True)
         with self.assertRaises(ValidationError):
+            NextRetentionProbeRequest(subject_id="subject-001", invented=True)
+        with self.assertRaises(ValidationError):
             StartStudySessionRequest(
                 idempotency_key="key-1",
                 subject_id="subject-001",
@@ -62,6 +67,8 @@ class ApplicationContractCoreTests(unittest.TestCase):
     def test_strict_request_types_do_not_coerce(self) -> None:
         with self.assertRaises(ValidationError):
             SubjectStatusRequest(subject_id=1)
+        with self.assertRaises(ValidationError):
+            NextRetentionProbeRequest(subject_id=1)
         with self.assertRaises(ValidationError):
             StartStudySessionRequest(
                 idempotency_key="key-1",
@@ -89,6 +96,18 @@ class ApplicationContractCoreTests(unittest.TestCase):
         status_result_fields = set(SubjectStatusResult.model_fields) - {"application_contract_version"}
         self.assertEqual(status_request_fields, set(status_operation["required_request_fields"]))
         self.assertEqual(status_result_fields, set(status_operation["required_result_fields"]))
+
+        probe_operation = next(
+            item for item in self.inventory["operations"] if item["mcp_tool"] == "get_next_probe"
+        )
+        probe_request_fields = set(NextRetentionProbeRequest.model_fields) - {
+            "application_contract_version"
+        }
+        probe_result_fields = set(NextRetentionProbeResult.model_fields) - {
+            "application_contract_version"
+        }
+        self.assertEqual(probe_request_fields, set(probe_operation["required_request_fields"]))
+        self.assertEqual(probe_result_fields, set(probe_operation["required_result_fields"]))
 
         doctor_operation = next(
             item for item in self.inventory["operations"] if item["mcp_tool"] == "doctor"
@@ -124,6 +143,48 @@ class ApplicationContractCoreTests(unittest.TestCase):
                 current_checkpoint_id=None,
                 current_focus=None,
                 next_action=None,
+            )
+
+    def test_next_retention_probe_states_are_consistent(self) -> None:
+        empty = NextRetentionProbeResult(
+            subject_id="subject-001",
+            probe=None,
+            reason="no_scheduled_probe",
+            source_checkpoint_id=None,
+        )
+        self.assertIsNone(empty.probe)
+
+        scheduled = NextRetentionProbeResult(
+            subject_id="subject-001",
+            probe=RetentionProbeSummary(
+                retention_probe_id="probe-1",
+                concept_id="sliding-window",
+                due_at="2026-08-26T00:00:00Z",
+                status="scheduled",
+            ),
+            reason="scheduled_retention_probe",
+            source_checkpoint_id="checkpoint-1",
+        )
+        self.assertEqual(scheduled.probe.retention_probe_id, "probe-1")
+
+        with self.assertRaises(ValidationError):
+            NextRetentionProbeResult(
+                subject_id="subject-001",
+                probe=None,
+                reason="scheduled_retention_probe",
+                source_checkpoint_id="checkpoint-1",
+            )
+        with self.assertRaises(ValidationError):
+            NextRetentionProbeResult(
+                subject_id="subject-001",
+                probe=RetentionProbeSummary(
+                    retention_probe_id="probe-1",
+                    concept_id="sliding-window",
+                    due_at="2026-08-26T00:00:00Z",
+                    status="scheduled",
+                ),
+                reason="no_scheduled_probe",
+                source_checkpoint_id=None,
             )
 
     def test_start_session_optional_compatibility_normalization(self) -> None:
@@ -279,6 +340,12 @@ class ApplicationContractCoreTests(unittest.TestCase):
             current_focus=None,
             next_action=None,
         )
+        next_probe = NextRetentionProbeResult(
+            subject_id="subject-001",
+            probe=None,
+            reason="no_scheduled_probe",
+            source_checkpoint_id=None,
+        )
         result = RuntimeHealthResult(
             healthy=True,
             runtime_version="0.1.0",
@@ -290,6 +357,9 @@ class ApplicationContractCoreTests(unittest.TestCase):
         )
         Draft202012Validator(bundle["models"]["get_subject_status_result"]).validate(
             status.model_dump(mode="json")
+        )
+        Draft202012Validator(bundle["models"]["get_next_retention_probe_result"]).validate(
+            next_probe.model_dump(mode="json")
         )
         Draft202012Validator(bundle["models"]["inspect_runtime_health_result"]).validate(
             result.model_dump(mode="json")
