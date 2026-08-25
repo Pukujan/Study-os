@@ -7,6 +7,9 @@ name = "study-os-local-runtime"
 version = "0.1.0"
 description = "Local-first Study OS semantic runtime"
 requires-python = ">=3.11"
+dependencies = [
+    "fsrs>=6.3.2,<7",
+]
 
 [tool.setuptools.packages.find]
 where = ["src"]
