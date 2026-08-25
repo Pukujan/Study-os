@@ -1,0 +1,104 @@
+{
+  "graph_version": "0.1.0",
+  "domain_id": "dsa",
+  "slice_id": "running-extrema",
+  "competencies": [
+    {
+      "id": "dsa.compare.values",
+      "version": "0.1.0",
+      "title": "Compare candidate values",
+      "observable_behavior": "Given two scalar values, identify which should replace the current candidate under a stated comparison rule.",
+      "prerequisites": [],
+      "task_modes": ["state_prediction", "verbal_explanation", "code_reading"],
+      "misconceptions": [
+        {"id": "cmp.direction_reversed", "description": "Reverses greater-than and less-than update conditions.", "evidence_signals": ["selects smaller value for running maximum", "explains comparison direction backwards"]}
+      ],
+      "transfer_targets": ["running minimum", "top-k candidate updates"]
+    },
+    {
+      "id": "dsa.extrema.running_max",
+      "version": "0.1.0",
+      "title": "Maintain one running maximum",
+      "observable_behavior": "Trace or implement a single-pass update that preserves the maximum value seen so far.",
+      "prerequisites": ["dsa.compare.values"],
+      "task_modes": ["state_prediction", "code_trace", "manual_code_scaffolded", "manual_code_blank"],
+      "misconceptions": [
+        {"id": "max.reset_each_iteration", "description": "Treats the running candidate as local to one iteration instead of persistent state.", "evidence_signals": ["resets candidate on every loop", "prediction ignores prior maximum"]}
+      ],
+      "transfer_targets": ["running minimum", "best-so-far score"]
+    },
+    {
+      "id": "py.index_value.distinguish",
+      "version": "0.1.0",
+      "title": "Distinguish index from value",
+      "observable_behavior": "Given a sequence traversal, correctly distinguish an element value from its position and choose the one required by the task.",
+      "prerequisites": [],
+      "task_modes": ["code_reading", "state_prediction", "debug_existing_code"],
+      "misconceptions": [
+        {"id": "index.used_as_value", "description": "Uses loop position where the algorithm requires the element value.", "evidence_signals": ["compares index to candidate value", "returns index when value requested"]}
+      ],
+      "transfer_targets": ["argmax", "enumerate-based tracking"]
+    },
+    {
+      "id": "dsa.state.predict_transition",
+      "version": "0.1.0",
+      "title": "Predict a state transition",
+      "observable_behavior": "Given current algorithm state and the next input value, predict the complete next state before executing code.",
+      "prerequisites": ["dsa.compare.values"],
+      "task_modes": ["state_prediction", "code_trace", "verbal_explanation"],
+      "misconceptions": [
+        {"id": "transition.partial_update", "description": "Updates one state variable while omitting another required simultaneous consequence.", "evidence_signals": ["predicts largest change but leaves second candidate stale", "explains only one branch effect"]}
+      ],
+      "transfer_targets": ["sliding-window state", "prefix-state algorithms"]
+    },
+    {
+      "id": "dsa.extrema.two_candidates",
+      "version": "0.1.0",
+      "title": "Maintain two ordered extrema candidates",
+      "observable_behavior": "Maintain largest and second-largest candidate values across a stream while preserving their ordering relationship.",
+      "prerequisites": ["dsa.extrema.running_max", "dsa.state.predict_transition"],
+      "task_modes": ["state_prediction", "code_trace", "parsons_completion", "manual_code_scaffolded"],
+      "misconceptions": [
+        {"id": "two_candidates.overwrite_second", "description": "Overwrites second-largest without preserving the previous largest when a new maximum arrives.", "evidence_signals": ["sets largest before copying old largest", "loses prior best candidate"]},
+        {"id": "two_candidates.duplicate_policy_implicit", "description": "Fails to distinguish distinct-value and duplicate-allowed variants.", "evidence_signals": ["cannot state whether equal values qualify", "uses equality behavior inconsistent with prompt"]}
+      ],
+      "transfer_targets": ["third largest", "top-two scores", "two smallest values"]
+    },
+    {
+      "id": "dsa.invariant.two_largest_order",
+      "version": "0.1.0",
+      "title": "Explain the two-candidate invariant",
+      "observable_behavior": "Explain what largest and second-largest mean after each processed prefix and why their order is preserved.",
+      "prerequisites": ["dsa.extrema.two_candidates"],
+      "task_modes": ["verbal_explanation", "code_reading", "ai_oversight_review"],
+      "misconceptions": [
+        {"id": "invariant.final_only", "description": "States only a final-output property instead of a prefix-preserved invariant.", "evidence_signals": ["description applies only after loop ends", "cannot explain why each update is safe"]}
+      ],
+      "transfer_targets": ["top-k invariants", "window validity invariants"]
+    },
+    {
+      "id": "dsa.extrema.update_order",
+      "version": "0.1.0",
+      "title": "Apply correct update ordering",
+      "observable_behavior": "When a new maximum is found, preserve the old maximum as the second candidate before replacing the maximum.",
+      "prerequisites": ["dsa.extrema.two_candidates", "dsa.invariant.two_largest_order"],
+      "task_modes": ["state_prediction", "parsons_completion", "debug_existing_code", "manual_code_scaffolded"],
+      "misconceptions": [
+        {"id": "update_order.clobber_old_max", "description": "Updates largest first and then copies the new largest into second-largest.", "evidence_signals": ["both candidates become equal after new maximum", "debug trace loses prior maximum"]}
+      ],
+      "transfer_targets": ["swap-like state updates", "top-k insertion order"]
+    },
+    {
+      "id": "dsa.extrema.second_largest_implement",
+      "version": "0.1.0",
+      "title": "Implement second-largest in one pass",
+      "observable_behavior": "Independently implement and debug a one-pass second-largest solution whose candidate state and duplicate policy match the task specification.",
+      "prerequisites": ["dsa.extrema.update_order", "py.index_value.distinguish"],
+      "task_modes": ["manual_code_blank", "debug_existing_code", "ai_oversight_review"],
+      "misconceptions": [
+        {"id": "implementation.syntax_masks_model", "description": "Algorithmic state is correct in explanation but implementation introduces unrelated Python mistakes.", "evidence_signals": ["trace/explanation passes while blank implementation fails", "syntax or indentation error without state-model error"]}
+      ],
+      "transfer_targets": ["third-largest derivation", "second-smallest", "return index of second-largest"]
+    }
+  ]
+}
