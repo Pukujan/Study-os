@@ -50,7 +50,18 @@ class ItemComplexity:
 
     @classmethod
     def from_mapping(cls, value: Mapping[str, Any]) -> "ItemComplexity":
-        return cls(**{field_name: value.get(field_name) for field_name in cls.__dataclass_fields__})
+        return cls(
+            prerequisite_depth=_level(value.get("prerequisite_depth"), "prerequisite_depth"),
+            state_variables=_level(value.get("state_variables"), "state_variables"),
+            control_flow=_level(value.get("control_flow"), "control_flow"),
+            syntax_load=_level(value.get("syntax_load"), "syntax_load"),
+            representation_translation=_level(
+                value.get("representation_translation"), "representation_translation"
+            ),
+            surface_novelty=_level(value.get("surface_novelty"), "surface_novelty"),
+            scaffold_amount=_level(value.get("scaffold_amount"), "scaffold_amount"),
+            transfer_distance=_level(value.get("transfer_distance"), "transfer_distance"),
+        )
 
 
 @dataclass(frozen=True, slots=True)
