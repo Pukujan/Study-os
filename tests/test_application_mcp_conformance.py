@@ -13,11 +13,13 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from study_os import RuntimeConfig, StudyOSService  # noqa: E402
 from study_os.application.contracts import (  # noqa: E402
+    NextRetentionProbeRequest,
     StartStudySessionRequest,
     SubjectStatusRequest,
 )
 from study_os.application.service import (  # noqa: E402
     ApplicationService,
+    project_next_retention_probe_to_mcp,
     project_runtime_health_to_mcp,
     project_start_study_session_to_mcp,
     project_subject_status_to_mcp,
@@ -46,6 +48,16 @@ class MalformedStatusService:
         }
 
 
+class MalformedNextProbeService:
+    def get_next_probe(self, *, subject_id: str) -> dict[str, Any]:
+        return {
+            "subject_id": subject_id,
+            "probe": None,
+            "reason": "scheduled_retention_probe",
+            "source_checkpoint_id": "checkpoint-impossible",
+        }
+
+
 class MalformedStartSessionService:
     def start_session(self, **_: Any) -> dict[str, Any]:
         return {
@@ -67,6 +79,44 @@ class ApplicationMcpConformanceTests(unittest.TestCase):
             self.service.close()
         finally:
             self.temp_dir.cleanup()
+
+    def fixture_scheduled_probe(self, subject_id: str = "subject-probe") -> dict[str, Any]:
+        session = self.service.start_session(
+            idempotency_key=f"{subject_id}-session",
+            subject_id=subject_id,
+            project_id=f"{subject_id}-project",
+            domain_id=f"{subject_id}-domain",
+        )
+        artifact = self.service.capture_evidence(
+            session_id=session["session_id"],
+            subject_id=subject_id,
+            content=b"public-safe probe evidence",
+            media_type="text/plain",
+        )
+        event = self.service.record_learning_event(
+            idempotency_key=f"{subject_id}-event",
+            session_id=session["session_id"],
+            subject_id=subject_id,
+            evidence_class="observed",
+            event_type="probe_seed",
+            payload={"summary": "scheduled-probe fixture"},
+        )
+        checkpoint = self.service.checkpoint(
+            idempotency_key=f"{subject_id}-checkpoint",
+            subject_id=subject_id,
+            source_session_ids=[session["session_id"]],
+            evidence_ids=[artifact["artifact_id"], event["event_id"]],
+            capability_state={"retention": "not_tested"},
+            assistance_state={},
+            resume={"current_focus": "retention", "next_action": "run delayed probe"},
+        )
+        return self.service.schedule_retention_probe(
+            idempotency_key=f"{subject_id}-probe",
+            subject_id=subject_id,
+            concept_id="sliding-window",
+            due_at="2026-08-26T00:00:00Z",
+            source_checkpoint_id=checkpoint["checkpoint_id"],
+        )
 
     def test_doctor_round_trip_matches_direct_runtime_exactly(self) -> None:
         direct = self.service.doctor()
@@ -141,6 +191,76 @@ class ApplicationMcpConformanceTests(unittest.TestCase):
     def test_status_rejects_application_only_transport_fields(self) -> None:
         result = MCPServer(self.service).call_tool(
             "status",
+            {
+                "subject_id": "subject-001",
+                "application_contract_version": "0.1.0",
+            },
+        )
+        self.assertEqual(result["error"]["category"], "validation_error")
+
+    def test_next_probe_empty_state_is_exactly_equivalent(self) -> None:
+        self.service.start_session(
+            idempotency_key="empty-probe-session",
+            subject_id="subject-empty-probe",
+            project_id="project-empty-probe",
+            domain_id="dsa",
+        )
+        direct = self.service.get_next_probe(subject_id="subject-empty-probe")
+        application = project_next_retention_probe_to_mcp(
+            ApplicationService(self.service).get_next_retention_probe(
+                NextRetentionProbeRequest(subject_id="subject-empty-probe")
+            )
+        )
+        mcp = MCPServer(self.service).call_tool(
+            "get_next_probe",
+            {"subject_id": "subject-empty-probe"},
+        )
+        self.assertEqual(application, direct)
+        self.assertEqual(mcp, direct)
+        self.assertIsNone(direct["probe"])
+        self.assertEqual(direct["reason"], "no_scheduled_probe")
+        self.assertIsNone(direct["source_checkpoint_id"])
+
+    def test_next_probe_scheduled_state_is_exactly_equivalent(self) -> None:
+        scheduled = self.fixture_scheduled_probe()
+        direct = self.service.get_next_probe(subject_id="subject-probe")
+        application = project_next_retention_probe_to_mcp(
+            ApplicationService(self.service).get_next_retention_probe(
+                NextRetentionProbeRequest(subject_id="subject-probe")
+            )
+        )
+        mcp = MCPServer(self.service).call_tool(
+            "get_next_probe",
+            {"subject_id": "subject-probe"},
+        )
+        self.assertEqual(application, direct)
+        self.assertEqual(mcp, direct)
+        self.assertEqual(
+            direct["probe"]["retention_probe_id"],
+            scheduled["retention_probe_id"],
+        )
+        self.assertEqual(direct["reason"], "scheduled_retention_probe")
+        self.assertIsNotNone(direct["source_checkpoint_id"])
+
+    def test_next_probe_preserves_not_found_semantics(self) -> None:
+        result = MCPServer(self.service).call_tool(
+            "get_next_probe",
+            {"subject_id": "missing-probe-subject"},
+        )
+        self.assertEqual(result["error"]["category"], "not_found")
+        self.assertFalse(result["error"]["retryable"])
+
+    def test_next_probe_malformed_runtime_state_fails_closed(self) -> None:
+        result = MCPServer(MalformedNextProbeService()).call_tool(  # type: ignore[arg-type]
+            "get_next_probe",
+            {"subject_id": "subject-broken"},
+        )
+        self.assertEqual(result["error"]["category"], "internal_error")
+        self.assertEqual(result["error"]["details"]["exception"], "ApplicationBoundaryError")
+
+    def test_next_probe_rejects_application_only_transport_fields(self) -> None:
+        result = MCPServer(self.service).call_tool(
+            "get_next_probe",
             {
                 "subject_id": "subject-001",
                 "application_contract_version": "0.1.0",
