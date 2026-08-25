@@ -6,6 +6,9 @@ from typing import Any, Protocol
 from pydantic import ValidationError
 
 from .contracts import (
+    NextRetentionProbeRequest,
+    NextRetentionProbeResult,
+    RetentionProbeSummary,
     RuntimeHealthCheck,
     RuntimeHealthRequest,
     RuntimeHealthResult,
@@ -24,6 +27,8 @@ class ApplicationRuntimePort(Protocol):
     def doctor(self) -> dict[str, Any]: ...
 
     def status(self, *, subject_id: str) -> dict[str, Any]: ...
+
+    def get_next_probe(self, *, subject_id: str) -> dict[str, Any]: ...
 
     def start_session(
         self,
@@ -96,6 +101,34 @@ class ApplicationService:
                 "legacy status result does not satisfy the application contract"
             ) from exc
 
+    def get_next_retention_probe(
+        self,
+        request: NextRetentionProbeRequest,
+    ) -> NextRetentionProbeResult:
+        raw = self.runtime.get_next_probe(subject_id=request.subject_id)
+        try:
+            raw_probe = raw["probe"]
+            probe = None
+            if raw_probe is not None:
+                if not isinstance(raw_probe, dict):
+                    raise TypeError("retention probe summary must be an object or null")
+                probe = RetentionProbeSummary(
+                    retention_probe_id=raw_probe["retention_probe_id"],
+                    concept_id=raw_probe["concept_id"],
+                    due_at=raw_probe["due_at"],
+                    status=raw_probe["status"],
+                )
+            return NextRetentionProbeResult(
+                subject_id=raw["subject_id"],
+                probe=probe,
+                reason=raw["reason"],
+                source_checkpoint_id=raw["source_checkpoint_id"],
+            )
+        except (KeyError, TypeError, ValidationError) as exc:
+            raise ApplicationBoundaryError(
+                "legacy get_next_probe result does not satisfy the application contract"
+            ) from exc
+
     def start_study_session(self, request: StartStudySessionRequest) -> StartStudySessionResult:
         raw = self.runtime.start_session(
             idempotency_key=request.idempotency_key,
@@ -148,6 +181,25 @@ def project_subject_status_to_mcp(result: SubjectStatusResult) -> dict[str, Any]
         "current_checkpoint_id": result.current_checkpoint_id,
         "current_focus": result.current_focus,
         "next_action": result.next_action,
+    }
+
+
+def project_next_retention_probe_to_mcp(result: NextRetentionProbeResult) -> dict[str, Any]:
+    """Project canonical retention-probe selection back to the unchanged MCP v0.1 payload."""
+
+    probe = None
+    if result.probe is not None:
+        probe = {
+            "retention_probe_id": result.probe.retention_probe_id,
+            "concept_id": result.probe.concept_id,
+            "due_at": result.probe.due_at,
+            "status": result.probe.status,
+        }
+    return {
+        "subject_id": result.subject_id,
+        "probe": probe,
+        "reason": result.reason,
+        "source_checkpoint_id": result.source_checkpoint_id,
     }
 
 
