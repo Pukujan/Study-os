@@ -1,0 +1,46 @@
+{
+  "fixture_version": "0.1.0",
+  "description": "Synthetic diagnostic candidate bank for comparing prior-entropy and BKT-information-gain selectors on identical state.",
+  "snapshot": {
+    "snapshot_version": "0.1.0",
+    "subject_id": "subject-diagnostic-fixture",
+    "checkpoint_id": "checkpoint-diagnostic-fixture",
+    "phase": "diagnostic",
+    "current_focus": "localize two-candidate state bottleneck",
+    "capabilities": {},
+    "open_hypotheses": [],
+    "active_misconceptions": [],
+    "retention_state": {},
+    "recent_exposures": [],
+    "active_goal_ids": ["goal-dsa-foundations"],
+    "interaction_constraints": {}
+  },
+  "candidates": [
+    {
+      "candidate_id": "diag-noisy-center",
+      "competency_id": "algo.two_candidate_state",
+      "p_mastery": 0.5,
+      "p_slip": 0.35,
+      "p_guess": 0.35
+    },
+    {
+      "candidate_id": "diag-informative-offcenter",
+      "competency_id": "algo.two_candidate_update_order",
+      "p_mastery": 0.6,
+      "p_slip": 0.1,
+      "p_guess": 0.2
+    },
+    {
+      "candidate_id": "diag-saturated",
+      "competency_id": "py.compare_values",
+      "p_mastery": 0.98,
+      "p_slip": 0.1,
+      "p_guess": 0.2
+    }
+  ],
+  "expected": {
+    "uncertainty_baseline": "diag-noisy-center",
+    "bkt_information_gain": "diag-informative-offcenter",
+    "saturated_exclusion": "diagnostic_state_saturated"
+  }
+}
