@@ -6,14 +6,17 @@ import tempfile
 import unittest
 from pathlib import Path
 from typing import Any
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from study_os import RuntimeConfig, StudyOSService  # noqa: E402
+from study_os.application.contracts import StartStudySessionRequest  # noqa: E402
 from study_os.application.service import (  # noqa: E402
     ApplicationService,
     project_runtime_health_to_mcp,
+    project_start_study_session_to_mcp,
 )
 from study_os.mcp.server import MCPServer  # noqa: E402
 
@@ -25,6 +28,16 @@ class MalformedDoctorService:
             "runtime_version": "0.1.0",
             "schema_version": 1,
             "checks": {"broken": {"healthy": True}},
+        }
+
+
+class MalformedStartSessionService:
+    def start_session(self, **_: Any) -> dict[str, Any]:
+        return {
+            "session_id": "session-broken",
+            "subject_id": "subject-broken",
+            "started_at": "not-a-timestamp",
+            "created": True,
         }
 
 
@@ -74,6 +87,50 @@ class ApplicationMcpConformanceTests(unittest.TestCase):
         self.assertEqual(result["error"]["category"], "internal_error")
         self.assertFalse(result["error"]["retryable"])
         self.assertEqual(result["error"]["details"]["exception"], "ApplicationBoundaryError")
+
+    def test_start_session_direct_application_and_mcp_are_differentially_equivalent(self) -> None:
+        roots = [tempfile.TemporaryDirectory() for _ in range(3)]
+        services = [StudyOSService(RuntimeConfig.from_env(root.name)) for root in roots]
+        args = {
+            "idempotency_key": "differential-start-1",
+            "subject_id": "subject-differential",
+            "project_id": "project-differential",
+            "domain_id": "dsa",
+            "source_client": "mcp",
+            "metadata": {"surface": "chat", "mode": "study"},
+        }
+        try:
+            with (
+                patch("study_os.services.runtime_base.new_id", return_value="session-fixed"),
+                patch(
+                    "study_os.services.runtime_base.utc_now",
+                    return_value="2026-08-25T23:40:00.123456Z",
+                ),
+            ):
+                direct = services[0].start_session(**args)
+                application_result = ApplicationService(services[1]).start_study_session(
+                    StartStudySessionRequest(**args)
+                )
+                application = project_start_study_session_to_mcp(application_result)
+                mcp = MCPServer(services[2]).call_tool("start_session", args)
+
+            self.assertEqual(application, direct)
+            self.assertEqual(mcp, direct)
+            for service in services:
+                row = service.db.connection.execute(
+                    "SELECT session_id, source_client, metadata_json FROM sessions WHERE subject_id = ?",
+                    ("subject-differential",),
+                ).fetchone()
+                self.assertIsNotNone(row)
+                assert row is not None
+                self.assertEqual(row["session_id"], "session-fixed")
+                self.assertEqual(row["source_client"], "mcp")
+                self.assertEqual(json.loads(row["metadata_json"]), args["metadata"])
+        finally:
+            for service in services:
+                service.close()
+            for root in roots:
+                root.cleanup()
 
     def test_start_session_optional_legacy_arguments_remain_accepted(self) -> None:
         result = MCPServer(self.service).call_tool(
@@ -139,6 +196,37 @@ class ApplicationMcpConformanceTests(unittest.TestCase):
             ("subject-conflict",),
         ).fetchone()[0]
         self.assertEqual(count, 1)
+
+    def test_start_session_malformed_runtime_result_fails_closed(self) -> None:
+        result = MCPServer(MalformedStartSessionService()).call_tool(  # type: ignore[arg-type]
+            "start_session",
+            {
+                "idempotency_key": "malformed-start-1",
+                "subject_id": "subject-broken",
+                "project_id": "project-broken",
+                "domain_id": "dsa",
+            },
+        )
+        self.assertEqual(result["error"]["category"], "internal_error")
+        self.assertEqual(result["error"]["details"]["exception"], "ApplicationBoundaryError")
+
+    def test_start_session_rejects_nonlegacy_transport_extras(self) -> None:
+        result = MCPServer(self.service).call_tool(
+            "start_session",
+            {
+                "idempotency_key": "extra-start-1",
+                "subject_id": "subject-extra",
+                "project_id": "project-extra",
+                "domain_id": "dsa",
+                "application_contract_version": "0.1.0",
+            },
+        )
+        self.assertEqual(result["error"]["category"], "validation_error")
+        count = self.service.db.connection.execute(
+            "SELECT COUNT(*) FROM sessions WHERE subject_id = ?",
+            ("subject-extra",),
+        ).fetchone()[0]
+        self.assertEqual(count, 0)
 
     def test_public_mcp_tool_set_remains_exactly_thirteen(self) -> None:
         names = MCPServer(self.service).list_tool_names()
