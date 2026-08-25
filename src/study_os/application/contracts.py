@@ -18,6 +18,10 @@ from pydantic import (
 
 APPLICATION_CONTRACT_VERSION = "0.1.0"
 NonEmptyString = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
+ErrorCode = Annotated[
+    str,
+    StringConstraints(strip_whitespace=True, min_length=1, pattern=r"^[a-z][a-z0-9_.-]*$"),
+]
 FORBIDDEN_PUBLIC_DETAIL_KEYS = frozenset(
     {
         "raw_private_evidence",
@@ -54,16 +58,16 @@ def _validate_public_json(value: JsonValue) -> JsonValue:
 
 
 class ApplicationContractModel(BaseModel):
-    model_config = ConfigDict(extra="forbid", frozen=True)
+    model_config = ConfigDict(extra="forbid", frozen=True, strict=True)
 
     application_contract_version: Literal["0.1.0"] = APPLICATION_CONTRACT_VERSION
 
 
 class ApplicationError(BaseModel):
-    model_config = ConfigDict(extra="forbid", frozen=True)
+    model_config = ConfigDict(extra="forbid", frozen=True, strict=True)
 
     category: ApplicationErrorCategory
-    code: NonEmptyString
+    code: ErrorCode
     message: NonEmptyString
     retryable: bool = False
     details: dict[str, JsonValue] = Field(default_factory=dict)
@@ -84,7 +88,7 @@ class RuntimeHealthRequest(ApplicationContractModel):
 
 
 class RuntimeHealthCheck(BaseModel):
-    model_config = ConfigDict(extra="forbid", frozen=True)
+    model_config = ConfigDict(extra="forbid", frozen=True, strict=True)
 
     healthy: bool
     detail: NonEmptyString
@@ -101,7 +105,7 @@ class RuntimeHealthResult(ApplicationContractModel):
     healthy: bool
     runtime_version: NonEmptyString
     schema_version: int | None
-    checks: dict[str, RuntimeHealthCheck]
+    checks: dict[NonEmptyString, RuntimeHealthCheck]
 
 
 class StartStudySessionRequest(ApplicationContractModel):
