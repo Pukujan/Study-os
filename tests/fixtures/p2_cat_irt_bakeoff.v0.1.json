@@ -1,0 +1,70 @@
+{
+  "fixture_version": "0.1.0",
+  "ability_theta": 0.0,
+  "target_success": 0.7,
+  "diagnostic_snapshot": {
+    "snapshot_version": "0.1.0",
+    "subject_id": "subject-cat-fixture",
+    "checkpoint_id": "checkpoint-cat-fixture",
+    "phase": "diagnostic",
+    "current_focus": "choose most informative diagnostic item",
+    "capabilities": {},
+    "open_hypotheses": [],
+    "active_misconceptions": [],
+    "retention_state": {},
+    "recent_exposures": [],
+    "active_goal_ids": ["goal-dsa-foundations"],
+    "interaction_constraints": {}
+  },
+  "instruction_snapshot": {
+    "snapshot_version": "0.1.0",
+    "subject_id": "subject-cat-fixture",
+    "checkpoint_id": "checkpoint-cat-fixture",
+    "phase": "instruction",
+    "current_focus": "choose ZPD-fit practice item",
+    "capabilities": {},
+    "open_hypotheses": [],
+    "active_misconceptions": [],
+    "retention_state": {},
+    "recent_exposures": [],
+    "active_goal_ids": ["goal-dsa-foundations"],
+    "interaction_constraints": {}
+  },
+  "items": [
+    {
+      "candidate_id": "item-info-center",
+      "competency_id": "algo.two_candidate_state",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "exposure_count": 0,
+      "exposure_limit": 3,
+      "action_type": "diagnostic_probe"
+    },
+    {
+      "candidate_id": "item-target-70",
+      "competency_id": "algo.two_candidate_update_order",
+      "difficulty": -0.8472978603872034,
+      "discrimination": 1.0,
+      "exposure_count": 0,
+      "exposure_limit": 3,
+      "action_type": "practice"
+    },
+    {
+      "candidate_id": "item-overexposed",
+      "competency_id": "py.compare_values",
+      "difficulty": 0.0,
+      "discrimination": 1.2,
+      "exposure_count": 2,
+      "exposure_limit": 2,
+      "action_type": "diagnostic_probe"
+    }
+  ],
+  "expected": {
+    "diagnostic_selected": "item-info-center",
+    "instruction_selected": "item-target-70",
+    "overexposed_reason": "item_exposure_limit_reached",
+    "center_probability": 0.5,
+    "target_probability": 0.7,
+    "center_information": 0.25
+  }
+}
