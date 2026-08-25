@@ -60,3 +60,37 @@ jobs:
         run: |
           python -m coverage run --branch -m unittest discover -s tests -v
           python -m coverage report --fail-under=70
+
+  python311:
+    name: Python 3.11 compatibility
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+
+      - name: Install validation dependencies
+        run: python -m pip install --upgrade pip && python -m pip install -r requirements-dev.txt
+
+      - name: Compile runtime and tests
+        run: python -m compileall src tools tests
+
+      - name: Build Study OS wheel
+        run: python -m pip wheel . --no-deps --wheel-dir dist
+
+      - name: Smoke test installed wheel
+        run: |
+          python -m venv /tmp/study-os-wheel-smoke-311
+          /tmp/study-os-wheel-smoke-311/bin/python -m pip install --no-deps dist/*.whl
+          /tmp/study-os-wheel-smoke-311/bin/python tools/verify_built_package.py
+
+      - name: Run full unittest and Hypothesis suite
+        run: python -m unittest discover -s tests -v
