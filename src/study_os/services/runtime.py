@@ -6,7 +6,7 @@ from typing import Iterable
 
 from .retention import retention_result_payload, validate_retention_probe_id, validate_scheduled_probe
 from .runtime_base import StudyOSService as BaseStudyOSService
-from .runtime_base import canonical_json, new_id, utc_now
+from .runtime_base import canonical_json, new_id, os, utc_now  # noqa: F401
 from ..errors import validation
 
 
