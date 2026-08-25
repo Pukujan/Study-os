@@ -4,7 +4,7 @@ project:
   repository: Pukujan/Study-os
   status: research-first
   phase: P2 adaptive-learning integration + engineering-verification hardening
-  current_gate: P2-shadow
+  current_gate: R0
   mission: >-
     Convert AI-assisted study sessions into auditable evidence about where
     representation translation breaks, what intervention was attempted, and
