@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 from typing import Any, TextIO
 
+from ..application.service import ApplicationService, project_runtime_health_to_mcp
 from ..errors import StudyOSError, validation
 from ..services.runtime import StudyOSService
 from .tools import CONTRACT_PATH, load_contract
@@ -15,6 +16,7 @@ from .tools import CONTRACT_PATH, load_contract
 class MCPServer:
     def __init__(self, service: StudyOSService | None = None, contract_path: str | Path | None = None) -> None:
         self.service = service or StudyOSService()
+        self.application = ApplicationService(self.service)
         path = Path(contract_path) if contract_path else CONTRACT_PATH
         self.contract = load_contract(path)
         self.tool_specs = {tool["name"]: tool for tool in self.contract["tools"]}
@@ -47,10 +49,15 @@ class MCPServer:
             raise validation("Required MCP tool arguments are missing", tool=name, missing=missing)
 
     def _dispatch(self, name: str, arguments: dict[str, Any]) -> dict[str, Any]:
-        method = getattr(self.service, name, None)
-        if method is None or not callable(method):
-            raise StudyOSError("internal_error", f"No service implementation for MCP tool: {name}", False)
-        result = method(**arguments)
+        if name == "doctor":
+            if arguments:
+                raise validation("doctor does not accept arguments", unexpected=sorted(arguments))
+            result = project_runtime_health_to_mcp(self.application.inspect_runtime_health())
+        else:
+            method = getattr(self.service, name, None)
+            if method is None or not callable(method):
+                raise StudyOSError("internal_error", f"No service implementation for MCP tool: {name}", False)
+            result = method(**arguments)
         if not isinstance(result, dict):
             raise StudyOSError(
                 "internal_error",
