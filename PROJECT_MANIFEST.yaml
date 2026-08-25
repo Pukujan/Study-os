@@ -109,6 +109,20 @@ privacy:
     - hidden_eval_answers_exposed_to_tutor
     - hidden_engineering_holdout_answers_exposed_to_coding_agents
 
+fossil:
+  role: optional_export_and_promotion_layer
+  runtime_dependency: false
+  canonical_source_of_learning_events: study_os
+  canonical_source_of_learner_checkpoints: study_os
+  automatic_micro_event_ingest: false
+  resume_dependency: false
+  promotion_candidates:
+    - curated_learning_trajectory
+    - repeated_representation_finding
+    - lesson_hypothesis
+    - validated_domain_knowledge
+    - research_conclusion
+
 schemas:
   session_manifest: "0.1.0"
   learning_event: "0.1.0"
