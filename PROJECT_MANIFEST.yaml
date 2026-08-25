@@ -48,6 +48,7 @@ canonical_paths:
   mcp_contract: contracts/study-os-mcp-tools.v0.1.json
   application_contract_inventory: contracts/application-operation-inventory.v0.1.json
   application_contract_architecture: docs/APPLICATION_CONTRACT_ARCHITECTURE.md
+  application_contract_source: src/study_os/application/contracts.py
   local_runtime_source: src/study_os/
   local_runtime_cli: cli/study_os.py
   local_runtime_migrations: src/study_os/db/migrations/
@@ -193,6 +194,7 @@ engineering:
     - python_compile
     - dependency_lock_reproducibility
     - application_contract_inventory_conformance
+    - deterministic_application_schema_rendering
     - repository_validation
     - version_and_13_tool_consistency
     - adaptive_curriculum_architecture_boundary
@@ -203,17 +205,17 @@ engineering:
     - wheel_build_and_installed_package_smoke
     - python_311_compatibility
     - branch_coverage_minimum_70
-    - unit_property_stateful_and_reference_model_tests
+    - unit_contract_property_stateful_and_reference_model_tests
   planned_pr_checks:
     - ruff_format_check
     - project_state_doc_convergence
     - application_schema_generation_freshness
+    - application_adapter_differential
     - focused_property_tests
     - relevant_hidden_acceptance
   planned_post_merge_checks:
     - broader_integration
     - replay
-    - application_adapter_differential
   planned_scheduled_checks:
     - large_property_stateful_runs
     - mutation_testing
@@ -267,8 +269,9 @@ open_risks:
   - synthetic_simulation_mistaken_for_human_learning_evidence
 
 next_milestone: >-
-  Freeze the E11a-0 application contract source-of-truth and operation inventory,
-  then introduce a very small transport-independent canonical DTO/result/error
-  subset under E11a-1 while mutation controls, protected engineering holdouts,
-  seeded learner-policy simulation, and live-shadow evidence remain required
-  before Issue #10 can advance to G5.
+  Verify and merge the representative E11a-1 canonical contract core, then move
+  only the same bounded doctor/start-session subset through MCP conformance with
+  direct-application-versus-adapter differential tests before expanding contract
+  coverage. Mutation controls, protected engineering holdouts, seeded learner-policy
+  simulation, and live-shadow evidence remain required before Issue #10 can advance
+  to G5.
