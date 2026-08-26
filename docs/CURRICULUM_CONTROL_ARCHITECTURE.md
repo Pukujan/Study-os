@@ -8,7 +8,9 @@ The machine-readable companion is `contracts/curriculum-control-policy.v0.1.json
 
 ## Scope and authority
 
-The active research gate remains R0. Current research evidence is still limited to DSA/Python and the narrow concept-family work already identified in project state. The broader curriculum map below is architecture for future activation, not evidence that Study OS has validated teaching procedures in every track.
+The active research gate remains R0. Its active concept family remains **Sliding Window** in DSA/Python. The versioned `running-extrema` material is an instantiated supporting curriculum/verification slice used to exercise the curriculum and control machinery; its existence does **not** create a second active R0 research claim.
+
+The broader curriculum map below is architecture for future activation, not evidence that Study OS has validated teaching procedures in every track.
 
 C0/C1 do not:
 
@@ -16,7 +18,8 @@ C0/C1 do not:
 - add public MCP tools;
 - add HTTP/frontend behavior;
 - grant adaptive components live authority;
-- turn a planning heuristic into a mastery claim.
+- turn a planning heuristic into a mastery claim;
+- expand R0 from Sliding Window merely because supporting curriculum slices exist.
 
 ## Namespace rule
 
@@ -217,7 +220,7 @@ track
   -> diagnostic/practice/transfer/retention evidence
 ```
 
-The existing running-extrema slice is the reference shape. Near-term instantiated learning should continue to prioritize the active manual-Python/DSA objective while the measurement/control loop is validated. Math/data/ML/DL/AIE/SYS content should be instantiated only when an explicit learner goal and prerequisite/evidence design justify it.
+The existing running-extrema slice is the reference shape for an instantiated supporting curriculum slice, not evidence that R0 has expanded beyond Sliding Window. Near-term instantiated learning should continue to prioritize the active manual-Python/DSA objective while the measurement/control loop is validated. Math/data/ML/DL/AIE/SYS content should be instantiated only when an explicit learner goal and prerequisite/evidence design justify it.
 
 ## Compatibility and change policy
 
