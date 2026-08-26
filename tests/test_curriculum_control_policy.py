@@ -34,6 +34,19 @@ class CurriculumControlPolicyTests(unittest.TestCase):
     def test_current_policy_is_consistent(self) -> None:
         check_curriculum_control_policy()
 
+    def test_r0_concept_family_cannot_be_expanded_by_supporting_curriculum_slice(self) -> None:
+        mutated = copy.deepcopy(self.policy)
+        mutated["research_scope"]["active_concept_family"] = "running-extrema"
+        self.assert_invalid(mutated)
+
+        mutated = copy.deepcopy(self.policy)
+        mutated["research_scope"]["instantiated_supporting_curriculum_slices"] = ["sliding-window"]
+        self.assert_invalid(mutated)
+
+        mutated = copy.deepcopy(self.policy)
+        mutated["research_scope"]["supporting_slices_do_not_expand_r0_claim"] = False
+        self.assert_invalid(mutated)
+
     def test_track_namespace_cannot_reuse_legacy_tier_ids(self) -> None:
         mutated = copy.deepcopy(self.policy)
         mutated["tracks"][0]["id"] = "T1"
