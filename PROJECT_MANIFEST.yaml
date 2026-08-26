@@ -1,4 +1,4 @@
-manifest_version: "0.2.1"
+manifest_version: "0.2.2"
 project:
   name: Study OS
   repository: Pukujan/Study-os
@@ -49,6 +49,8 @@ canonical_paths:
   application_contract_inventory: contracts/application-operation-inventory.v0.1.json
   application_contract_architecture: docs/APPLICATION_CONTRACT_ARCHITECTURE.md
   application_contract_source: src/study_os/application/contracts.py
+  curriculum_control_policy: contracts/curriculum-control-policy.v0.1.json
+  curriculum_control_architecture: docs/CURRICULUM_CONTROL_ARCHITECTURE.md
   local_runtime_source: src/study_os/
   local_runtime_cli: cli/study_os.py
   local_runtime_migrations: src/study_os/db/migrations/
@@ -141,13 +143,27 @@ schemas:
 
 learning:
   execution_tracker: 10
+  curriculum_control_tracker: 42
   verification_tracker: 21
   active_research_scope:
-    track: algorithmic_foundations
+    track: ALG
     domain: dsa
     language: python
+  curriculum_track_namespace:
+    - ALG
+    - SWE
+    - MATH
+    - DATA
+    - ML
+    - DL
+    - AIE
+    - SYS
+    - DIAG
+  dsa_proficiency_namespace: DSA0_DSA6
+  legacy_dsa_tier_aliases: T0_T6_issue_3_documentation_only
   scoring_model: multidimensional_evidence_backed_capability_state
   global_mastery_scalar: false
+  daily_evidence_goal_authority: advisory_design_only
   adaptive_authority: shadow
   promotion_ladder:
     - G0_source_license_assumption_audit
@@ -175,6 +191,7 @@ learning:
     - shadow_proposal_to_outcome_linkage
     - atomic_retention_probe_closure
     - richer_resume_projection
+    - curriculum_control_taxonomy_and_dsa_proficiency_spec
   remaining_pre_live_authority:
     - complete_live_shadow_comparisons
     - hidden_engineering_holdout
@@ -194,6 +211,7 @@ engineering:
     - python_compile
     - dependency_lock_reproducibility
     - application_contract_inventory_conformance
+    - curriculum_control_policy_conformance
     - deterministic_application_schema_rendering
     - repository_validation
     - version_and_13_tool_consistency
@@ -269,9 +287,11 @@ open_risks:
   - synthetic_simulation_mistaken_for_human_learning_evidence
 
 next_milestone: >-
-  Verify and merge the representative E11a-1 canonical contract core, then move
-  only the same bounded doctor/start-session subset through MCP conformance with
-  direct-application-versus-adapter differential tests before expanding contract
-  coverage. Mutation controls, protected engineering holdouts, seeded learner-policy
-  simulation, and live-shadow evidence remain required before Issue #10 can advance
-  to G5.
+  Canonicalize Issue #42 C0/C1 curriculum taxonomy, DSA proficiency gates, and
+  advisory daily-evidence-goal semantics without runtime authority changes; then
+  continue Issue #26 E11a-2 operation-by-operation application/MCP conformance,
+  starting with the next bounded durable operation. Issue #42 C2 depends on the
+  richer Issue #10 LearnerSnapshot projection, and C3+ daily planning remains
+  shadow/promotion-gated. Mutation controls, protected engineering holdouts,
+  seeded learner-policy simulation, and live-shadow evidence remain required
+  before Issue #10 can advance to G5.
