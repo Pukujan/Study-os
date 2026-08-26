@@ -13,7 +13,8 @@ There is still only **one active research study**:
 - subject: `subject-001`
 - domain: DSA
 - language: Python
-- current R0 concept-family work: Sliding Window / running-extrema foundations
+- active R0 concept family: Sliding Window
+- instantiated supporting curriculum slice: running-extrema (does not create a second R0 research claim)
 - gate: Research Gate R0
 
 The broader tracks below are **planned competency tracks**, not simultaneous research programs and not evidence that Study OS has validated learning procedures outside DSA. They should be activated only when the current gate and learner needs justify them.
@@ -307,7 +308,7 @@ A planned track may become an active Study OS learning/research slice only after
 4. activating it does not invalidate or silently bypass the current research gate;
 5. project state is updated explicitly in the manifest/handoff if the active scope changes.
 
-Until then, the nine-track map is a **curriculum architecture**, while R0 remains a narrow DSA/Python research experiment.
+Until then, the nine-track map is a **curriculum architecture**, while R0 remains a narrow DSA/Python research experiment centered on Sliding Window.
 
 ## Open design work
 
