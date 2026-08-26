@@ -67,6 +67,23 @@ class ResumeApplicationConformanceTests(unittest.TestCase):
             event_type="attempt_observed",
             payload={"summary": "resume continuity evidence"},
         )
+        attempt = self.service.record_attempt(
+            idempotency_key="resume-attempt-1",
+            session_id=session["session_id"],
+            subject_id="subject-resume",
+            task_id="state-transition-trace",
+            response={"answer": "correct"},
+            assistance_level="none",
+        )
+        assessment = self.service.record_assessment(
+            idempotency_key="resume-assessment-1",
+            session_id=session["session_id"],
+            subject_id="subject-resume",
+            capability="state_prediction",
+            result="pass",
+            assistance_level="none",
+            evidence_ids=[attempt["attempt_id"]],
+        )
         intervention = self.service.record_representation_intervention(
             idempotency_key="resume-intervention-1",
             session_id=session["session_id"],
@@ -80,7 +97,11 @@ class ResumeApplicationConformanceTests(unittest.TestCase):
             idempotency_key="resume-checkpoint-1",
             subject_id="subject-resume",
             source_session_ids=[session["session_id"]],
-            evidence_ids=[artifact["artifact_id"], event["event_id"]],
+            evidence_ids=[
+                artifact["artifact_id"],
+                event["event_id"],
+                assessment["assessment_id"],
+            ],
             capability_state={"state_prediction": "pass_unaided"},
             assistance_state={"level": "none"},
             resume={
@@ -113,6 +134,7 @@ class ResumeApplicationConformanceTests(unittest.TestCase):
         self.assertEqual(application, direct)
         self.assertEqual(mcp, direct)
         self.assertEqual(direct["checkpoint_id"], checkpoint["checkpoint_id"])
+        self.assertEqual(direct["capability_state"], {"state_prediction": "pass_unaided"})
         self.assertEqual(direct["do_not_reteach"], ["basic indexing"])
         self.assertEqual(direct["retention_due_at"], "2026-09-01T00:00:00Z")
         self.assertEqual(
