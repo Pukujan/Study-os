@@ -6,6 +6,9 @@
     "gate": "R0",
     "domain": "dsa",
     "language": "python",
+    "active_concept_family": "sliding-window",
+    "instantiated_supporting_curriculum_slices": ["running-extrema"],
+    "supporting_slices_do_not_expand_r0_claim": true,
     "active_tracks": ["ALG"],
     "additional_tracks_are_architecture_only": true,
     "broad_curriculum_activation_requires_explicit_scope_change": true
