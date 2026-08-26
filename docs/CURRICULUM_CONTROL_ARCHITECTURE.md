@@ -27,6 +27,8 @@ Study OS previously used `T*` for two unrelated concepts:
 
 Those dimensions are now separated.
 
+Older audit snapshots, including `docs/LEARNER_MODEL_CURRICULUM_AUDIT.md`, may still quote the old `T1`–`T5` broad-track labels as historical design text. Those labels are superseded by this policy and must not be treated as current canonical track IDs or used to reinterpret previously recorded evidence.
+
 ### Curriculum tracks
 
 Canonical track IDs are:
