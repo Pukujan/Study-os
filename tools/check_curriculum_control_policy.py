@@ -65,6 +65,18 @@ def validate_policy(policy: dict[str, Any]) -> None:
     _require(research_scope.get("gate") == "R0", "C0/C1 must not broaden the active research gate")
     _require(research_scope.get("domain") == "dsa", "active research domain must remain DSA")
     _require(research_scope.get("language") == "python", "active research language must remain Python")
+    _require(
+        research_scope.get("active_concept_family") == "sliding-window",
+        "R0 active concept family must remain Sliding Window",
+    )
+    _require(
+        research_scope.get("instantiated_supporting_curriculum_slices") == ["running-extrema"],
+        "running-extrema must remain an explicitly supporting instantiated curriculum slice",
+    )
+    _require(
+        research_scope.get("supporting_slices_do_not_expand_r0_claim") is True,
+        "supporting curriculum slices must not silently expand the R0 research claim",
+    )
     _require(research_scope.get("active_tracks") == ["ALG"], "only ALG may be active under the current research scope")
     _require(research_scope.get("additional_tracks_are_architecture_only") is True, "additional tracks must remain architecture-only")
 
