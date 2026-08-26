@@ -1,0 +1,219 @@
+{
+  "policy_version": "0.1.0",
+  "status": "design_and_advisory_only",
+  "purpose": "Keep curriculum tracks, learner capability evidence, DSA proficiency gates, and daily study planning distinct while preserving the current research-first authority boundary.",
+  "research_scope": {
+    "gate": "R0",
+    "domain": "dsa",
+    "language": "python",
+    "active_tracks": ["ALG"],
+    "additional_tracks_are_architecture_only": true,
+    "broad_curriculum_activation_requires_explicit_scope_change": true
+  },
+  "dimensions": {
+    "track": "competency_family",
+    "competency": "observable_behavior",
+    "capability_state": "evidence_backed_learner_state",
+    "assistance": "support_exposed_before_or_during_evidence",
+    "task_difficulty": "multidimensional_item_and_operation_load",
+    "representation_effectiveness": "contextual_intervention_outcome_evidence",
+    "proficiency_tier": "repeated_cross_item_and_session_capability_gate",
+    "daily_study_goal": "derived_revisable_evidence_collection_plan"
+  },
+  "global_mastery_scalar": false,
+  "tracks": [
+    {
+      "id": "ALG",
+      "name": "Algorithmic foundations",
+      "status": "active_research_slice",
+      "scope": ["python_fluency", "manual_implementation", "data_structures_algorithms", "complexity", "debugging", "transfer"]
+    },
+    {
+      "id": "SWE",
+      "name": "Software engineering foundations",
+      "status": "planned_architecture",
+      "scope": ["git", "modules", "typing", "testing", "apis", "sql_databases", "concurrency", "software_design"]
+    },
+    {
+      "id": "MATH",
+      "name": "Math and statistics foundations",
+      "status": "planned_architecture",
+      "scope": ["algebra", "linear_algebra", "probability_statistics", "calculus", "optimization_as_needed"]
+    },
+    {
+      "id": "DATA",
+      "name": "Data foundations",
+      "status": "planned_architecture",
+      "scope": ["numpy", "pandas", "visualization", "data_handling"]
+    },
+    {
+      "id": "ML",
+      "name": "Machine learning",
+      "status": "planned_architecture",
+      "scope": ["classical_ml", "training_evaluation", "baselines", "leakage", "calibration", "error_analysis"]
+    },
+    {
+      "id": "DL",
+      "name": "Deep learning",
+      "status": "planned_architecture",
+      "scope": ["pytorch", "neural_networks", "optimization", "embeddings", "attention", "transformers"]
+    },
+    {
+      "id": "AIE",
+      "name": "AI engineering",
+      "status": "planned_architecture",
+      "scope": ["llm_apis", "structured_outputs", "tool_calling", "retrieval_rag", "evals", "workflows_agents"]
+    },
+    {
+      "id": "SYS",
+      "name": "Production systems and reliability",
+      "status": "planned_architecture",
+      "scope": ["production_engineering", "reliability", "model_serving", "caching_queues", "distributed_systems", "system_design"]
+    },
+    {
+      "id": "DIAG",
+      "name": "Technical problem framing and diagnosis",
+      "status": "planned_architecture",
+      "scope": ["goal_identification", "ambiguity_detection", "evidence_acquisition", "hypothesis_testing", "debugging", "technical_communication"]
+    }
+  ],
+  "dsa_proficiency": {
+    "namespace": "DSA",
+    "legacy_namespace": "T",
+    "legacy_spec_issue": 3,
+    "legacy_aliases_are_documentation_compatibility_only": true,
+    "bands": [
+      {
+        "id": "DSA0",
+        "legacy_alias": "T0",
+        "name": "Orientation",
+        "independence": "supported_foundations",
+        "summary": "Basic problem comprehension and supported tracing; no independent DSA expectation."
+      },
+      {
+        "id": "DSA1",
+        "legacy_alias": "T1",
+        "name": "Guided Easy",
+        "independence": "guided",
+        "summary": "Recognize constrained patterns, predict simple state, explain simple algorithms, arrange procedures, and complete scaffolded Python."
+      },
+      {
+        "id": "DSA2",
+        "legacy_alias": "T2",
+        "name": "Independent Easy",
+        "independence": "independent",
+        "summary": "Solve unseen Easy-type tasks with minimal or no help, including recognition, invariant/procedure, implementation, and debugging."
+      },
+      {
+        "id": "DSA3",
+        "legacy_alias": "T3",
+        "name": "Guided Medium",
+        "independence": "guided_with_fading",
+        "summary": "Solve Medium-type tasks with small cues or visual support while assistance is measured and deliberately faded."
+      },
+      {
+        "id": "DSA4",
+        "legacy_alias": "T4",
+        "name": "Independent Medium",
+        "independence": "independent",
+        "summary": "Repeatedly solve unseen Medium-type tasks with independent recognition, derivation, implementation, debugging, and complexity reasoning."
+      },
+      {
+        "id": "DSA5",
+        "legacy_alias": "T5",
+        "name": "Interview Ready",
+        "independence": "independent_under_interview_constraints",
+        "summary": "Perform across mixed unseen topics with limited hints, communication, time constraints, retention, consistent Medium performance, and selected harder variants."
+      },
+      {
+        "id": "DSA6",
+        "legacy_alias": "T6",
+        "name": "Advanced",
+        "independence": "advanced_transfer_and_derivation",
+        "summary": "Combine patterns, derive modifications, optimize alternatives, reason about difficult invariants, and tackle harder variants."
+      }
+    ]
+  },
+  "promotion_policy": {
+    "status": "initial_configurable_policy_not_validated_population_threshold",
+    "minimum_distinct_unseen_items": 2,
+    "more_than_one_session_when_practical": true,
+    "threshold_is_configurable": true,
+    "independent_bands": ["DSA2", "DSA4", "DSA5", "DSA6"],
+    "independent_band_requires_unaided_evidence": true,
+    "independent_band_requires_transfer_evidence": true,
+    "independent_band_requires_delayed_evidence": true,
+    "critical_capability_gate_overrides_average": true,
+    "self_report_is_never_sufficient": true,
+    "teaching_exposure_cannot_count_as_unseen": true,
+    "ai_assisted_construction_cannot_be_recorded_as_unaided_manual_implementation": true,
+    "anti_promotion_cases": [
+      "one_item_success",
+      "supported_only_for_independent_band",
+      "self_report_only",
+      "average_hides_implementation_gap",
+      "average_hides_transfer_gap",
+      "teaching_item_reused_as_unseen_evidence",
+      "ai_assisted_construction_recorded_as_unaided_manual",
+      "immediate_success_inferred_as_transfer_or_delayed"
+    ]
+  },
+  "daily_evidence_goal": {
+    "status": "advisory_derived_design_only",
+    "evidence_class": "derived",
+    "canonical_mastery_authority": false,
+    "adaptive_authority": "shadow",
+    "runtime_implementation": "deferred_until_C3",
+    "public_mcp_change_required_for_C0_C1": false,
+    "required_semantics": [
+      "goal_plan_version",
+      "target_track",
+      "target_competency",
+      "current_capability_state_and_evidence_refs",
+      "desired_next_evidence_state",
+      "task_or_interaction_mode",
+      "maximum_assistance_or_fade_target",
+      "due_retention_obligations",
+      "transfer_probe_if_warranted",
+      "explicit_priority_or_interview_need",
+      "optional_time_or_effort_budget",
+      "stop_or_replan_condition",
+      "rationale_and_provenance"
+    ],
+    "selection_order": [
+      "due_retention",
+      "highest_value_active_competency",
+      "diagnose_if_ambiguous",
+      "practice_or_remediate",
+      "fade",
+      "transfer_if_warranted",
+      "checkpoint",
+      "schedule_next_probe"
+    ],
+    "time_budget_is_planning_constraint_only": true,
+    "item_count_is_not_progress_evidence": true,
+    "time_spent_is_not_mastery_evidence": true,
+    "self_report_is_not_mastery_evidence": true,
+    "manual_and_ai_assisted_evidence_must_remain_distinguishable": true,
+    "C2_snapshot_dependencies": [
+      "capability_evidence_refs",
+      "current_and_last_successful_assistance",
+      "active_goals_and_current_phase",
+      "recent_exposure_summary",
+      "interaction_device_tool_constraints_where_relevant",
+      "explicit_next_fade_target",
+      "next_high_information_action"
+    ]
+  },
+  "roadmap": {
+    "C0": "taxonomy_and_design_convergence",
+    "C1": "proficiency_gate_specification",
+    "C2": "learner_snapshot_prerequisites",
+    "C3": "shadow_daily_goal_selector",
+    "C4": "real_learning_validation",
+    "C5": "bounded_advisory_or_live_authority_after_promotion_gates"
+  },
+  "C0_C1_runtime_behavior_change": false,
+  "C0_C1_http_frontend_change": false,
+  "C0_C1_adaptive_authority_change": false
+}
