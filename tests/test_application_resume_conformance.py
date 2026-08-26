@@ -1,14 +1,12 @@
 from __future__ import annotations
 
+import sys
 import tempfile
 import unittest
 from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
-
-import sys
-
 sys.path.insert(0, str(ROOT / "src"))
 
 from study_os import RuntimeConfig, StudyOSService  # noqa: E402
@@ -129,7 +127,7 @@ class ResumeApplicationConformanceTests(unittest.TestCase):
             direct["recent_representation_history"][0]["operation"],
             "predict",
         )
-        self.assertEqual(intervention["intervention_id"], intervention["intervention_id"])
+        self.assertTrue(intervention["created"])
 
     def test_resume_preserves_no_checkpoint_not_found_semantics(self) -> None:
         self.service.start_session(
