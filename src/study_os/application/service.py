@@ -8,6 +8,10 @@ from pydantic import ValidationError
 from .contracts import (
     NextRetentionProbeRequest,
     NextRetentionProbeResult,
+    RecentRepresentationSummary,
+    ResumeRetentionProbeSummary,
+    ResumeSubjectRequest,
+    ResumeSubjectResult,
     RetentionProbeSummary,
     RuntimeHealthCheck,
     RuntimeHealthRequest,
@@ -27,6 +31,8 @@ class ApplicationRuntimePort(Protocol):
     def doctor(self) -> dict[str, Any]: ...
 
     def status(self, *, subject_id: str) -> dict[str, Any]: ...
+
+    def resume(self, *, subject_id: str) -> dict[str, Any]: ...
 
     def get_next_probe(self, *, subject_id: str) -> dict[str, Any]: ...
 
@@ -99,6 +105,56 @@ class ApplicationService:
         except (KeyError, TypeError, ValidationError) as exc:
             raise ApplicationBoundaryError(
                 "legacy status result does not satisfy the application contract"
+            ) from exc
+
+    def resume_subject(self, request: ResumeSubjectRequest) -> ResumeSubjectResult:
+        raw = self.runtime.resume(subject_id=request.subject_id)
+        try:
+            raw_probe = raw["next_retention_probe"]
+            next_retention_probe = None
+            if raw_probe is not None:
+                if not isinstance(raw_probe, dict):
+                    raise TypeError("resume retention probe summary must be an object or null")
+                next_retention_probe = ResumeRetentionProbeSummary(
+                    retention_probe_id=raw_probe["retention_probe_id"],
+                    concept_id=raw_probe["concept_id"],
+                    due_at=raw_probe["due_at"],
+                    status=raw_probe["status"],
+                    source_checkpoint_id=raw_probe["source_checkpoint_id"],
+                )
+
+            raw_history = raw["recent_representation_history"]
+            if not isinstance(raw_history, list):
+                raise TypeError("recent representation history must be an array")
+            recent_representation_history = []
+            for item in raw_history:
+                if not isinstance(item, dict):
+                    raise TypeError("recent representation entries must be objects")
+                recent_representation_history.append(
+                    RecentRepresentationSummary(
+                        representation_family=item["representation_family"],
+                        operation=item["operation"],
+                        representation_version=item["representation_version"],
+                        target_bottleneck=item["target_bottleneck"],
+                        created_at=item["created_at"],
+                    )
+                )
+
+            return ResumeSubjectResult(
+                subject_id=raw["subject_id"],
+                checkpoint_id=raw["checkpoint_id"],
+                capability_state=raw["capability_state"],
+                assistance_state=raw["assistance_state"],
+                current_focus=raw["current_focus"],
+                do_not_reteach=raw["do_not_reteach"],
+                next_action=raw["next_action"],
+                retention_due_at=raw["retention_due_at"],
+                next_retention_probe=next_retention_probe,
+                recent_representation_history=recent_representation_history,
+            )
+        except (KeyError, TypeError, ValidationError) as exc:
+            raise ApplicationBoundaryError(
+                "legacy resume result does not satisfy the application contract"
             ) from exc
 
     def get_next_retention_probe(
@@ -181,6 +237,41 @@ def project_subject_status_to_mcp(result: SubjectStatusResult) -> dict[str, Any]
         "current_checkpoint_id": result.current_checkpoint_id,
         "current_focus": result.current_focus,
         "next_action": result.next_action,
+    }
+
+
+def project_resume_subject_to_mcp(result: ResumeSubjectResult) -> dict[str, Any]:
+    """Project canonical resume continuity back to the unchanged MCP v0.1 payload."""
+
+    next_retention_probe = None
+    if result.next_retention_probe is not None:
+        next_retention_probe = {
+            "retention_probe_id": result.next_retention_probe.retention_probe_id,
+            "concept_id": result.next_retention_probe.concept_id,
+            "due_at": result.next_retention_probe.due_at,
+            "status": result.next_retention_probe.status,
+            "source_checkpoint_id": result.next_retention_probe.source_checkpoint_id,
+        }
+    return {
+        "subject_id": result.subject_id,
+        "checkpoint_id": result.checkpoint_id,
+        "capability_state": result.capability_state,
+        "assistance_state": result.assistance_state,
+        "current_focus": result.current_focus,
+        "do_not_reteach": result.do_not_reteach,
+        "next_action": result.next_action,
+        "retention_due_at": result.retention_due_at,
+        "next_retention_probe": next_retention_probe,
+        "recent_representation_history": [
+            {
+                "representation_family": item.representation_family,
+                "operation": item.operation,
+                "representation_version": item.representation_version,
+                "target_bottleneck": item.target_bottleneck,
+                "created_at": item.created_at,
+            }
+            for item in result.recent_representation_history
+        ],
     }
 
 
