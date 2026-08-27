@@ -6,6 +6,8 @@ from typing import Any, Protocol
 from pydantic import ValidationError
 
 from .contracts import (
+    CreateFossilExportRequest,
+    CreateFossilExportResult,
     NextRetentionProbeRequest,
     NextRetentionProbeResult,
     RecentRepresentationSummary,
@@ -127,6 +129,15 @@ class ApplicationRuntimePort(Protocol):
         concept_id: str,
         due_at: str,
         source_checkpoint_id: str,
+    ) -> dict[str, Any]: ...
+
+    def export_fossil(
+        self,
+        *,
+        idempotency_key: str,
+        subject_id: str,
+        artifact_type: str,
+        source_ids: list[str],
     ) -> dict[str, Any]: ...
 
 
@@ -431,6 +442,28 @@ class ApplicationService:
                 "legacy schedule_retention_probe result does not satisfy the application contract"
             ) from exc
 
+    def create_fossil_export(
+        self,
+        request: CreateFossilExportRequest,
+    ) -> CreateFossilExportResult:
+        raw = self.runtime.export_fossil(
+            idempotency_key=request.idempotency_key,
+            subject_id=request.subject_id,
+            artifact_type=request.artifact_type,
+            source_ids=request.source_ids,
+        )
+        try:
+            return CreateFossilExportResult(
+                export_id=raw["export_id"],
+                created=raw["created"],
+                artifact_type=raw["artifact_type"],
+                source_ids=raw["source_ids"],
+            )
+        except (KeyError, TypeError, ValidationError) as exc:
+            raise ApplicationBoundaryError(
+                "legacy export_fossil result does not satisfy the application contract"
+            ) from exc
+
 
 def project_runtime_health_to_mcp(result: RuntimeHealthResult) -> dict[str, Any]:
     checks: dict[str, dict[str, Any]] = {}
@@ -574,4 +607,13 @@ def project_schedule_retention_probe_to_mcp(
         "retention_probe_id": result.retention_probe_id,
         "created": result.created,
         "due_at": result.due_at,
+    }
+
+
+def project_create_fossil_export_to_mcp(result: CreateFossilExportResult) -> dict[str, Any]:
+    return {
+        "export_id": result.export_id,
+        "created": result.created,
+        "artifact_type": result.artifact_type,
+        "source_ids": result.source_ids,
     }
