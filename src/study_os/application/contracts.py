@@ -295,6 +295,31 @@ class RecordAttemptResult(ApplicationContractModel):
     created: bool
 
 
+class RecordLearningEventRequest(ApplicationContractModel):
+    idempotency_key: NonEmptyString
+    session_id: NonEmptyString
+    subject_id: NonEmptyString
+    evidence_class: Literal["observed", "self_reported", "derived"]
+    event_type: NonEmptyString
+    payload: dict[str, JsonValue]
+    source_ids: list[NonEmptyString] | None = None
+    payload_version: str = "0.1.0"
+
+    @field_validator("payload")
+    @classmethod
+    def validate_payload_json(cls, value: dict[str, JsonValue]) -> dict[str, JsonValue]:
+        # Event payloads are semantic learner/research data and may contain arbitrary
+        # JSON keys; do not reinterpret them as public error/detail metadata.
+        _validate_json_value(value)
+        return value
+
+
+class RecordLearningEventResult(ApplicationContractModel):
+    event_id: NonEmptyString
+    created: bool
+    evidence_class: Literal["observed", "self_reported", "derived"]
+
+
 CORE_SCHEMA_MODELS: dict[str, type[BaseModel]] = {
     "application_error_envelope": ApplicationErrorEnvelope,
     "get_next_retention_probe_request": NextRetentionProbeRequest,
@@ -305,6 +330,8 @@ CORE_SCHEMA_MODELS: dict[str, type[BaseModel]] = {
     "inspect_runtime_health_result": RuntimeHealthResult,
     "record_attempt_request": RecordAttemptRequest,
     "record_attempt_result": RecordAttemptResult,
+    "record_learning_event_request": RecordLearningEventRequest,
+    "record_learning_event_result": RecordLearningEventResult,
     "resume_subject_request": ResumeSubjectRequest,
     "resume_subject_result": ResumeSubjectResult,
     "start_study_session_request": StartStudySessionRequest,
