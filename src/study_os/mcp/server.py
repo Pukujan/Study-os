@@ -9,6 +9,7 @@ from typing import Any, TextIO
 
 from ..application.contracts import (
     NextRetentionProbeRequest,
+    RecordAttemptRequest,
     ResumeSubjectRequest,
     StartStudySessionRequest,
     SubjectStatusRequest,
@@ -16,6 +17,7 @@ from ..application.contracts import (
 from ..application.service import (
     ApplicationService,
     project_next_retention_probe_to_mcp,
+    project_record_attempt_to_mcp,
     project_resume_subject_to_mcp,
     project_runtime_health_to_mcp,
     project_start_study_session_to_mcp,
@@ -27,7 +29,11 @@ from .tools import CONTRACT_PATH, load_contract
 
 
 class MCPServer:
-    def __init__(self, service: StudyOSService | None = None, contract_path: str | Path | None = None) -> None:
+    def __init__(
+        self,
+        service: StudyOSService | None = None,
+        contract_path: str | Path | None = None,
+    ) -> None:
         self.service = service or StudyOSService()
         self.application = ApplicationService(self.service)
         path = Path(contract_path) if contract_path else CONTRACT_PATH
@@ -46,7 +52,12 @@ class MCPServer:
                 {
                     "name": spec["name"],
                     "description": f"Study OS semantic operation: {spec['name']}",
-                    "inputSchema": {"type": "object", "properties": properties, "required": required, "additionalProperties": True},
+                    "inputSchema": {
+                        "type": "object",
+                        "properties": properties,
+                        "required": required,
+                        "additionalProperties": True,
+                    },
                 }
             )
         return tools
@@ -59,12 +70,19 @@ class MCPServer:
             raise validation("Unknown MCP tool", tool=name)
         missing = [field for field in spec["required_input"] if field not in arguments]
         if missing:
-            raise validation("Required MCP tool arguments are missing", tool=name, missing=missing)
+            raise validation(
+                "Required MCP tool arguments are missing",
+                tool=name,
+                missing=missing,
+            )
 
     def _dispatch(self, name: str, arguments: dict[str, Any]) -> dict[str, Any]:
         if name == "doctor":
             if arguments:
-                raise validation("doctor does not accept arguments", unexpected=sorted(arguments))
+                raise validation(
+                    "doctor does not accept arguments",
+                    unexpected=sorted(arguments),
+                )
             result = project_runtime_health_to_mcp(self.application.inspect_runtime_health())
         elif name == "status":
             unexpected = sorted(set(arguments) - {"subject_id"})
@@ -108,10 +126,32 @@ class MCPServer:
             result = project_start_study_session_to_mcp(
                 self.application.start_study_session(request)
             )
+        elif name == "record_attempt":
+            allowed = {
+                "idempotency_key",
+                "session_id",
+                "subject_id",
+                "task_id",
+                "response",
+                "assistance_level",
+                "context",
+            }
+            unexpected = sorted(set(arguments) - allowed)
+            if unexpected:
+                raise validation(
+                    "record_attempt received unexpected arguments",
+                    unexpected=unexpected,
+                )
+            request = RecordAttemptRequest(**arguments)
+            result = project_record_attempt_to_mcp(self.application.record_attempt(request))
         else:
             method = getattr(self.service, name, None)
             if method is None or not callable(method):
-                raise StudyOSError("internal_error", f"No service implementation for MCP tool: {name}", False)
+                raise StudyOSError(
+                    "internal_error",
+                    f"No service implementation for MCP tool: {name}",
+                    False,
+                )
             result = method(**arguments)
         if not isinstance(result, dict):
             raise StudyOSError(
@@ -123,10 +163,19 @@ class MCPServer:
         spec = self.tool_specs[name]
         missing = [field for field in spec["required_output"] if field not in result]
         if missing:
-            raise StudyOSError("internal_error", "Service response does not satisfy MCP output contract", False, {"tool": name, "missing": missing})
+            raise StudyOSError(
+                "internal_error",
+                "Service response does not satisfy MCP output contract",
+                False,
+                {"tool": name, "missing": missing},
+            )
         return result
 
-    def call_tool(self, name: str, arguments: dict[str, Any] | None = None) -> dict[str, Any]:
+    def call_tool(
+        self,
+        name: str,
+        arguments: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         try:
             args = arguments or {}
             self._validate_arguments(name, args)
@@ -135,8 +184,13 @@ class MCPServer:
             return exc.as_dict()
         except (TypeError, ValueError, KeyError) as exc:
             return StudyOSError("validation_error", str(exc), False).as_dict()
-        except Exception as exc:  # MCP must never expose a successful-looking response after an unexpected failure.
-            return StudyOSError("internal_error", "Unexpected Study OS service failure", False, {"exception": type(exc).__name__}).as_dict()
+        except Exception as exc:
+            return StudyOSError(
+                "internal_error",
+                "Unexpected Study OS service failure",
+                False,
+                {"exception": type(exc).__name__},
+            ).as_dict()
 
     def handle_message(self, message: dict[str, Any]) -> dict[str, Any] | None:
         request_id = message.get("id")
@@ -155,14 +209,39 @@ class MCPServer:
         elif method == "tools/call":
             if not isinstance(params, dict) or not isinstance(params.get("name"), str):
                 error = validation("tools/call requires a tool name")
-                return {"jsonrpc": "2.0", "id": request_id, "error": error.as_dict()["error"]}
-            result = {"content": [{"type": "text", "text": json.dumps(self.call_tool(params["name"], params.get("arguments") or {}), sort_keys=True)}]}
+                return {
+                    "jsonrpc": "2.0",
+                    "id": request_id,
+                    "error": error.as_dict()["error"],
+                }
+            result = {
+                "content": [
+                    {
+                        "type": "text",
+                        "text": json.dumps(
+                            self.call_tool(
+                                params["name"],
+                                params.get("arguments") or {},
+                            ),
+                            sort_keys=True,
+                        ),
+                    }
+                ]
+            }
         else:
             error = validation("Unsupported MCP method", method=method)
-            return {"jsonrpc": "2.0", "id": request_id, "error": error.as_dict()["error"]}
+            return {
+                "jsonrpc": "2.0",
+                "id": request_id,
+                "error": error.as_dict()["error"],
+            }
         return {"jsonrpc": "2.0", "id": request_id, "result": result}
 
-    def run_stdio(self, input_stream: TextIO = sys.stdin, output_stream: TextIO = sys.stdout) -> None:
+    def run_stdio(
+        self,
+        input_stream: TextIO = sys.stdin,
+        output_stream: TextIO = sys.stdout,
+    ) -> None:
         for line in input_stream:
             if not line.strip():
                 continue
@@ -172,6 +251,20 @@ class MCPServer:
                     output_stream.write(json.dumps(response, separators=(",", ":")) + "\n")
                     output_stream.flush()
             except Exception as exc:
-                error = StudyOSError("internal_error", "Invalid MCP message", False, {"exception": type(exc).__name__})
-                output_stream.write(json.dumps({"jsonrpc": "2.0", "id": None, "error": error.as_dict()["error"]}) + "\n")
+                error = StudyOSError(
+                    "internal_error",
+                    "Invalid MCP message",
+                    False,
+                    {"exception": type(exc).__name__},
+                )
+                output_stream.write(
+                    json.dumps(
+                        {
+                            "jsonrpc": "2.0",
+                            "id": None,
+                            "error": error.as_dict()["error"],
+                        }
+                    )
+                    + "\n"
+                )
                 output_stream.flush()
