@@ -59,11 +59,14 @@ class RepresentationApplicationConformanceTests(unittest.TestCase):
         subject_id: str,
         suffix: str,
     ) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
+        # Each isolated fixture owns its own project/domain pair. Reusing one domain
+        # across different fixture projects would correctly violate the runtime's
+        # durable domain -> project ownership invariant.
         session = service.start_session(
             idempotency_key=f"{suffix}-session",
             subject_id=subject_id,
             project_id=f"{suffix}-project",
-            domain_id="dsa",
+            domain_id=f"{suffix}-domain",
         )
         attempt = service.record_attempt(
             idempotency_key=f"{suffix}-attempt",
@@ -165,7 +168,7 @@ class RepresentationApplicationConformanceTests(unittest.TestCase):
             for root in roots:
                 root.cleanup()
 
-    def test_intervention_retry_reuses_one_representation_and_conflicting_request_fails(self) -> None:
+    def test_intervention_retry_reuse_and_fail_closed_paths(self) -> None:
         server = MCPServer(self.service)
         base = {
             "idempotency_key": "representation-retry",
@@ -182,47 +185,39 @@ class RepresentationApplicationConformanceTests(unittest.TestCase):
             "record_representation_intervention",
             {**base, "operation": "explain"},
         )
+        invalid_version = server.call_tool(
+            "record_representation_intervention",
+            {**base, "idempotency_key": "invalid-version", "representation_version": "v1"},
+        )
+        missing_session = server.call_tool(
+            "record_representation_intervention",
+            {**base, "idempotency_key": "missing-session", "session_id": "missing"},
+        )
 
         self.assertTrue(first["created"])
         self.assertFalse(retry["created"])
         self.assertEqual(first["intervention_id"], retry["intervention_id"])
         self.assertEqual(conflict["error"]["category"], "conflict")
-        representation_count = self.service.db.connection.execute(
-            "SELECT COUNT(*) FROM representations WHERE family = ? AND semantic_version = ?",
-            ("deterministic_state_trace", "0.1.0"),
-        ).fetchone()[0]
-        intervention_count = self.service.db.connection.execute(
-            "SELECT COUNT(*) FROM interventions WHERE subject_id = ?",
-            ("subject-representation",),
-        ).fetchone()[0]
-        self.assertEqual(representation_count, 1)
-        self.assertEqual(intervention_count, 1)
-
-    def test_intervention_validation_not_found_and_malformed_result_fail_closed(self) -> None:
-        base = {
-            "idempotency_key": "representation-invalid",
-            "session_id": self.session["session_id"],
-            "subject_id": "subject-representation",
-            "representation_family": "deterministic_state_trace",
-            "operation": "predict",
-            "representation_version": "version-one",
-            "target_bottleneck": "state_transition",
-        }
-        invalid = MCPServer(self.service).call_tool(
-            "record_representation_intervention",
-            base,
+        self.assertEqual(invalid_version["error"]["category"], "validation_error")
+        self.assertEqual(missing_session["error"]["category"], "not_found")
+        self.assertEqual(
+            self.service.db.connection.execute(
+                "SELECT COUNT(*) FROM representations WHERE family = ? AND semantic_version = ?",
+                ("deterministic_state_trace", "0.1.0"),
+            ).fetchone()[0],
+            1,
         )
-        self.assertEqual(invalid["error"]["category"], "validation_error")
-
-        missing = MCPServer(self.service).call_tool(
-            "record_representation_intervention",
-            {**base, "session_id": "missing-session", "representation_version": "0.1.0"},
+        self.assertEqual(
+            self.service.db.connection.execute(
+                "SELECT COUNT(*) FROM interventions WHERE subject_id = ?",
+                ("subject-representation",),
+            ).fetchone()[0],
+            1,
         )
-        self.assertEqual(missing["error"]["category"], "not_found")
 
         malformed = MCPServer(MalformedInterventionService()).call_tool(  # type: ignore[arg-type]
             "record_representation_intervention",
-            {**base, "representation_version": "0.1.0"},
+            base,
         )
         self.assertEqual(malformed["error"]["category"], "internal_error")
         self.assertEqual(
@@ -242,10 +237,7 @@ class RepresentationApplicationConformanceTests(unittest.TestCase):
             for index, service in enumerate(services)
         ]
         try:
-            with patch(
-                "study_os.services.runtime_base.new_id",
-                return_value="outcome-fixed",
-            ):
+            with patch("study_os.services.runtime_base.new_id", return_value="outcome-fixed"):
                 direct = services[0].record_representation_outcome(
                     idempotency_key="outcome-differential",
                     intervention_id=seeded[0][2]["intervention_id"],
@@ -297,7 +289,7 @@ class RepresentationApplicationConformanceTests(unittest.TestCase):
             for root in roots:
                 root.cleanup()
 
-    def test_outcome_retry_conflict_and_behavioral_evidence_invariant(self) -> None:
+    def test_outcome_idempotency_and_behavioral_evidence_invariant(self) -> None:
         _, assessment, intervention = self.seed_behavioral_chain(
             self.service,
             subject_id="subject-outcome",
@@ -368,8 +360,6 @@ class RepresentationApplicationConformanceTests(unittest.TestCase):
                 "evidence_ids": [assessment["assessment_id"]],
             },
         )
-        self.assertEqual(missing["error"]["category"], "not_found")
-
         mismatch = server.call_tool(
             "record_representation_outcome",
             {
@@ -380,6 +370,7 @@ class RepresentationApplicationConformanceTests(unittest.TestCase):
                 "evidence_ids": [assessment["assessment_id"]],
             },
         )
+        self.assertEqual(missing["error"]["category"], "not_found")
         self.assertEqual(mismatch["error"]["category"], "integrity_error")
 
         malformed = MCPServer(MalformedOutcomeService()).call_tool(  # type: ignore[arg-type]
@@ -408,17 +399,6 @@ class RepresentationApplicationConformanceTests(unittest.TestCase):
             "representation_version": "0.1.0",
             "target_bottleneck": "state_transition",
         }
-        for extra in (
-            {"application_contract_version": "0.1.0"},
-            {"invented": True},
-        ):
-            with self.subTest(operation="intervention", extra=extra):
-                result = MCPServer(self.service).call_tool(
-                    "record_representation_intervention",
-                    {**intervention_base, **extra},
-                )
-                self.assertEqual(result["error"]["category"], "validation_error")
-
         outcome_base = {
             "idempotency_key": "outcome-unexpected",
             "intervention_id": "intervention-001",
@@ -426,16 +406,17 @@ class RepresentationApplicationConformanceTests(unittest.TestCase):
             "evidence_score": 3,
             "evidence_ids": ["assessment-001"],
         }
-        for extra in (
-            {"application_contract_version": "0.1.0"},
-            {"invented": True},
+        for operation, base in (
+            ("record_representation_intervention", intervention_base),
+            ("record_representation_outcome", outcome_base),
         ):
-            with self.subTest(operation="outcome", extra=extra):
-                result = MCPServer(self.service).call_tool(
-                    "record_representation_outcome",
-                    {**outcome_base, **extra},
-                )
-                self.assertEqual(result["error"]["category"], "validation_error")
+            for extra in (
+                {"application_contract_version": "0.1.0"},
+                {"invented": True},
+            ):
+                with self.subTest(operation=operation, extra=extra):
+                    result = MCPServer(self.service).call_tool(operation, {**base, **extra})
+                    self.assertEqual(result["error"]["category"], "validation_error")
 
 
 if __name__ == "__main__":
