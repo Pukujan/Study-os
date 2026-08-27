@@ -18,6 +18,7 @@ from pydantic import (
 
 APPLICATION_CONTRACT_VERSION = "0.1.0"
 NonEmptyString = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
+SemanticVersion = Annotated[str, StringConstraints(pattern=r"^\d+\.\d+\.\d+$")]
 ErrorCode = Annotated[
     str,
     StringConstraints(strip_whitespace=True, min_length=1, pattern=r"^[a-z][a-z0-9_.-]*$"),
@@ -226,8 +227,6 @@ class StartStudySessionRequest(ApplicationContractModel):
     @field_validator("metadata", mode="before")
     @classmethod
     def normalize_legacy_null_metadata(cls, value: object) -> object:
-        # The existing runtime fingerprints absent/None metadata as an empty object.
-        # Preserve that compatibility before MCP is migrated onto this model.
         return {} if value is None else value
 
     @field_validator("metadata")
@@ -270,22 +269,17 @@ class RecordAttemptRequest(ApplicationContractModel):
     @field_validator("context", mode="before")
     @classmethod
     def normalize_legacy_null_context(cls, value: object) -> object:
-        # The preserved runtime fingerprints absent/None context as an empty object.
         return {} if value is None else value
 
     @field_validator("response")
     @classmethod
     def validate_response_json(cls, value: JsonValue) -> JsonValue:
-        # Learner responses may legitimately contain arbitrary JSON keys, so use the
-        # generic JSON safety check rather than the public error/detail key filter.
         _validate_json_value(value)
         return value
 
     @field_validator("context")
     @classmethod
     def validate_context_json(cls, value: dict[str, JsonValue]) -> dict[str, JsonValue]:
-        # Context currently carries versioned attempt telemetry and remains stored as
-        # one JSON object; this adapter must not silently reinterpret its vocabulary.
         _validate_json_value(value)
         return value
 
@@ -308,8 +302,6 @@ class RecordLearningEventRequest(ApplicationContractModel):
     @field_validator("payload")
     @classmethod
     def validate_payload_json(cls, value: dict[str, JsonValue]) -> dict[str, JsonValue]:
-        # Event payloads are semantic learner/research data and may contain arbitrary
-        # JSON keys; do not reinterpret them as public error/detail metadata.
         _validate_json_value(value)
         return value
 
@@ -318,6 +310,35 @@ class RecordLearningEventResult(ApplicationContractModel):
     event_id: NonEmptyString
     created: bool
     evidence_class: Literal["observed", "self_reported", "derived"]
+
+
+class RecordRepresentationInterventionRequest(ApplicationContractModel):
+    idempotency_key: NonEmptyString
+    session_id: NonEmptyString
+    subject_id: NonEmptyString
+    representation_family: NonEmptyString
+    operation: NonEmptyString
+    representation_version: SemanticVersion
+    target_bottleneck: NonEmptyString
+
+
+class RecordRepresentationInterventionResult(ApplicationContractModel):
+    intervention_id: NonEmptyString
+    created: bool
+
+
+class RecordRepresentationOutcomeRequest(ApplicationContractModel):
+    idempotency_key: NonEmptyString
+    intervention_id: NonEmptyString
+    subject_id: NonEmptyString
+    evidence_score: Annotated[int, Field(ge=0, le=5)]
+    evidence_ids: Annotated[list[NonEmptyString], Field(min_length=1)]
+
+
+class RecordRepresentationOutcomeResult(ApplicationContractModel):
+    outcome_id: NonEmptyString
+    created: bool
+    evidence_score: Annotated[int, Field(ge=0, le=5)]
 
 
 CORE_SCHEMA_MODELS: dict[str, type[BaseModel]] = {
@@ -332,6 +353,10 @@ CORE_SCHEMA_MODELS: dict[str, type[BaseModel]] = {
     "record_attempt_result": RecordAttemptResult,
     "record_learning_event_request": RecordLearningEventRequest,
     "record_learning_event_result": RecordLearningEventResult,
+    "record_representation_intervention_request": RecordRepresentationInterventionRequest,
+    "record_representation_intervention_result": RecordRepresentationInterventionResult,
+    "record_representation_outcome_request": RecordRepresentationOutcomeRequest,
+    "record_representation_outcome_result": RecordRepresentationOutcomeResult,
     "resume_subject_request": ResumeSubjectRequest,
     "resume_subject_result": ResumeSubjectResult,
     "start_study_session_request": StartStudySessionRequest,
