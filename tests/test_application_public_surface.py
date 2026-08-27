@@ -17,6 +17,8 @@ class ApplicationPublicSurfaceTests(unittest.TestCase):
             "ApplicationError",
             "ApplicationErrorCategory",
             "ApplicationErrorEnvelope",
+            "CreateFossilExportRequest",
+            "CreateFossilExportResult",
             "NextRetentionProbeRequest",
             "NextRetentionProbeResult",
             "RecentRepresentationSummary",
