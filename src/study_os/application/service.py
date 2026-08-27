@@ -13,6 +13,10 @@ from .contracts import (
     RecordAttemptResult,
     RecordLearningEventRequest,
     RecordLearningEventResult,
+    RecordRepresentationInterventionRequest,
+    RecordRepresentationInterventionResult,
+    RecordRepresentationOutcomeRequest,
+    RecordRepresentationOutcomeResult,
     ResumeRetentionProbeSummary,
     ResumeSubjectRequest,
     ResumeSubjectResult,
@@ -74,6 +78,28 @@ class ApplicationRuntimePort(Protocol):
         payload: dict[str, Any],
         source_ids: list[str] | None = None,
         payload_version: str = "0.1.0",
+    ) -> dict[str, Any]: ...
+
+    def record_representation_intervention(
+        self,
+        *,
+        idempotency_key: str,
+        session_id: str,
+        subject_id: str,
+        representation_family: str,
+        operation: str,
+        representation_version: str,
+        target_bottleneck: str,
+    ) -> dict[str, Any]: ...
+
+    def record_representation_outcome(
+        self,
+        *,
+        idempotency_key: str,
+        intervention_id: str,
+        subject_id: str,
+        evidence_score: int,
+        evidence_ids: list[str],
     ) -> dict[str, Any]: ...
 
 
@@ -283,10 +309,53 @@ class ApplicationService:
                 "legacy record_learning_event result does not satisfy the application contract"
             ) from exc
 
+    def record_representation_intervention(
+        self,
+        request: RecordRepresentationInterventionRequest,
+    ) -> RecordRepresentationInterventionResult:
+        raw = self.runtime.record_representation_intervention(
+            idempotency_key=request.idempotency_key,
+            session_id=request.session_id,
+            subject_id=request.subject_id,
+            representation_family=request.representation_family,
+            operation=request.operation,
+            representation_version=request.representation_version,
+            target_bottleneck=request.target_bottleneck,
+        )
+        try:
+            return RecordRepresentationInterventionResult(
+                intervention_id=raw["intervention_id"],
+                created=raw["created"],
+            )
+        except (KeyError, TypeError, ValidationError) as exc:
+            raise ApplicationBoundaryError(
+                "legacy record_representation_intervention result does not satisfy the application contract"
+            ) from exc
+
+    def record_representation_outcome(
+        self,
+        request: RecordRepresentationOutcomeRequest,
+    ) -> RecordRepresentationOutcomeResult:
+        raw = self.runtime.record_representation_outcome(
+            idempotency_key=request.idempotency_key,
+            intervention_id=request.intervention_id,
+            subject_id=request.subject_id,
+            evidence_score=request.evidence_score,
+            evidence_ids=request.evidence_ids,
+        )
+        try:
+            return RecordRepresentationOutcomeResult(
+                outcome_id=raw["outcome_id"],
+                created=raw["created"],
+                evidence_score=raw["evidence_score"],
+            )
+        except (KeyError, TypeError, ValidationError) as exc:
+            raise ApplicationBoundaryError(
+                "legacy record_representation_outcome result does not satisfy the application contract"
+            ) from exc
+
 
 def project_runtime_health_to_mcp(result: RuntimeHealthResult) -> dict[str, Any]:
-    """Project the canonical application result back to the unchanged MCP v0.1 payload."""
-
     checks: dict[str, dict[str, Any]] = {}
     for name, check in result.checks.items():
         checks[name] = {
@@ -303,8 +372,6 @@ def project_runtime_health_to_mcp(result: RuntimeHealthResult) -> dict[str, Any]
 
 
 def project_subject_status_to_mcp(result: SubjectStatusResult) -> dict[str, Any]:
-    """Project canonical subject status back to the unchanged MCP v0.1 payload."""
-
     return {
         "subject_id": result.subject_id,
         "current_session_id": result.current_session_id,
@@ -315,8 +382,6 @@ def project_subject_status_to_mcp(result: SubjectStatusResult) -> dict[str, Any]
 
 
 def project_resume_subject_to_mcp(result: ResumeSubjectResult) -> dict[str, Any]:
-    """Project canonical resume continuity back to the unchanged MCP v0.1 payload."""
-
     next_retention_probe = None
     if result.next_retention_probe is not None:
         next_retention_probe = {
@@ -350,8 +415,6 @@ def project_resume_subject_to_mcp(result: ResumeSubjectResult) -> dict[str, Any]
 
 
 def project_next_retention_probe_to_mcp(result: NextRetentionProbeResult) -> dict[str, Any]:
-    """Project canonical retention-probe selection back to the unchanged MCP v0.1 payload."""
-
     probe = None
     if result.probe is not None:
         probe = {
@@ -369,8 +432,6 @@ def project_next_retention_probe_to_mcp(result: NextRetentionProbeResult) -> dic
 
 
 def project_start_study_session_to_mcp(result: StartStudySessionResult) -> dict[str, Any]:
-    """Project canonical start-session output back to the unchanged MCP v0.1 payload."""
-
     return {
         "session_id": result.session_id,
         "subject_id": result.subject_id,
@@ -380,8 +441,6 @@ def project_start_study_session_to_mcp(result: StartStudySessionResult) -> dict[
 
 
 def project_record_attempt_to_mcp(result: RecordAttemptResult) -> dict[str, Any]:
-    """Project canonical attempt output back to the unchanged MCP v0.1 payload."""
-
     return {
         "attempt_id": result.attempt_id,
         "created": result.created,
@@ -391,10 +450,27 @@ def project_record_attempt_to_mcp(result: RecordAttemptResult) -> dict[str, Any]
 def project_record_learning_event_to_mcp(
     result: RecordLearningEventResult,
 ) -> dict[str, Any]:
-    """Project canonical learning-event output back to the unchanged MCP v0.1 payload."""
-
     return {
         "event_id": result.event_id,
         "created": result.created,
         "evidence_class": result.evidence_class,
+    }
+
+
+def project_record_representation_intervention_to_mcp(
+    result: RecordRepresentationInterventionResult,
+) -> dict[str, Any]:
+    return {
+        "intervention_id": result.intervention_id,
+        "created": result.created,
+    }
+
+
+def project_record_representation_outcome_to_mcp(
+    result: RecordRepresentationOutcomeResult,
+) -> dict[str, Any]:
+    return {
+        "outcome_id": result.outcome_id,
+        "created": result.created,
+        "evidence_score": result.evidence_score,
     }
