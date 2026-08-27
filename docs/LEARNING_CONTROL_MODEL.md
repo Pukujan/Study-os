@@ -2,7 +2,9 @@
 
 Status: **design clarification; does not expand Research Gate R0**
 
-Study OS currently has strong evidence, checkpoint, validation, and capability-state machinery, but its learning-control concepts are distributed across several documents and schemas. This document makes the control loop explicit and separates the **active research study** from broader **planned learner-development tracks**.
+Study OS currently has strong evidence, checkpoint, validation, capability-state, curriculum-item, and scaffold-control machinery, but its learning-control concepts are distributed across several documents and schemas. This document makes the control loop explicit and separates the **active research study** from broader **planned learner-development tracks**.
+
+The curriculum/proficiency namespace and daily evidence-goal policy are defined in `docs/CURRICULUM_CONTROL_ARCHITECTURE.md` and `contracts/curriculum-control-policy.v0.1.json`.
 
 ## Scope rule
 
@@ -11,97 +13,47 @@ There is still only **one active research study**:
 - subject: `subject-001`
 - domain: DSA
 - language: Python
-- concept family: Sliding Window
+- active R0 concept family: Sliding Window
+- instantiated supporting curriculum slice: running-extrema (does not create a second R0 research claim)
 - gate: Research Gate R0
 
 The broader tracks below are **planned competency tracks**, not simultaneous research programs and not evidence that Study OS has validated learning procedures outside DSA. They should be activated only when the current gate and learner needs justify them.
 
-## Planned competency tracks
+## Curriculum track namespace
 
-Study OS may eventually support five connected technical-development tracks for Subject 001.
+Track identifiers describe **what family of capabilities is being developed**. They are not proficiency levels.
 
-### T1 — Algorithmic foundations
+Canonical track IDs are:
 
-Primary content:
+- `ALG` — Python fluency, manual implementation, DSA, complexity, debugging, and transfer;
+- `SWE` — Git, modules, typing, testing, APIs, SQL/databases, concurrency, and software design;
+- `MATH` — algebra, linear algebra, probability/statistics, calculus, and optimization as needed;
+- `DATA` — NumPy, pandas, visualization, and data handling;
+- `ML` — classical ML, training/evaluation, baselines, leakage, calibration, and error analysis;
+- `DL` — PyTorch, neural networks, optimization, embeddings, attention, and transformers;
+- `AIE` — LLM APIs, structured outputs, tool calling, retrieval/RAG, evals, workflows, and agents;
+- `SYS` — production engineering, reliability, model serving, caching/queues, distributed systems, and system design;
+- `DIAG` — technical problem framing, debugging, evidence acquisition, hypothesis testing, and communication.
 
-- Python fluency;
-- data structures and algorithms;
-- complexity reasoning;
-- implementation;
-- debugging;
-- transfer to unfamiliar problems.
+Current status: only `ALG` is part of the active R0 research slice. Every other track is curriculum architecture until explicitly activated.
 
-Current status: **active research slice**, beginning with Sliding Window.
+These tracks are not a strict staircase. Some development can proceed in parallel, provided evidence conditions remain explicit. For example, SWE can strengthen alongside ALG, and practical AIE work can occur before all DL theory is complete without being mistaken for deep model-training mastery.
 
-### T2 — Software and systems foundations
+## Proficiency is a separate namespace
 
-Primary content:
+Issue #3's DSA tier meanings are preserved, but new curriculum-track identifiers no longer use `T*`.
 
-- Python software engineering;
-- modules, interfaces, typing, errors, tests, and debugging;
-- databases, transactions, indexes, persistence, and migrations;
-- APIs and semantic boundaries;
-- concurrency and asynchronous behavior;
-- tracing Study OS components end to end.
+The canonical DSA proficiency namespace is:
 
-A major use case is reverse-learning Study OS itself: move from AI-assisted construction to independent explanation, modification, testing, and debugging of the codebase.
+- `DSA0` — Orientation (`T0` legacy prose);
+- `DSA1` — Guided Easy (`T1` legacy prose);
+- `DSA2` — Independent Easy (`T2` legacy prose);
+- `DSA3` — Guided Medium (`T3` legacy prose);
+- `DSA4` — Independent Medium (`T4` legacy prose);
+- `DSA5` — Interview Ready (`T5` legacy prose);
+- `DSA6` — Advanced (`T6` legacy prose).
 
-Current status: **planned learner-development track; not an R0 research domain**.
-
-### T3 — System design and reliability
-
-Primary content:
-
-- requirements and constraints;
-- service boundaries;
-- state and consistency;
-- queues, retries, timeouts, and idempotency;
-- observability;
-- failure handling and recovery;
-- scaling and architecture tradeoffs.
-
-Study OS itself should provide recurring design cases, for example redesigning the local-first system for larger user counts without requiring those scale-out architectures to be built prematurely.
-
-Current status: **planned learner-development track; not an R0 research domain**.
-
-### T4 — AI systems, evaluation, and reliability
-
-Primary content:
-
-- model/application boundaries;
-- structured outputs and tool use;
-- agents and context/state;
-- output validation;
-- deterministic and model-based graders;
-- golden datasets and regression suites;
-- calibration and uncertainty;
-- production monitoring and failure taxonomy.
-
-The learner should be able to distinguish model behavior from harness, tool, runtime, data, evaluator, and product failures.
-
-Current status: **planned specialization track; some reliability concepts already exist in the Study OS implementation/validation harness, but they are not yet a separate learning study**.
-
-### T5 — Technical problem framing and diagnosis
-
-Primary content:
-
-- identify the actual goal before proposing a solution;
-- detect ambiguity and missing information;
-- define expected versus observed behavior;
-- gather evidence and representative failures;
-- map the system/failure boundary;
-- generate competing hypotheses;
-- design discriminating experiments;
-- reason about trust, evidence, and uncertainty;
-- communicate technical conclusions at multiple depths.
-
-Representative prompt:
-
-> "Here is our production prompt. We need help with it."
-
-Study OS should not reveal the hidden problem immediately. The learner must first establish the goal, request evidence, and drive the investigation.
-
-Current status: **planned cross-cutting competency prompted by real interview evidence; not a separate R0 research claim**.
+A proficiency tier is a **repeated cross-item/session capability gate**, not a curriculum track and not one mastery percentage. Do not invent one universal proficiency scale for future tracks until those tracks have their own observable capability/evidence requirements.
 
 ## Canonical learning-control loop
 
@@ -142,7 +94,7 @@ Example:
 
 ```yaml
 goal: solve_sliding_window_unaided
-track: T1
+track: ALG
 capability: implementation
 target_assistance: A0
 required_evidence:
@@ -160,7 +112,7 @@ Study OS does **not yet have a first-class canonical goal object/schema**. Goal-
 - checkpoint `next_action` / `next_probe`;
 - capability state and retention scheduling.
 
-A goal schema should not be added merely for completeness; define it when the live learning loop needs durable multi-goal planning.
+A durable multi-goal schema should not be added merely for completeness; define it when the live learning loop needs canonical multi-goal planning.
 
 ## Plan system
 
@@ -184,11 +136,38 @@ Plans are hypotheses about how to make progress. They must be updated when evide
 Study OS has a **partial plan system**, distributed across:
 
 - `docs/RESEARCH_PLAN.md` for the active experiment;
-- Lesson IR/representation sequencing;
+- versioned curriculum item/episode sequencing;
 - checkpoint `next_action`, `next_probe`, and retention due state;
-- agent/tutor proposals.
+- shadow agent/tutor proposals.
 
 There is **no unified canonical learner study-plan schema yet**.
+
+### Daily evidence goals
+
+Issue #42 adds a narrower planning concept without pretending the full plan system exists.
+
+A **daily evidence goal** is a derived, revisable objective for the current study period. It should eventually answer:
+
+> Given canonical learner evidence, due retention, current phase, explicit priorities, and available study budget, what bounded evidence objective should be pursued next?
+
+It may include target track/competency, current evidence refs, desired next capability state, interaction mode, maximum assistance/fade target, due retention, a transfer probe, priority, optional time/effort budget, stop/replan condition, and rationale/provenance.
+
+A daily goal is not observed evidence, not mastery authority, and not a quota. Time spent or number of items completed may constrain a session but cannot by themselves prove progress.
+
+The initial advisory control skeleton is:
+
+```text
+due retention
+  -> highest-value active competency
+  -> diagnose if ambiguous
+  -> practice/remediate
+  -> fade
+  -> transfer if warranted
+  -> checkpoint
+  -> schedule next probe
+```
+
+Runtime implementation of a daily-goal selector is deferred until the richer learner-state prerequisites are available and must begin shadow-only.
 
 ## Task / episode system
 
@@ -251,9 +230,42 @@ This is the current scoring philosophy: **a vector of evidence-backed capability
 
 Derived confidence values belong to hypotheses/diagnoses and must not be confused with calibrated probability of learner mastery unless calibration has actually been established.
 
+## DSA proficiency promotion
+
+The initial C1 proficiency policy is deliberately conservative and configurable.
+
+For independent DSA bands (`DSA2`, `DSA4`, `DSA5`, `DSA6`), promotion requires relevant repeated evidence that includes unaided performance, changed-surface transfer, delayed retrieval, and any critical capability named by the claim such as implementation/debugging.
+
+Do not promote from:
+
+- one successful item;
+- supported-only success into an independent band;
+- self-report alone;
+- an average that hides an implementation or transfer gap;
+- an exposed teaching item relabeled as unseen evidence;
+- AI-assisted construction relabeled as unaided manual implementation;
+- immediate success inferred as transfer or delayed mastery.
+
+The current machine policy uses at least two distinct unseen items as an initial configurable default and asks for more than one session when practical. That threshold is an operating policy, not a validated population-level pedagogical constant.
+
+## Manual versus AI-assisted evidence
+
+Manual and AI-assisted work should remain distinguishable through interaction-mode and assistance provenance rather than through a fabricated universal dual score.
+
+Examples include:
+
+- blank manual implementation;
+- scaffolded manual implementation;
+- code reading/debugging;
+- AI oversight/review;
+- AI-assisted construction;
+- verbal/phone shorthand when full implementation is not being measured.
+
+AI-assisted success can support capabilities such as oversight, architecture, decomposition, or debugging. It cannot silently become A0 blank-manual implementation evidence.
+
 ## Scoring technical problem framing
 
-For T5, do not score whether the learner guessed the hidden root cause immediately. Score observable diagnostic behavior.
+For `DIAG`, do not score whether the learner guessed the hidden root cause immediately. Score observable diagnostic behavior.
 
 Initial dimensions:
 
@@ -272,21 +284,19 @@ These should use the same evidence-state philosophy as other capabilities rather
 
 ## Suggested current time allocation
 
-While basic DSA/Python fluency is being restored:
+While basic DSA/Python fluency is being restored, the current planning heuristic remains:
 
-- **50%** T1 algorithmic foundations;
-- **35%** T2/T3 software + systems foundations;
-- **15%** T5 ambiguous technical diagnosis.
+- **50%** `ALG`;
+- **35%** `SWE`/`SYS`;
+- **15%** `DIAG`.
 
-After DSA reaches a stable interview-maintenance level:
+After DSA reaches a stable interview-maintenance level, a reasonable current heuristic is:
 
-- **25%** T1;
-- **45%** T2/T3;
-- **30%** T4/T5.
+- **25%** `ALG`;
+- **45%** `SWE`/`SYS`;
+- **30%** `AIE`/`DIAG`.
 
-During active AI-systems interviewing, allocation should be adjusted from observed interview failures rather than fixed permanently.
-
-These percentages are a current planning heuristic, not a validated pedagogical claim.
+These percentages are not a validated pedagogical claim and are not the permanent allocation for the broader Python-to-ML-to-AI roadmap. When explicit MATH/DATA/ML/DL goals become active, allocation should be recomputed from learner goals, prerequisites, retention obligations, and observed interview/project gaps.
 
 ## Activation rule for new tracks
 
@@ -298,19 +308,19 @@ A planned track may become an active Study OS learning/research slice only after
 4. activating it does not invalidate or silently bypass the current research gate;
 5. project state is updated explicitly in the manifest/handoff if the active scope changes.
 
-Until then, the five-track model is a **curriculum architecture**, while R0 remains a single DSA/Sliding Window research experiment.
+Until then, the nine-track map is a **curriculum architecture**, while R0 remains a narrow DSA/Python research experiment centered on Sliding Window.
 
 ## Open design work
 
-Do not implement all of these immediately. The next design decisions after R0/P1 readiness should determine whether Study OS needs first-class schemas/services for:
+Do not implement all of these immediately. Subsequent design/implementation decisions should determine when Study OS needs first-class schemas/services for:
 
-- goals;
-- study plans;
-- assessment/test specifications;
-- competency definitions across domains;
+- durable multi-goal state;
+- unified study plans;
+- assessment/test specifications across domains;
+- competency definitions outside the instantiated DSA slice;
 - time-allocation policies;
-- adaptive plan selection;
+- shadow then promoted daily-plan selection;
 - technical-diagnosis scenario fixtures;
 - eval rubrics for open-ended engineering judgment.
 
-Any such implementation must preserve the existing observed/self-reported/derived evidence boundary and multidimensional capability model.
+Any such implementation must preserve the existing observed/self-reported/derived evidence boundary, multidimensional capability model, and Issue #10/#21 promotion/verification gates.
