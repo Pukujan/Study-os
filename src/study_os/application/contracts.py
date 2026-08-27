@@ -19,6 +19,8 @@ from pydantic import (
 
 APPLICATION_CONTRACT_VERSION = "0.1.0"
 NonEmptyString = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
+OpaqueNonEmptyString = Annotated[str, StringConstraints(min_length=1)]
+PreservedNonBlankString = Annotated[str, StringConstraints(min_length=1, pattern=r"\S")]
 SemanticVersion = Annotated[str, StringConstraints(pattern=r"^\d+\.\d+\.\d+$")]
 ErrorCode = Annotated[
     str,
@@ -377,15 +379,15 @@ class RecordRepresentationOutcomeResult(ApplicationContractModel):
 class CreateFossilExportRequest(ApplicationContractModel):
     idempotency_key: NonEmptyString
     subject_id: NonEmptyString
-    artifact_type: NonEmptyString
-    source_ids: Annotated[list[NonEmptyString], Field(min_length=1)]
+    artifact_type: PreservedNonBlankString
+    source_ids: Annotated[list[OpaqueNonEmptyString], Field(min_length=1)]
 
 
 class CreateFossilExportResult(ApplicationContractModel):
     export_id: NonEmptyString
     created: bool
-    artifact_type: NonEmptyString
-    source_ids: Annotated[list[NonEmptyString], Field(min_length=1)]
+    artifact_type: PreservedNonBlankString
+    source_ids: Annotated[list[OpaqueNonEmptyString], Field(min_length=1)]
 
 
 class ScheduleRetentionProbeRequest(ApplicationContractModel):
