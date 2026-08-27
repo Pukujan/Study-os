@@ -24,6 +24,8 @@ from .contracts import (
     RuntimeHealthCheck,
     RuntimeHealthRequest,
     RuntimeHealthResult,
+    ScheduleRetentionProbeRequest,
+    ScheduleRetentionProbeResult,
     StartStudySessionRequest,
     StartStudySessionResult,
     SubjectStatusRequest,
@@ -100,6 +102,16 @@ class ApplicationRuntimePort(Protocol):
         subject_id: str,
         evidence_score: int,
         evidence_ids: list[str],
+    ) -> dict[str, Any]: ...
+
+    def schedule_retention_probe(
+        self,
+        *,
+        idempotency_key: str,
+        subject_id: str,
+        concept_id: str,
+        due_at: str,
+        source_checkpoint_id: str,
     ) -> dict[str, Any]: ...
 
 
@@ -354,6 +366,28 @@ class ApplicationService:
                 "legacy record_representation_outcome result does not satisfy the application contract"
             ) from exc
 
+    def schedule_retention_probe(
+        self,
+        request: ScheduleRetentionProbeRequest,
+    ) -> ScheduleRetentionProbeResult:
+        raw = self.runtime.schedule_retention_probe(
+            idempotency_key=request.idempotency_key,
+            subject_id=request.subject_id,
+            concept_id=request.concept_id,
+            due_at=request.due_at,
+            source_checkpoint_id=request.source_checkpoint_id,
+        )
+        try:
+            return ScheduleRetentionProbeResult(
+                retention_probe_id=raw["retention_probe_id"],
+                created=raw["created"],
+                due_at=raw["due_at"],
+            )
+        except (KeyError, TypeError, ValidationError) as exc:
+            raise ApplicationBoundaryError(
+                "legacy schedule_retention_probe result does not satisfy the application contract"
+            ) from exc
+
 
 def project_runtime_health_to_mcp(result: RuntimeHealthResult) -> dict[str, Any]:
     checks: dict[str, dict[str, Any]] = {}
@@ -473,4 +507,14 @@ def project_record_representation_outcome_to_mcp(
         "outcome_id": result.outcome_id,
         "created": result.created,
         "evidence_score": result.evidence_score,
+    }
+
+
+def project_schedule_retention_probe_to_mcp(
+    result: ScheduleRetentionProbeResult,
+) -> dict[str, Any]:
+    return {
+        "retention_probe_id": result.retention_probe_id,
+        "created": result.created,
+        "due_at": result.due_at,
     }
