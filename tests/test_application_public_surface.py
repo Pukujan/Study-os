@@ -35,6 +35,8 @@ class ApplicationPublicSurfaceTests(unittest.TestCase):
             "RuntimeHealthCheck",
             "RuntimeHealthRequest",
             "RuntimeHealthResult",
+            "ScheduleRetentionProbeRequest",
+            "ScheduleRetentionProbeResult",
             "StartStudySessionRequest",
             "StartStudySessionResult",
             "SubjectStatusRequest",

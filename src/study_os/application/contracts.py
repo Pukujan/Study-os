@@ -341,6 +341,20 @@ class RecordRepresentationOutcomeResult(ApplicationContractModel):
     evidence_score: Annotated[int, Field(ge=0, le=5)]
 
 
+class ScheduleRetentionProbeRequest(ApplicationContractModel):
+    idempotency_key: NonEmptyString
+    subject_id: NonEmptyString
+    concept_id: NonEmptyString
+    due_at: NonEmptyString
+    source_checkpoint_id: NonEmptyString
+
+
+class ScheduleRetentionProbeResult(ApplicationContractModel):
+    retention_probe_id: NonEmptyString
+    created: bool
+    due_at: NonEmptyString
+
+
 CORE_SCHEMA_MODELS: dict[str, type[BaseModel]] = {
     "application_error_envelope": ApplicationErrorEnvelope,
     "get_next_retention_probe_request": NextRetentionProbeRequest,
@@ -359,6 +373,8 @@ CORE_SCHEMA_MODELS: dict[str, type[BaseModel]] = {
     "record_representation_outcome_result": RecordRepresentationOutcomeResult,
     "resume_subject_request": ResumeSubjectRequest,
     "resume_subject_result": ResumeSubjectResult,
+    "schedule_retention_probe_request": ScheduleRetentionProbeRequest,
+    "schedule_retention_probe_result": ScheduleRetentionProbeResult,
     "start_study_session_request": StartStudySessionRequest,
     "start_study_session_result": StartStudySessionResult,
 }
