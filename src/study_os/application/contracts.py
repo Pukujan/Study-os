@@ -374,6 +374,20 @@ class RecordRepresentationOutcomeResult(ApplicationContractModel):
     evidence_score: Annotated[int, Field(ge=0, le=5)]
 
 
+class CreateFossilExportRequest(ApplicationContractModel):
+    idempotency_key: NonEmptyString
+    subject_id: NonEmptyString
+    artifact_type: NonEmptyString
+    source_ids: Annotated[list[NonEmptyString], Field(min_length=1)]
+
+
+class CreateFossilExportResult(ApplicationContractModel):
+    export_id: NonEmptyString
+    created: bool
+    artifact_type: NonEmptyString
+    source_ids: Annotated[list[NonEmptyString], Field(min_length=1)]
+
+
 class ScheduleRetentionProbeRequest(ApplicationContractModel):
     idempotency_key: NonEmptyString
     subject_id: NonEmptyString
@@ -390,6 +404,8 @@ class ScheduleRetentionProbeResult(ApplicationContractModel):
 
 CORE_SCHEMA_MODELS: dict[str, type[BaseModel]] = {
     "application_error_envelope": ApplicationErrorEnvelope,
+    "create_fossil_export_request": CreateFossilExportRequest,
+    "create_fossil_export_result": CreateFossilExportResult,
     "get_next_retention_probe_request": NextRetentionProbeRequest,
     "get_next_retention_probe_result": NextRetentionProbeResult,
     "get_subject_status_request": SubjectStatusRequest,
