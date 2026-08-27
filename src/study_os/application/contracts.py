@@ -43,6 +43,18 @@ class ApplicationErrorCategory(StrEnum):
     INTERNAL_ERROR = "internal_error"
 
 
+def _validate_json_value(value: JsonValue) -> JsonValue:
+    if isinstance(value, float) and not math.isfinite(value):
+        raise ValueError("non-finite numbers are not allowed in application contract JSON")
+    if isinstance(value, list):
+        for item in value:
+            _validate_json_value(item)
+    elif isinstance(value, dict):
+        for item in value.values():
+            _validate_json_value(item)
+    return value
+
+
 def _validate_public_json(value: JsonValue) -> JsonValue:
     if isinstance(value, float) and not math.isfinite(value):
         raise ValueError("non-finite numbers are not allowed in application contract JSON")
@@ -246,6 +258,43 @@ class StartStudySessionResult(ApplicationContractModel):
         return value.isoformat(timespec="microseconds").replace("+00:00", "Z")
 
 
+class RecordAttemptRequest(ApplicationContractModel):
+    idempotency_key: NonEmptyString
+    session_id: NonEmptyString
+    subject_id: NonEmptyString
+    task_id: NonEmptyString
+    response: JsonValue
+    assistance_level: NonEmptyString = "none"
+    context: dict[str, JsonValue] = Field(default_factory=dict)
+
+    @field_validator("context", mode="before")
+    @classmethod
+    def normalize_legacy_null_context(cls, value: object) -> object:
+        # The preserved runtime fingerprints absent/None context as an empty object.
+        return {} if value is None else value
+
+    @field_validator("response")
+    @classmethod
+    def validate_response_json(cls, value: JsonValue) -> JsonValue:
+        # Learner responses may legitimately contain arbitrary JSON keys, so use the
+        # generic JSON safety check rather than the public error/detail key filter.
+        _validate_json_value(value)
+        return value
+
+    @field_validator("context")
+    @classmethod
+    def validate_context_json(cls, value: dict[str, JsonValue]) -> dict[str, JsonValue]:
+        # Context currently carries versioned attempt telemetry and remains stored as
+        # one JSON object; this adapter must not silently reinterpret its vocabulary.
+        _validate_json_value(value)
+        return value
+
+
+class RecordAttemptResult(ApplicationContractModel):
+    attempt_id: NonEmptyString
+    created: bool
+
+
 CORE_SCHEMA_MODELS: dict[str, type[BaseModel]] = {
     "application_error_envelope": ApplicationErrorEnvelope,
     "get_next_retention_probe_request": NextRetentionProbeRequest,
@@ -254,6 +303,8 @@ CORE_SCHEMA_MODELS: dict[str, type[BaseModel]] = {
     "get_subject_status_result": SubjectStatusResult,
     "inspect_runtime_health_request": RuntimeHealthRequest,
     "inspect_runtime_health_result": RuntimeHealthResult,
+    "record_attempt_request": RecordAttemptRequest,
+    "record_attempt_result": RecordAttemptResult,
     "resume_subject_request": ResumeSubjectRequest,
     "resume_subject_result": ResumeSubjectResult,
     "start_study_session_request": StartStudySessionRequest,

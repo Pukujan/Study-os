@@ -9,6 +9,7 @@ from typing import Any, TextIO
 
 from ..application.contracts import (
     NextRetentionProbeRequest,
+    RecordAttemptRequest,
     ResumeSubjectRequest,
     StartStudySessionRequest,
     SubjectStatusRequest,
@@ -16,6 +17,7 @@ from ..application.contracts import (
 from ..application.service import (
     ApplicationService,
     project_next_retention_probe_to_mcp,
+    project_record_attempt_to_mcp,
     project_resume_subject_to_mcp,
     project_runtime_health_to_mcp,
     project_start_study_session_to_mcp,
@@ -108,6 +110,24 @@ class MCPServer:
             result = project_start_study_session_to_mcp(
                 self.application.start_study_session(request)
             )
+        elif name == "record_attempt":
+            allowed = {
+                "idempotency_key",
+                "session_id",
+                "subject_id",
+                "task_id",
+                "response",
+                "assistance_level",
+                "context",
+            }
+            unexpected = sorted(set(arguments) - allowed)
+            if unexpected:
+                raise validation(
+                    "record_attempt received unexpected arguments",
+                    unexpected=unexpected,
+                )
+            request = RecordAttemptRequest(**arguments)
+            result = project_record_attempt_to_mcp(self.application.record_attempt(request))
         else:
             method = getattr(self.service, name, None)
             if method is None or not callable(method):
