@@ -14,6 +14,7 @@ from ..application.contracts import (
     RecordRepresentationInterventionRequest,
     RecordRepresentationOutcomeRequest,
     ResumeSubjectRequest,
+    ScheduleRetentionProbeRequest,
     StartStudySessionRequest,
     SubjectStatusRequest,
 )
@@ -26,6 +27,7 @@ from ..application.service import (
     project_record_representation_outcome_to_mcp,
     project_resume_subject_to_mcp,
     project_runtime_health_to_mcp,
+    project_schedule_retention_probe_to_mcp,
     project_start_study_session_to_mcp,
     project_subject_status_to_mcp,
 )
@@ -192,6 +194,24 @@ class MCPServer:
             request = RecordRepresentationOutcomeRequest(**arguments)
             result = project_record_representation_outcome_to_mcp(
                 self.application.record_representation_outcome(request)
+            )
+        elif name == "schedule_retention_probe":
+            allowed = {
+                "idempotency_key",
+                "subject_id",
+                "concept_id",
+                "due_at",
+                "source_checkpoint_id",
+            }
+            unexpected = sorted(set(arguments) - allowed)
+            if unexpected:
+                raise validation(
+                    "schedule_retention_probe received unexpected arguments",
+                    unexpected=unexpected,
+                )
+            request = ScheduleRetentionProbeRequest(**arguments)
+            result = project_schedule_retention_probe_to_mcp(
+                self.application.schedule_retention_probe(request)
             )
         else:
             method = getattr(self.service, name, None)
