@@ -22,6 +22,8 @@ class ApplicationPublicSurfaceTests(unittest.TestCase):
             "RecentRepresentationSummary",
             "RecordAttemptRequest",
             "RecordAttemptResult",
+            "RecordLearningEventRequest",
+            "RecordLearningEventResult",
             "ResumeRetentionProbeSummary",
             "ResumeSubjectRequest",
             "ResumeSubjectResult",
