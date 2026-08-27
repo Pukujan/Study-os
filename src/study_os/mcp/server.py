@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any, TextIO
 
 from ..application.contracts import (
+    CreateFossilExportRequest,
     NextRetentionProbeRequest,
     RecordAssessmentRequest,
     RecordAttemptRequest,
@@ -21,6 +22,7 @@ from ..application.contracts import (
 )
 from ..application.service import (
     ApplicationService,
+    project_create_fossil_export_to_mcp,
     project_next_retention_probe_to_mcp,
     project_record_assessment_to_mcp,
     project_record_attempt_to_mcp,
@@ -235,6 +237,23 @@ class MCPServer:
             request = ScheduleRetentionProbeRequest(**arguments)
             result = project_schedule_retention_probe_to_mcp(
                 self.application.schedule_retention_probe(request)
+            )
+        elif name == "export_fossil":
+            allowed = {
+                "idempotency_key",
+                "subject_id",
+                "artifact_type",
+                "source_ids",
+            }
+            unexpected = sorted(set(arguments) - allowed)
+            if unexpected:
+                raise validation(
+                    "export_fossil received unexpected arguments",
+                    unexpected=unexpected,
+                )
+            request = CreateFossilExportRequest(**arguments)
+            result = project_create_fossil_export_to_mcp(
+                self.application.create_fossil_export(request)
             )
         else:
             method = getattr(self.service, name, None)
