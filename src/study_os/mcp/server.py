@@ -9,6 +9,7 @@ from typing import Any, TextIO
 
 from ..application.contracts import (
     NextRetentionProbeRequest,
+    RecordAssessmentRequest,
     RecordAttemptRequest,
     RecordLearningEventRequest,
     RecordRepresentationInterventionRequest,
@@ -21,6 +22,7 @@ from ..application.contracts import (
 from ..application.service import (
     ApplicationService,
     project_next_retention_probe_to_mcp,
+    project_record_assessment_to_mcp,
     project_record_attempt_to_mcp,
     project_record_learning_event_to_mcp,
     project_record_representation_intervention_to_mcp,
@@ -156,6 +158,27 @@ class MCPServer:
             request = RecordLearningEventRequest(**arguments)
             result = project_record_learning_event_to_mcp(
                 self.application.record_learning_event(request)
+            )
+        elif name == "record_assessment":
+            allowed = {
+                "idempotency_key",
+                "session_id",
+                "subject_id",
+                "capability",
+                "result",
+                "assistance_level",
+                "evidence_ids",
+                "retention_probe_id",
+            }
+            unexpected = sorted(set(arguments) - allowed)
+            if unexpected:
+                raise validation(
+                    "record_assessment received unexpected arguments",
+                    unexpected=unexpected,
+                )
+            request = RecordAssessmentRequest(**arguments)
+            result = project_record_assessment_to_mcp(
+                self.application.record_assessment(request)
             )
         elif name == "record_representation_intervention":
             allowed = {
