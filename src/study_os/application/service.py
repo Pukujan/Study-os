@@ -9,6 +9,8 @@ from .contracts import (
     NextRetentionProbeRequest,
     NextRetentionProbeResult,
     RecentRepresentationSummary,
+    RecordAttemptRequest,
+    RecordAttemptResult,
     ResumeRetentionProbeSummary,
     ResumeSubjectRequest,
     ResumeSubjectResult,
@@ -45,6 +47,18 @@ class ApplicationRuntimePort(Protocol):
         domain_id: str,
         source_client: str | None = None,
         metadata: dict[str, Any] | None = None,
+    ) -> dict[str, Any]: ...
+
+    def record_attempt(
+        self,
+        *,
+        idempotency_key: str,
+        session_id: str,
+        subject_id: str,
+        task_id: str,
+        response: Any,
+        assistance_level: str = "none",
+        context: dict[str, Any] | None = None,
     ) -> dict[str, Any]: ...
 
 
@@ -209,6 +223,26 @@ class ApplicationService:
                 "legacy start_session result does not satisfy the application contract"
             ) from exc
 
+    def record_attempt(self, request: RecordAttemptRequest) -> RecordAttemptResult:
+        raw = self.runtime.record_attempt(
+            idempotency_key=request.idempotency_key,
+            session_id=request.session_id,
+            subject_id=request.subject_id,
+            task_id=request.task_id,
+            response=request.response,
+            assistance_level=request.assistance_level,
+            context=request.context,
+        )
+        try:
+            return RecordAttemptResult(
+                attempt_id=raw["attempt_id"],
+                created=raw["created"],
+            )
+        except (KeyError, TypeError, ValidationError) as exc:
+            raise ApplicationBoundaryError(
+                "legacy record_attempt result does not satisfy the application contract"
+            ) from exc
+
 
 def project_runtime_health_to_mcp(result: RuntimeHealthResult) -> dict[str, Any]:
     """Project the canonical application result back to the unchanged MCP v0.1 payload."""
@@ -301,5 +335,14 @@ def project_start_study_session_to_mcp(result: StartStudySessionResult) -> dict[
         "session_id": result.session_id,
         "subject_id": result.subject_id,
         "started_at": result.started_at.isoformat().replace("+00:00", "Z"),
+        "created": result.created,
+    }
+
+
+def project_record_attempt_to_mcp(result: RecordAttemptResult) -> dict[str, Any]:
+    """Project canonical attempt output back to the unchanged MCP v0.1 payload."""
+
+    return {
+        "attempt_id": result.attempt_id,
         "created": result.created,
     }
