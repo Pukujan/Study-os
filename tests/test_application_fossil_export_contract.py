@@ -37,20 +37,23 @@ class FossilExportContractTests(unittest.TestCase):
         self.assertEqual(request_fields, set(self.operation["required_request_fields"]))
         self.assertEqual(result_fields, set(self.operation["required_result_fields"]))
 
-    def test_request_is_strict_and_requires_curated_sources(self) -> None:
+    def test_request_is_strict_requires_sources_and_preserves_opaque_values(self) -> None:
         base = {
             "idempotency_key": "fossil-key",
             "subject_id": "subject-001",
-            "artifact_type": "study_fossil",
-            "source_ids": ["attempt-001"],
+            "artifact_type": " study_fossil ",
+            "source_ids": [" attempt-001 "],
         }
         request = CreateFossilExportRequest(**base)
-        self.assertEqual(request.source_ids, ["attempt-001"])
+        self.assertEqual(request.artifact_type, " study_fossil ")
+        self.assertEqual(request.source_ids, [" attempt-001 "])
 
         with self.assertRaises(ValidationError):
             CreateFossilExportRequest(**{**base, "source_ids": []})
         with self.assertRaises(ValidationError):
             CreateFossilExportRequest(**{**base, "artifact_type": " "})
+        with self.assertRaises(ValidationError):
+            CreateFossilExportRequest(**{**base, "source_ids": [""]})
         with self.assertRaises(ValidationError):
             CreateFossilExportRequest(**{**base, "source_ids": [1]})
         with self.assertRaises(ValidationError):
