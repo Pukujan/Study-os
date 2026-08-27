@@ -9,6 +9,8 @@ from .contracts import (
     NextRetentionProbeRequest,
     NextRetentionProbeResult,
     RecentRepresentationSummary,
+    RecordAssessmentRequest,
+    RecordAssessmentResult,
     RecordAttemptRequest,
     RecordAttemptResult,
     RecordLearningEventRequest,
@@ -80,6 +82,19 @@ class ApplicationRuntimePort(Protocol):
         payload: dict[str, Any],
         source_ids: list[str] | None = None,
         payload_version: str = "0.1.0",
+    ) -> dict[str, Any]: ...
+
+    def record_assessment(
+        self,
+        *,
+        idempotency_key: str,
+        session_id: str,
+        subject_id: str,
+        capability: str,
+        result: str,
+        assistance_level: str,
+        evidence_ids: list[str],
+        retention_probe_id: str | None = None,
     ) -> dict[str, Any]: ...
 
     def record_representation_intervention(
@@ -321,6 +336,34 @@ class ApplicationService:
                 "legacy record_learning_event result does not satisfy the application contract"
             ) from exc
 
+    def record_assessment(self, request: RecordAssessmentRequest) -> RecordAssessmentResult:
+        raw = self.runtime.record_assessment(
+            idempotency_key=request.idempotency_key,
+            session_id=request.session_id,
+            subject_id=request.subject_id,
+            capability=request.capability,
+            result=request.result,
+            assistance_level=request.assistance_level,
+            evidence_ids=request.evidence_ids,
+            retention_probe_id=request.retention_probe_id,
+        )
+        try:
+            payload: dict[str, Any] = {
+                "assessment_id": raw["assessment_id"],
+                "created": raw["created"],
+                "capability": raw["capability"],
+                "result": raw["result"],
+            }
+            if "retention_probe_id" in raw:
+                payload["retention_probe_id"] = raw["retention_probe_id"]
+            if "retention_probe_status" in raw:
+                payload["retention_probe_status"] = raw["retention_probe_status"]
+            return RecordAssessmentResult(**payload)
+        except (KeyError, TypeError, ValidationError) as exc:
+            raise ApplicationBoundaryError(
+                "legacy record_assessment result does not satisfy the application contract"
+            ) from exc
+
     def record_representation_intervention(
         self,
         request: RecordRepresentationInterventionRequest,
@@ -489,6 +532,20 @@ def project_record_learning_event_to_mcp(
         "created": result.created,
         "evidence_class": result.evidence_class,
     }
+
+
+def project_record_assessment_to_mcp(result: RecordAssessmentResult) -> dict[str, Any]:
+    payload: dict[str, Any] = {
+        "assessment_id": result.assessment_id,
+        "created": result.created,
+        "capability": result.capability,
+        "result": result.result,
+    }
+    if "retention_probe_id" in result.model_fields_set:
+        payload["retention_probe_id"] = result.retention_probe_id
+    if "retention_probe_status" in result.model_fields_set:
+        payload["retention_probe_status"] = result.retention_probe_status
+    return payload
 
 
 def project_record_representation_intervention_to_mcp(
