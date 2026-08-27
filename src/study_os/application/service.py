@@ -11,6 +11,8 @@ from .contracts import (
     RecentRepresentationSummary,
     RecordAttemptRequest,
     RecordAttemptResult,
+    RecordLearningEventRequest,
+    RecordLearningEventResult,
     ResumeRetentionProbeSummary,
     ResumeSubjectRequest,
     ResumeSubjectResult,
@@ -59,6 +61,19 @@ class ApplicationRuntimePort(Protocol):
         response: Any,
         assistance_level: str = "none",
         context: dict[str, Any] | None = None,
+    ) -> dict[str, Any]: ...
+
+    def record_learning_event(
+        self,
+        *,
+        idempotency_key: str,
+        session_id: str,
+        subject_id: str,
+        evidence_class: str,
+        event_type: str,
+        payload: dict[str, Any],
+        source_ids: list[str] | None = None,
+        payload_version: str = "0.1.0",
     ) -> dict[str, Any]: ...
 
 
@@ -243,6 +258,31 @@ class ApplicationService:
                 "legacy record_attempt result does not satisfy the application contract"
             ) from exc
 
+    def record_learning_event(
+        self,
+        request: RecordLearningEventRequest,
+    ) -> RecordLearningEventResult:
+        raw = self.runtime.record_learning_event(
+            idempotency_key=request.idempotency_key,
+            session_id=request.session_id,
+            subject_id=request.subject_id,
+            evidence_class=request.evidence_class,
+            event_type=request.event_type,
+            payload=request.payload,
+            source_ids=request.source_ids,
+            payload_version=request.payload_version,
+        )
+        try:
+            return RecordLearningEventResult(
+                event_id=raw["event_id"],
+                created=raw["created"],
+                evidence_class=raw["evidence_class"],
+            )
+        except (KeyError, TypeError, ValidationError) as exc:
+            raise ApplicationBoundaryError(
+                "legacy record_learning_event result does not satisfy the application contract"
+            ) from exc
+
 
 def project_runtime_health_to_mcp(result: RuntimeHealthResult) -> dict[str, Any]:
     """Project the canonical application result back to the unchanged MCP v0.1 payload."""
@@ -345,4 +385,16 @@ def project_record_attempt_to_mcp(result: RecordAttemptResult) -> dict[str, Any]
     return {
         "attempt_id": result.attempt_id,
         "created": result.created,
+    }
+
+
+def project_record_learning_event_to_mcp(
+    result: RecordLearningEventResult,
+) -> dict[str, Any]:
+    """Project canonical learning-event output back to the unchanged MCP v0.1 payload."""
+
+    return {
+        "event_id": result.event_id,
+        "created": result.created,
+        "evidence_class": result.evidence_class,
     }
