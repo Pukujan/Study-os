@@ -11,6 +11,8 @@ from ..application.contracts import (
     NextRetentionProbeRequest,
     RecordAttemptRequest,
     RecordLearningEventRequest,
+    RecordRepresentationInterventionRequest,
+    RecordRepresentationOutcomeRequest,
     ResumeSubjectRequest,
     StartStudySessionRequest,
     SubjectStatusRequest,
@@ -20,6 +22,8 @@ from ..application.service import (
     project_next_retention_probe_to_mcp,
     project_record_attempt_to_mcp,
     project_record_learning_event_to_mcp,
+    project_record_representation_intervention_to_mcp,
+    project_record_representation_outcome_to_mcp,
     project_resume_subject_to_mcp,
     project_runtime_health_to_mcp,
     project_start_study_session_to_mcp,
@@ -150,6 +154,44 @@ class MCPServer:
             request = RecordLearningEventRequest(**arguments)
             result = project_record_learning_event_to_mcp(
                 self.application.record_learning_event(request)
+            )
+        elif name == "record_representation_intervention":
+            allowed = {
+                "idempotency_key",
+                "session_id",
+                "subject_id",
+                "representation_family",
+                "operation",
+                "representation_version",
+                "target_bottleneck",
+            }
+            unexpected = sorted(set(arguments) - allowed)
+            if unexpected:
+                raise validation(
+                    "record_representation_intervention received unexpected arguments",
+                    unexpected=unexpected,
+                )
+            request = RecordRepresentationInterventionRequest(**arguments)
+            result = project_record_representation_intervention_to_mcp(
+                self.application.record_representation_intervention(request)
+            )
+        elif name == "record_representation_outcome":
+            allowed = {
+                "idempotency_key",
+                "intervention_id",
+                "subject_id",
+                "evidence_score",
+                "evidence_ids",
+            }
+            unexpected = sorted(set(arguments) - allowed)
+            if unexpected:
+                raise validation(
+                    "record_representation_outcome received unexpected arguments",
+                    unexpected=unexpected,
+                )
+            request = RecordRepresentationOutcomeRequest(**arguments)
+            result = project_record_representation_outcome_to_mcp(
+                self.application.record_representation_outcome(request)
             )
         else:
             method = getattr(self.service, name, None)
