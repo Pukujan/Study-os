@@ -20,6 +20,8 @@ class ApplicationPublicSurfaceTests(unittest.TestCase):
             "NextRetentionProbeRequest",
             "NextRetentionProbeResult",
             "RecentRepresentationSummary",
+            "RecordAssessmentRequest",
+            "RecordAssessmentResult",
             "RecordAttemptRequest",
             "RecordAttemptResult",
             "RecordLearningEventRequest",
