@@ -14,6 +14,7 @@ from pydantic import (
     StringConstraints,
     field_serializer,
     field_validator,
+    model_validator,
 )
 
 APPLICATION_CONTRACT_VERSION = "0.1.0"
@@ -312,6 +313,38 @@ class RecordLearningEventResult(ApplicationContractModel):
     evidence_class: Literal["observed", "self_reported", "derived"]
 
 
+class RecordAssessmentRequest(ApplicationContractModel):
+    idempotency_key: NonEmptyString
+    session_id: NonEmptyString
+    subject_id: NonEmptyString
+    capability: NonEmptyString
+    result: NonEmptyString
+    assistance_level: NonEmptyString
+    evidence_ids: Annotated[list[NonEmptyString], Field(min_length=1)]
+    retention_probe_id: NonEmptyString | None = None
+
+
+class RecordAssessmentResult(ApplicationContractModel):
+    assessment_id: NonEmptyString
+    created: bool
+    capability: NonEmptyString
+    result: NonEmptyString
+    retention_probe_id: NonEmptyString | None = None
+    retention_probe_status: Literal["completed"] | None = None
+
+    @model_validator(mode="after")
+    def validate_retention_completion_pair(self) -> RecordAssessmentResult:
+        probe_present = "retention_probe_id" in self.model_fields_set
+        status_present = "retention_probe_status" in self.model_fields_set
+        if probe_present != status_present:
+            raise ValueError("retention completion fields must be present together")
+        if probe_present and (
+            self.retention_probe_id is None or self.retention_probe_status != "completed"
+        ):
+            raise ValueError("retention completion must identify a completed probe")
+        return self
+
+
 class RecordRepresentationInterventionRequest(ApplicationContractModel):
     idempotency_key: NonEmptyString
     session_id: NonEmptyString
@@ -363,6 +396,8 @@ CORE_SCHEMA_MODELS: dict[str, type[BaseModel]] = {
     "get_subject_status_result": SubjectStatusResult,
     "inspect_runtime_health_request": RuntimeHealthRequest,
     "inspect_runtime_health_result": RuntimeHealthResult,
+    "record_assessment_request": RecordAssessmentRequest,
+    "record_assessment_result": RecordAssessmentResult,
     "record_attempt_request": RecordAttemptRequest,
     "record_attempt_result": RecordAttemptResult,
     "record_learning_event_request": RecordLearningEventRequest,
