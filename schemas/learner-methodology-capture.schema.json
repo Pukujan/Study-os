@@ -1,0 +1,185 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://study-os.local/schemas/learner-methodology-capture.schema.json",
+  "title": "Study OS Learner Methodology Capture",
+  "description": "A public-safe, source-linked derivative of one learning conversation. It is not a mastery record or a universal learning rule.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "dataset_id",
+    "status",
+    "authority",
+    "evidence_status",
+    "subject_id",
+    "scope",
+    "source",
+    "self_reported",
+    "observed",
+    "derived",
+    "instrumentation_proposals",
+    "not_claimed"
+  ],
+  "properties": {
+    "schema_version": {"const": "study-os.learner-methodology-capture.v1"},
+    "dataset_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]+$"},
+    "status": {"type": "string", "enum": ["draft", "reviewed"]},
+    "authority": {"const": "non_authoritative"},
+    "evidence_status": {"const": "reconstructed"},
+    "subject_id": {"type": "string"},
+    "scope": {
+      "type": "object",
+      "required": ["domain", "language", "concepts"],
+      "properties": {
+        "domain": {"type": "string"},
+        "language": {"type": "string"},
+        "concepts": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": false
+    },
+    "source": {
+      "type": "object",
+      "required": [
+        "url",
+        "title",
+        "capture_method",
+        "serialized_node_count",
+        "projected_message_count",
+        "role_counts",
+        "raw_capture_hashes",
+        "fossil"
+      ],
+      "properties": {
+        "url": {"type": "string", "format": "uri"},
+        "title": {"type": "string"},
+        "capture_method": {"const": "chatgpt-share-page-route-reconstruction"},
+        "serialized_node_count": {"type": "integer", "minimum": 1},
+        "projected_message_count": {"type": "integer", "minimum": 1},
+        "role_counts": {
+          "type": "object",
+          "required": ["user", "assistant", "tool"],
+          "properties": {
+            "user": {"type": "integer", "minimum": 0},
+            "assistant": {"type": "integer", "minimum": 0},
+            "tool": {"type": "integer", "minimum": 0}
+          },
+          "additionalProperties": false
+        },
+        "raw_capture_hashes": {
+          "type": "object",
+          "required": ["route_stream_sha256", "decoded_payload_sha256", "readable_projection_sha256"],
+          "properties": {
+            "route_stream_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+            "decoded_payload_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+            "readable_projection_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+          },
+          "additionalProperties": false
+        },
+        "fossil": {
+          "type": "object",
+          "required": [
+            "repository",
+            "commit",
+            "pull_request_url",
+            "pack_id",
+            "conversation_id",
+            "lineage_id",
+            "source_artifact_id",
+            "source_snapshot_id"
+          ],
+          "properties": {
+            "repository": {"const": "Pukujan/fossil-core"},
+            "commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+            "pull_request_url": {"type": "string", "format": "uri"},
+            "pack_id": {"type": "string"},
+            "conversation_id": {"type": "string"},
+            "lineage_id": {"type": "string"},
+            "source_artifact_id": {"type": "string"},
+            "source_snapshot_id": {"type": "string"}
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "self_reported": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/selfReportedRecord"}
+    },
+    "observed": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/observedRecord"}
+    },
+    "derived": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/derivedRecord"}
+    },
+    "instrumentation_proposals": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/instrumentationRecord"}
+    },
+    "recurring_failure_signatures": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "not_claimed": {
+      "type": "array",
+      "items": {"type": "string"},
+      "minItems": 1
+    }
+  },
+  "$defs": {
+    "sourceRefs": {
+      "type": "array",
+      "items": {"type": "string", "pattern": "^message:[0-9]{4}$"},
+      "minItems": 1
+    },
+    "selfReportedRecord": {
+      "type": "object",
+      "required": ["id", "evidence_class", "source_message_refs", "text"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]+$"},
+        "evidence_class": {"const": "self_reported"},
+        "source_message_refs": {"$ref": "#/$defs/sourceRefs"},
+        "text": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "observedRecord": {
+      "type": "object",
+      "required": ["id", "evidence_class", "source_message_refs", "text"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]+$"},
+        "evidence_class": {"const": "observed"},
+        "source_message_refs": {"$ref": "#/$defs/sourceRefs"},
+        "text": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "derivedRecord": {
+      "type": "object",
+      "required": ["id", "evidence_class", "kind", "status", "source_message_refs", "text"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]+$"},
+        "evidence_class": {"const": "derived"},
+        "kind": {"type": "string", "enum": ["hypothesis", "protocol_proposal", "data_model_proposal", "risk"]},
+        "status": {"const": "proposed"},
+        "source_message_refs": {"$ref": "#/$defs/sourceRefs"},
+        "text": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "instrumentationRecord": {
+      "type": "object",
+      "required": ["field", "evidence_class", "status", "purpose"],
+      "properties": {
+        "field": {"type": "string"},
+        "evidence_class": {"const": "derived"},
+        "status": {"const": "proposed"},
+        "purpose": {"type": "string"},
+        "allowed": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://study-os.local/schemas/fossil-research-export.schema.json",
+  "title": "Study OS FOSSIL Research Export",
+  "description": "A provenance pointer from a public-safe Study OS derivative to a separately preserved FOSSIL pack.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "export_id",
+    "status",
+    "authority",
+    "dataset_path",
+    "dataset_sha256",
+    "fossil_pack",
+    "source",
+    "public_safety"
+  ],
+  "properties": {
+    "schema_version": {"const": "study-os.fossil-research-export.v1"},
+    "export_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]+$"},
+    "status": {"const": "draft"},
+    "authority": {"const": "non_authoritative"},
+    "dataset_path": {"const": "datasets/learner-methodology/2026-08-29-study-os-methodology-capture.json"},
+    "dataset_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "fossil_pack": {
+      "type": "object",
+      "required": ["pack_id", "placement", "promotion_status"],
+      "properties": {
+        "pack_id": {"type": "string"},
+        "placement": {"const": "research"},
+        "promotion_status": {"const": "not_promoted"}
+      },
+      "additionalProperties": false
+    },
+    "source": {
+      "type": "object",
+      "required": ["url", "fossil_commit", "fossil_pull_request_url", "conversation_id", "lineage_id"],
+      "properties": {
+        "url": {"type": "string", "format": "uri"},
+        "fossil_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "fossil_pull_request_url": {"type": "string", "format": "uri"},
+        "conversation_id": {"type": "string"},
+        "lineage_id": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "record_counts": {
+      "type": "object",
+      "properties": {
+        "self_reported": {"type": "integer", "minimum": 0},
+        "observed": {"type": "integer", "minimum": 0},
+        "derived": {"type": "integer", "minimum": 0},
+        "instrumentation_proposals": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "public_safety": {
+      "type": "object",
+      "required": ["full_transcript_committed", "raw_capture_committed", "secrets_included", "account_identifiers_included"],
+      "properties": {
+        "full_transcript_committed": {"const": false},
+        "raw_capture_committed": {"const": false},
+        "secrets_included": {"const": false},
+        "account_identifiers_included": {"const": false}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,6 +1,6 @@
 # Agent Handoff
 
-Last updated: 2026-08-25
+Last updated: 2026-08-29
 
 ## Current phase
 
@@ -73,6 +73,17 @@ Do not use theorem proving, mutation score, coverage, an LLM grader, or syntheti
 Issue #10 remains the behavioral authority. Implemented foundations include versioned `LearnerSnapshot` / `DecisionProposal`, structured attempt/hint/representation telemetry, the first atomic running-extrema/second-largest curriculum slice, baseline/BKT/CAT/IRT/FSRS shadow mechanisms, an evidence-gated scaffold controller, contextual representation policy, learner-relative complexity, tutor-behavior regression, proposal-to-outcome linkage, retention-probe closure, and richer resume context.
 
 These components remain non-authoritative/shadow unless explicitly promoted through the documented G0-G7 ladder.
+
+## Imported methodology evidence
+
+The public-safe draft dataset at
+`datasets/learner-methodology/2026-08-29-study-os-methodology-capture.json`
+records a reconstructed shared Study OS conversation. It separates
+self-reported, observed, and derived material and links to the complete
+source preserved in FOSSIL PR #240. The FOSSIL research export remains
+`not_promoted`; this capture does not alter the R0 gate, runtime authority, or
+canonical local session/checkpoint store. The full transcript and raw capture
+remain outside this public repository.
 
 ## Immediate next work
 

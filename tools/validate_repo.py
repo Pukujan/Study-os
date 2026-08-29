@@ -8,6 +8,7 @@ integrity. It is lightweight enough to run locally and in CI.
 from __future__ import annotations
 
 import json
+import hashlib
 import subprocess
 import sys
 from pathlib import Path
@@ -18,6 +19,8 @@ from jsonschema import Draft202012Validator, FormatChecker
 
 ROOT = Path(__file__).resolve().parents[1]
 SCHEMA_DIR = ROOT / "schemas"
+METHODOLOGY_DATASET_PATH = ROOT / "datasets" / "learner-methodology" / "2026-08-29-study-os-methodology-capture.json"
+FOSSIL_RESEARCH_EXPORT_PATH = ROOT / "fossil" / "exports" / "research" / "2026-08-29-study-os-methodology.json"
 
 REQUIRED_FILES = [
     "README.md",
@@ -212,6 +215,38 @@ def check_public_data_boundary() -> None:
         )
 
 
+def check_curated_public_data() -> None:
+    dataset_schema = load_schema("learner-methodology-capture.schema.json")
+    export_schema = load_schema("fossil-research-export.schema.json")
+
+    if not METHODOLOGY_DATASET_PATH.is_file():
+        raise ValidationFailure(f"Missing curated methodology dataset: {METHODOLOGY_DATASET_PATH}")
+    if not FOSSIL_RESEARCH_EXPORT_PATH.is_file():
+        raise ValidationFailure(f"Missing FOSSIL research export: {FOSSIL_RESEARCH_EXPORT_PATH}")
+
+    dataset = load_json(METHODOLOGY_DATASET_PATH)
+    export = load_json(FOSSIL_RESEARCH_EXPORT_PATH)
+    validate_instance(dataset, dataset_schema, METHODOLOGY_DATASET_PATH)
+    validate_instance(export, export_schema, FOSSIL_RESEARCH_EXPORT_PATH)
+
+    expected_dataset_path = METHODOLOGY_DATASET_PATH.relative_to(ROOT).as_posix()
+    if export["dataset_path"] != expected_dataset_path:
+        raise ValidationFailure("FOSSIL research export points to an unexpected dataset path")
+
+    dataset_hash = hashlib.sha256(METHODOLOGY_DATASET_PATH.read_bytes()).hexdigest()
+    if export["dataset_sha256"] != dataset_hash:
+        raise ValidationFailure("FOSSIL research export dataset_sha256 does not match the dataset")
+
+    expected_counts = {
+        "self_reported": len(dataset["self_reported"]),
+        "observed": len(dataset["observed"]),
+        "derived": len(dataset["derived"]),
+        "instrumentation_proposals": len(dataset["instrumentation_proposals"]),
+    }
+    if export.get("record_counts") != expected_counts:
+        raise ValidationFailure("FOSSIL research export record_counts do not match the dataset")
+
+
 def validate_schemas() -> dict[str, dict[str, Any]]:
     schemas: dict[str, dict[str, Any]] = {}
     for key, filename in SCHEMA_FILES.items():
@@ -299,6 +334,7 @@ def main() -> int:
         ("MCP semantic contract", check_mcp_contract),
         ("local runtime layout", check_runtime_layout),
         ("public data boundary", check_public_data_boundary),
+        ("curated public data", check_curated_public_data),
     ]
 
     try:
