@@ -140,6 +140,8 @@ schemas:
   learner_snapshot: "0.1.0"
   decision_proposal: "0.1.0"
   attempt_telemetry: "0.1.0"
+  learner_methodology_capture: "v1"
+  fossil_research_export: "v1"
 
 learning:
   execution_tracker: 10

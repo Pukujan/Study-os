@@ -1,0 +1,32 @@
+{
+  "schema_version": "study-os.fossil-research-export.v1",
+  "export_id": "fossil-export-study-os-methodology-2026-08-29",
+  "status": "draft",
+  "authority": "non_authoritative",
+  "dataset_path": "datasets/learner-methodology/2026-08-29-study-os-methodology-capture.json",
+  "dataset_sha256": "95bb8aa5184548cf1c5095d42473a69619ea97955dcded40d8f870f1b13b61c1",
+  "fossil_pack": {
+    "pack_id": "pack_study_os_personal_6a90f29fc14c83e",
+    "placement": "research",
+    "promotion_status": "not_promoted"
+  },
+  "source": {
+    "url": "https://chatgpt.com/share/6a90f29f-c14c-83ea-a688-5ecdf6518933",
+    "fossil_commit": "9c142da7c5fef05562208b8d84c33e84f23f1f77",
+    "fossil_pull_request_url": "https://github.com/Pukujan/fossil-core/pull/240",
+    "conversation_id": "conv_study_os_shared_6a90f29fc14c83e",
+    "lineage_id": "lin_study_os_method_6a90f29fc14c83e"
+  },
+  "record_counts": {
+    "self_reported": 7,
+    "observed": 4,
+    "derived": 6,
+    "instrumentation_proposals": 10
+  },
+  "public_safety": {
+    "full_transcript_committed": false,
+    "raw_capture_committed": false,
+    "secrets_included": false,
+    "account_identifiers_included": false
+  }
+}

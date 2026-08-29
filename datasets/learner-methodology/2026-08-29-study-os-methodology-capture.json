@@ -1,0 +1,245 @@
+{
+  "schema_version": "study-os.learner-methodology-capture.v1",
+  "dataset_id": "study-os-methodology-capture-2026-08-29",
+  "status": "draft",
+  "authority": "non_authoritative",
+  "evidence_status": "reconstructed",
+  "subject_id": "subject-001",
+  "scope": {
+    "domain": "dsa",
+    "language": "python",
+    "concepts": ["arrays", "hash-maps", "running-state", "sliding-window"]
+  },
+  "source": {
+    "url": "https://chatgpt.com/share/6a90f29f-c14c-83ea-a688-5ecdf6518933",
+    "title": "Check Study OS health",
+    "capture_method": "chatgpt-share-page-route-reconstruction",
+    "serialized_node_count": 951,
+    "projected_message_count": 703,
+    "role_counts": {
+      "user": 212,
+      "assistant": 292,
+      "tool": 199
+    },
+    "raw_capture_hashes": {
+      "route_stream_sha256": "1900c1f3c09751a38aeb53ebfe108f258e5fecedcc0700b81ca52c55f0570f7a",
+      "decoded_payload_sha256": "b427f40364222a9a0e8891222aaafebe5d12a779bb247f9e0c21b2a47a55d94f",
+      "readable_projection_sha256": "7dcb8abccd4a77db32d382efae32c313528e78efa60091c190e821c708174108"
+    },
+    "fossil": {
+      "repository": "Pukujan/fossil-core",
+      "commit": "9c142da7c5fef05562208b8d84c33e84f23f1f77",
+      "pull_request_url": "https://github.com/Pukujan/fossil-core/pull/240",
+      "pack_id": "pack_study_os_personal_6a90f29fc14c83e",
+      "conversation_id": "conv_study_os_shared_6a90f29fc14c83e",
+      "lineage_id": "lin_study_os_method_6a90f29fc14c83e",
+      "source_artifact_id": "art_7dcb8abccd4a77db32d382efae32c313",
+      "source_snapshot_id": "snap_4d9f7842e6cc2fb417bbcf3b"
+    }
+  },
+  "self_reported": [
+    {
+      "id": "learner-workflow",
+      "evidence_class": "self_reported",
+      "source_message_refs": ["message:0024"],
+      "text": "The learner wants to write code independently, then use guided reasoning, debugging, and questions; hints should precede full solutions unless a full solution is requested."
+    },
+    {
+      "id": "learner-visual-dsa",
+      "evidence_class": "self_reported",
+      "source_message_refs": ["message:0024", "message:0272", "message:0753", "message:0896"],
+      "text": "The learner prefers visual explanations and traced examples for data structures and algorithms."
+    },
+    {
+      "id": "learner-context-need",
+      "evidence_class": "self_reported",
+      "source_message_refs": ["message:0687", "message:0689", "message:0691", "message:0694"],
+      "text": "Isolated pattern drills felt like memorization and did not provide enough of the engineering context."
+    },
+    {
+      "id": "learner-failure-versioning",
+      "evidence_class": "self_reported",
+      "source_message_refs": ["message:0715"],
+      "text": "The learner describes stacking failures, versioning the program until an idea clicks, and tracing backward through what failed and what could improve."
+    },
+    {
+      "id": "learner-external-graph-risk",
+      "evidence_class": "self_reported",
+      "source_message_refs": ["message:0715"],
+      "text": "The learner sees value in using a knowledge graph to reduce memorization, while worrying that retrieval could perform the expertise externally instead of building unaided interview recall."
+    },
+    {
+      "id": "learner-syntax-friction",
+      "evidence_class": "self_reported",
+      "source_message_refs": ["message:0765", "message:0771", "message:0777", "message:0780"],
+      "text": "Python syntax is a recurring source of frustration and can obscure interest in the underlying logic and systems."
+    },
+    {
+      "id": "learner-integrated-goals",
+      "evidence_class": "self_reported",
+      "source_message_refs": ["message:0923", "message:0929"],
+      "text": "Interview readiness is intended to coexist with AI engineering, system design, ML engineering, diagnosis, behavioral answers, and technical speaking."
+    }
+  ],
+  "observed": [
+    {
+      "id": "visual-prompt-correction",
+      "evidence_class": "observed",
+      "source_message_refs": ["message:0272", "message:0741", "message:0746", "message:0747"],
+      "text": "The interaction records a correction from a completed visual answer toward an incomplete visual prompt that left the decision for the learner."
+    },
+    {
+      "id": "retrieval-after-hint",
+      "evidence_class": "observed",
+      "source_message_refs": ["message:0737", "message:0738", "message:0739", "message:0747", "message:0748"],
+      "text": "The learner initially reported forgetting a dictionary transformation and later produced it after an ASCII-tree hint was provided."
+    },
+    {
+      "id": "syntax-translation-errors",
+      "evidence_class": "observed",
+      "source_message_refs": ["message:0759", "message:0760", "message:0764", "message:0765", "message:0770"],
+      "text": "Several recorded attempts retained relevant loop or state logic while containing Python translation errors involving operators, colons, append syntax, or output selection."
+    },
+    {
+      "id": "persistence-gap-reported",
+      "evidence_class": "observed",
+      "source_message_refs": ["message:0263", "message:0699", "message:0428", "message:0435", "message:0443"],
+      "text": "The conversation reports connection failures that prevented some attempts from being saved and a later checkpoint that no longer matched the learner's progress."
+    }
+  ],
+  "derived": [
+    {
+      "id": "engineering-first-protocol",
+      "evidence_class": "derived",
+      "kind": "protocol_proposal",
+      "status": "proposed",
+      "source_message_refs": ["message:0698", "message:0724", "message:0731"],
+      "text": "Test starting from a realistic system requirement, allowing a naive implementation first, and introducing a data structure when the requirement creates a genuine need for it."
+    },
+    {
+      "id": "logic-then-translation",
+      "evidence_class": "derived",
+      "kind": "protocol_proposal",
+      "status": "proposed",
+      "source_message_refs": ["message:0770", "message:0776", "message:0874"],
+      "text": "Test a separate logic or state pass followed by Python translation and syntax fluency, rather than making syntax memorization the whole lesson."
+    },
+    {
+      "id": "scaffold-decay-loop",
+      "evidence_class": "derived",
+      "kind": "protocol_proposal",
+      "status": "proposed",
+      "source_message_refs": ["message:0716", "message:0720", "message:0884"],
+      "text": "After assisted success, close the external aid, reconstruct the idea and failure cause, solve a related transfer task, and revisit later with fewer cues."
+    },
+    {
+      "id": "dual-track-loop",
+      "evidence_class": "derived",
+      "kind": "protocol_proposal",
+      "status": "proposed",
+      "source_message_refs": ["message:0928", "message:0933", "message:0938"],
+      "text": "Keep realistic engineering scenarios and targeted interview reconstruction as connected tracks instead of treating them as mutually exclusive curricula."
+    },
+    {
+      "id": "external-retrieval-substitution-risk",
+      "evidence_class": "derived",
+      "kind": "risk",
+      "status": "proposed",
+      "source_message_refs": ["message:0715", "message:0716", "message:0720"],
+      "text": "Measure whether retrieval or graph support is substituting for unaided recall; assistance removal and transfer are required before interpreting assisted success as capability evidence."
+    },
+    {
+      "id": "persistence-integrity-risk",
+      "evidence_class": "derived",
+      "kind": "risk",
+      "status": "proposed",
+      "source_message_refs": ["message:0263", "message:0699", "message:0428", "message:0443"],
+      "text": "Treat missing attempt persistence and stale checkpoints as instrumentation risks that can distort learner-state conclusions, not as learner failure evidence."
+    }
+  ],
+  "instrumentation_proposals": [
+    {
+      "field": "task_id",
+      "evidence_class": "derived",
+      "status": "proposed",
+      "purpose": "Stable identity for the requirement or exercise."
+    },
+    {
+      "field": "attempt_sequence",
+      "evidence_class": "derived",
+      "status": "proposed",
+      "purpose": "Preserve the sequence of initial attempt, assistance, revision, and outcome."
+    },
+    {
+      "field": "outcome",
+      "evidence_class": "derived",
+      "status": "proposed",
+      "purpose": "Separate success, failure, partial progress, and blocked persistence."
+    },
+    {
+      "field": "assistance_level",
+      "evidence_class": "derived",
+      "status": "proposed",
+      "purpose": "Record the amount of external support available at the time of an attempt.",
+      "allowed": ["independent", "light_hint", "syntax_hint", "conceptual_hint", "partial_solution", "full_solution"]
+    },
+    {
+      "field": "representation",
+      "evidence_class": "derived",
+      "status": "proposed",
+      "purpose": "Record the representation used and any meaningful transition.",
+      "allowed": ["plain_code", "pseudocode", "ascii_tree", "execution_trace", "analogy", "architecture_diagram", "code_reading", "code_modification"]
+    },
+    {
+      "field": "effort_mode",
+      "evidence_class": "derived",
+      "status": "proposed",
+      "purpose": "Distinguish manual coding, shorthand, verbal reasoning, prediction-only, and external-aid-assisted work.",
+      "allowed": ["manual_coding", "phone_shorthand", "verbal_reasoning", "prediction_only", "external_aid_assisted"]
+    },
+    {
+      "field": "failure_signature",
+      "evidence_class": "derived",
+      "status": "proposed",
+      "purpose": "Record what failed, including syntax-only, representation, state/invariant, or conceptual failure."
+    },
+    {
+      "field": "candidate_state",
+      "evidence_class": "derived",
+      "status": "proposed",
+      "purpose": "Record intermediate variables and invariants instead of only the final output."
+    },
+    {
+      "field": "internalization_result",
+      "evidence_class": "derived",
+      "status": "proposed",
+      "purpose": "Record unaided reconstruction, transfer, and later retention separately."
+    },
+    {
+      "field": "checkpoint_ref",
+      "evidence_class": "derived",
+      "status": "proposed",
+      "purpose": "Tie a session to resumable state without treating a stale checkpoint as current truth."
+    }
+  ],
+  "recurring_failure_signatures": [
+    "equals_vs_assignment",
+    "increment_operator",
+    "greater_equal_operator_spacing",
+    "colon_or_indentation",
+    "append_parentheses_vs_brackets",
+    "enumerate_syntax",
+    "value_vs_index",
+    "modulo_even_odd_logic",
+    "javascript_syntax_leaking_into_python",
+    "set_vs_dictionary_initialization",
+    "external_retrieval_substituting_for_recall"
+  ],
+  "not_claimed": [
+    "This dataset does not establish durable mastery or a clinical learning profile.",
+    "A tutor interpretation is not independent evidence merely because it appears in the conversation.",
+    "Research citations and method rankings appearing in the source were not independently revalidated by this import.",
+    "One learner and one reconstructed conversation do not establish a population-level effect.",
+    "No claim is promoted into a common, domain, or architecture pack; the FOSSIL claims remain proposal-only."
+  ]
+}

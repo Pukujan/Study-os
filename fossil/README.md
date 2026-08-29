@@ -23,6 +23,13 @@ Good export candidates:
 - Study OS research conclusions;
 - source/provenance records needed to reconstruct those claims.
 
+The research export at
+[`exports/research/2026-08-29-study-os-methodology.json`](exports/research/2026-08-29-study-os-methodology.json)
+links a public-safe Study OS derivative to the separately preserved FOSSIL
+pack `pack_study_os_personal_6a90f29fc14c83e`. It remains draft and
+`not_promoted`; the full reconstructed source is not copied into this public
+repository.
+
 Do not export every click, hint, prediction, or micro-event by default.
 
 If this folder is deleted, Study OS must still be able to reconstruct it from canonical raw/session data.

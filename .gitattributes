@@ -1,0 +1,6 @@
+# Content-addressed research data and schemas must have stable bytes across
+# Windows and Unix checkouts because the export records the dataset SHA-256.
+datasets/learner-methodology/*.json text eol=lf
+fossil/exports/research/*.json text eol=lf
+schemas/learner-methodology-capture.schema.json text eol=lf
+schemas/fossil-research-export.schema.json text eol=lf
