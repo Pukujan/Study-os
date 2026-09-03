@@ -1,75 +1,106 @@
 # Current State
 
-Date: 2026-08-23
-Status: v0.1 experiment design
+Date: 2026-09-03
+Status: operational dogfooding + durable evidence + structured curriculum acquisition
 
-## What exists conceptually
+## Current product reality
 
-Study OS begins from the hypothesis that much technical learning difficulty is representation friction: experts communicate in compressed representations while learners spend substantial effort reconstructing missing intermediate steps.
+Study OS is already being used by Subject 001 through the GPT app for real learning. That dogfooding is producing direct product-development evidence about where learning breaks and what kinds of representation changes help or hurt.
 
-The planned system treats AI as an adaptive translation layer rather than only an answer generator.
+The current learner-facing surface remains GPT. A dedicated frontend is important later, but it is not the present critical path.
 
-The first use case is DSA learning with a learner who can provide high-resolution live feedback about:
+The local Study OS runtime remains the intended canonical operational store: SQLite plus a private evidence store. GitHub remains source/spec/research/issue history and curated public evidence, not the live learner database.
 
-- what is understood;
-- what is not understood;
-- which explanation/figure/flowchart makes understanding worse or better;
-- why a representation caused a breakthrough;
-- where understanding stops when translating into code.
+## What has become clearer from real use
 
-This creates the opportunity to build a longitudinal Golden Learning Trajectory dataset rather than a static Q&A dataset.
+The active product hypothesis is no longer limited to one DSA representation experiment.
 
-## Current hypothesis
+Real episodes have exposed subject-level failure modes including:
 
-A useful learning record is not “question -> answer.” It is:
+- representation translation overhead when authored code form competes with algorithmic reasoning;
+- variable-name semantic interference when an arbitrary identifier carries an unrelated learned meaning;
+- information overload and under-information as distinct tutoring failures;
+- over-help/under-help as distinct from learner capability;
+- dynamic decomposition/recomposition as a way to zoom into one blocked operation without turning the entire curriculum into micro-lessons.
 
-`learner state -> task -> attempt -> observed failure -> self-report -> intervention -> re-attempt -> assessment -> transfer/retention`
+These are operational findings/hypotheses, not universal efficacy claims.
 
-## Initial test subject
+## Current architectural priority
 
-Subject 001 is the first longitudinal test subject.
+The highest-priority engineering problem is reliable learner-data capture from the real GPT learning surface into the local runtime.
 
-This is intentionally N=1. Results are valid as evidence about this learner and as development data for the procedure; they must not be promoted into universal learning claims without later replication.
+Reported HTTP 502 failures mean the current end-to-end path is not dependable enough for longitudinal evidence acquisition.
 
-## Initial domain
+The required invariant is:
 
-- DSA
-- Python
-- Sliding Window first
+> No silent learner-evidence loss.
 
-The project should expand only after the instrumentation and evidence loop work on one concept family.
+A learner interaction must be durably acknowledged locally or explicitly known to be missing/uncertain and recoverable through reconciliation/backfill.
 
-## Known design requirements
+The evidence architecture should preserve:
 
-- preserve full raw transcripts;
-- never overwrite original evidence;
-- keep observed, self-reported, and derived labels separate;
-- version lessons, representations, schemas, assessments, and learner-model derivations independently;
-- organize data by domain/concept/lesson and by time/session;
-- allow one lesson to span sessions and one session to contain many learning episodes;
-- support deterministic figures/flowcharts/state traces before relying on generative media;
-- support later image, audio, and video representations without making them canonical truth;
-- preserve hidden transfer and delayed retention tests separately from training examples.
+```text
+raw/private evidence
+ -> normalized operational records
+ -> derived learner/system state
+```
 
-## Immediate build sequence
+with provenance from derived claims back to lower-level evidence.
 
-1. Define canonical Study OS schemas.
-2. Define session/transcript ingest contract.
-3. Capture the first real ChatGPT learning session verbatim.
-4. Extract learning events and episodes with transcript-span provenance.
-5. Build one Sliding Window lesson IR with several representations.
-6. Run instrumented learning sessions.
-7. Record subjective breakthrough claims and objective assessments separately.
-8. Build hidden-transfer and delayed-retention checks.
-9. Compare representation versions and interventions.
-10. Only then expand to a second DSA pattern.
+## Current curriculum direction
 
-## Open questions
+Structured curriculum/data work proceeds in parallel with dogfooding.
 
-- best transcript export format from each LLM provider;
-- how to normalize timestamps/roles/tool messages while preserving raw source bytes;
-- which learner-state labels should remain human-confirmed versus model-derived;
-- how to generate deterministic state animations from Lesson IR;
-- when to promote a repeated subject-specific observation into a lesson-level hypothesis;
-- what subset of Study OS artifacts should be exported to FOSSIL;
-- whether later multi-subject experiments need anonymized/pseudonymous subject boundaries.
+Approved public/open sources may be sampled, normalized, mapped to competencies/prerequisites, and expanded into structured learning material without waiting for a complete Sliding Window-only research gate.
+
+Source provenance, source class, rights/license boundaries, authored representation, and learner outcomes remain distinct.
+
+External/public content is candidate learning material; Study OS is responsible for observing when the source representation itself creates avoidable difficulty.
+
+## Current operational loop
+
+```text
+source task
+ -> learner attempt
+ -> observed/self-reported friction
+ -> diagnosis hypothesis
+ -> representation / information / assistance / granularity operation
+ -> learner response
+ -> fade / restore source difficulty
+ -> original-format check / transfer / retention when warranted
+ -> update learner + system evidence
+```
+
+The learner and the tutoring system must be evaluated separately.
+
+## Durable assets
+
+The project currently values as durable:
+
+- architecture and ownership boundaries;
+- persistent data semantics/migrations;
+- raw evidence integrity and provenance;
+- learner-state contracts;
+- curriculum/task provenance and competency structure;
+- representation/intervention semantics;
+- PDD/SDD/decision invariants;
+- recovery/reconciliation guarantees.
+
+Implementation code is replaceable when needed. Engineering assurance should protect these assets and the real learning path rather than become an independent product objective.
+
+## Immediate execution priorities
+
+1. Diagnose and restore the GPT -> local Study OS write path.
+2. Define/implement durable-or-recoverable capture and reconciliation.
+3. Continue Subject 001 learning through GPT while the system is being repaired and evolved.
+4. Continue approved public-source curriculum sampling/normalization in parallel.
+5. Record and refine representation, information, assistance, and decomposition operations from real trajectories.
+6. Develop learner and system evaluation from those trajectories.
+7. Apply broader hardening when a concrete failure model or product surface justifies it.
+8. Activate dedicated frontend/multimodal work later when it has higher value than continued GPT dogfooding.
+
+## Current planning authority
+
+See `docs/ROADMAP.md` and the latest accepted entries in `docs/DECISIONS.md`.
+
+Historical GitHub issues remain valuable lineage, but old unchecked items are not automatically current execution priorities when superseded by later accepted planning decisions.
