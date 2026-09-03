@@ -2,8 +2,8 @@
 
 Date: 2026-09-03
 
-This receipt records the code-side repair for Issue #59. It does not claim
-real-GPT acceptance while the Study OS GPT surface remains unverified.
+This receipt records the code-side repair for Issue #59 and the subsequent
+real-GPT verification on the live WSL-backed Study OS runtime.
 
 ## Implemented
 
@@ -27,11 +27,21 @@ real-GPT acceptance while the Study OS GPT surface remains unverified.
 - Repository validation: PASS.
 - Engineering baseline: PASS.
 - Schema migration: NO.
+- CT10: PASS through a fresh Study OS GPT chat; it returned
+  `checkpoint_plus_recent_evidence`, recovered `sliding-window`, and kept
+  transcript material explicitly source-only.
+- CT11: PASS through a fresh Study OS GPT chat; the exact learner turn is in
+  `messages` and `raw_artifacts`.
+- CT12: PASS through a fresh Study OS GPT chat; the exact displayed assistant
+  response is in `messages` and `raw_artifacts`.
+- Live message/artifact hashes: PASS; database content hashes match artifact
+  hashes and on-disk bytes.
+- Live WSL `study-os.service` and Cloudflare tunnel: ACTIVE.
+- Live doctor: HEALTHY with zero foreign-key, checkpoint, and evidence
+  integrity failures.
 
-## Not yet accepted
+## Deferred
 
-CT10–CT12 require the actual Study OS GPT, not synthetic service, MCP, or
-Actions calls. The GPT must prove stable subject/runtime binding, durable user
-turn capture, durable exact assistant-response capture, and fresh-chat
-continuity. Historical transcript reconciliation remains deferred until that
-proof exists.
+Historical transcript reconciliation remains deferred until the real capture
+path has been used in ordinary learner conversations and any private/lossless
+historical sources have been audited. Issue #56 remains open for that reason.
