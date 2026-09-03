@@ -39,4 +39,4 @@ python tools/validate_repo.py
 python tools/check_engineering_baseline.py
 ```
 
-Result: 252 tests passed before the final HTTP additions; the focused HTTP and runtime checks also pass afterward. The WSL service is active on loopback port 18765, and live `doctor` is healthy.
+Result: 254 tests passed. The WSL service is active on loopback port 18765, and live `doctor` is healthy.
