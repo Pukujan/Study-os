@@ -22,6 +22,8 @@ from .contracts import (
     RecordRepresentationOutcomeRequest,
     RecordRepresentationOutcomeResult,
     ResumeRetentionProbeSummary,
+    ResumeLearningContextRequest,
+    ResumeLearningContextResult,
     ResumeSubjectRequest,
     ResumeSubjectResult,
     RetentionProbeSummary,
@@ -47,6 +49,8 @@ class ApplicationRuntimePort(Protocol):
     def status(self, *, subject_id: str) -> dict[str, Any]: ...
 
     def resume(self, *, subject_id: str) -> dict[str, Any]: ...
+
+    def resume_learning_context(self, *, subject_id: str) -> dict[str, Any]: ...
 
     def get_next_probe(self, *, subject_id: str) -> dict[str, Any]: ...
 
@@ -255,6 +259,24 @@ class ApplicationService:
         except (KeyError, TypeError, ValidationError) as exc:
             raise ApplicationBoundaryError(
                 "legacy resume result does not satisfy the application contract"
+            ) from exc
+
+    def resume_learning_context(
+        self, request: ResumeLearningContextRequest
+    ) -> ResumeLearningContextResult:
+        raw = self.runtime.resume_learning_context(subject_id=request.subject_id)
+        try:
+            return ResumeLearningContextResult(
+                subject_id=raw["subject_id"],
+                continuity_status=raw["continuity_status"],
+                checkpoint=raw["checkpoint"],
+                recent_evidence=raw["recent_evidence"],
+                evidence_boundary=raw["evidence_boundary"],
+                identity_diagnostic=raw["identity_diagnostic"],
+            )
+        except (KeyError, TypeError, ValidationError) as exc:
+            raise ApplicationBoundaryError(
+                "runtime continuity result does not satisfy the application contract"
             ) from exc
 
     def get_next_retention_probe(
@@ -566,6 +588,19 @@ def project_start_study_session_to_mcp(result: StartStudySessionResult) -> dict[
         "subject_id": result.subject_id,
         "started_at": result.started_at.isoformat().replace("+00:00", "Z"),
         "created": result.created,
+    }
+
+
+def project_resume_learning_context_to_mcp(
+    result: ResumeLearningContextResult,
+) -> dict[str, Any]:
+    return {
+        "subject_id": result.subject_id,
+        "continuity_status": result.continuity_status,
+        "checkpoint": result.checkpoint,
+        "recent_evidence": result.recent_evidence,
+        "evidence_boundary": result.evidence_boundary,
+        "identity_diagnostic": result.identity_diagnostic,
     }
 
 

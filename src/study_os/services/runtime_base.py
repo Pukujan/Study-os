@@ -1142,6 +1142,167 @@ class StudyOSService:
                 "next_action": checkpoint["next_action"],
             }
 
+    def resume_learning_context(self, *, subject_id: str) -> dict:
+        """Return bounded, evidence-backed continuity without requiring a checkpoint.
+
+        Transcript turns are returned as source evidence with an exact bounded
+        excerpt and hash. They are deliberately not projected into capability
+        or mastery state; only accepted checkpoint state may carry those
+        semantics.
+        """
+        if not isinstance(subject_id, str) or not subject_id.strip():
+            raise validation("subject_id must be a non-empty string")
+
+        with self.repository.transaction(immediate=False) as connection:
+            subject = connection.execute(
+                "SELECT 1 FROM subjects WHERE subject_id = ?", (subject_id,)
+            ).fetchone()
+            if subject is None:
+                return {
+                    "subject_id": subject_id,
+                    "continuity_status": "identity_or_runtime_unverified",
+                    "identity_diagnostic": "subject_not_found_in_runtime",
+                    "checkpoint": None,
+                    "recent_evidence": {"sessions": [], "messages": [], "learning_events": [], "attempts": []},
+                    "evidence_boundary": {
+                        "recent_evidence_is_not_mastery": True,
+                        "transcript_is_source_evidence_only": True,
+                    },
+                }
+
+            pointer = connection.execute(
+                "SELECT checkpoint_id FROM subject_current_checkpoint WHERE subject_id = ?",
+                (subject_id,),
+            ).fetchone()
+            checkpoint = None
+            checkpoint_created_at = None
+            if pointer is not None:
+                checkpoint = self._checkpoint_payload(connection, subject_id, pointer["checkpoint_id"])
+                checkpoint_created_at = checkpoint["created_at"]
+
+            def newer_clause(column: str) -> tuple[str, tuple[str, ...]]:
+                if checkpoint_created_at is None:
+                    return "", ()
+                return f" AND {column} > ?", (checkpoint_created_at,)
+
+            limit = 20
+            session_clause, session_params = newer_clause("s.started_at")
+            session_rows = connection.execute(
+                "SELECT s.session_id, s.started_at, s.source_client "
+                "FROM sessions s WHERE s.subject_id = ?" + session_clause +
+                " ORDER BY s.started_at DESC, s.session_id DESC LIMIT ?",
+                (subject_id, *session_params, limit),
+            ).fetchall()
+            sessions = [
+                {
+                    "session_id": row["session_id"],
+                    "started_at": row["started_at"],
+                    "source_client": row["source_client"],
+                }
+                for row in reversed(session_rows)
+            ]
+
+            message_clause, message_params = newer_clause("m.created_at")
+            message_rows = connection.execute(
+                "SELECT m.message_id, m.session_id, m.role, m.artifact_id, "
+                "m.content_sha256, m.created_at, m.metadata_json, a.storage_path, a.sha256 "
+                "FROM messages m JOIN sessions s ON s.session_id = m.session_id "
+                "LEFT JOIN raw_artifacts a ON a.artifact_id = m.artifact_id "
+                "WHERE s.subject_id = ?" + message_clause +
+                " ORDER BY m.created_at ASC, m.message_id ASC LIMIT ?",
+                (subject_id, *message_params, limit),
+            ).fetchall()
+            messages = []
+            for row in message_rows:
+                if row["artifact_id"] is None or row["storage_path"] is None:
+                    raise integrity("Durable message is missing its raw artifact", message_id=row["message_id"])
+                if row["content_sha256"] != row["sha256"]:
+                    raise integrity("Message and raw artifact hashes disagree", message_id=row["message_id"])
+                path = self.evidence.resolve(row["storage_path"])
+                if not path.is_file() or not self.evidence.verify(row["storage_path"], row["sha256"]):
+                    raise integrity("Durable message raw artifact failed hash verification", message_id=row["message_id"])
+                excerpt = path.read_bytes()[:512].decode("utf-8", errors="replace")
+                try:
+                    metadata = json.loads(row["metadata_json"])
+                except (TypeError, ValueError, json.JSONDecodeError) as exc:
+                    raise integrity("Conversation message metadata is malformed", message_id=row["message_id"]) from exc
+                messages.append(
+                    {
+                        "message_id": row["message_id"],
+                        "session_id": row["session_id"],
+                        "role": row["role"],
+                        "artifact_id": row["artifact_id"],
+                        "content_sha256": row["content_sha256"],
+                        "created_at": row["created_at"],
+                        "content_excerpt": excerpt,
+                        "source_conversation_ref": metadata.get("source_conversation_ref"),
+                        "source_message_ref": metadata.get("source_message_ref"),
+                        "source_sequence": metadata.get("source_sequence"),
+                    }
+                )
+
+            event_clause, event_params = newer_clause("e.created_at")
+            event_rows = connection.execute(
+                "SELECT e.event_id, e.session_id, e.evidence_class, e.event_type, e.created_at "
+                "FROM learning_events e WHERE e.subject_id = ?" + event_clause +
+                " ORDER BY e.created_at ASC, e.event_id ASC LIMIT ?",
+                (subject_id, *event_params, limit),
+            ).fetchall()
+            learning_events = [
+                {
+                    "event_id": row["event_id"],
+                    "session_id": row["session_id"],
+                    "evidence_class": row["evidence_class"],
+                    "event_type": row["event_type"],
+                    "created_at": row["created_at"],
+                }
+                for row in event_rows
+            ]
+
+            attempt_clause, attempt_params = newer_clause("a.created_at")
+            attempt_rows = connection.execute(
+                "SELECT a.attempt_id, a.session_id, a.task_id, a.assistance_level, a.created_at "
+                "FROM attempts a WHERE a.subject_id = ?" + attempt_clause +
+                " ORDER BY a.created_at ASC, a.attempt_id ASC LIMIT ?",
+                (subject_id, *attempt_params, limit),
+            ).fetchall()
+            attempts = [
+                {
+                    "attempt_id": row["attempt_id"],
+                    "session_id": row["session_id"],
+                    "task_id": row["task_id"],
+                    "assistance_level": row["assistance_level"],
+                    "created_at": row["created_at"],
+                }
+                for row in attempt_rows
+            ]
+
+            recent_evidence = {
+                "sessions": sessions,
+                "messages": messages,
+                "learning_events": learning_events,
+                "attempts": attempts,
+            }
+            has_evidence = any(
+                recent_evidence[name]
+                for name in ("messages", "learning_events", "attempts")
+            )
+            if checkpoint is not None:
+                status = "checkpoint_plus_recent_evidence" if has_evidence else "checkpoint_only"
+            else:
+                status = "evidence_only" if has_evidence else "no_durable_context"
+            return {
+                "subject_id": subject_id,
+                "continuity_status": status,
+                "identity_diagnostic": None,
+                "checkpoint": checkpoint,
+                "recent_evidence": recent_evidence,
+                "evidence_boundary": {
+                    "recent_evidence_is_not_mastery": True,
+                    "transcript_is_source_evidence_only": True,
+                },
+            }
+
     def status(self, *, subject_id: str) -> dict:
         with self.repository.transaction(immediate=False) as connection:
             if connection.execute("SELECT 1 FROM subjects WHERE subject_id = ?", (subject_id,)).fetchone() is None:

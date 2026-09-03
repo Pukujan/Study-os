@@ -96,8 +96,8 @@ def check_version_consistency() -> None:
         raise BaselineFailure(
             f"approved MCP tool-count drift: contract={actual!r}, manifest={approved_tool_count!r}"
         )
-    if approved_tool_count != 14:
-        raise BaselineFailure("approved MCP semantic boundary must remain exactly 14 tools")
+    if approved_tool_count != 15:
+        raise BaselineFailure("approved MCP semantic boundary must remain exactly 15 tools")
 
 
 def _imported_modules(path: Path) -> set[str]:
@@ -256,7 +256,7 @@ def check_top_level_dependency_cycles() -> None:
 
 def main() -> int:
     checks = (
-        ("version and 14-tool consistency", check_version_consistency),
+        ("version and 15-tool consistency", check_version_consistency),
         ("adaptive/curriculum architecture boundary", check_pure_logic_boundaries),
         ("application architecture boundary", check_application_boundaries),
         ("MCP transport architecture boundary", check_transport_boundaries),

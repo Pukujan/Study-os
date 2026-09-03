@@ -117,6 +117,26 @@ class SourceTurnHTTPTests(unittest.TestCase):
         self.assertTrue(action["created"])
         self.assertEqual(action["capture_origin"], "live")
 
+    def test_gpt_action_route_preserves_semantic_error_categories(self) -> None:
+        status, missing = self.post({"subject_id": "missing-subject"}, path="/actions/resume")
+        self.assertEqual(status, 200)
+        self.assertEqual(missing["error"]["category"], "not_found")
+
+        status, invalid = self.post({"subject_id": "subject-http"}, path="/actions/append_conversation_turn")
+        self.assertEqual(status, 200)
+        self.assertEqual(invalid["error"]["category"], "validation_error")
+
+        base = {
+            "idempotency_key": "http-action-conflict",
+            "session_id": self.session["session_id"],
+            "subject_id": "subject-http",
+            "role": "user",
+            "content": "first content",
+        }
+        self.post(base, path="/actions/append_conversation_turn")
+        _, conflict = self.post({**base, "content": "different content"}, path="/actions/append_conversation_turn")
+        self.assertEqual(conflict["error"]["category"], "conflict")
+
 
 if __name__ == "__main__":
     unittest.main()

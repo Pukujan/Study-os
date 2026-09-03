@@ -218,6 +218,32 @@ class ResumeSubjectResult(ApplicationContractModel):
         return value
 
 
+class ResumeLearningContextRequest(ApplicationContractModel):
+    subject_id: NonEmptyString
+
+
+class ResumeLearningContextResult(ApplicationContractModel):
+    subject_id: NonEmptyString
+    continuity_status: Literal[
+        "checkpoint_only",
+        "checkpoint_plus_recent_evidence",
+        "evidence_only",
+        "no_durable_context",
+        "identity_or_runtime_unverified",
+    ]
+    checkpoint: dict[str, JsonValue] | None
+    recent_evidence: dict[str, JsonValue]
+    evidence_boundary: dict[str, JsonValue]
+    identity_diagnostic: NonEmptyString | None
+
+    @field_validator("checkpoint", "recent_evidence", "evidence_boundary")
+    @classmethod
+    def validate_public_context(cls, value: dict[str, JsonValue] | None) -> dict[str, JsonValue] | None:
+        if value is not None:
+            _validate_public_json(value)
+        return value
+
+
 class StartStudySessionRequest(ApplicationContractModel):
     idempotency_key: NonEmptyString
     subject_id: NonEmptyString
@@ -453,6 +479,8 @@ CORE_SCHEMA_MODELS: dict[str, type[BaseModel]] = {
     "record_representation_outcome_result": RecordRepresentationOutcomeResult,
     "resume_subject_request": ResumeSubjectRequest,
     "resume_subject_result": ResumeSubjectResult,
+    "resume_learning_context_request": ResumeLearningContextRequest,
+    "resume_learning_context_result": ResumeLearningContextResult,
     "schedule_retention_probe_request": ScheduleRetentionProbeRequest,
     "schedule_retention_probe_result": ScheduleRetentionProbeResult,
     "start_study_session_request": StartStudySessionRequest,

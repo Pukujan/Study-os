@@ -410,7 +410,7 @@ class ApplicationMcpConformanceTests(unittest.TestCase):
 
     def test_public_mcp_tool_set_is_exactly_fourteen_with_bounded_append(self) -> None:
         names = MCPServer(self.service).list_tool_names()
-        self.assertEqual(len(names), 14)
+        self.assertEqual(len(names), 15)
         self.assertEqual(len(names), len(set(names)))
         self.assertIn("append_conversation_turn", names)
 

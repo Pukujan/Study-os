@@ -180,6 +180,8 @@ class _MCPRequestHandler(BaseHTTPRequestHandler):
                     pass
         try:
             result = self._dispatch_action(name, arguments)
+        except StudyOSError as exc:
+            result = exc.as_dict()
         except Exception as exc:
             result = _json_error("internal_error", "Unexpected Study OS service failure", details={"exception": type(exc).__name__})
         self._send_json(HTTPStatus.OK, result)

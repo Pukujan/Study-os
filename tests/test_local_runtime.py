@@ -264,7 +264,7 @@ class LocalRuntimeTests(unittest.TestCase):
 
     def test_mcp_exposes_exact_contract_and_no_generic_tools(self):
         server = MCPServer(self.service)
-        contract = json.loads((ROOT / "contracts/study-os-mcp-tools.v0.2.json").read_text(encoding="utf-8"))
+        contract = json.loads((ROOT / "contracts/study-os-mcp-tools.v0.3.json").read_text(encoding="utf-8"))
         expected = [tool["name"] for tool in contract["tools"]]
         self.assertEqual(server.list_tool_names(), expected)
         self.assertEqual(set(server.list_tool_names()), set(expected))

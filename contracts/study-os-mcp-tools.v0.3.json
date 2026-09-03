@@ -1,0 +1,32 @@
+{
+  "contract_version": "0.3.0",
+  "surface": "StudyOS MCP semantic tools",
+  "principles": {
+    "semantic_tools_only": true,
+    "generic_sql_allowed": false,
+    "generic_shell_allowed": false,
+    "generic_file_write_allowed": false,
+    "arbitrary_code_execution_allowed": false,
+    "canonical_runtime_store": "local_study_os_service",
+    "github_runtime_dependency": false,
+    "fossil_runtime_dependency": false
+  },
+  "error_categories": ["validation_error", "not_found", "conflict", "integrity_error", "unsupported_version", "unavailable", "internal_error"],
+  "tools": [
+    {"name":"doctor","mutating":false,"idempotency_required":false,"required_input":[],"required_output":["healthy","runtime_version","schema_version","checks"]},
+    {"name":"status","mutating":false,"idempotency_required":false,"required_input":["subject_id"],"required_output":["subject_id","current_session_id","current_checkpoint_id","current_focus","next_action"]},
+    {"name":"start_session","mutating":true,"idempotency_required":true,"required_input":["idempotency_key","subject_id","project_id","domain_id"],"required_output":["session_id","subject_id","started_at"]},
+    {"name":"append_conversation_turn","mutating":true,"idempotency_required":true,"required_input":["idempotency_key","session_id","subject_id","role","content"],"required_output":["message_id","artifact_id","sha256","created","capture_origin","local_captured_at"]},
+    {"name":"record_learning_event","mutating":true,"idempotency_required":true,"required_input":["idempotency_key","session_id","subject_id","evidence_class","event_type","payload"],"required_output":["event_id","created","evidence_class"]},
+    {"name":"record_attempt","mutating":true,"idempotency_required":true,"required_input":["idempotency_key","session_id","subject_id","task_id","response"],"required_output":["attempt_id","created"]},
+    {"name":"record_assessment","mutating":true,"idempotency_required":true,"required_input":["idempotency_key","session_id","subject_id","capability","result","assistance_level","evidence_ids"],"required_output":["assessment_id","created","capability","result"]},
+    {"name":"record_representation_intervention","mutating":true,"idempotency_required":true,"required_input":["idempotency_key","session_id","subject_id","representation_family","operation","representation_version","target_bottleneck"],"required_output":["intervention_id","created"]},
+    {"name":"record_representation_outcome","mutating":true,"idempotency_required":true,"required_input":["idempotency_key","intervention_id","subject_id","evidence_score","evidence_ids"],"required_output":["outcome_id","created","evidence_score"]},
+    {"name":"checkpoint","mutating":true,"idempotency_required":true,"required_input":["idempotency_key","subject_id","source_session_ids","evidence_ids","capability_state","assistance_state","resume"],"required_output":["checkpoint_id","accepted","subject_id","next_action"]},
+    {"name":"resume","mutating":false,"idempotency_required":false,"required_input":["subject_id"],"required_output":["subject_id","checkpoint_id","capability_state","assistance_state","current_focus","next_action"]},
+    {"name":"resume_learning_context","mutating":false,"idempotency_required":false,"required_input":["subject_id"],"required_output":["subject_id","continuity_status","checkpoint","recent_evidence","evidence_boundary","identity_diagnostic"]},
+    {"name":"schedule_retention_probe","mutating":true,"idempotency_required":true,"required_input":["idempotency_key","subject_id","concept_id","due_at","source_checkpoint_id"],"required_output":["retention_probe_id","created","due_at"]},
+    {"name":"get_next_probe","mutating":false,"idempotency_required":false,"required_input":["subject_id"],"required_output":["subject_id","probe","reason","source_checkpoint_id"]},
+    {"name":"export_fossil","mutating":true,"idempotency_required":true,"required_input":["idempotency_key","subject_id","artifact_type","source_ids"],"required_output":["export_id","created","artifact_type","source_ids"]}
+  ]
+}

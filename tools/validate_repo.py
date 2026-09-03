@@ -36,7 +36,7 @@ REQUIRED_FILES = [
     "docs/DATABASE_CONTRACT.md",
     "docs/ERROR_IDEMPOTENCY_CONTRACT.md",
     "contracts/study-os-mcp-tools.v0.1.json",
-    "contracts/study-os-mcp-tools.v0.2.json",
+    "contracts/study-os-mcp-tools.v0.3.json",
     "src/study_os/services/runtime.py",
     "src/study_os/mcp/server.py",
     "src/study_os/db/migrations/0001_initial.sql",
@@ -131,10 +131,10 @@ def check_manifest() -> None:
 
 
 def check_mcp_contract() -> None:
-    contract_path = ROOT / "contracts" / "study-os-mcp-tools.v0.2.json"
+    contract_path = ROOT / "contracts" / "study-os-mcp-tools.v0.3.json"
     contract = load_json(contract_path)
-    if contract.get("contract_version") != "0.2.0":
-        raise ValidationFailure("current MCP contract version must be 0.2.0")
+    if contract.get("contract_version") != "0.3.0":
+        raise ValidationFailure("current MCP contract version must be 0.3.0")
     principles = contract.get("principles", {})
     for key in (
         "semantic_tools_only",
@@ -160,8 +160,8 @@ def check_mcp_contract() -> None:
     forbidden_fragments = ("sql", "shell", "terminal", "exec", "execute_code", "run_code", "write_file", "filesystem")
     if any(any(fragment in name.lower() for fragment in forbidden_fragments) for name in names):
         raise ValidationFailure("MCP contract exposes a prohibited generic machine tool")
-    if len(tools) != 14 or "append_conversation_turn" not in names:
-        raise ValidationFailure("current MCP semantic boundary must contain exactly 14 tools including append_conversation_turn")
+    if len(tools) != 15 or "append_conversation_turn" not in names or "resume_learning_context" not in names:
+        raise ValidationFailure("current MCP semantic boundary must contain exactly 15 tools including append_conversation_turn and resume_learning_context")
     for tool in tools:
         for field in ("mutating", "idempotency_required", "required_input", "required_output"):
             if field not in tool:
