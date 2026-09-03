@@ -1,4 +1,6 @@
 from study_os.application.contracts import (
+    AppendConversationTurnRequest,
+    AppendConversationTurnResult,
     APPLICATION_CONTRACT_VERSION,
     ApplicationError,
     ApplicationErrorCategory,
@@ -36,6 +38,8 @@ from study_os.application.contracts import (
 
 __all__ = [
     "APPLICATION_CONTRACT_VERSION",
+    "AppendConversationTurnRequest",
+    "AppendConversationTurnResult",
     "ApplicationError",
     "ApplicationErrorCategory",
     "ApplicationErrorEnvelope",

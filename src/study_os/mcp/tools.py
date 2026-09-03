@@ -11,7 +11,8 @@ from pathlib import Path
 from typing import Any
 
 
-CONTRACT_PATH = Path(__file__).resolve().parents[3] / "contracts" / "study-os-mcp-tools.v0.1.json"
+MCP_CONTRACT_VERSION = "0.2.0"
+CONTRACT_PATH = Path(__file__).resolve().parents[3] / "contracts" / "study-os-mcp-tools.v0.2.json"
 
 
 def load_contract(path: str | Path | None = None) -> dict[str, Any]:

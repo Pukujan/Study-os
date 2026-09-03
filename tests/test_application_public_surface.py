@@ -14,6 +14,8 @@ class ApplicationPublicSurfaceTests(unittest.TestCase):
     def test_public_contract_exports_match_current_canonical_models(self) -> None:
         expected = {
             "APPLICATION_CONTRACT_VERSION",
+            "AppendConversationTurnRequest",
+            "AppendConversationTurnResult",
             "ApplicationError",
             "ApplicationErrorCategory",
             "ApplicationErrorEnvelope",

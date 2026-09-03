@@ -45,7 +45,7 @@ research:
 canonical_paths:
   schemas: schemas/
   contracts: contracts/
-  mcp_contract: contracts/study-os-mcp-tools.v0.1.json
+  mcp_contract: contracts/study-os-mcp-tools.v0.2.json
   application_contract_inventory: contracts/application-operation-inventory.v0.1.json
   application_contract_architecture: docs/APPLICATION_CONTRACT_ARCHITECTURE.md
   application_contract_source: src/study_os/application/contracts.py
@@ -88,8 +88,8 @@ runtime:
     intended_name: "@StudyOS"
     protocol: mcp
     semantic_tools_only: true
-    semantic_contract_version: "0.1.0"
-    approved_tool_count: 13
+    semantic_contract_version: "0.2.0"
+    approved_tool_count: 14
     direct_localhost_from_chatgpt: false
     deployed_private_transport_configuration_in_public_repo: false
   checkpoint_source_of_truth_when_runtime_active: local_database
@@ -214,7 +214,7 @@ engineering:
     - curriculum_control_policy_conformance
     - deterministic_application_schema_rendering
     - repository_validation
-    - version_and_13_tool_consistency
+    - version_and_14_tool_consistency
     - adaptive_curriculum_architecture_boundary
     - mcp_transport_architecture_boundary
     - top_level_package_dependency_cycles

@@ -19,6 +19,7 @@ from pydantic import (
 
 APPLICATION_CONTRACT_VERSION = "0.1.0"
 NonEmptyString = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
+SourceTurnContent = Annotated[str, StringConstraints(min_length=1)]
 SemanticVersion = Annotated[str, StringConstraints(pattern=r"^\d+\.\d+\.\d+$")]
 ErrorCode = Annotated[
     str,
@@ -258,6 +259,48 @@ class StartStudySessionResult(ApplicationContractModel):
         return value.isoformat(timespec="microseconds").replace("+00:00", "Z")
 
 
+class AppendConversationTurnRequest(ApplicationContractModel):
+    idempotency_key: NonEmptyString
+    session_id: NonEmptyString
+    subject_id: NonEmptyString
+    role: Literal["user", "assistant"]
+    content: SourceTurnContent
+    source_conversation_ref: NonEmptyString | None = None
+    source_message_ref: NonEmptyString | None = None
+    source_parent_ref: NonEmptyString | None = None
+    source_timestamp: NonEmptyString | None = None
+    source_sequence: int | None = Field(default=None, ge=0)
+    source_client: NonEmptyString | None = None
+
+    @field_validator("content")
+    @classmethod
+    def reject_whitespace_only_content(cls, value: str) -> str:
+        if not value.strip():
+            raise ValueError("content must contain non-whitespace text")
+        return value
+
+
+class AppendConversationTurnResult(ApplicationContractModel):
+    message_id: NonEmptyString
+    artifact_id: NonEmptyString
+    sha256: NonEmptyString
+    created: bool
+    capture_origin: Literal["live", "reconciliation"]
+    local_captured_at: datetime
+
+    @field_validator("local_captured_at")
+    @classmethod
+    def require_utc_capture_time(cls, value: datetime) -> datetime:
+        offset = value.utcoffset()
+        if value.tzinfo is None or offset is None or offset.total_seconds() != 0:
+            raise ValueError("local_captured_at must be UTC")
+        return value
+
+    @field_serializer("local_captured_at", when_used="json")
+    def serialize_local_captured_at(self, value: datetime) -> str:
+        return value.isoformat(timespec="microseconds").replace("+00:00", "Z")
+
+
 class RecordAttemptRequest(ApplicationContractModel):
     idempotency_key: NonEmptyString
     session_id: NonEmptyString
@@ -389,6 +432,8 @@ class ScheduleRetentionProbeResult(ApplicationContractModel):
 
 
 CORE_SCHEMA_MODELS: dict[str, type[BaseModel]] = {
+    "append_conversation_turn_request": AppendConversationTurnRequest,
+    "append_conversation_turn_result": AppendConversationTurnResult,
     "application_error_envelope": ApplicationErrorEnvelope,
     "get_next_retention_probe_request": NextRetentionProbeRequest,
     "get_next_retention_probe_result": NextRetentionProbeResult,

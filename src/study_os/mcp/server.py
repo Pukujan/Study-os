@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any, TextIO
 
 from ..application.contracts import (
+    AppendConversationTurnRequest,
     NextRetentionProbeRequest,
     RecordAssessmentRequest,
     RecordAttemptRequest,
@@ -21,6 +22,7 @@ from ..application.contracts import (
 )
 from ..application.service import (
     ApplicationService,
+    project_append_conversation_turn_to_mcp,
     project_next_retention_probe_to_mcp,
     project_record_assessment_to_mcp,
     project_record_attempt_to_mcp,
@@ -119,6 +121,30 @@ class MCPServer:
             request = StartStudySessionRequest(**arguments)
             result = project_start_study_session_to_mcp(
                 self.application.start_study_session(request)
+            )
+        elif name == "append_conversation_turn":
+            allowed = {
+                "idempotency_key",
+                "session_id",
+                "subject_id",
+                "role",
+                "content",
+                "source_conversation_ref",
+                "source_message_ref",
+                "source_parent_ref",
+                "source_timestamp",
+                "source_sequence",
+                "source_client",
+            }
+            unexpected = sorted(set(arguments) - allowed)
+            if unexpected:
+                raise validation(
+                    "append_conversation_turn received unexpected arguments",
+                    unexpected=unexpected,
+                )
+            request = AppendConversationTurnRequest(**arguments)
+            result = project_append_conversation_turn_to_mcp(
+                self.application.append_conversation_turn(request)
             )
         elif name == "record_attempt":
             allowed = {

@@ -6,6 +6,8 @@ from typing import Any, Protocol
 from pydantic import ValidationError
 
 from .contracts import (
+    AppendConversationTurnRequest,
+    AppendConversationTurnResult,
     NextRetentionProbeRequest,
     NextRetentionProbeResult,
     RecentRepresentationSummary,
@@ -57,6 +59,22 @@ class ApplicationRuntimePort(Protocol):
         domain_id: str,
         source_client: str | None = None,
         metadata: dict[str, Any] | None = None,
+    ) -> dict[str, Any]: ...
+
+    def append_conversation_turn(
+        self,
+        *,
+        idempotency_key: str,
+        session_id: str,
+        subject_id: str,
+        role: str,
+        content: str,
+        source_conversation_ref: str | None = None,
+        source_message_ref: str | None = None,
+        source_parent_ref: str | None = None,
+        source_timestamp: str | None = None,
+        source_sequence: int | None = None,
+        source_client: str | None = None,
     ) -> dict[str, Any]: ...
 
     def record_attempt(
@@ -291,6 +309,40 @@ class ApplicationService:
                 "legacy start_session result does not satisfy the application contract"
             ) from exc
 
+    def append_conversation_turn(
+        self,
+        request: AppendConversationTurnRequest,
+    ) -> AppendConversationTurnResult:
+        raw = self.runtime.append_conversation_turn(
+            idempotency_key=request.idempotency_key,
+            session_id=request.session_id,
+            subject_id=request.subject_id,
+            role=request.role,
+            content=request.content,
+            source_conversation_ref=request.source_conversation_ref,
+            source_message_ref=request.source_message_ref,
+            source_parent_ref=request.source_parent_ref,
+            source_timestamp=request.source_timestamp,
+            source_sequence=request.source_sequence,
+            source_client=request.source_client,
+        )
+        try:
+            local_captured_at = raw["local_captured_at"]
+            if isinstance(local_captured_at, str):
+                local_captured_at = datetime.fromisoformat(local_captured_at.replace("Z", "+00:00"))
+            return AppendConversationTurnResult(
+                message_id=raw["message_id"],
+                artifact_id=raw["artifact_id"],
+                sha256=raw["sha256"],
+                created=raw["created"],
+                capture_origin=raw["capture_origin"],
+                local_captured_at=local_captured_at,
+            )
+        except (KeyError, TypeError, ValueError, ValidationError) as exc:
+            raise ApplicationBoundaryError(
+                "runtime append_conversation_turn result does not satisfy the application contract"
+            ) from exc
+
     def record_attempt(self, request: RecordAttemptRequest) -> RecordAttemptResult:
         raw = self.runtime.record_attempt(
             idempotency_key=request.idempotency_key,
@@ -514,6 +566,19 @@ def project_start_study_session_to_mcp(result: StartStudySessionResult) -> dict[
         "subject_id": result.subject_id,
         "started_at": result.started_at.isoformat().replace("+00:00", "Z"),
         "created": result.created,
+    }
+
+
+def project_append_conversation_turn_to_mcp(
+    result: AppendConversationTurnResult,
+) -> dict[str, Any]:
+    return {
+        "message_id": result.message_id,
+        "artifact_id": result.artifact_id,
+        "sha256": result.sha256,
+        "created": result.created,
+        "capture_origin": result.capture_origin,
+        "local_captured_at": result.local_captured_at.isoformat().replace("+00:00", "Z"),
     }
 
 

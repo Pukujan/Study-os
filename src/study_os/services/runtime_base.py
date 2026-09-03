@@ -56,6 +56,7 @@ class StudyOSService:
         self.db = Database(self.config)
         self.repository = SQLiteRepository(self.db)
         self.evidence = EvidenceStore(self.config)
+        self._after_append_commit_hook = None
 
     def close(self) -> None:
         self.repository.close()
@@ -239,6 +240,391 @@ class StudyOSService:
                     pass
             raise
         return {"artifact_id": artifact_id, "sha256": sha256, "storage_path": storage_path}
+
+    def append_conversation_turn(
+        self,
+        *,
+        idempotency_key: str,
+        session_id: str,
+        subject_id: str,
+        role: str,
+        content: str,
+        source_conversation_ref: str | None = None,
+        source_message_ref: str | None = None,
+        source_parent_ref: str | None = None,
+        source_timestamp: str | None = None,
+        source_sequence: int | None = None,
+        source_client: str | None = None,
+        capture_origin: str = "live",
+        reconciliation_source_ref: str | None = None,
+    ) -> dict:
+        if role not in {"user", "assistant"}:
+            raise validation("role must be user or assistant")
+        if not isinstance(content, str) or not content.strip():
+            raise validation("content must contain non-whitespace text")
+        if capture_origin not in {"live", "reconciliation"}:
+            raise validation("capture_origin must be live or reconciliation")
+        if source_sequence is not None and (
+            isinstance(source_sequence, bool)
+            or not isinstance(source_sequence, int)
+            or source_sequence < 0
+        ):
+            raise validation("source_sequence must be a non-negative integer")
+        for field_name, value in (
+            ("source_conversation_ref", source_conversation_ref),
+            ("source_message_ref", source_message_ref),
+            ("source_parent_ref", source_parent_ref),
+            ("source_timestamp", source_timestamp),
+            ("source_client", source_client),
+            ("reconciliation_source_ref", reconciliation_source_ref),
+        ):
+            if value is not None and (not isinstance(value, str) or not value.strip()):
+                raise validation(f"{field_name} must be a non-empty string when supplied")
+
+        content_bytes = content.encode("utf-8")
+        sha256 = EvidenceStore.sha256_bytes(content_bytes)
+        request = {
+            "session_id": session_id,
+            "subject_id": subject_id,
+            "role": role,
+            "content_sha256": sha256,
+            "source_conversation_ref": source_conversation_ref,
+            "source_message_ref": source_message_ref,
+            "source_parent_ref": source_parent_ref,
+            "source_timestamp": source_timestamp,
+            "source_sequence": source_sequence,
+            "source_client": source_client,
+            "capture_origin": capture_origin,
+            "reconciliation_source_ref": reconciliation_source_ref,
+        }
+        metadata = {
+            "metadata_version": "study-os.source-turn.v1",
+            "capture_origin": capture_origin,
+            "source_client": source_client,
+            "source_conversation_ref": source_conversation_ref,
+            "source_message_ref": source_message_ref,
+            "source_parent_ref": source_parent_ref,
+            "source_timestamp": source_timestamp,
+            "source_sequence": source_sequence,
+            "reconciliation_source_ref": reconciliation_source_ref,
+        }
+        storage_path: str | None = None
+        try:
+            with self.repository.transaction() as connection:
+                cached = self._idempotency_check(
+                    connection, "append_conversation_turn", idempotency_key, request
+                )
+                if cached:
+                    return cached
+                self._session(connection, session_id, subject_id)
+                message_id = new_id()
+                artifact_id = new_id()
+                local_captured_at = utc_now()
+                artifact_id, sha256, storage_path = self.evidence.capture(
+                    session_id=session_id,
+                    content=content_bytes,
+                    media_type="text/plain; charset=utf-8",
+                    capture_method=f"conversation_turn_{capture_origin}",
+                    source_metadata=metadata,
+                    artifact_id=artifact_id,
+                )
+                connection.execute(
+                    "INSERT INTO raw_artifacts "
+                    "(artifact_id, session_id, sha256, storage_path, media_type, captured_at, capture_method, source_metadata_json) "
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                    (
+                        artifact_id,
+                        session_id,
+                        sha256,
+                        storage_path,
+                        "text/plain; charset=utf-8",
+                        local_captured_at,
+                        f"conversation_turn_{capture_origin}",
+                        canonical_json(metadata),
+                    ),
+                )
+                connection.execute(
+                    "INSERT INTO messages "
+                    "(message_id, session_id, role, artifact_id, content_sha256, created_at, metadata_json) "
+                    "VALUES (?, ?, ?, ?, ?, ?, ?)",
+                    (
+                        message_id,
+                        session_id,
+                        role,
+                        artifact_id,
+                        sha256,
+                        local_captured_at,
+                        canonical_json(metadata),
+                    ),
+                )
+                result = {
+                    "message_id": message_id,
+                    "artifact_id": artifact_id,
+                    "sha256": sha256,
+                    "created": True,
+                    "capture_origin": capture_origin,
+                    "local_captured_at": local_captured_at,
+                }
+                self._idempotency_record(
+                    connection,
+                    operation="append_conversation_turn",
+                    key=idempotency_key,
+                    request=request,
+                    result=result,
+                    resource_type="message",
+                    resource_id=message_id,
+                )
+        except Exception:
+            if storage_path is not None:
+                try:
+                    self.evidence.resolve(storage_path).unlink(missing_ok=True)
+                except (OSError, StudyOSError):
+                    pass
+            raise
+        hook = self._after_append_commit_hook
+        if hook is not None:
+            hook(result)
+        return result
+
+    def list_conversation_turns(self, *, session_id: str, subject_id: str) -> list[dict]:
+        """Return bounded local occurrence metadata for reviewed reconciliation."""
+        with self.repository.transaction(immediate=False) as connection:
+            self._session(connection, session_id, subject_id)
+            rows = connection.execute(
+                "SELECT message_id, session_id, role, artifact_id, content_sha256, created_at, metadata_json "
+                "FROM messages WHERE session_id = ? ORDER BY created_at ASC, message_id ASC",
+                (session_id,),
+            ).fetchall()
+            result: list[dict] = []
+            for row in rows:
+                try:
+                    metadata = json.loads(row["metadata_json"])
+                except (TypeError, ValueError, json.JSONDecodeError) as exc:
+                    raise integrity(
+                        "Conversation message metadata is malformed",
+                        message_id=row["message_id"],
+                    ) from exc
+                result.append(
+                    {
+                        "message_id": row["message_id"],
+                        "session_id": row["session_id"],
+                        "role": row["role"],
+                        "artifact_id": row["artifact_id"],
+                        "content_sha256": row["content_sha256"],
+                        "created_at": row["created_at"],
+                        "metadata": metadata,
+                    }
+                )
+            return result
+
+    def reconcile_conversation(
+        self,
+        *,
+        session_id: str,
+        subject_id: str,
+        transcript_path: str | Path,
+    ) -> dict:
+        """Backfill missing turns from one reviewed, lossless transcript export."""
+        source = Path(transcript_path).expanduser().resolve()
+        if not source.is_file():
+            raise validation("Transcript source file does not exist", path=str(source))
+        source_bytes = source.read_bytes()
+        if not source_bytes:
+            raise validation("Transcript source file must not be empty")
+        try:
+            payload = json.loads(source_bytes.decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+            raise validation("Transcript source must be UTF-8 JSON") from exc
+        if not isinstance(payload, dict) or not isinstance(payload.get("turns"), list):
+            raise validation("Transcript source must contain a turns array")
+        conversation_ref = payload.get("conversation_id")
+        if conversation_ref is not None and (
+            not isinstance(conversation_ref, str) or not conversation_ref.strip()
+        ):
+            raise validation("conversation_id must be a non-empty string when supplied")
+        source_client = payload.get("source_client")
+        if source_client is not None and (
+            not isinstance(source_client, str) or not source_client.strip()
+        ):
+            raise validation("source_client must be a non-empty string when supplied")
+
+        source_sha256 = EvidenceStore.sha256_bytes(source_bytes)
+        source_artifact_id = f"reconciliation-source-{source_sha256}"
+        source_metadata = {
+            "metadata_version": "study-os.reconciliation-source.v1",
+            "capture_origin": "reconciliation",
+            "source_conversation_ref": conversation_ref,
+            "source_client": source_client,
+            "source_sha256": source_sha256,
+        }
+        source_storage_path: str | None = None
+        try:
+            with self.repository.transaction() as connection:
+                self._session(connection, session_id, subject_id)
+                existing_source = connection.execute(
+                    "SELECT session_id, sha256, storage_path FROM raw_artifacts WHERE artifact_id = ?",
+                    (source_artifact_id,),
+                ).fetchone()
+                if existing_source is None:
+                    _, _, source_storage_path = self.evidence.capture(
+                        session_id=session_id,
+                        content=source_bytes,
+                        media_type="application/json",
+                        capture_method="conversation_transcript_reconciliation_source",
+                        source_metadata=source_metadata,
+                        artifact_id=source_artifact_id,
+                    )
+                    connection.execute(
+                        "INSERT INTO raw_artifacts "
+                        "(artifact_id, session_id, sha256, storage_path, media_type, captured_at, capture_method, source_metadata_json) "
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                        (
+                            source_artifact_id,
+                            session_id,
+                            source_sha256,
+                            source_storage_path,
+                            "application/json",
+                            utc_now(),
+                            "conversation_transcript_reconciliation_source",
+                            canonical_json(source_metadata),
+                        ),
+                    )
+                elif (
+                    existing_source["session_id"] != session_id
+                    or existing_source["sha256"] != source_sha256
+                    or not self.evidence.verify(existing_source["storage_path"], source_sha256)
+                ):
+                    raise integrity(
+                        "Reconciliation source identity conflicts with existing evidence",
+                        artifact_id=source_artifact_id,
+                    )
+        except Exception:
+            if source_storage_path is not None:
+                try:
+                    self.evidence.resolve(source_storage_path).unlink(missing_ok=True)
+                except (OSError, StudyOSError):
+                    pass
+            raise
+
+        existing = self.list_conversation_turns(session_id=session_id, subject_id=subject_id)
+        outcomes: list[dict] = []
+        for index, raw_turn in enumerate(payload["turns"]):
+            if not isinstance(raw_turn, dict):
+                outcomes.append({"index": index, "outcome": "rejected_invalid_source"})
+                continue
+            role = raw_turn.get("role")
+            content = raw_turn.get("content")
+            if role not in {"user", "assistant"} or not isinstance(content, str) or not content:
+                outcomes.append({"index": index, "outcome": "rejected_invalid_source"})
+                continue
+            source_message_ref = raw_turn.get("source_message_id")
+            if source_message_ref is not None and (
+                not isinstance(source_message_ref, str) or not source_message_ref.strip()
+            ):
+                outcomes.append({"index": index, "outcome": "rejected_invalid_source"})
+                continue
+            source_parent_ref = raw_turn.get("source_parent_id")
+            source_timestamp = raw_turn.get("source_timestamp")
+            source_sequence = raw_turn.get("source_sequence")
+            if source_parent_ref is not None and not isinstance(source_parent_ref, str):
+                outcomes.append({"index": index, "outcome": "rejected_invalid_source"})
+                continue
+            if source_timestamp is not None and not isinstance(source_timestamp, str):
+                outcomes.append({"index": index, "outcome": "rejected_invalid_source"})
+                continue
+            if source_sequence is not None and (
+                isinstance(source_sequence, bool)
+                or not isinstance(source_sequence, int)
+                or source_sequence < 0
+            ):
+                outcomes.append({"index": index, "outcome": "rejected_invalid_source"})
+                continue
+
+            content_sha256 = EvidenceStore.sha256_bytes(content.encode("utf-8"))
+            candidates = [
+                item
+                for item in existing
+                if item["role"] == role and item["content_sha256"] == content_sha256
+            ]
+            exact = []
+            for item in candidates:
+                metadata = item["metadata"]
+                if source_message_ref is not None and (
+                    metadata.get("source_message_ref") == source_message_ref
+                    and (
+                        conversation_ref is None
+                        or metadata.get("source_conversation_ref") == conversation_ref
+                    )
+                ):
+                    exact.append(item)
+                elif source_message_ref is None:
+                    if source_sequence is not None and metadata.get("source_sequence") != source_sequence:
+                        continue
+                    if source_timestamp is not None and metadata.get("source_timestamp") != source_timestamp:
+                        continue
+                    exact.append(item)
+            if len(exact) == 1:
+                outcomes.append(
+                    {"index": index, "outcome": "already_present_exact", "message_id": exact[0]["message_id"]}
+                )
+                continue
+            if len(exact) > 1 or (source_message_ref is None and len(candidates) > 1):
+                outcomes.append({"index": index, "outcome": "ambiguous_review_required"})
+                continue
+
+            identity = source_message_ref or f"index-{index}-{content_sha256}"
+            result = self.append_conversation_turn(
+                idempotency_key=f"reconciliation:{source_artifact_id}:{identity}",
+                session_id=session_id,
+                subject_id=subject_id,
+                role=role,
+                content=content,
+                source_conversation_ref=conversation_ref,
+                source_message_ref=source_message_ref,
+                source_parent_ref=source_parent_ref,
+                source_timestamp=source_timestamp,
+                source_sequence=source_sequence,
+                source_client=source_client,
+                capture_origin="reconciliation",
+                reconciliation_source_ref=source_artifact_id,
+            )
+            existing.append(
+                {
+                    "message_id": result["message_id"],
+                    "session_id": session_id,
+                    "role": role,
+                    "artifact_id": result["artifact_id"],
+                    "content_sha256": result["sha256"],
+                    "created_at": result["local_captured_at"],
+                    "metadata": {
+                        "source_message_ref": source_message_ref,
+                        "source_conversation_ref": conversation_ref,
+                        "source_sequence": source_sequence,
+                        "source_timestamp": source_timestamp,
+                    },
+                }
+            )
+            outcomes.append(
+                {
+                    "index": index,
+                    "outcome": "backfilled_missing",
+                    "message_id": result["message_id"],
+                }
+            )
+
+        status = "ok"
+        if any(item["outcome"] == "ambiguous_review_required" for item in outcomes):
+            status = "ambiguous_review_required"
+        elif any(item["outcome"] == "rejected_invalid_source" for item in outcomes):
+            status = "rejected_invalid_source"
+        elif any(item["outcome"] == "backfilled_missing" for item in outcomes):
+            status = "backfilled_missing"
+        return {
+            "status": status,
+            "source_artifact_id": source_artifact_id,
+            "source_sha256": source_sha256,
+            "outcomes": outcomes,
+        }
 
     def start_session(
         self,
@@ -1033,6 +1419,50 @@ class StudyOSService:
             check("raw_evidence_integrity", not artifact_failures, "ok" if not artifact_failures else "raw evidence hash verification failed", failures=artifact_failures)
         except sqlite3.DatabaseError as exc:
             check("raw_evidence_integrity", False, "artifact inspection failed", error=str(exc))
+
+        message_failures: list[dict[str, str]] = []
+        try:
+            for message in connection.execute(
+                "SELECT message_id, session_id, artifact_id, content_sha256, metadata_json FROM messages"
+            ):
+                artifact = None
+                if message["artifact_id"]:
+                    artifact = connection.execute(
+                        "SELECT session_id, sha256, storage_path FROM raw_artifacts WHERE artifact_id = ?",
+                        (message["artifact_id"],),
+                    ).fetchone()
+                if artifact is None:
+                    message_failures.append(
+                        {"message_id": message["message_id"], "reason": "missing_artifact"}
+                    )
+                    continue
+                if artifact["session_id"] != message["session_id"]:
+                    message_failures.append(
+                        {"message_id": message["message_id"], "reason": "artifact_session_mismatch"}
+                    )
+                if message["content_sha256"] != artifact["sha256"]:
+                    message_failures.append(
+                        {"message_id": message["message_id"], "reason": "content_hash_mismatch"}
+                    )
+                try:
+                    metadata = json.loads(message["metadata_json"])
+                    if not isinstance(metadata, dict):
+                        raise ValueError("metadata is not an object")
+                    if metadata.get("metadata_version") == "study-os.source-turn.v1":
+                        if metadata.get("capture_origin") not in {"live", "reconciliation"}:
+                            raise ValueError("invalid capture origin")
+                except (TypeError, ValueError, json.JSONDecodeError) as exc:
+                    message_failures.append(
+                        {"message_id": message["message_id"], "reason": f"invalid_metadata:{exc}"}
+                    )
+            check(
+                "message_evidence_integrity",
+                not message_failures,
+                "ok" if not message_failures else "message evidence links are invalid",
+                failures=message_failures,
+            )
+        except sqlite3.DatabaseError as exc:
+            check("message_evidence_integrity", False, "message inspection failed", error=str(exc))
 
         healthy = all(item["healthy"] for item in checks.values())
         return {
