@@ -1,243 +1,371 @@
-# Luna Local Implementation Handoff — Study OS v0.1
+# Luna Local Implementation Handoff — P3.0 Durable Evidence Repair
+
+Date: 2026-09-03
 
 This file is intended to be handed directly to the learner's local coding agent ("Luna") running in WSL.
 
 ## Mission
 
-Implement the local-first Study OS runtime defined by Issue #4 and `docs/LOCAL_RUNTIME_ARCHITECTURE.md` without changing the learning/research contracts silently.
+Repair the real GPT -> local Study OS evidence-capture path so learner interactions are **durable-or-recoverable**.
 
-The local runtime is the canonical operational store for learner state. GitHub remains source/spec/test/research control.
+Primary invariant:
 
-## Read first
+> No silent learner-evidence loss.
+
+Do not treat the task as a generic 502 bug fix. The required outcome is that Study OS can prove what was committed, safely resolve uncertain results, and identify/reconcile evidence that never reached the local runtime.
+
+## Read first — current authority
+
+Read in this order before changing runtime behavior:
 
 1. `AGENTS.md`
-2. `PROJECT_MANIFEST.yaml`
-3. `docs/LOCAL_RUNTIME_ARCHITECTURE.md`
-4. `docs/PARALLEL_EXECUTION_PLAN.md`
-5. `docs/VALIDATION_STRATEGY.md`
-6. `docs/CHECKPOINTING.md`
-7. `docs/FOSSIL_INTEGRATION.md`
-8. `contracts/study-os-mcp-tools.v0.1.json`
-9. Issue #4
-10. Issue #3
+2. `docs/HANDOFF.md`
+3. `docs/ROADMAP.md`
+4. `docs/CURRENT_STATE.md`
+5. `docs/DECISIONS.md` — latest accepted decisions, especially D010/D012/D014
+6. `docs/P3_DURABLE_EVIDENCE_CAPTURE_PDD.md`
+7. `docs/P3_DURABLE_EVIDENCE_CAPTURE_SDD.md`
+8. `docs/P3_DURABLE_EVIDENCE_CAPTURE_TDD.md`
+9. `docs/ERROR_IDEMPOTENCY_CONTRACT.md`
+10. `docs/DATABASE_CONTRACT.md`
+11. `docs/LOCAL_RUNTIME_ARCHITECTURE.md`
+12. `contracts/study-os-mcp-tools.v0.1.json`
+13. Issue #52
 
-## Do not build yet
+Historical P0/P1/P2 issue checklists are lineage, not current execution authority.
 
-Do not spend the first implementation cycle on:
+## Architecture to preserve
 
-- production UI;
-- generated video/image pipeline;
+```text
+GPT learner-facing app
+        ↓
+secure/private Study OS transport
+        ↓
+Study OS application/runtime semantics
+        ↓
+local SQLite + private evidence store
+```
+
+Runtime ownership remains:
+
+- local SQLite + private evidence store = canonical live learner state/evidence;
+- GitHub = source/spec/research/CI/curated public artifacts;
+- FOSSIL = optional/downstream lineage/research, never required for normal capture/resume;
+- GPT = current learner-facing surface.
+
+Implementation code may be replaced/refactored if needed. Persistent evidence identity, provenance, idempotency, migrations, acknowledgement/recovery semantics are the assets that must survive.
+
+## Do not build as part of this repair
+
+Do not spend this cycle on:
+
+- dedicated web/mobile frontend;
+- HTTP expansion unrelated to the real failure;
+- generated video/audio/image systems;
 - Postgres;
-- graph database;
-- FOSSIL runtime integration;
-- public hosting;
-- arbitrary remote shell/file tools;
-- full DSA curriculum.
+- microservices;
+- FOSSIL runtime dependency;
+- broad adaptive-policy promotion;
+- broad mutation/formal/chaos programs;
+- wholesale runtime refactor for aesthetics;
+- general platform hardening unrelated to the durability incident.
 
-## Local runtime target
+## Step 0 — protect local learner data before risky work
 
-Use a project-agnostic layout similar to:
+Before any migration/destructive diagnostic on the real runtime:
 
-```text
-src/study_os/
-  db/
-    migrations/
-    connection.py
-    repositories/
-  domain/
-    models.py
-    errors.py
-  services/
-    sessions.py
-    evidence.py
-    assessments.py
-    checkpoints.py
-    representations.py
-    health.py
-    backups.py
-  mcp/
-    server.py
-    tools.py
-  evidence/
-    store.py
-  config.py
+1. identify the actual configured Study OS root;
+2. run current `doctor`/health checks;
+3. make/verify a backup using the existing supported backup path;
+4. use a disposable copied runtime or synthetic temp root for failure injection whenever possible;
+5. do not expose raw private learner content in logs, issue comments, PR fixtures, or screenshots.
 
-cli/
-  study_os.py
+If the current backup cannot be verified, fix/establish a safe backup before a destructive migration.
 
-tests/
-  unit/
-  integration/
-  contract/
-```
+## Step 1 — reproduce and localize the 502
 
-Exact structure may differ, but keep MCP -> service -> repository -> SQLite separation.
+Before changing production code, reproduce the current failure or gather enough local diagnostics to classify it.
 
-## Storage location
-
-Default outside the Git working tree:
+For one attempted write, determine:
 
 ```text
-~/.study-os/
-  db/study-os.sqlite3
-  evidence/
-  backups/
-  config/
+A. request reached tunnel/edge?
+B. local MCP/transport received it?
+C. application/runtime handler entered?
+D. idempotency lookup happened?
+E. DB transaction began?
+F. commit happened?
+G. result was constructed?
+H. response failed after commit?
 ```
 
-Allow a configurable root for tests so every test can use a temporary directory.
+Classify as one of:
 
-## Database requirements
+- `pre_local_receipt`
+- `transport_or_handler_before_commit`
+- `persistence_before_commit`
+- `post_commit_response_failure`
+- `multiple_or_unresolved`
 
-Project-agnostic minimum entities:
+Use correlation IDs and stable categories where available. Do not log raw learner text merely to prove the request path.
 
-- subjects
-- projects
-- domains
-- concepts
-- sessions
-- messages/raw_artifacts
-- learning_events
-- episodes
-- attempts
-- assessments
-- representations
-- interventions
-- representation_outcomes
-- checkpoints
-- retention_probes
+If the failure is upstream of the local service, do not pretend local code can make the network infallible. Implement only the local durable/reconciliation requirements that remain relevant and report the upstream boundary.
 
-Use migrations from day one. Enable SQLite foreign keys. Prefer stable text/UUID-style IDs over row numbers as external identifiers.
+## Step 2 — test first
 
-### Required semantic invariants
+Follow `docs/P3_DURABLE_EVIDENCE_CAPTURE_TDD.md`.
 
-- raw evidence is immutable after capture;
-- durable write APIs accept an idempotency key/request ID;
-- repeated same request must not duplicate a learning event/checkpoint;
-- derived learner state requires evidence IDs;
-- current checkpoint update is atomic with accepted checkpoint creation;
-- checkpoint must not claim untested capability as passed;
-- representation outcome references real intervention + behavioral evidence;
-- FOSSIL is not involved in normal writes/resume;
-- GitHub is not involved in normal writes/resume.
+The repository already has useful regression coverage, especially in:
 
-## Private evidence store
+- `tests/test_local_runtime.py`
+- `tests/test_application_*_conformance.py`
+- MCP conformance/runtime tests
 
-Implement content hashing (SHA-256) and metadata records. Prefer copy-on-ingest into an immutable session artifact directory. A mismatch between stored hash and current bytes must be detected by `doctor`/verification.
+Existing behavior already includes idempotent event retry, conflict rejection, checkpoint rollback, restart continuity, DB busy handling, evidence hash checks, backup/restore, and contract conformance.
 
-## Initial service methods
+Do not rebuild these blindly.
 
-Implement at minimum:
+Add/select a failing test for the actual missing failure class first.
 
-- `doctor()`
-- `status(subject_id)`
-- `start_session(...)`
-- `record_learning_event(...)`
-- `record_attempt(...)`
-- `record_assessment(...)`
-- `record_representation_intervention(...)`
-- `record_representation_outcome(...)`
-- `checkpoint(...)`
-- `resume(subject_id)`
-- `backup(...)`
-- `restore(...)`
+The key P3 additions are expected to cover:
 
-Retention scheduling can be stubbed only if the contract clearly reports `not_implemented`; do not silently fake scheduling.
+- post-commit response loss / unknown caller result;
+- source/raw capture independent of later semantic failure where applicable;
+- explicit reconciliation/backfill for pre-receipt missing turns;
+- idempotent reconciliation rerun;
+- ambiguous reconciliation fail-closed;
+- `doctor` visibility for unresolved capture/reconciliation states;
+- backup/restore of any new durable capture/reconciliation semantics.
 
-## MCP surface
+## Step 3 — smallest implementation change
 
-Implement the approved tool names and request/response shapes from `contracts/study-os-mcp-tools.v0.1.json`.
+After the failing test exists, make the smallest change that satisfies the PDD/SDD invariant.
 
-Rules:
+Do not widen architecture unnecessarily.
 
-- semantic tools only;
-- no SQL tool;
-- no shell tool;
-- no unrestricted write-file tool;
-- no arbitrary code execution;
-- validate tool arguments;
-- stable machine-readable errors;
-- MCP wrapper calls service methods, not ad-hoc SQL.
+Prefer preserving the current application/MCP contract unless evidence shows the contract itself cannot represent a required durable state.
 
-## `doctor` checks
+If a schema change is necessary:
 
-Must fail non-zero / unhealthy when any of these are detected:
+- write a forward migration;
+- preserve all historical records;
+- do not reuse old fields with changed meaning;
+- test migration from the current schema;
+- backup valuable local state first;
+- include migration/restore evidence in the PR.
 
-- migration/schema version incompatible;
-- required tables missing;
-- foreign keys disabled or broken;
-- current checkpoint points to missing checkpoint;
-- checkpoint references missing evidence;
-- private evidence hash mismatch;
-- configured evidence root unavailable;
-- unsupported contract/runtime version.
+## Required semantics
 
-## Backup/restore
+### Durable acknowledgement
 
-Implement before real learning data is trusted.
+Do not return/claim durable success until the required local transaction/durability boundary commits.
 
-Acceptance:
+### Exact retry
 
-1. create fixture DB + evidence;
-2. backup;
-3. destroy/move working data;
-4. restore;
-5. hashes/checkpoints/record counts match;
-6. `doctor` passes.
+```text
+same idempotency identity + same fingerprint
+    -> original durable result, no duplicate
 
-## Testing requirements
+same idempotency identity + different fingerprint
+    -> explicit conflict
+```
 
-Follow `docs/VALIDATION_STRATEGY.md`.
+### Unknown result
 
-Minimum PR evidence:
+If commit succeeds but the response is lost, retry/query must resolve the already committed operation safely.
 
-- migration test from empty DB;
-- migration repeat/idempotency test;
-- idempotent event-write test;
-- invalid derived claim without evidence rejection test;
-- checkpoint atomic/current-pointer test;
-- resume-after-process-restart integration test;
-- evidence mutation/hash failure test;
-- backup/restore test;
-- MCP contract conformance test;
-- prohibited generic tool test.
+### Raw/source evidence
 
-## First deterministic fixture
+Where a learner-facing turn is captured locally, optional normalization/diagnosis/system grading must not be able to erase it.
 
-Use a synthetic/non-private Subject 001-style fixture, not the learner's actual transcript.
+### Reconciliation
 
-Example sequence:
+A turn that never reached local Study OS can only be recovered from actual source evidence such as a reviewed transcript/export.
 
-1. start session;
-2. record `confusion_reported` self-report;
-3. record `state_trace + predict` intervention;
-4. record supported correct attempt;
-5. record faded correct assessment;
-6. record representation outcome evidence level 3;
-7. create checkpoint with state tracing passed and implementation not tested;
-8. restart service;
-9. resume and verify next action.
+Backfill must:
 
-## Branch/PR handoff back to cloud reviewer
+- preserve source provenance;
+- distinguish live capture from reconciliation capture;
+- deduplicate exact matches;
+- preserve recovery time separately from source time;
+- refuse automatic merge when identity is ambiguous.
 
-When P0 implementation is ready:
+Never invent a missing turn.
 
-1. run all local tests;
-2. run repository tests;
-3. push a branch;
-4. open a PR referencing Issue #4;
-5. in PR body include:
-   - architecture summary;
-   - migration version;
-   - test commands + result summary;
-   - known limitations;
-   - backup/restore result;
-   - MCP tool list;
-   - changes to contracts, if any;
-   - whether manifest/handoff need update.
+## `doctor` expectations
 
-Do not merge merely because the happy path works. The cloud/repo reviewer will inspect the diff and compare the implementation to the versioned contracts/failure tests.
+Extend `doctor` only as needed to surface the P3 durability state.
 
-## Definition of done for Luna P0
+It should be able to identify applicable problems such as:
 
-P0 is complete only when the runtime can be deleted/restarted/restored and still reproduce a valid learner checkpoint from durable evidence, with no GitHub/FOSSIL dependency in the operational path.
+- DB/migration/integrity failure;
+- missing/corrupt private evidence artifact;
+- invalid idempotency state;
+- durable receipt referencing missing record;
+- semantic/derived record referencing missing source evidence;
+- unresolved unknown-result/reconciliation-required item;
+- ambiguous reconciliation item;
+- backup/restore integrity status where available.
+
+`doctor` reports; it must not silently rewrite learner history to make itself healthy.
+
+## Backup/restore expectations
+
+If P3 adds new persisted capture/reconciliation state, backup/restore must preserve it.
+
+After restore verify:
+
+- source/capture identities;
+- hashes/private artifact references;
+- idempotency identity/fingerprint semantics;
+- reconciliation provenance/status;
+- learner/system evidence links;
+- retry behavior;
+- `doctor` result.
+
+A restore that recovers a checkpoint but loses underlying learner evidence is not acceptable.
+
+## Public/private boundary
+
+Use synthetic fixtures only in committed tests.
+
+Do not commit:
+
+- real raw learner transcript;
+- tunnel URLs containing secrets/tokens;
+- local credentials;
+- private filesystem paths when avoidable;
+- logs containing raw private learner content.
+
+Prefer correlation IDs, hashes, status categories, and synthetic payloads.
+
+## Focused verification before PR
+
+Run the applicable P3 TDD tests and existing regressions.
+
+Expected pattern if a new focused file is created:
+
+```bash
+python -m unittest tests.test_p3_durable_evidence_capture -v
+python -m unittest tests.test_local_runtime -v
+```
+
+Then run the repository's canonical validation/test commands from the current checkout.
+
+Record exact commands and pass/fail totals; do not summarize only as "tests passed."
+
+## Disposable rollout sequence
+
+Before real learner use:
+
+1. disposable/synthetic runtime root;
+2. durable write;
+3. exact retry;
+4. conflict retry;
+5. injected before-commit failure;
+6. injected post-commit response-loss case where feasible;
+7. restart service;
+8. `doctor`;
+9. reconciliation/backfill fixture;
+10. backup -> destroy disposable state -> restore;
+11. MCP/local transport smoke.
+
+Only then test the actual GPT path.
+
+## Real GPT smoke
+
+After lower layers pass:
+
+1. start/verify the real local service and transport;
+2. perform one small non-sensitive Study OS write through the GPT app;
+3. inspect the local DB/evidence state using supported service/diagnostic methods;
+4. verify the operation is durably present;
+5. if caller result was uncertain, retry using the same logical identity and verify no duplicate;
+6. run `doctor`.
+
+Do not use a long valuable learning session as the first real smoke test.
+
+## Historical missed sessions
+
+The current repair does not retroactively prove that prior 502 turns were locally captured.
+
+After the live path is trustworthy, reconcile known missed/uncertain sessions only from available actual source evidence.
+
+Preserve whether each record was:
+
+- captured live;
+- already present despite caller uncertainty;
+- recovered later by reconciliation;
+- unresolved/ambiguous.
+
+## Stop and report instead of improvising when
+
+Stop and return diagnostics/proposal if:
+
+- the real failure is entirely outside the local Study OS boundary;
+- public MCP contract changes appear necessary;
+- a destructive migration is required without verified backup;
+- current local checkout/state conflicts materially with `main` specs;
+- reconciliation identity is ambiguous;
+- fixing the issue would require committing private credentials/config;
+- a proposed shortcut would make derived state authoritative over raw evidence.
+
+## Implementation PR requirements
+
+Open a PR referencing Issue #52.
+
+Include:
+
+### Root-cause / boundary table
+
+| Boundary | Observed? | Evidence |
+|---|---|---|
+| request reached local transport | yes/no/unknown | sanitized ref |
+| application handler entered | yes/no/unknown | ref |
+| transaction began | yes/no/unknown | ref |
+| commit occurred | yes/no/unknown | ref |
+| caller received result | yes/no/unknown | ref |
+
+### Change summary
+
+- failure class fixed;
+- architecture/data semantics changed;
+- code areas changed;
+- migration version or explicitly `none`;
+- compatibility implications;
+- known limitations.
+
+### TDD receipt
+
+Report T1–T14 from `P3_DURABLE_EVIDENCE_CAPTURE_TDD.md` as:
+
+- pass;
+- not applicable + reason;
+- unresolved blocker.
+
+### Verification receipt
+
+- exact head SHA;
+- exact commands;
+- pass/fail counts;
+- backup/restore result;
+- local transport/MCP smoke;
+- real GPT smoke;
+- unresolved historical evidence gaps.
+
+## Definition of done
+
+The local P3.0 repair is complete only when:
+
+- the current 502 boundary is localized or explicitly documented as unresolved/upstream;
+- no tested acknowledged durable write can disappear;
+- exact retries cannot duplicate the affected evidence;
+- commit-then-response-loss is recoverable safely;
+- pre-receipt missing evidence has a tested provenance-preserving backfill path;
+- ambiguous reconciliation never guesses;
+- restart and backup/restore preserve durability semantics;
+- existing checkpoint/evidence integrity remains green;
+- one actual GPT smoke write is proven durable locally;
+- the learner can resume normal Study OS learning without manually administering routine persistence.
+
+The goal is not to preserve current code. The goal is to preserve trustworthy longitudinal learner evidence.
