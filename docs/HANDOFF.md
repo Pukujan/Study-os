@@ -1,102 +1,138 @@
 # Agent Handoff
 
-Last updated: 2026-08-25
+Last updated: 2026-09-03
 
 ## Current phase
 
-**P2 adaptive-learning integration with engineering-verification hardening.**
+**Operational dogfooding + durable evidence + structured curriculum acquisition.**
 
-P0 local runtime is complete and merged. The repository contains the P2 adaptive foundation: structured telemetry, versioned adapter contracts, atomic curriculum fixtures, BKT/CAT/IRT/FSRS shadow mechanisms, scaffold control, representation policy, learner-relative complexity, tutor-policy regression, proposal-to-outcome linkage, atomic retention-probe closure, and richer resume projection.
+Study OS is already being used by Subject 001 through the GPT app for real learning. That usage is now a primary product-development and evidence-generation loop.
 
-The deployed/local P1 ChatGPT transport remains a separate lineage with private WSL/Cloudflare/GPT Action configuration intentionally absent from this public repository. Do not modify or invent those local secrets/configurations from cloud-only work.
+The immediate execution priority is not broad code hardening or frontend implementation. It is to make the GPT -> local Study OS evidence path dependable enough that ongoing learning does not silently lose data, while curriculum/data work continues in parallel.
 
-## Canonical trackers
+## Planning authority
 
-- Issue #10 — P2 learner model, curriculum, adaptive control, shadow/canary/live-promotion gates.
-- Issue #21 — production-grade agentic verification and SWE foundations.
-- Issue #5 — historical P0/P1 runtime and continuity parent tracker.
+Read in this order:
 
-Before any P2 component reaches G5 advisory/canary or later, apply the relevant Issue #21 verification gates.
+1. `docs/ROADMAP.md`
+2. `docs/CURRENT_STATE.md`
+3. latest accepted entries in `docs/DECISIONS.md`
+4. active issue/PR specifics
 
-## Current runtime/contracts
+Git/issues preserve history. Old unchecked issue items do not override later accepted roadmap/decision changes.
 
-- Runtime/package version: `0.1.0`.
-- MCP semantic contract: `0.1.0`.
-- SQLite schema version: `1` / migration `0001`.
-- Public semantic tool surface remains exactly 13 tools.
+## Runtime ownership
+
 - Canonical live learner state remains local SQLite + private evidence store.
-- GitHub is source/spec/research/CI, not the live learner database.
+- GitHub remains source/spec/research/issue history/CI and curated public evidence.
+- FOSSIL remains optional/downstream for durable lineage, promoted findings, and research artifacts; it is not the live learner database.
+- The GPT app remains the current learner-facing surface.
 
-## Current engineering structure
+## Current reliability incident
 
-Study OS remains a modular monolith in progress:
+Real learning sessions have reported HTTP 502 failures while attempting Study OS writes.
 
-- `src/study_os/adaptive/` — pure/adaptive decision mechanisms and shadow policy logic.
-- `src/study_os/curriculum/` — versioned competency/item loading and validation.
-- `src/study_os/db/` — SQLite connection/migrations.
-- `src/study_os/evidence/` — private evidence/hash handling.
-- `src/study_os/services/` — semantic application/runtime facade; transitional and still contains the large preserved `runtime_base.py`.
-- `src/study_os/mcp/` — MCP transport wrappers.
+Treat this as a learner-data integrity/reliability problem, not merely a transient UX defect.
 
-Do not aggressively refactor the semantic runtime until property/state-machine/reference-model verification freezes its behavior.
+### Required invariant
 
-## Verification state
+> No silent learner-evidence loss.
 
-The first Issue #21 SWE baseline is mandatory in CI:
+A write must be either durably acknowledged locally or explicitly identifiable as missing/uncertain and recoverable through reconciliation/backfill.
 
-1. Python compile;
-2. repository/schema/privacy/contract validator;
-3. runtime-package/MCP-version consistency and exact 13-tool count;
-4. architecture check preventing `adaptive/` and `curriculum/` pure logic from importing DB/evidence/service/MCP layers;
-5. Ruff lint for critical Python errors;
-6. Pyright basic type checking over `src/study_os`;
-7. branch-aware coverage with a 70% floor;
-8. full unittest suite.
+Protect:
 
-The first Hypothesis verification slice is also implemented: generated idempotency/conflict properties plus a rule-based durability state machine exercise unique event writes, exact retries, conflicting key reuse, service restarts, durable event cardinality, and continuous `doctor()` health. This is a bounded sequence oracle; it does not yet model the full attempt/assessment/checkpoint/retention lifecycle.
+- commit-before-success acknowledgement;
+- idempotent exact retries;
+- no duplicate durable evidence;
+- correlation/operation identifiers;
+- visible unknown/failed write state;
+- service-restart continuity;
+- integrity/doctor checks;
+- backup/restore;
+- transcript reconciliation for turns that failed before local receipt;
+- raw/private evidence provenance.
 
-Remaining Issue #21 verification order:
+## Learning/evidence direction
 
-1. Ruff format + reproducible dependency lock/project-state convergence;
-2. expand Hypothesis state-machine/metamorphic coverage to attempts, assessments, checkpoints, resume, retention probes and rollback boundaries;
-3. independent executable reference model + differential tests;
-4. mutation/negative controls;
-5. protected engineering holdout tests;
-6. seeded >=100x learner-policy simulation;
-7. load/failure/chaos tests;
-8. targeted Alloy/TLA+/SMT/formal verification where state-space risk justifies it.
+Current operational evidence supports testing, at subject level:
 
-Do not use theorem proving, mutation score, coverage, an LLM grader, or synthetic learners as a single sufficient correctness oracle.
+- `representation_translation_overhead`;
+- `variable_name_semantic_interference`;
+- information overload/under-information;
+- over-help/under-help;
+- dynamic task decomposition/recomposition;
+- assistance fade and source/original representation restoration.
 
-## Learner/adaptive state
+Do not convert these into universal learner traits or population claims.
 
-Issue #10 remains the behavioral authority. Implemented foundations include versioned `LearnerSnapshot` / `DecisionProposal`, structured attempt/hint/representation telemetry, the first atomic running-extrema/second-largest curriculum slice, baseline/BKT/CAT/IRT/FSRS shadow mechanisms, an evidence-gated scaffold controller, contextual representation policy, learner-relative complexity, tutor-behavior regression, proposal-to-outcome linkage, retention-probe closure, and richer resume context.
+Preserve the event chain where available:
 
-These components remain non-authoritative/shadow unless explicitly promoted through the documented G0-G7 ladder.
+```text
+source task
+ -> learner attempt
+ -> failure/confusion evidence
+ -> intervention/operation
+ -> representation + assistance + information/granularity conditions
+ -> learner response
+ -> fade/original-format check
+ -> transfer
+ -> delayed retention
+```
+
+Learner evaluation and system/intervention evaluation remain separate.
+
+## Curriculum/data direction
+
+Approved public/open curriculum sources may be sampled and structured in parallel with operational learning.
+
+Do not reinstate the old global rule that all curriculum expansion must wait for one complete Sliding Window trajectory.
+
+Preserve source provenance, source class, rights/license boundary, competency/prerequisite mapping, task version, authored representation, and learner outcome separately.
+
+PR #50 is the current draft source-registry/planning work. PR #51 is the current draft canonical operational learning evidence around Two Sum representation failures. PR #49 is retrospective methodology evidence. Review each on its own evidence/privacy boundary.
+
+## Existing trackers: current interpretation
+
+- #4 local-first runtime: preserve as accepted architectural lineage.
+- #10 learner/curriculum/adaptive work: keep/reframe around learner model, representation operations, assistance, and real outcome evidence; OSS mechanisms are implementation options, not the product identity.
+- #21 engineering assurance: keep as a risk-driven toolbox/backlog; architecture/data integrity work that protects current operations remains valuable, but the old full hardening order is no longer the near-term roadmap.
+- #26 application/frontend boundary: defer/park until a dedicated frontend becomes active product work.
+- #42 curriculum: keep/reframe so structured public curriculum may expand in parallel with dogfooding.
+- #1/#2/#3/#5/#27: candidates for historical/superseded closure after a separate issue-cleanup review.
+
+Do not close/rewrite historical issues merely because this handoff says they are candidates. Issue cleanup is a separate deliberate action.
+
+## Current engineering stance
+
+Preserve PDD/SDD, invariants, data contracts/migrations, architecture boundaries, provenance, idempotency, recovery, and compatibility when they protect durable project assets.
+
+Implementation code is replaceable. Do not prioritize mutation score, broad synthetic simulation, formal methods, exhaustive platform hardening, or frontend tooling merely because an old checklist contains them. Activate those methods when a concrete current failure model justifies them.
 
 ## Immediate next work
 
-1. Expand the state machine to attempt -> assessment -> checkpoint -> resume -> retention-probe completion/rollback sequences.
-2. Build a small independent in-memory reference model and differential harness.
-3. Add mutation/negative-control verification.
-4. Establish a coding-agent-hidden engineering holdout boundary.
-5. Run deterministic >=100-trajectory synthetic learner-policy regression before G5.
-6. Only then resume live-shadow -> advisory/canary promotion work.
+1. Inspect the actual local GPT/MCP/transport/SQLite failure path that is producing 502s.
+2. Write a focused persistence/reconciliation PDD/SDD with the no-silent-loss invariant.
+3. Repair and verify the real local capture path under restart/retry/unknown-result conditions.
+4. Continue real Subject 001 learning through GPT and reconcile any missed sessions.
+5. Continue small-sample structured curriculum ingestion from approved sources.
+6. Extend operational event semantics only when real trajectories require them, especially representation/information/assistance/decomposition operations.
+7. Build learner and system grading/evaluation from real downstream outcomes.
+8. Defer dedicated frontend and rich multimodal product work until the owner promotes it in priority.
 
 ## Non-negotiable invariants
 
-- Raw/private learning evidence is not committed to this public repository.
+- Raw/private learning evidence is not committed publicly by default.
 - Observed, self-reported, and derived evidence remain distinct.
-- Self-report or conversational fluency cannot promote capability.
-- Passing checkpoint capability states require same-subject behavioral assessment evidence.
-- Exact retries must not duplicate durable evidence.
-- Checkpoint creation/current-pointer updates remain atomic.
-- Hidden learning/evaluation answers must not be exposed to the tutor.
-- Hidden engineering holdout answers/tests must not be exposed to coding agents before implementation.
-- Adaptive/donor components do not own canonical SQLite/checkpoint state.
-- Representation policies are contextual experiments, not fixed learning-style labels.
-- Do not grant live adaptive authority without the documented promotion gates and verification prerequisites.
+- Derived learner/system state retains evidence provenance.
+- Exact retry must not duplicate durable evidence.
+- No acknowledged local durable write may disappear after restart.
+- Remote failure before local receipt must be detectable/recoverable through reconciliation rather than silently treated as captured.
+- Hidden learning/evaluation answers remain protected.
+- Adaptive components do not own canonical SQLite/checkpoint state directly.
+- Representation policies are contextual interventions, not fixed learning-style labels.
+- Public/source curriculum provenance remains distinct from learner outcomes.
 
 ## Handoff rule
 
-Keep this file concise and current. Git and issues are history. Update it when operational phase, current trackers, runtime ownership, versions/contracts, deployment boundary, mandatory verification, or next execution priorities materially change.
+Keep this file concise and current. Update it when the operational phase, current reliability incident, runtime ownership, planning authority, or immediate execution priorities materially change.

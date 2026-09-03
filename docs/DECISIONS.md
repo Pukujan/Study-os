@@ -76,7 +76,7 @@ Continuous deployment is deferred until Research Gate R0 produces one complete a
 
 ## D008 — Build is gated by learning evidence
 
-**Status:** accepted
+**Status:** accepted; sequencing partially superseded by D014
 
 Before broad UI/multimodal expansion, R0 requires:
 
@@ -90,6 +90,8 @@ Before broad UI/multimodal expansion, R0 requires:
 - delayed retrieval;
 - comparison of self-report and behavior;
 - agent-reconstructable experiment history.
+
+D014 later removes this as a global blocker on structured curriculum acquisition and ongoing product dogfooding. The evidence-quality requirements remain applicable to claims about intervention effectiveness.
 
 ## D009 — Agent state is explicit and reviewable
 
@@ -137,11 +139,11 @@ ChatGPT cannot directly reach a WSL-only `localhost` service. Integration must u
 
 ## D013 — Separate active research scope from planned competency tracks
 
-**Status:** accepted
+**Status:** accepted; execution-scope restriction partially superseded by D014
 
 Study OS may plan broader technical-development tracks without treating them as simultaneous research programs or validated learning domains.
 
-The active Research Gate R0 scope remains exactly:
+The original active Research Gate R0 scope was exactly:
 
 - Subject 001;
 - DSA;
@@ -164,6 +166,90 @@ Study OS currently has strong assessment/evidence/capability-state machinery, a 
 
 Scoring remains multidimensional and evidence-backed. Planned open-ended diagnosis exercises must score observable problem-framing behavior rather than whether the learner guessed a hidden root cause immediately.
 
-**Why:** recent real interview evidence exposed technical problem framing and AI-systems diagnosis as a meaningful learner-development need, while the R0 research gate still requires scope discipline. Separating curriculum architecture from active research scope allows Study OS to preserve both.
+**Why:** recent real interview evidence exposed technical problem framing and AI-systems diagnosis as a meaningful learner-development need, while the R0 research gate still required scope discipline. D014 later allows structured curriculum acquisition and operational dogfooding to expand in parallel without retroactively upgrading evidence claims from the original R0 work.
 
 **Specification:** see `docs/LEARNING_CONTROL_MODEL.md`.
+
+## D014 — Operational learning and durable data are the primary product-development loop
+
+**Status:** accepted
+
+Study OS will now prioritize real learner use, durable longitudinal evidence, and structured curriculum acquisition as parallel workstreams.
+
+The current learner-facing surface remains the GPT app. A dedicated frontend is deferred, not rejected.
+
+### Core product loop
+
+```text
+structured source material
+ -> learner attempt
+ -> observed/self-reported friction
+ -> diagnosis hypothesis
+ -> representation / information / assistance / granularity operation
+ -> learner response
+ -> fade / restore source difficulty
+ -> transfer / retention when warranted
+ -> learner + system evidence
+```
+
+### Durable-data invariant
+
+> No silent learner-evidence loss.
+
+A learner interaction must be either durably acknowledged by the local Study OS runtime or explicitly known to be missing/uncertain and recoverable through reconciliation/backfill.
+
+The local runtime cannot guarantee capture of a remote turn that never reaches it. Therefore the end-to-end design must combine reliable local persistence with reconciliation of missing/unknown remote writes.
+
+Preserve at least:
+
+```text
+raw/private evidence
+ -> normalized operational records
+ -> derived learner/system state
+```
+
+Derived state must retain provenance to lower-level evidence.
+
+### Curriculum consequence
+
+Approved public/open sources may be used to build structured curriculum in parallel with dogfooding. Curriculum expansion is no longer globally blocked on completing one narrow Sliding Window trajectory.
+
+This does not weaken evidence standards for claims that a particular representation/intervention caused learning improvement.
+
+### Representation consequence
+
+Representation is a first-class adaptive product variable. Current subject-level operational hypotheses include:
+
+- representation translation overhead;
+- variable-name semantic interference;
+- information overload/under-information;
+- over-help/under-help;
+- dynamic decomposition/recomposition;
+- transformation fidelity and restoration to original/source representation.
+
+These are contextual intervention/failure hypotheses, not fixed learner traits.
+
+### Learner/system evaluation consequence
+
+Learner capability and Study OS intervention quality must be evaluated separately. Immediate assisted correctness is not sufficient evidence for durable learner capability or system effectiveness.
+
+### Architecture vs implementation consequence
+
+The durable project assets are architecture, data semantics, provenance, contracts, curriculum structure, intervention semantics, invariants, and recovery guarantees.
+
+Implementation code is replaceable. Engineering verification should be applied where it protects these durable assets or a concrete current product failure mode. Broad mutation programs, exhaustive hidden engineering holdouts, large synthetic learner simulations, chaos matrices, formal methods, and frontend/platform hardening are not blanket near-term roadmap gates unless a specific risk justifies them.
+
+### Sequencing supersession
+
+This decision partially supersedes the sequencing assumptions in D008 and D013:
+
+- the narrow R0 evidence gate no longer blocks structured curriculum acquisition;
+- Subject 001 may continue real course learning beyond the original Sliding Window-only experiment scope;
+- product dogfooding and learning research run together rather than research having to finish before product use;
+- historical R0 evidence remains scoped to the conditions under which it was collected and is not retroactively generalized.
+
+### Frontend/multimodal consequence
+
+Frontend, Mermaid/diagram rendering, audio tutoring, imagery, and later video remain valuable future representation surfaces. They should consume the same backend learning semantics and be activated when the owner promotes them in priority. They are not the present critical path while GPT dogfooding is coherent and productive.
+
+**Roadmap:** see `docs/ROADMAP.md`.
