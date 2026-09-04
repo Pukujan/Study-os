@@ -3,7 +3,7 @@ project:
   name: Study OS
   repository: Pukujan/Study-os
   status: research-first
-  phase: P2 adaptive-learning integration + engineering-verification hardening
+  phase: P4 deterministic learning controller + versioned representation pipeline
   current_gate: R0
   mission: >-
     Convert AI-assisted study sessions into auditable evidence about where
@@ -287,11 +287,8 @@ open_risks:
   - synthetic_simulation_mistaken_for_human_learning_evidence
 
 next_milestone: >-
-  Canonicalize Issue #42 C0/C1 curriculum taxonomy, DSA proficiency gates, and
-  advisory daily-evidence-goal semantics without runtime authority changes; then
-  continue Issue #26 E11a-2 operation-by-operation application/MCP conformance,
-  starting with the next bounded durable operation. Issue #42 C2 depends on the
-  richer Issue #10 LearnerSnapshot projection, and C3+ daily planning remains
-  shadow/promotion-gated. Mutation controls, protected engineering holdouts,
-  seeded learner-policy simulation, and live-shadow evidence remain required
-  before Issue #10 can advance to G5.
+  Complete the focused P4 vertical slice audit and tests for one explicitly
+  pinned real course node, then add only the minimal reversible persistence
+  required for deterministic control-state, decision, representation-lineage,
+  module-version, and outcome provenance. Keep adaptive authority bounded and
+  preserve the existing P3 source-evidence guarantees.

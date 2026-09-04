@@ -16,7 +16,6 @@ from pydantic import ValidationError  # noqa: E402
 from study_os import RuntimeConfig, StudyOSService  # noqa: E402
 from study_os.application.contracts import (  # noqa: E402
     AppendConversationTurnRequest,
-    AppendConversationTurnResult,
 )
 from study_os.application.service import (  # noqa: E402
     ApplicationService,

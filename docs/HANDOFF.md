@@ -162,14 +162,24 @@ ReplayEvaluation
 
 Exact table names are not mandated. Reuse existing runtime structures wherever semantics already fit.
 
-## Immediate Luna task
+## Immediate Luna task — audit completed
 
-### Phase 1 — architecture/schema audit
+### Phase 1 — architecture/schema audit — complete
 
-1. Pull latest `main` after the P4 planning PR is accepted.
+1. Pulled latest `main` at `7f39f747d5c2d362d1ba95597e7001fd6ecdafda`.
 2. Read Issue #63 + P4 PDD/SDD + ADR-0016.
-3. Inspect current runtime schema/service/MCP contracts against each P4 semantic object.
-4. Produce a mapping:
+3. Inspected current runtime schema/service/MCP contracts against each P4 semantic object.
+4. Recorded the mapping and live read-only runtime observation in
+   `docs/P4_RUNTIME_SCHEMA_AUDIT.md`.
+
+The audit found that the P3/P2 durable substrate is healthy, but no P4-specific
+course-node, learner-control, authoritative decision, module-set, outcome, or
+replay records exist yet. The first implementation candidate is the existing
+versioned `dsa.extrema.update_order@0.1.0` slice; the live `sliding-window`
+checkpoint must not be relabeled to that node without an explicit pinned
+course definition.
+
+The mapping is:
 
 ```text
 P4 semantic object
@@ -181,7 +191,7 @@ P4 semantic object
 5. Do **not** add schema merely because the design document names an object. Reuse existing durable structures where semantics align.
 6. Identify the smallest real current course node suitable for the first vertical slice.
 
-### Phase 2 — proposed smallest vertical slice
+### Phase 2 — proposed smallest vertical slice — next
 
 Design before implementation:
 
@@ -205,7 +215,10 @@ Initial operation subset:
 - `give_hint`
 - `restore_original`
 
-Return a focused TDD/implementation handoff before changing broad runtime behavior if new persistent semantics/migrations are required.
+The focused TDD/implementation handoff is recorded at the end of
+`docs/P4_RUNTIME_SCHEMA_AUDIT.md`. New persistent semantics will require an
+additive, reversible migration; do not change the live learner store until
+those tests and the migration plan are reviewed.
 
 ## Operational improvement loop
 
