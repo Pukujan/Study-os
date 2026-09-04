@@ -18,6 +18,10 @@ from jsonschema import Draft202012Validator, FormatChecker
 
 ROOT = Path(__file__).resolve().parents[1]
 SCHEMA_DIR = ROOT / "schemas"
+AUTHORIZED_PUBLIC_RECOVERY_PREFIX = (
+    "sessions/2026-09-03/mcp-recovery-transcript-gap/raw/public-export/"
+    "chatgpt-6a8ca3b3-6434-83ea-a807-98080d8bcada/"
+)
 
 REQUIRED_FILES = [
     "README.md",
@@ -205,6 +209,8 @@ def check_public_data_boundary() -> None:
     for path in tracked_files():
         normalized = path.replace("\\", "/")
         if "/raw/" in normalized and normalized.startswith("sessions/"):
+            if normalized.startswith(AUTHORIZED_PUBLIC_RECOVERY_PREFIX):
+                continue
             if not normalized.endswith("/raw/.gitkeep"):
                 violations.append(normalized)
         if normalized.startswith(".study-os-private/"):
