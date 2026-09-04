@@ -14,6 +14,11 @@ This raw evidence set preserves the learner/assistant calibration dialogue from 
 3. `raw/chat-visible-transcript-part03.md`
    - covers the progressive-loop rehearsal, arrow-rule discovery, index-row/circle refinement, `k` → box → moving `i` → `sum[i]`, and the final successful sequence.
 
+4. `raw/chat-visible-transcript-part04.md`
+   - continues after the earlier save point;
+   - preserves the public-dataset discussion, the learner's clarification that the method is a human control-flow/problem-breakdown graph, and the resumed `sum[i]` teaching;
+   - includes all repeated tutor failures around `sum[i+1]` and the learner-selected final minimal representation: the full box chart followed by `7 + 2 + 6 = 15` being the same as `13 - 4 + 6 = 15`.
+
 ## Integrity boundary
 
 - The immediately preceding sliding-window turns before the learner answer `6` are not represented as verbatim transcript text because this fresh session only had summarized continuity for those turns.
