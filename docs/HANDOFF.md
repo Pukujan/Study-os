@@ -85,6 +85,13 @@ source preserved in FOSSIL PR #240. The FOSSIL research export remains
 canonical local session/checkpoint store. The full transcript and raw capture
 remain outside this public repository.
 
+The follow-up public-safe dataset at
+`datasets/learner-methodology/2026-09-03-study-os-continuation-capture.json`
+records the learner's correction from transcript generation toward direct
+GPT-app and learning-experience observation. It links to FOSSIL PR #246 and
+remains reconstructed, draft, and non-authoritative; the full transcript and
+rendered capture remain outside this public repository.
+
 ## Immediate next work
 
 1. Expand the state machine to attempt -> assessment -> checkpoint -> resume -> retention-probe completion/rollback sequences.

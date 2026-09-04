@@ -1,0 +1,128 @@
+{
+  "schema_version": "study-os.learner-methodology-capture.v1",
+  "dataset_id": "study-os-continuation-capture-2026-09-03",
+  "status": "draft",
+  "authority": "non_authoritative",
+  "evidence_status": "reconstructed",
+  "subject_id": "subject-001",
+  "scope": {
+    "domain": "study-os-research",
+    "language": "mixed",
+    "concepts": ["human-in-the-loop", "gpt-app", "learner-experience", "interaction-semantics"]
+  },
+  "source": {
+    "url": "https://chatgpt.com/share/6a996a5d-1784-83ea-af6a-12cba8e57a85",
+    "title": "Continue Study OS Workflow",
+    "capture_method": "chatgpt-share-page-route-reconstruction",
+    "serialized_node_count": 9,
+    "projected_message_count": 9,
+    "role_counts": {"user": 5, "assistant": 4, "tool": 0},
+    "raw_capture_hashes": {
+      "route_stream_sha256": "7d30f06397dabf6f144c71fb0385589d79fe4e5d6ed62041438e4aae3cf05e9d",
+      "decoded_payload_sha256": "a36de69112a44c1c5f94ecbfa1ec86fb9e8cbf6acdd0e0f839a832a271150d88",
+      "readable_projection_sha256": "c13d1cbfae15ace10a1e66abce87ed8d64d9e3687e30e118979167889a6e23e5"
+    },
+    "fossil": {
+      "repository": "Pukujan/fossil-core",
+      "commit": "003f261d5e0d219b093441a44f1b1dea41d56073",
+      "pull_request_url": "https://github.com/Pukujan/fossil-core/pull/246",
+      "pack_id": "pack_study_os_personal_6a996a5d178483ea",
+      "conversation_id": "conv_study_os_shared_6a996a5d178483ea",
+      "lineage_id": "lin_study_os_continue_workflow_6a996a5d178483ea",
+      "source_artifact_id": "art_c13d1cbfae15ace10a1e66abce87ed8d",
+      "source_snapshot_id": "src_bf6e008955240b09b21f"
+    }
+  },
+  "self_reported": [
+    {
+      "id": "direct-gpt-app-learning-check-request",
+      "evidence_class": "self_reported",
+      "source_message_refs": ["message:0006"],
+      "text": "The learner rejected a transcript-only framing and requested a direct check of how the interaction affects the GPT app and their own learning experience."
+    },
+    {
+      "id": "transcript-request-superseded",
+      "evidence_class": "self_reported",
+      "source_message_refs": ["message:0008"],
+      "text": "The learner subsequently withdrew the transcript request and said they had a better solution."
+    }
+  ],
+  "observed": [
+    {
+      "id": "request-shift-to-direct-observation",
+      "evidence_class": "observed",
+      "source_message_refs": ["message:0004", "message:0005", "message:0006"],
+      "text": "The rendered exchange shifts from requesting a downloadable transcript to requesting direct inspection of the GPT app and learning experience."
+    },
+    {
+      "id": "shared-page-close-after-interruption",
+      "evidence_class": "observed",
+      "source_message_refs": ["message:0007", "message:0008", "message:0009"],
+      "text": "The rendered shared page shows an interrupted assistant status, followed by the learner's better-solution turn and a short assistant acknowledgment."
+    }
+  ],
+  "derived": [
+    {
+      "id": "direct-effect-needs-behavioral-observation",
+      "evidence_class": "derived",
+      "kind": "hypothesis",
+      "status": "proposed",
+      "source_message_refs": ["message:0006"],
+      "text": "A direct human-in-the-loop check should measure app behavior, learner action, and learning outcome separately; transcript interpretation alone cannot establish app impact."
+    },
+    {
+      "id": "transcript-and-app-check-are-distinct-artifacts",
+      "evidence_class": "derived",
+      "kind": "data_model_proposal",
+      "status": "proposed",
+      "source_message_refs": ["message:0004", "message:0006"],
+      "text": "Study OS should distinguish a source-transcript request from a direct app-interaction experiment and preserve the relation between them without treating one as evidence of the other."
+    },
+    {
+      "id": "learner-request-revision-is-instrumentation",
+      "evidence_class": "derived",
+      "kind": "protocol_proposal",
+      "status": "proposed",
+      "source_message_refs": ["message:0006", "message:0008"],
+      "text": "When a learner revises the requested operation, the superseded intent and the replacement intent should remain separately attributable."
+    }
+  ],
+  "instrumentation_proposals": [
+    {
+      "field": "interaction_surface",
+      "evidence_class": "derived",
+      "status": "proposed",
+      "purpose": "Identify whether the learner is interacting with ChatGPT, Study OS, a lesson task, or another surface."
+    },
+    {
+      "field": "learner_action",
+      "evidence_class": "derived",
+      "status": "proposed",
+      "purpose": "Record the learner's observable action separately from model text or interpretation."
+    },
+    {
+      "field": "learning_effect_observation",
+      "evidence_class": "derived",
+      "status": "proposed",
+      "purpose": "Record behavioral evidence about the learner experience without collapsing it into self-report or model judgment."
+    },
+    {
+      "field": "request_revision_ref",
+      "evidence_class": "derived",
+      "status": "proposed",
+      "purpose": "Link a superseded request to the learner's replacement request while preserving both histories."
+    }
+  ],
+  "recurring_failure_signatures": [
+    "transcript_vs_direct_observation",
+    "human_in_the_loop_surface_mismatch",
+    "request_scope_revision",
+    "self_report_without_behavioral_outcome"
+  ],
+  "not_claimed": [
+    "This capture does not establish how the GPT app affected the learner or whether learning improved.",
+    "The rendered shared page is reconstructed evidence, not an original ChatGPT export.",
+    "The public Study OS repository contains no full transcript or raw rendered-page capture.",
+    "No learner request, tutor interpretation, or proposed instrumentation field is promoted to authoritative product or learning truth."
+  ]
+}

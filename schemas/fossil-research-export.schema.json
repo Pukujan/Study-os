@@ -20,7 +20,10 @@
     "export_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]+$"},
     "status": {"const": "draft"},
     "authority": {"const": "non_authoritative"},
-    "dataset_path": {"const": "datasets/learner-methodology/2026-08-29-study-os-methodology-capture.json"},
+    "dataset_path": {
+      "type": "string",
+      "pattern": "^datasets/learner-methodology/[a-z0-9][a-z0-9-]+\\.json$"
+    },
     "dataset_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
     "fossil_pack": {
       "type": "object",

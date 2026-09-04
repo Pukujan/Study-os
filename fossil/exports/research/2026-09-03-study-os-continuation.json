@@ -1,0 +1,32 @@
+{
+  "schema_version": "study-os.fossil-research-export.v1",
+  "export_id": "fossil-export-study-os-continuation-2026-09-03",
+  "status": "draft",
+  "authority": "non_authoritative",
+  "dataset_path": "datasets/learner-methodology/2026-09-03-study-os-continuation-capture.json",
+  "dataset_sha256": "dd6a0a2b3263aadf135a3013266306f75f17bcbd8d2f0a0eb39aba088209f1e3",
+  "fossil_pack": {
+    "pack_id": "pack_study_os_personal_6a996a5d178483ea",
+    "placement": "research",
+    "promotion_status": "not_promoted"
+  },
+  "source": {
+    "url": "https://chatgpt.com/share/6a996a5d-1784-83ea-af6a-12cba8e57a85",
+    "fossil_commit": "003f261d5e0d219b093441a44f1b1dea41d56073",
+    "fossil_pull_request_url": "https://github.com/Pukujan/fossil-core/pull/246",
+    "conversation_id": "conv_study_os_shared_6a996a5d178483ea",
+    "lineage_id": "lin_study_os_continue_workflow_6a996a5d178483ea"
+  },
+  "record_counts": {
+    "self_reported": 2,
+    "observed": 2,
+    "derived": 3,
+    "instrumentation_proposals": 4
+  },
+  "public_safety": {
+    "full_transcript_committed": false,
+    "raw_capture_committed": false,
+    "secrets_included": false,
+    "account_identifiers_included": false
+  }
+}
