@@ -4,7 +4,7 @@
   "subject_id": "subject-001",
   "domain": "dsa",
   "concept": "sliding-window",
-  "purpose": "Preserve a live learner-driven calibration session that iteratively refined a beginner teaching sequence for array position, index, box/window size, moving start index, and sum[i].",
+  "purpose": "Preserve a live learner-driven calibration session that iteratively refined a beginner teaching sequence for array position, index, box/window size, moving start index, sum[i], and the first sum[i] to sum[i+1] relationship.",
   "source": {
     "provider": "chatgpt",
     "capture_scope": "current visible conversation",
@@ -16,10 +16,12 @@
       "raw/chat-visible-transcript.md",
       "raw/chat-visible-transcript-part01.md",
       "raw/chat-visible-transcript-part02.md",
-      "raw/chat-visible-transcript-part03.md"
+      "raw/chat-visible-transcript-part03.md",
+      "raw/chat-visible-transcript-part04.md"
     ],
     "derived": [
-      "derived/pedagogy-findings.md"
+      "derived/pedagogy-findings.md",
+      "derived/resume-handoff.md"
     ],
     "promoted_domain_fixture": "domains/dsa/sliding-window/golden/beginner-progressive-box-index-sum.v0.1.md"
   },
