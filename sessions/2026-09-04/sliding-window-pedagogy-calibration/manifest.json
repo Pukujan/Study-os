@@ -1,0 +1,23 @@
+{
+  "session_id": "sliding-window-pedagogy-calibration",
+  "date": "2026-09-04",
+  "subject_id": "subject-001",
+  "domain": "dsa",
+  "concept": "sliding-window",
+  "purpose": "Preserve a live learner-driven calibration session that iteratively refined a beginner teaching sequence for array position, index, box/window size, moving start index, and sum[i].",
+  "source": {
+    "provider": "chatgpt",
+    "capture_scope": "current visible conversation",
+    "verbatim_boundary": "Exact visible user/assistant text can be preserved from the first visible learner answer '6' onward; immediately preceding turns are available only as summarized continuity and must not be represented as byte-exact transcript text."
+  },
+  "artifacts": {
+    "raw": [
+      "raw/chat-visible-transcript.md"
+    ],
+    "derived": [
+      "derived/pedagogy-findings.md"
+    ],
+    "promoted_domain_fixture": "domains/dsa/sliding-window/golden/beginner-progressive-box-index-sum.v0.1.md"
+  },
+  "evidence_boundary": "This session is product-development and learning evidence. Transcript language and successful immediate responses are not mastery claims."
+}
