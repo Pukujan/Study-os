@@ -25,6 +25,38 @@ Current accepted operational foundation includes:
 
 P3 remains supporting infrastructure. Do not restart a broad infrastructure phase unless a real failure requires it.
 
+## Historical recovery — completed for supplied source
+
+The user-authorized historical transcript source has been fully processed to the limit of what that source can establish.
+
+Receipt: `docs/HISTORICAL_TRANSCRIPT_RECOVERY_RECEIPT.md`
+
+Accepted result:
+
+```text
+source SHA verified: PASS
+reviewed outer turns: 34
+backfilled missing: 34
+nested headings ignored: 50
+second reconciliation added: 0
+existing structured learner state unchanged: PASS
+hash/link integrity: PASS
+backup/restore: PASS
+doctor: PASS
+source exhausted: yes
+conversation complete: NOT_ESTABLISHED
+```
+
+Canonical target session after recovery:
+
+```text
+0446d18d-046b-4b8b-a00f-f2f629787bda
+messages: 4 → 38
+raw_artifacts: 4 → 40
+```
+
+Do not repeat recovery from this same source. Only reopen historical reconciliation if genuinely new/stronger source evidence appears.
+
 ## Product thesis
 
 The core moat is the learner ↔ course representation problem.
@@ -77,10 +109,11 @@ Read in this order:
 1. Issue #63
 2. `docs/P4_DETERMINISTIC_LEARNING_CONTROLLER_PDD.md`
 3. `docs/P4_DETERMINISTIC_LEARNING_CONTROLLER_SDD.md`
-4. `docs/ROADMAP.md`
-5. `docs/CURRENT_STATE.md`
-6. latest accepted `docs/DECISIONS.md`
-7. supporting P3 durability/reconciliation docs as needed
+4. `docs/ADR-0016-deterministic-learning-control.md`
+5. `docs/ROADMAP.md`
+6. `docs/CURRENT_STATE.md`
+7. latest accepted `docs/DECISIONS.md`
+8. supporting P3 durability/reconciliation docs as needed
 
 ## Early product-discovery evidence
 
@@ -134,7 +167,7 @@ Exact table names are not mandated. Reuse existing runtime structures wherever s
 ### Phase 1 — architecture/schema audit
 
 1. Pull latest `main` after the P4 planning PR is accepted.
-2. Read Issue #63 + P4 PDD/SDD.
+2. Read Issue #63 + P4 PDD/SDD + ADR-0016.
 3. Inspect current runtime schema/service/MCP contracts against each P4 semantic object.
 4. Produce a mapping:
 
@@ -252,25 +285,6 @@ Future implementations may include:
 - constrained LLM fallback.
 
 The controller remains authority regardless of which implementation fulfills an operation.
-
-## Historical transcript recovery — supporting task
-
-The user-authorized recovery source remains under:
-
-```text
-sessions/2026-09-03/mcp-recovery-transcript-gap/raw/public-export/
-  chatgpt-6a8ca3b3-6434-83ea-a807-98080d8bcada/
-```
-
-Source SHA-256:
-
-```text
-07becb3c24c2876354dd496ba57e1832df23763eda7b4c85b19891e77b7b5a7d
-```
-
-Its exporter says `PARTIAL / NOT ESTABLISHED`; do not call the original conversation complete. Nested transcript copies inside assistant responses must not be parsed as outer turns. See `docs/LUNA_HISTORICAL_TRANSCRIPT_RECOVERY_HANDOFF.md`.
-
-Historical recovery may continue, but it must not block P4 dogfooding unless unreconciled evidence is required for a specific P4 analysis.
 
 ## Non-negotiable invariants
 
