@@ -1,154 +1,314 @@
 # Agent Handoff
 
 Last updated: 2026-09-03
+Primary tracker: #63
 
 ## Current phase
 
-**P3 operational dogfooding + historical evidence recovery + structured curriculum acquisition.**
+**P4 — deterministic learning controller + versioned representation engine + operational improvement loop.**
 
-Live source-turn capture and cross-chat continuity are accepted through final verification receipt SHA:
+The product center is no longer persistence repair or an abstract research gate. Study OS is being used for real learning, and the next architecture should make AI teaching behavior deterministic at the control layer while keeping representation generation flexible and versioned.
+
+## Accepted live foundation
+
+Current accepted operational foundation includes:
+
+- learner-facing surface: Study OS GPT;
+- stable learner identity: `subject-001`;
+- live root: `/root/.study-os`;
+- canonical store: SQLite + private evidence store;
+- real user/assistant source-turn durability;
+- cross-chat continuity via `resume_learning_context`;
+- source evidence distinct from mastery/capability;
+- local backup/restore + doctor/integrity protections;
+- historical reconciliation mechanism for missing pre-capture evidence.
+
+P3 remains supporting infrastructure. Do not restart a broad infrastructure phase unless a real failure requires it.
+
+## Historical recovery — completed for supplied source
+
+The user-authorized historical transcript source has been fully processed to the limit of what that source can establish.
+
+Receipt: `docs/HISTORICAL_TRANSCRIPT_RECOVERY_RECEIPT.md`
+
+Accepted result:
 
 ```text
-90fe4733a621ff7286fc88b26ba8d48e1ee73ed6
+source SHA verified: PASS
+reviewed outer turns: 34
+backfilled missing: 34
+nested headings ignored: 50
+second reconciliation added: 0
+existing structured learner state unchanged: PASS
+hash/link integrity: PASS
+backup/restore: PASS
+doctor: PASS
+source exhausted: yes
+conversation complete: NOT_ESTABLISHED
 ```
 
-Accepted live state:
+Canonical target session after recovery:
 
-- stable learner identity: `subject-001`;
-- live runtime root: `/root/.study-os`;
-- real GPT user turns durably captured;
-- exact displayed assistant turns durably captured;
-- `resume_learning_context(subject_id)` returns checkpoint + recent evidence;
-- CT1–CT12 passed;
-- full suite passed at 265 tests;
-- doctor/hash integrity and backup/restore passed;
-- no schema migration.
+```text
+0446d18d-046b-4b8b-a00f-f2f629787bda
+messages: 4 → 38
+raw_artifacts: 4 → 40
+```
 
-The immediate P3.0 task is now **historical transcript/source recovery** for learning that occurred before reliable source-turn capture.
+Do not repeat recovery from this same source. Only reopen historical reconciliation if genuinely new/stronger source evidence appears.
+
+## Product thesis
+
+The core moat is the learner ↔ course representation problem.
+
+```text
+COURSE / SOURCE
+      ↓
+DETERMINISTIC COURSE STATE
+      ↓
+DETERMINISTIC LEARNING CONTROLLER
+      ↓ authorized pedagogical operation
+VERSIONED REPRESENTATION ENGINE
+      ↓
+GPT LEARNER SURFACE
+      ↓
+DURABLE OPERATIONAL EVIDENCE
+      ↓
+LEARNER / CONTROLLER STATE
+      ↺
+```
+
+Preserve productive target difficulty. Remove unnecessary representation difficulty during acquisition. Fade assistance and restore authentic/source representations later.
+
+## Authority boundary
+
+Study OS code/state controls:
+
+- course node/version and prerequisites;
+- learner-control state;
+- allowed next operations;
+- assistance ceiling;
+- progression/blocking;
+- fade/restoration requirements;
+- transfer/retention requirements where applicable;
+- evidence/provenance semantics;
+- module versions.
+
+AI may:
+
+- propose diagnosis hypotheses;
+- generate an authorized explanation/representation operation;
+- transform terminology, examples, traces, pseudocode, or code under explicit constraints.
+
+AI may not silently advance curriculum or mark mastery.
 
 ## Planning authority
 
 Read in this order:
 
-1. `docs/ROADMAP.md`
-2. `docs/CURRENT_STATE.md`
-3. latest accepted `docs/DECISIONS.md`
-4. Issue #52
-5. Issue #56
-6. `docs/P3_DURABLE_EVIDENCE_CAPTURE_PDD.md`
-7. `docs/P3_DURABLE_EVIDENCE_CAPTURE_SDD.md`
-8. `docs/P3_SOURCE_TURN_DURABILITY_PDD_DELTA.md`
-9. `docs/P3_SOURCE_TURN_DURABILITY_SDD_DELTA.md`
-10. `docs/LUNA_HISTORICAL_TRANSCRIPT_RECOVERY_HANDOFF.md`
+1. Issue #63
+2. `docs/P4_DETERMINISTIC_LEARNING_CONTROLLER_PDD.md`
+3. `docs/P4_DETERMINISTIC_LEARNING_CONTROLLER_SDD.md`
+4. `docs/ADR-0016-deterministic-learning-control.md`
+5. `docs/ROADMAP.md`
+6. `docs/CURRENT_STATE.md`
+7. latest accepted `docs/DECISIONS.md`
+8. supporting P3 durability/reconciliation docs as needed
 
-## User-authorized historical recovery source
+## Early product-discovery evidence
 
-The learner explicitly authorized public GitHub publication of one specific ChatGPT Markdown export so local Luna can pull it without a separate file transfer.
+Recovered historical learning around dictionaries/Two Sum exposed:
 
-Source directory:
+- `seen` produced semantic interference because of prior set association;
+- `index_by_num` remained confusing;
+- `box` was self-reported as clearer;
+- a later dictionary lookup was answered correctly;
+- the same intervention also reduced task complexity/context.
 
-```text
-sessions/2026-09-03/mcp-recovery-transcript-gap/raw/public-export/
-  chatgpt-6a8ca3b3-6434-83ea-a807-98080d8bcada/
-```
-
-Read its `README.md` before use.
-
-Source identity:
+Evidence boundary:
 
 ```text
-filename: Study OS Tutor - Check Study OS health.md
-conversation_id: 6a8ca3b3-6434-83ea-a807-98080d8bcada
-exported_at: 2026-09-04T01:22:07.725Z
-reported_turns_captured: 40
-reported_completeness: PARTIAL / NOT ESTABLISHED
-original_size_bytes: 30104
-original_sha256: 07becb3c24c2876354dd496ba57e1832df23763eda7b4c85b19891e77b7b5a7d
+observed:
+  confusion before; later lookup correct
+
+self-reported:
+  box clearer
+
+derived/proposed:
+  identifier semantic interference contributed
+
+not proven:
+  renaming alone caused improvement
 ```
 
-The exact source is losslessly represented as a four-part deterministic gzip/base64 transport archive. Luna must reconstruct it and verify the original SHA-256 before importing anything.
+Therefore representation changes and decomposition/context changes must be recorded independently.
 
-This publication authorization applies only to this source. Other raw learner evidence remains private by default.
+## P4 semantic objects to stabilize
 
-## Critical source limitation
-
-Do **not** call this export a complete original conversation.
-
-Its own metadata says `PARTIAL / NOT ESTABLISHED` and warns that scrolling did not establish a stable turn set.
-
-It also contains assistant responses that embed earlier raw-conversation Markdown. A parser that treats every `## User` / `## Assistant` heading as an outer turn will double-count/fabricate history.
-
-Use separate statuses:
+Do not jump directly to implementation without preserving these contracts:
 
 ```text
-source_exhausted
-= all uniquely recoverable outer evidence from this exact export reviewed/imported
-
-conversation_complete
-= full original ChatGPT conversation independently proven complete and ordered
+CourseNodeVersion
+ProgressionPolicy
+LearnerControlState
+DiagnosisHypothesis
+PedagogicalOperationDefinition
+DecisionRecord / OperationInvocation
+RepresentationVersion + mapping/lineage
+ModuleVersionSet
+OutcomeRecord
+ReplayEvaluation
 ```
+
+Exact table names are not mandated. Reuse existing runtime structures wherever semantics already fit.
 
 ## Immediate Luna task
 
-1. Pull latest `main`.
-2. Reconstruct the exact Markdown from the published archive and verify SHA-256.
-3. Confirm `/root/.study-os` and `subject-001`.
-4. Run `doctor`, capture pre-import counts, and create a full backup.
-5. Preserve the reconstructed exact Markdown bytes in the local Study OS immutable evidence store.
-6. Reconstruct only reviewed real outer ChatGPT turns; nested transcript copies stay inside their containing assistant messages.
-7. Map reviewed ranges to historical Study OS sessions only where supported; ambiguity remains unresolved.
-8. Reconcile only genuinely missing turns.
-9. Rerun identical reconciliation and prove zero additional writes.
-10. Verify existing attempts/events/checkpoints/current-pointer and live post-fix messages were not overwritten.
-11. Verify message/artifact hashes, `doctor`, restart, and backup/restore.
-12. Only after raw recovery is stable, create reviewed source-linked operational learning events/episodes.
-13. Report `source_exhausted` separately from `conversation_complete`.
+### Phase 1 — architecture/schema audit
 
-The exact procedure and completion receipt are in `docs/LUNA_HISTORICAL_TRANSCRIPT_RECOVERY_HANDOFF.md`.
-
-## High-value historical learning evidence
-
-The source contains candidate evidence around:
-
-- LeetCode Two Sum representation translation overhead;
-- `enumerate` vs index-first authored code during acquisition;
-- semantic interference from the variable name `seen`;
-- continued confusion with `index_by_num`;
-- improved immediate clarity using neutral `box` terminology;
-- correct immediate dictionary lookup after that representation change;
-- learner identification of variable naming/author language as avoidable concept difficulty;
-- learner identification of append-only transcript capture as an outage-resilience requirement.
-
-These are candidate observed/self-reported/derived findings, not mastery, transfer, or retention claims. Every reviewed operational record must cite recovered source IDs.
-
-## Architecture to protect
+1. Pull latest `main` after the P4 planning PR is accepted.
+2. Read Issue #63 + P4 PDD/SDD + ADR-0016.
+3. Inspect current runtime schema/service/MCP contracts against each P4 semantic object.
+4. Produce a mapping:
 
 ```text
-RAW / SOURCE EVIDENCE
-        ↓
-NORMALIZED OPERATIONAL RECORDS
-        ↓
-DERIVED LEARNER + SYSTEM STATE
+P4 semantic object
+→ existing table/type/service support
+→ gap
+→ proposed reuse/additive change
 ```
 
-The published archive is recovery transport, not the canonical live learner store. After reconstruction, canonical learner evidence remains local SQLite + private Study OS evidence.
+5. Do **not** add schema merely because the design document names an object. Reuse existing durable structures where semantics align.
+6. Identify the smallest real current course node suitable for the first vertical slice.
 
-## Runtime ownership
+### Phase 2 — proposed smallest vertical slice
 
-- Canonical live learner state/evidence: local SQLite + private evidence store.
-- GPT app: current learner-facing surface.
-- GitHub: source/spec/history plus this explicitly user-authorized recovery archive.
-- FOSSIL: optional downstream lineage/research promotion; not live learner persistence.
+Design before implementation:
+
+```text
+real course node/version
+→ learner-control state
+→ one deterministic progression policy
+→ operation registry subset
+→ bounded GPT operation envelope
+→ representation/version provenance
+→ learner response/outcome
+→ deterministic state transition
+```
+
+Initial operation subset:
+
+- `try_unaided`
+- `rename_terms`
+- `smaller_step`
+- `show_trace`
+- `give_hint`
+- `restore_original`
+
+Return a focused TDD/implementation handoff before changing broad runtime behavior if new persistent semantics/migrations are required.
+
+## Operational improvement loop
+
+Now that sessions persist across chats, normal learning is product-development data.
+
+For meaningful trajectories preserve:
+
+```text
+course node/version
+learner state before
+source representation
+attempt
+observed/self-reported difficulty
+diagnosis hypothesis/version
+authorized operation(s)/version
+representation version
+assistance level
+next learner behavior
+fade/source-restoration outcome
+transfer/retention when applicable
+module version set
+```
+
+System changes must be explicit module versions, not silent prompt drift.
+
+Development loop:
+
+```text
+real trajectories
+→ identify failure
+→ module version N+1
+→ offline replay
+→ prospective real use
+→ keep/promote/revert
+```
+
+Replay output is counterfactual system evaluation, never historical learner evidence.
+
+## Longitudinal dogfooding objective
+
+Keep using Study OS through increasingly difficult real material:
+
+```text
+Python/DSA
+→ LeetCode
+→ complex DSA
+→ system design
+→ AI-system reasoning/debugging
+```
+
+Harder material should expose failures in diagnosis, decomposition, representation, assistance, restoration, and progression. Extend states/operations only when real evidence warrants them.
+
+## Later beta/user expansion
+
+Do not build production auth/multi-tenancy now.
+
+After repeated stable trajectories exist on harder material, beta/authenticated users can test:
+
+> Which mechanisms generalize, which require personalization, and which fail across learners?
+
+Subject 001 remains subject-level evidence until replicated.
+
+## Long-horizon cost architecture
+
+Do not optimize inference cost now, but preserve replaceable module interfaces.
+
+Future implementations may include:
+
+- parsers/AST/compiler transforms;
+- deterministic traces/static analysis;
+- terminology rewriting;
+- templates;
+- retrieval/cached validated representations;
+- sentence embeddings/transformers;
+- small classifiers/task-specific models;
+- IR/language/notation converters;
+- constrained LLM fallback.
+
+The controller remains authority regardless of which implementation fulfills an operation.
 
 ## Non-negotiable invariants
 
-- No destructive DB/evidence reset.
-- No invented missing turns.
-- No naive nested-heading parsing.
-- Reconciliation ambiguity fails closed.
-- Repeated reconciliation does not duplicate evidence.
-- Existing structured historical evidence is not overwritten.
-- Stable learner identity remains explicit.
-- Raw/source evidence retains immutable provenance and hashes.
-- Transcript evidence never silently becomes mastery/capability.
-- Generic SQL/shell/file MCP access remains prohibited.
+1. No silent learner-evidence loss.
+2. Course progression is controlled by code/state.
+3. AI behavior is bounded by explicit authorized operations.
+4. Transcript text alone never becomes mastery.
+5. AI diagnosis remains a hypothesis.
+6. Multi-dimensional interventions remain multi-dimensional in data.
+7. Source representation remains restorable where claimed.
+8. Raw evidence survives module/model changes.
+9. Historical learner outcomes are immutable.
+10. Replay/counterfactual outputs never masquerade as experienced learner evidence.
+11. Module evolution is explicit/versioned.
+12. Same canonical controller inputs + controller version produce the same authorization.
+13. Future non-LLM components must be able to fulfill the same module contracts.
+14. Generic SQL/shell/file MCP access remains prohibited.
+
+## Deprioritized
+
+- broad frontend work;
+- video infrastructure;
+- generic multimodal platform work;
+- production multi-user auth;
+- deep FOSSIL integration;
+- premature LLM-cost optimization;
+- broad hardening unrelated to control/data/evidence integrity.

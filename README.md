@@ -1,198 +1,269 @@
 # Study OS
 
-Study OS is a **research-first learning system** for observing, modeling, and improving how a learner translates technical concepts between representations.
+Study OS is a learning control system that sits between **course/source material** and a **longitudinal learner record**.
 
-The first vertical slice is **DSA in Python**, with `subject-001` as the initial longitudinal design participant.
+Its core problem is the learner ↔ course representation mismatch: a learner may be blocked not only by the target concept, but by the author's terminology, variable names, notation, control flow, decomposition, amount of context, or representation.
 
-> Current status: **Research Gate R0 — research harness readying.** Broad product/UI work is deliberately gated until one complete learning trajectory demonstrates immediate improvement, scaffold fading, transfer, and delayed retention.
+Study OS uses AI to adapt those representations while deterministic code/state controls what is being learned, what assistance is allowed, when the learner may advance, and how evidence is interpreted.
 
-## Mission
+> Current phase: **P4 — deterministic learning controller + versioned representation engine + operational improvement loop.** See Issue #63.
 
-Convert AI-assisted study sessions into auditable evidence about:
+## Product thesis
 
-1. where understanding breaks;
-2. which representation or learning operation was attempted;
-3. what changed after the intervention;
-4. whether improvement survives removal of assistance;
-5. whether it transfers to a changed problem;
-6. whether it persists after delay.
+The goal is not a generic AI tutor.
 
-The target is not syntax memorization for its own sake. The target is **AI leverage with human technical control**: enough unaided reasoning to trace, explain, implement, test, debug, and adapt code even when AI is available.
+The intended differentiated capability is a **learner-specific intermediate representation layer**:
 
-## Core hypothesis
+```text
+COURSE / SOURCE MATERIAL
+        ↓
+CANONICAL COURSE GRAPH
+        ↓
+DETERMINISTIC COURSE STATE
+        ↓
+DETERMINISTIC LEARNING CONTROLLER
+        ↓ authorized operation
+AI / REPRESENTATION ENGINE
+        ↓
+LEARNER
+        ↓
+DURABLE OPERATIONAL EVIDENCE
+        ↓
+LEARNER + CONTROLLER STATE
+        ↺
+```
 
-A learner may fail at a **representation transition** rather than at an entire concept.
+Study OS should preserve **productive target difficulty** while reducing **extraneous representation difficulty** during acquisition, then fade assistance and restore authentic/source representations so the learner does not become dependent on simplification.
 
-For DSA, the relevant chain might be:
+## Authority boundary
 
-`problem -> recognition -> mental model -> state -> invariant -> semantic procedure -> pseudocode -> code -> debugging -> transfer`
+Study OS code/state controls:
 
-Study OS records those transitions and can adapt across representations such as prose, figures, Mermaid flowcharts, deterministic state traces, invariants, pseudocode, code scaffolds, executable code, and later carefully validated audio/video.
+- active course node and prerequisites;
+- learner-control state;
+- allowed next pedagogical operations;
+- assistance ceiling;
+- advancement/blocking rules;
+- assistance fading;
+- source-representation restoration;
+- transfer/retention requirements where applicable;
+- evidence/provenance semantics;
+- module-version provenance.
 
-The system must not treat “I understand” as mastery. Self-report, observed behavior, intervention history, transfer, and delayed retention remain separate evidence.
+AI may:
 
-## Subject 001
+- propose diagnosis hypotheses;
+- generate a realization of an authorized operation;
+- transform terminology, representation, examples, traces, pseudocode, or explanations under explicit constraints.
 
-The first design participant has a useful transition profile for this research question:
+AI does **not** silently own curriculum progression or mastery.
 
-- prior coding experience centered on JavaScript;
-- no completed formal Python learning sequence;
-- extensive use of AI to build scripts and technical projects;
-- can often make code work with AI assistance while wanting stronger unaided Python/DSA fluency;
-- wants manual code comprehension, debugging, algorithmic reasoning, and implementation skill without rejecting AI assistance;
-- can report live where an explanation fails and why a changed representation did or did not help;
-- can participate in repeated and delayed assessments.
+## Current learner-facing surface
 
-This makes Subject 001 a high-information **design participant** for studying the boundary between AI-assisted productivity and internalized procedural competence. It does **not** make one participant representative of learners generally.
+The current product surface is the Study OS GPT app.
 
-## What the research currently supports
+A dedicated frontend remains useful later, but GPT currently provides the fastest coherent interface for real learning while the deterministic control/data layer develops underneath it.
 
-The project is built around several evidence-backed ideas, with important constraints:
+The canonical live learner store is local Study OS:
 
-- worked examples and explicit subgoals can help novices acquire procedural schemas;
-- active prediction/explanation around program visualizations is more defensible than passive watching;
-- retrieval practice and spacing matter for durable learning;
-- carefully structured AI tutoring can help, but pedagogy should not live only in an LLM prompt;
-- AI-assisted programming increases the importance of being able to inspect, reason about, debug, and correct generated code;
-- N=1/single-case methods can be useful for repeated within-person experimentation, while population generalization remains a separate research stage;
-- the project **does not** assume fixed visual/auditory learning styles;
-- more modalities are not automatically better and can increase cognitive load.
+```text
+SQLite + private evidence store
+```
 
-See:
+GitHub stores architecture, schemas, decisions, tests, public-safe evidence, and project lineage. It is not the live learner database.
 
-- [`docs/RESEARCH_FOUNDATIONS.md`](docs/RESEARCH_FOUNDATIONS.md)
-- [`docs/SOURCE_INDEX.md`](docs/SOURCE_INDEX.md)
-- [`docs/RESEARCH_STATUS.md`](docs/RESEARCH_STATUS.md)
-- [`docs/RESEARCH_QUESTIONS.md`](docs/RESEARCH_QUESTIONS.md)
-- [`docs/FAILURE_MODES.md`](docs/FAILURE_MODES.md)
+## Durable evidence
 
-## Atomic unit
+Live source-turn capture and cross-chat continuity are implemented and accepted for the current Study OS GPT path.
 
-The atomic unit is a **learning episode**:
+The core durability invariant is:
 
-`learner state -> task -> attempt -> failure/uncertainty -> diagnosis hypothesis -> intervention -> re-attempt -> assessment -> fade -> transfer -> delayed evidence`
+> **No silent learner-evidence loss.**
 
-A chat session can contain many learning episodes. A lesson can span many sessions.
+Every locally received learner-facing turn should be durably committed before acknowledgement. Failures must remain visible/recoverable, and remote turns missed before local receipt must be reconcilable from source evidence rather than invented.
 
-## Evidence model
+Evidence hierarchy:
 
-Keep three evidence classes separate:
+```text
+RAW / SOURCE EVIDENCE
+        ↓
+NORMALIZED OPERATIONAL RECORDS
+        ↓
+DERIVED LEARNER + SYSTEM STATE
+```
 
-1. **Observed** — what happened: answer, score, hint count, transcript span, elapsed time.
-2. **Self-reported** — what the learner says was confusing/helpful and why.
-3. **Derived** — model/system interpretations such as “likely invariant-to-control-flow translation failure.”
+Transcript language never silently becomes mastery.
 
-Derived labels are hypotheses, not ground truth.
+Raw learner evidence is private by default. A specific historical recovery transcript was explicitly authorized for public recovery transport; that exception does not change the default privacy boundary.
 
-See [`docs/MEASUREMENT_MODEL.md`](docs/MEASUREMENT_MODEL.md).
+## Operational learning loop
 
-## Research Gate R0
+Normal Study OS use is also the primary product-development data stream.
 
-Before expanding into a broad DSA product, rich multimodal generation, or production UI, Study OS must produce one complete auditable Sliding Window trajectory with:
+For meaningful learning trajectories, preserve:
 
-- private raw evidence preserved and hashed;
-- provenance-aware transcript normalization;
-- a failure transition identified;
-- a versioned representation + learning operation;
-- immediate behavioral assessment;
-- assistance removal/fading;
-- changed-surface transfer;
-- delayed retrieval;
-- comparison of self-report and behavior;
-- enough repo state for a new agent to reconstruct the experiment.
+```text
+course node/version
+→ learner state before
+→ source representation
+→ learner attempt
+→ observed/self-reported difficulty
+→ diagnosis hypothesis
+→ authorized pedagogical operation
+→ exact representation/intervention version
+→ assistance level
+→ next learner behavior
+→ fade/source-restoration result
+→ transfer/retention when required
+```
 
-See [`docs/BUILD_GATES.md`](docs/BUILD_GATES.md) and [`docs/RESEARCH_PLAN.md`](docs/RESEARCH_PLAN.md).
+This lets Study OS improve from real longitudinal use without rewriting history.
 
-## Project boundary
+## First-class pedagogical operations
+
+Initial operation families include:
+
+- `try_unaided`
+- `explain`
+- `rename_terms`
+- `change_representation`
+- `smaller_step`
+- `remove_context`
+- `expand_detail`
+- `compress_detail`
+- `show_trace`
+- `explain_invariant`
+- `give_hint`
+- `show_worked_example`
+- `restore_original`
+- `transfer_probe`
+- `retention_probe`
+
+An intervention can contain multiple operations. Study OS should not attribute improvement to one variable when several things changed together.
+
+## Early operational evidence
+
+Historical real use exposed an important product-discovery sequence around LeetCode Two Sum and dictionary semantics:
+
+```text
+seen
+→ still confusing because of prior set association
+index_by_num
+→ still confusing
+box
+→ learner reports clearer representation
+→ subsequent dictionary lookup answered correctly
+```
+
+This supports a **candidate representation-interference hypothesis**, not a universal rule and not proof that renaming alone caused the improvement. The intervention also reduced task complexity/context, so representation and decomposition must remain separate variables.
+
+The broader design implication is that Study OS must be able to adapt very small representation dimensions—such as one identifier—not only switch between large modalities like prose and diagrams.
+
+## Deterministic learning control
+
+The target conceptual state machine is:
+
+```text
+INTRODUCE
+  ↓
+AWAIT_UNAIDED_ATTEMPT
+  ↓
+DIAGNOSE
+  ↓
+AUTHORIZE_OPERATION
+  ↓
+AWAIT_REATTEMPT
+  ↓
+FADE_ASSISTANCE
+  ↓
+RESTORE_SOURCE_REPRESENTATION
+  ↓
+TRANSFER / RETENTION WHEN REQUIRED
+  ↓
+ADVANCE_OR_BLOCK
+```
+
+Course-node progression requirements live in machine-readable policy rather than tutor intuition.
+
+## Modular versioning
+
+Study OS should version independently where practical:
+
+- course graph;
+- controller/policy;
+- operation taxonomy;
+- diagnosis module;
+- representation engine;
+- prompt/template;
+- retrieval/ranking;
+- assessment;
+- learner-state derivation;
+- model/provider adapter.
+
+Every operational decision should be reconstructable from the module versions that produced it.
+
+Historical evidence remains immutable. New module versions can be replayed against old inputs as **counterfactual evaluation**, but replay outputs are never treated as learner outcomes that actually occurred.
+
+## Longitudinal development path
+
+Study OS should be used continuously while the learner progresses through increasingly difficult material:
+
+```text
+Python/DSA foundations
+→ LeetCode-style problems
+→ complex DSA
+→ system design
+→ AI-system reasoning / debugging
+```
+
+The growing operational transcript becomes a versioned evaluation corpus for discovering controller/representation successes and failures.
+
+Once the contracts are stable and repeated real trajectories exist, authenticated/beta users can test which mechanisms generalize and which require personalization. Subject 001 longitudinal evidence remains subject-level evidence until broader replication exists.
+
+## Long-horizon cost/distribution direction
+
+This is not a current implementation priority, but the architecture should permit replacing large-LLM work with cheaper components when the product behavior is understood.
+
+Possible future representation/diagnosis implementations include:
+
+- parser / AST / compiler transforms;
+- deterministic traces and static analysis;
+- identifier/terminology rewriting;
+- templates;
+- retrieval/cached validated representations;
+- sentence embeddings / sentence transformers;
+- small classifiers or task-specific models;
+- IR-to-IR and language/notation converters;
+- constrained LLM fallback for ambiguous/generative work.
+
+The controller contract should remain stable regardless of which implementation fulfills an authorized operation.
+
+## Architecture and planning authority
+
+Start here:
+
+- [`docs/P4_DETERMINISTIC_LEARNING_CONTROLLER_PDD.md`](docs/P4_DETERMINISTIC_LEARNING_CONTROLLER_PDD.md)
+- [`docs/P4_DETERMINISTIC_LEARNING_CONTROLLER_SDD.md`](docs/P4_DETERMINISTIC_LEARNING_CONTROLLER_SDD.md)
+- [`docs/ROADMAP.md`](docs/ROADMAP.md)
+- [`docs/CURRENT_STATE.md`](docs/CURRENT_STATE.md)
+- [`docs/DECISIONS.md`](docs/DECISIONS.md)
+- [`docs/HANDOFF.md`](docs/HANDOFF.md)
+
+P3 durability/reconciliation specifications remain supporting infrastructure and historical design authority for evidence capture.
+
+## Repository boundary
 
 Study OS owns:
 
-- raw learning-session evidence and immutable transcript captures;
-- learning events and episodes;
-- learner-state snapshots;
-- representation definitions and versions;
-- lesson intermediate representations;
-- assessment, retention, and transfer evidence;
-- experimental comparison of learning interventions.
+- learner/session source evidence;
+- operational learning events and episodes;
+- course/control state;
+- learner-state derivations;
+- representation definitions/versions;
+- intervention decisions/outcomes;
+- assessment, transfer, and retention evidence;
+- module-version provenance and replay evaluation.
 
-Study OS does **not** initially own:
+FOSSIL remains optional downstream lineage/research promotion, not runtime learner-state authority.
 
-- a general-purpose knowledge graph platform;
-- general RAG infrastructure;
-- universal claims about how all humans learn;
-- a full DSA curriculum;
-- production multimodal generation infrastructure.
-
-See [`docs/PROJECT_CHARTER.md`](docs/PROJECT_CHARTER.md), [`docs/PROJECT_BOUNDARY.md`](docs/PROJECT_BOUNDARY.md), and [`docs/PRODUCT_VISION.md`](docs/PRODUCT_VISION.md).
-
-## FOSSIL boundary
-
-Study OS uses a dedicated learning schema. FOSSIL is a good fit for durable provenance, promoted research knowledge, lesson hypotheses, curated learning trajectories, and long-lived knowledge packs, but it should not be required for every learning micro-event.
-
-Canonical flow:
-
-`raw transcript -> Study OS events/episodes -> learner/lesson state -> optional FOSSIL export`
-
-See [`docs/FOSSIL_INTEGRATION.md`](docs/FOSSIL_INTEGRATION.md).
-
-## Transcript ingestion
-
-A deterministic first-stage utility exists at `tools/ingest_transcript.py`. It preserves source bytes, refuses to overwrite immutable raw evidence, hashes artifacts, and creates the session manifest.
-
-The intended assistant surface is described by [`plugins/study-os-ingest/skill.md`](plugins/study-os-ingest/skill.md):
-
-`@study-os-ingest ingest this learning session`
-
-The skill contract exists in the repo, but the @-mentionable plugin/skill is **not yet packaged/registered** in ChatGPT.
-
-Because this repository is public, full raw transcripts are local/private by default and excluded by `.gitignore`.
-
-## Agent-maintained project state
-
-Agents should be able to continue the project without relying on hidden chat context.
-
-- [`AGENTS.md`](AGENTS.md) — stable operating/integrity rules.
-- [`PROJECT_MANIFEST.yaml`](PROJECT_MANIFEST.yaml) — machine-readable current scope, gates, schema versions, privacy/FOSSIL policy, and risks.
-- [`docs/HANDOFF.md`](docs/HANDOFF.md) — current operational snapshot.
-- [`docs/DECISIONS.md`](docs/DECISIONS.md) — durable boundary/research decisions.
-- [`docs/AGENT_RESEARCH_PROTOCOL.md`](docs/AGENT_RESEARCH_PROTOCOL.md) — how agents update the research harness while the learner focuses on learning.
-
-“Self-updating” means agents are required to update these explicit state artifacts when their work changes project state; it does not mean the repository runs asynchronous autonomous work by itself.
-
-## CI/CD
-
-Continuous integration is appropriate now because data/provenance corruption can invalidate learning evidence just as code regressions can invalidate software.
-
-Current CI checks:
-
-- Python compilation;
-- schema validity;
-- committed session-data validity;
-- project-manifest invariants;
-- accidental public tracking of private raw transcripts;
-- deterministic transcript-ingest unit tests.
-
-Workflow: [`.github/workflows/ci.yml`](.github/workflows/ci.yml)
-
-Continuous deployment is intentionally deferred until Research Gate R0 and a stable application surface exist.
-
-See [`docs/CI_CD.md`](docs/CI_CD.md).
-
-## Repository layout
-
-- `docs/` — charter, research, failure modes, methodology, gates, decisions, handoff.
-- `schemas/` — versioned canonical Study OS data contracts.
-- `domains/` — domain/concept/lesson knowledge and representations.
-- `sessions/` — public-safe manifests/derived session records; raw evidence stays private by default.
-- `subjects/` — learner-model snapshots and subject-specific state.
-- `datasets/` — curated golden trajectories, transfer sets, and retention sets.
-- `plugins/` — assistant/agent skill contracts, beginning with transcript ingestion.
-- `tools/` — deterministic ingest and repository validation utilities.
-- `tests/` — deterministic tests.
-- `fossil/` — optional generated/exported FOSSIL-compatible artifacts; never the Study OS source of truth.
-
-## Current next milestone
-
-Verify CI, define the deterministic Sliding Window lesson/state model and matched evaluation items, then run **one complete instrumented learning trajectory** for Subject 001.
-
-The evidence from that trajectory—not the availability of more AI modalities—decides what gets built next.
+Implementation code is replaceable. The durable assets are the architecture, data semantics, provenance, control contracts, representations, curriculum structure, and longitudinal evidence.
