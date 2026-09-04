@@ -8,7 +8,7 @@ Primary tracker: #63
 
 Study OS is actively used through the GPT app for real learning.
 
-The source-turn durability and cross-chat continuity work is sufficiently operational for normal longitudinal use. P3 durability/reconciliation remains supporting infrastructure, but the product-development center has moved to the deterministic learner/course control problem.
+The source-turn durability and cross-chat continuity work is operational for normal longitudinal use. Historical recovery of the user-authorized transcript source has also completed successfully. P3 now remains supporting infrastructure rather than the product-development center.
 
 Canonical live learner state/evidence remains local:
 
@@ -18,6 +18,26 @@ SQLite + private evidence store
 ```
 
 GitHub remains architecture/spec/contracts/tests/public-safe lineage, not the live learner database.
+
+## Accepted historical recovery state
+
+The published historical recovery source was reconstructed and hash-verified, preserved as immutable local evidence, reviewed, and reconciled into `subject-001`.
+
+Accepted receipt:
+
+- source Markdown SHA-256: `07becb3c24c2876354dd496ba57e1832df23763eda7b4c85b19891e77b7b5a7d`;
+- 34 reviewed outer turns accepted and backfilled;
+- 50 nested/embedded headings ignored rather than double-counted;
+- second reconciliation added zero turns;
+- existing attempts/events/assessments/checkpoints remained unchanged;
+- message/artifact/on-disk hashes passed;
+- backup/restore and doctor passed;
+- source evidence exhausted for this export;
+- original ChatGPT conversation completeness remains `NOT_ESTABLISHED`.
+
+See `docs/HISTORICAL_TRANSCRIPT_RECOVERY_RECEIPT.md`.
+
+No further recovery from this exact source is required. Additional recovery is warranted only if a stronger/new source provides genuinely missing evidence.
 
 ## Current product thesis
 
@@ -49,7 +69,7 @@ course/source
 
 ## Early operational evidence
 
-A recovered historical sequence around dictionaries/Two Sum exposed a useful product-discovery pattern:
+The recovered historical sequence around dictionaries/Two Sum exposed a useful product-discovery pattern:
 
 - the variable name `seen` conflicted with the learner's prior association with sets;
 - `index_by_num` remained confusing;
@@ -90,6 +110,7 @@ The AI is allowed to generate/transform under an authorized operation. It is not
 - Issue #63
 - `docs/P4_DETERMINISTIC_LEARNING_CONTROLLER_PDD.md`
 - `docs/P4_DETERMINISTIC_LEARNING_CONTROLLER_SDD.md`
+- `docs/ADR-0016-deterministic-learning-control.md`
 - `docs/ROADMAP.md`
 - latest accepted entries in `docs/DECISIONS.md`
 
@@ -174,14 +195,12 @@ Keep protecting:
 - cross-chat continuity;
 - backup/restore;
 - doctor/integrity;
-- historical reconciliation;
+- future reconciliation if genuinely new historical source evidence appears;
 - structured curriculum provenance.
 
 Core invariant remains:
 
 > No silent learner-evidence loss.
-
-Historical recovery may continue, but it is not the center of P4 implementation.
 
 ## Immediate execution priorities
 
