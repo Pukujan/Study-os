@@ -5,72 +5,86 @@ Related issues: #52, #56, #59
 
 ## Purpose
 
-Record the existence, identity, limitations, and intended use of a private ChatGPT transcript export supplied for Study OS historical learner-evidence recovery.
+Record the identity, publication status, limitations, and intended canonical use of the ChatGPT transcript export supplied for Study OS historical learner-evidence recovery.
 
-The raw transcript is **not** stored in this public repository.
+The learner explicitly authorized public publication of **this specific source** so local Luna can pull it directly. This does not change the default privacy policy for other learner evidence.
 
 ## Source identity
 
 ```text
-source_type: private ChatGPT Markdown export
+source_type: ChatGPT Markdown export
 source_filename: Study OS Tutor - Check Study OS health.md
 conversation_id: 6a8ca3b3-6434-83ea-a807-98080d8bcada
 exported_at: 2026-09-04T01:22:07.725Z
 reported_turns_captured: 40
 reported_completeness: PARTIAL / NOT ESTABLISHED
-sha256: 07becb3c24c2876354dd496ba57e1832df23763eda7b4c85b19891e77b7b5a7d
-privacy: local/private learner evidence
+original_size_bytes: 30104
+original_sha256: 07becb3c24c2876354dd496ba57e1832df23763eda7b4c85b19891e77b7b5a7d
+publication: user_authorized_public_recovery_source
+```
+
+## Public archive location
+
+```text
+sessions/2026-09-03/mcp-recovery-transcript-gap/raw/public-export/
+  chatgpt-6a8ca3b3-6434-83ea-a807-98080d8bcada/
+```
+
+The exact Markdown bytes are represented losslessly as a deterministic gzip archive split across four base64 transport files. See that directory's `README.md` for reconstruction and hash verification.
+
+Archive identity:
+
+```text
+gzip_size_bytes: 6977
+gzip_sha256: 7395fc7a9af7d4cff4c283017927da7bbe2c7e3fcc128d3977d2bac734052592
 ```
 
 ## Source-quality warning
 
-The export itself states that repeated scroll sweeps did not establish a stable turn set.
+The export itself states that repeated scroll sweeps did not establish a stable turn set. Publication does not make the source complete.
 
-It also contains assistant messages that embed earlier raw-conversation Markdown. Therefore repeated `## User` / `## Assistant` headings inside the file are not evidence of additional source turns and must not be parsed naively.
+The Markdown also contains assistant messages that embed earlier raw-conversation Markdown. Therefore repeated `## User` / `## Assistant` headings inside the source must not be naively interpreted as additional outer turns.
 
-This source may be sufficient to recover substantial missing learning evidence, but it does not by itself establish full original-conversation completeness or ordering.
-
-Use these distinct statuses:
+Use distinct completion statuses:
 
 ```text
-source_exhausted = all uniquely recoverable outer turns from this exact file were reviewed
+source_exhausted = all uniquely recoverable outer turns from this exact export were reviewed
 conversation_complete = full original conversation independently proven complete and ordered
 ```
 
-The second status is currently **NOT ESTABLISHED**.
+`conversation_complete` is currently **NOT ESTABLISHED**.
 
-## Intended canonical destination
+## Canonical destination
 
 ```text
-private original source bytes
-  -> Study OS private raw evidence
-  -> reviewed normalized/reconciliation input
-  -> historical messages + raw_artifacts
-  -> reviewed learning events/episodes
-  -> derived state only with evidence provenance
+published recovery source
+  -> reconstruct + hash verify
+  -> local Study OS immutable raw evidence
+  -> reviewed outer-turn reconstruction
+  -> historical messages + raw_artifacts via reconciliation
+  -> reviewed source-linked learning events/episodes
+  -> derived state only where separately justified
 ```
 
-Study OS remains the canonical owner of learner evidence. GitHub stores only this public-safe manifest and implementation/evidence-recovery lineage.
+Study OS remains the canonical owner of learner evidence. GitHub is serving as an explicitly authorized recovery-source transport/archive for this source, not as the live learner database.
 
-## Candidate live-learning findings for reviewed recovery
+## Candidate reviewed live-learning findings
 
-The private source contains evidence relevant to at least these subject-level learning episodes:
+The source contains evidence relevant to at least these subject-level episodes:
 
 - representation translation overhead while reading a LeetCode Two Sum solution;
-- preference for `enumerate` over an index-first authored representation during acquisition;
+- `enumerate` as a lower-translation acquisition representation than index-first authored code;
 - semantic interference from the variable name `seen` because of prior set association;
 - continued confusion with `index_by_num`;
 - improved immediate clarity after changing the representation to neutral `box` terminology;
-- a correct immediate dictionary lookup response after the representation change;
-- learner identification of variable naming/author language as an avoidable source of conceptual difficulty;
-- learner identification of append-only transcript capture as a required resilience mechanism after MCP 502 failures.
+- a correct immediate dictionary lookup after that representation change;
+- learner identification of variable naming/author language as avoidable concept difficulty;
+- learner identification of append-only transcript capture as a resilience requirement after MCP 502 failures.
 
-These are candidate observed/self-reported findings only. They are not mastery, transfer, or retention claims.
+These are candidate observed/self-reported/derived findings only. They are not mastery, transfer, or retention claims.
 
 ## Recovery authority
 
-See:
+See `docs/LUNA_HISTORICAL_TRANSCRIPT_RECOVERY_HANDOFF.md` and Issue #56.
 
-`docs/LUNA_HISTORICAL_TRANSCRIPT_RECOVERY_HANDOFF.md`
-
-The handoff requires source hashing, backup-before-import, original-byte preservation, reviewed outer-turn reconstruction, conservative session mapping, idempotent reconciliation, integrity verification, and source-linked operational episode creation.
+The required process is: exact source reconstruction and hashing, backup-before-import, immutable local source preservation, reviewed outer-turn extraction, conservative session mapping, idempotent reconciliation, integrity verification, and only then source-linked operational episode creation.
