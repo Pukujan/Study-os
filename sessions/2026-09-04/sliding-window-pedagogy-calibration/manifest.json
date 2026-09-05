@@ -25,7 +25,8 @@
     ],
     "derived": [
       "derived/pedagogy-findings.md",
-      "derived/resume-handoff.md"
+      "derived/resume-handoff.md",
+      "derived/next-session-analysis-handoff.md"
     ],
     "promoted_domain_fixture": "domains/dsa/sliding-window/golden/beginner-progressive-box-index-sum.v0.1.md",
     "golden_extension": "domains/dsa/sliding-window/golden/beginner-sum-enumerate-append.v0.1.md"
