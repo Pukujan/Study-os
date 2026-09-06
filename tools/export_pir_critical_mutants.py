@@ -20,28 +20,42 @@ CRITICAL_MARKERS = (
     "study_os.services.pir_runtime.xǁPIRRuntimeMixinǁsubmit_problem_response__mutmut_",
     "study_os.services.pir_runtime.xǁPIRRuntimeMixinǁrequest_problem_expansion__mutmut_",
 )
+UNRESOLVED_STATUSES = ("survived", "timeout")
+
+
+def critical_unresolved(results: str) -> tuple[tuple[str, str], ...]:
+    unresolved: list[tuple[str, str]] = []
+    for raw_line in results.splitlines():
+        line = raw_line.strip()
+        for status in UNRESOLVED_STATUSES:
+            suffix = f": {status}"
+            if not line.endswith(suffix):
+                continue
+            mutant = line.removesuffix(suffix)
+            if any(marker in mutant for marker in CRITICAL_MARKERS):
+                unresolved.append((mutant, status))
+            break
+    return tuple(unresolved)
 
 
 def critical_survivors(results: str) -> tuple[str, ...]:
-    survivors: list[str] = []
-    for raw_line in results.splitlines():
-        line = raw_line.strip()
-        if not line.endswith(": survived"):
-            continue
-        mutant = line.removesuffix(": survived")
-        if any(marker in mutant for marker in CRITICAL_MARKERS):
-            survivors.append(mutant)
-    return tuple(survivors)
+    return tuple(
+        mutant for mutant, status in critical_unresolved(results) if status == "survived"
+    )
 
 
-def export_survivor_diffs(results_path: Path, output_path: Path) -> int:
+def export_unresolved_diffs(results_path: Path, output_path: Path) -> int:
     results = results_path.read_text(encoding="utf-8")
-    survivors = critical_survivors(results)
+    unresolved = critical_unresolved(results)
+    survivor_count = sum(status == "survived" for _, status in unresolved)
+    timeout_count = sum(status == "timeout" for _, status in unresolved)
     with output_path.open("w", encoding="utf-8") as output:
-        output.write(f"critical_survivors={len(survivors)}\n")
-        for mutant in survivors:
+        output.write(f"critical_unresolved={len(unresolved)}\n")
+        output.write(f"critical_survivors={survivor_count}\n")
+        output.write(f"critical_timeouts={timeout_count}\n")
+        for mutant, status in unresolved:
             output.write("\n" + "=" * 100 + "\n")
-            output.write(mutant + "\n")
+            output.write(f"{mutant}: {status}\n")
             completed = subprocess.run(
                 ["mutmut", "show", mutant],
                 check=False,
@@ -54,18 +68,24 @@ def export_survivor_diffs(results_path: Path, output_path: Path) -> int:
                 output.write(completed.stderr)
             if completed.returncode != 0:
                 output.write(f"\n[mutmut show exit={completed.returncode}]\n")
-    return len(survivors)
+    return len(unresolved)
+
+
+def export_survivor_diffs(results_path: Path, output_path: Path) -> int:
+    return export_unresolved_diffs(results_path, output_path)
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Export diffs for critical surviving PIR mutants")
+    parser = argparse.ArgumentParser(
+        description="Export diffs for critical surviving or timed-out PIR mutants"
+    )
     parser.add_argument("results", nargs="?", type=Path, default=Path("mutmut-results.txt"))
     parser.add_argument(
         "output", nargs="?", type=Path, default=Path("pir-critical-survivor-diffs.txt")
     )
     args = parser.parse_args()
-    count = export_survivor_diffs(args.results, args.output)
-    print(f"exported {count} critical surviving PIR mutant diffs to {args.output}")
+    count = export_unresolved_diffs(args.results, args.output)
+    print(f"exported {count} critical unresolved PIR mutant diffs to {args.output}")
     return 0
 
 
