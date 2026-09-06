@@ -56,5 +56,6 @@ pytest_add_cli_args_test_selection = [
     "tests/test_pir_teaching_controller.py",
     "tests/test_p4_pir_runtime_integration.py",
 ]
+also_copy = ["contracts/"]
 use_setproctitle = false
 max_stack_depth = -1
