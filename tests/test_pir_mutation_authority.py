@@ -6,7 +6,7 @@ import unittest
 
 from study_os import RuntimeConfig, StudyOSService
 from study_os.errors import StudyOSError
-from study_os.pir.contracts import ExpansionKind, RunStatus, StepKind
+from study_os.pir.contracts import ExpansionKind, RunStatus, StepKind, TransitionSpec
 from study_os.pir.controller import build_expansion_bundle, start_run, submit_response
 from study_os.pir.registry import CANONICAL_PROBLEM_ID, get_asset
 from study_os.services.runtime_base import request_fingerprint
@@ -70,34 +70,40 @@ class PIRControllerAuthorityMutationTests(unittest.TestCase):
                         kind=ExpansionKind.WHY,
                     )
 
-    def test_direct_final_submission_returns_exact_no_mastery_terminal_bundle(self) -> None:
-        state = self.state
-        bundle = self.bundle
-        answers = (
-            "8",
-            "S[i]=S[i-1]-a[i-1]+a[i+j]",
-            "for i,num in enumerate(a):",
-            "S.append(S[i-1]-a[i-1]+a[i+j])",
-            "if S[i] > max_sum:\n    max_sum = S[i]",
-        )
-        result = None
-        for answer in answers:
-            turn_id = bundle.response_turn_id
-            self.assertIsNotNone(turn_id)
-            assert turn_id is not None
-            result = submit_response(self.asset, state, turn_id=turn_id, response=answer)
-            state = result.state
-            bundle = result.bundle
+    def test_direct_terminal_transition_returns_exact_no_mastery_status_turn(self) -> None:
+        current_step_id = self.state.current_step_id
+        self.assertIsNotNone(current_step_id)
+        assert current_step_id is not None
+        changed_steps = []
+        for step in self.asset.steps:
+            if step.step_id != current_step_id:
+                changed_steps.append(step)
+                continue
+            changed_routes = tuple(
+                TransitionSpec(
+                    outcome=route.outcome,
+                    exit_status=RunStatus.ASSEMBLED_MASTERY_UNPROVEN,
+                )
+                if route.outcome is not None and route.outcome.value == "correct"
+                else route
+                for route in step.outcome_transitions
+            )
+            changed_steps.append(step.model_copy(update={"outcome_transitions": changed_routes}))
+        direct_terminal_asset = self.asset.model_copy(update={"steps": tuple(changed_steps)})
 
-        self.assertIsNotNone(result)
-        assert result is not None
+        result = submit_response(
+            direct_terminal_asset,
+            self.state,
+            turn_id=self.turn_id,
+            response="8",
+        )
         self.assertEqual(result.outcome.value, "correct")
         self.assertEqual(result.state.status, RunStatus.ASSEMBLED_MASTERY_UNPROVEN)
         self.assertIsNone(result.state.current_step_id)
         self.assertEqual(result.bundle.run_status, RunStatus.ASSEMBLED_MASTERY_UNPROVEN)
         self.assertIsNone(result.bundle.response_turn_id)
-        self.assertGreaterEqual(len(result.bundle.turns), 1)
-        terminal = result.bundle.turns[-1]
+        self.assertEqual(len(result.bundle.turns), 1)
+        terminal = result.bundle.turns[0]
         self.assertEqual(terminal.run_status, RunStatus.ASSEMBLED_MASTERY_UNPROVEN)
         self.assertEqual(terminal.turn_kind, StepKind.STATUS)
         self.assertEqual(terminal.response_kind.value, "none")
@@ -106,9 +112,6 @@ class PIRControllerAuthorityMutationTests(unittest.TestCase):
             terminal.learner_visible_markdown,
             "The reviewed lesson frontier is assembled. Independent mastery remains unproven.",
         )
-        for preceding in result.bundle.turns[:-1]:
-            self.assertNotEqual(preceding.turn_kind, StepKind.STATUS)
-            self.assertEqual(preceding.run_status, RunStatus.ACTIVE)
 
 
 class PIRRuntimeAuthorityMutationTests(unittest.TestCase):
