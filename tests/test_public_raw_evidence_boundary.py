@@ -1,11 +1,10 @@
 from __future__ import annotations
 
 import importlib.util
+import unittest
 from pathlib import Path
 from types import ModuleType
 from unittest.mock import patch
-
-import pytest
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -21,41 +20,44 @@ def load_validator() -> ModuleType:
     return module
 
 
-def test_existing_authorized_public_raw_corpora_pass() -> None:
-    validator = load_validator()
-    paths = [
-        (
-            "sessions/2026-09-03/mcp-recovery-transcript-gap/raw/public-export/"
-            "chatgpt-6a8ca3b3-6434-83ea-a807-98080d8bcada/turns.jsonl"
-        ),
-        (
-            "sessions/2026-09-04/sliding-window-pedagogy-calibration/raw/"
-            "chat-visible-transcript-part08.md"
-        ),
-    ]
+class PublicRawEvidenceBoundaryTests(unittest.TestCase):
+    def test_existing_authorized_public_raw_corpora_pass(self) -> None:
+        validator = load_validator()
+        paths = [
+            (
+                "sessions/2026-09-03/mcp-recovery-transcript-gap/raw/public-export/"
+                "chatgpt-6a8ca3b3-6434-83ea-a807-98080d8bcada/turns.jsonl"
+            ),
+            (
+                "sessions/2026-09-04/sliding-window-pedagogy-calibration/raw/"
+                "chat-visible-transcript-part08.md"
+            ),
+        ]
 
-    with patch.object(validator, "tracked_files", return_value=paths):
-        validator.check_public_data_boundary()
-
-
-def test_unrelated_raw_session_is_still_rejected() -> None:
-    validator = load_validator()
-    paths = ["sessions/2026-09-05/unapproved/raw/transcript.md"]
-
-    with patch.object(validator, "tracked_files", return_value=paths):
-        with pytest.raises(validator.ValidationFailure, match="Private/raw evidence"):
+        with patch.object(validator, "tracked_files", return_value=paths):
             validator.check_public_data_boundary()
 
+    def test_unrelated_raw_session_is_still_rejected(self) -> None:
+        validator = load_validator()
+        paths = ["sessions/2026-09-05/unapproved/raw/transcript.md"]
 
-def test_prefix_near_miss_does_not_expand_authorization() -> None:
-    validator = load_validator()
-    paths = [
-        (
-            "sessions/2026-09-04/sliding-window-pedagogy-calibration-copy/raw/"
-            "chat-visible-transcript.md"
-        )
-    ]
+        with patch.object(validator, "tracked_files", return_value=paths):
+            with self.assertRaisesRegex(validator.ValidationFailure, "Private/raw evidence"):
+                validator.check_public_data_boundary()
 
-    with patch.object(validator, "tracked_files", return_value=paths):
-        with pytest.raises(validator.ValidationFailure):
-            validator.check_public_data_boundary()
+    def test_prefix_near_miss_does_not_expand_authorization(self) -> None:
+        validator = load_validator()
+        paths = [
+            (
+                "sessions/2026-09-04/sliding-window-pedagogy-calibration-copy/raw/"
+                "chat-visible-transcript.md"
+            )
+        ]
+
+        with patch.object(validator, "tracked_files", return_value=paths):
+            with self.assertRaises(validator.ValidationFailure):
+                validator.check_public_data_boundary()
+
+
+if __name__ == "__main__":
+    unittest.main()
