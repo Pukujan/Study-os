@@ -341,7 +341,7 @@ class PIRRuntimeAuthorityMutationTests(unittest.TestCase):
         started = self.start_problem("invalid-step-start")
         run_id = str(started["problem_run_id"])
         self.service.db.connection.execute(
-            "UPDATE problem_runs SET current_step_id = ? WHERE problem_run_id = ?",
+            "UPDATE problem_runs SET current_step_id = ?, transition_seq = 0 WHERE problem_run_id = ?",
             ("missing-step", run_id),
         )
         self.service.db.connection.commit()
