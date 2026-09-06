@@ -81,6 +81,29 @@ class PIRMutationContractEdgeTests(unittest.TestCase):
         self.assertEqual(caught.exception.category, "validation_error")
         submit.assert_not_called()
 
+    def test_inactive_run_is_rejected_before_controller_execution_even_with_current_step(self) -> None:
+        started = self.start_problem("inactive-controller-start")
+        run_id = str(started["problem_run_id"])
+        turn_id = self.response_turn_id(started)
+        with self.service.repository.transaction(immediate=True) as connection:
+            connection.execute(
+                "UPDATE problem_runs SET status = ? WHERE problem_run_id = ?",
+                ("assembled_mastery_unproven", run_id),
+            )
+
+        with patch("study_os.services.pir_runtime.submit_response") as submit:
+            submit.side_effect = AssertionError("controller must not receive an inactive problem run")
+            with self.assertRaises(StudyOSError) as caught:
+                self.service.submit_problem_response(
+                    idempotency_key="inactive-controller-submit",
+                    problem_run_id=run_id,
+                    subject_id="subject-001",
+                    turn_id=turn_id,
+                    response="8",
+                )
+        self.assertEqual(caught.exception.category, "validation_error")
+        submit.assert_not_called()
+
     def test_blank_expansion_is_rejected_before_controller_execution(self) -> None:
         started = self.start_problem("blank-expansion-controller-start")
         run_id = str(started["problem_run_id"])
