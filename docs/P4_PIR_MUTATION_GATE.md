@@ -17,9 +17,9 @@ The focused mutation runner executes:
 - `tests/test_pir_teaching_controller.py`
 - `tests/test_p4_pir_runtime_integration.py`
 
-`src/study_os/pir/registry.py` is deliberately not in the `mutmut==3.7.0` file target. The registry constructs the reviewed canonical asset at module import. During the first mutation run, mutmut's trampoline stack recorder attempted to resolve the synthetic caller path `<frozen importlib._bootstrap>` with `strict=True` and failed before any mutant could execute. Treating that runner crash as mutation evidence would be false assurance.
+`src/study_os/pir/registry.py` is deliberately not in the `mutmut==3.7.0` file target. The registry constructs the reviewed canonical asset at module import. Mutmut also instruments calls from that import into targeted controller functions, so this lane sets `max_stack_depth = -1` to disable mutmut's stack-depth recorder. Without that setting, mutmut 3.7.0 attempts to resolve the synthetic caller path `<frozen importlib._bootstrap>` with `strict=True` and fails during stats collection before any mutant can execute.
 
-Registry and canonical-asset behavior remain mechanically protected by deterministic asset validation plus the explicit pedagogical data/specification mutations required by `P4_PIR_GPT_INTEGRATION_TDD.md`. The mutmut lane challenges the callable implementation authority points; it does not replace those fixture-level mutation tests.
+Registry and canonical-asset behavior remain mechanically protected by deterministic asset validation plus the explicit pedagogical data/specification mutations required by `P4_PIR_GPT_INTEGRATION_TDD.md`. The mutmut lane challenges callable implementation authority points; it does not replace those fixture-level mutation tests.
 
 Normal CI continues to run the entire repository suite, architecture checks, typing, installed-wheel smoke, and branch coverage.
 
@@ -44,7 +44,7 @@ The workflow pins `mutmut==3.7.0` and does not rely on the exit code of `mutmut 
 
 After mutation execution it records:
 
-- `mutmut-results.txt` from `mutmut results --all`;
+- `mutmut-results.txt` from `mutmut results`;
 - `mutants/mutmut-cicd-stats.json` from `mutmut export-cicd-stats`.
 
 `tools/check_pir_mutation_results.py` then requires:
