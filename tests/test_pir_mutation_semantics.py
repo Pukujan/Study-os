@@ -3,6 +3,8 @@ from __future__ import annotations
 import json
 import tempfile
 import unittest
+from typing import Any, cast
+from unittest.mock import patch
 
 from study_os import RuntimeConfig, StudyOSService
 from study_os.errors import StudyOSError
@@ -17,7 +19,7 @@ class PIRControllerSemanticMutationTests(unittest.TestCase):
         if self.asset is None:
             self.fail("reviewed sliding-window asset is unavailable")
 
-    def test_automatic_cycle_is_rejected(self) -> None:
+    def test_automatic_cycle_is_rejected_by_cycle_guard(self) -> None:
         cycling_step = next(
             step
             for step in self.asset.steps
@@ -53,7 +55,7 @@ class PIRControllerSemanticMutationTests(unittest.TestCase):
             status=RunStatus.ACTIVE,
             transition_seq=0,
         )
-        with self.assertRaises(ValueError):
+        with self.assertRaisesRegex(ValueError, "^automatic teaching-step cycle detected$"):
             build_interaction_bundle(cycling_asset, state)
 
     def test_direct_terminal_status_representation_is_exact(self) -> None:
@@ -194,6 +196,20 @@ class PIRRuntimeSemanticMutationTests(unittest.TestCase):
             before_events,
         )
 
+    def test_non_string_response_fails_at_runtime_boundary(self) -> None:
+        started = self.start_problem("non-string-response-start")
+        run_id = str(started["problem_run_id"])
+        turn_id = self.response_turn_id(started)
+        with self.assertRaises(StudyOSError) as caught:
+            self.service.submit_problem_response(
+                idempotency_key="non-string-response",
+                problem_run_id=run_id,
+                subject_id="subject-001",
+                turn_id=turn_id,
+                response=cast(Any, 8),
+            )
+        self.assertEqual(caught.exception.category, "validation_error")
+
     def test_blank_expansion_request_is_atomic(self) -> None:
         started = self.start_problem("blank-expansion-start")
         run_id = str(started["problem_run_id"])
@@ -245,6 +261,47 @@ class PIRRuntimeSemanticMutationTests(unittest.TestCase):
             self.service.db.connection.execute("SELECT COUNT(*) FROM learning_events").fetchone()[0],
             before_events,
         )
+
+    def test_response_conflict_classifier_handles_each_supported_stale_signal(self) -> None:
+        started = self.start_problem("response-conflict-classifier-start")
+        run_id = str(started["problem_run_id"])
+        turn_id = self.response_turn_id(started)
+        for index, message in enumerate(("stale", "current step")):
+            with self.subTest(message=message):
+                with patch(
+                    "study_os.services.pir_runtime.submit_response",
+                    side_effect=ValueError(message),
+                ):
+                    with self.assertRaises(StudyOSError) as caught:
+                        self.service.submit_problem_response(
+                            idempotency_key=f"response-conflict-classifier-{index}",
+                            problem_run_id=run_id,
+                            subject_id="subject-001",
+                            turn_id=turn_id,
+                            response="8",
+                        )
+                self.assertEqual(caught.exception.category, "conflict")
+
+    def test_expansion_conflict_classifier_handles_each_supported_stale_signal(self) -> None:
+        started = self.start_problem("expansion-conflict-classifier-start")
+        run_id = str(started["problem_run_id"])
+        turn_id = self.response_turn_id(started)
+        for index, message in enumerate(("stale", "current step")):
+            with self.subTest(message=message):
+                with patch(
+                    "study_os.services.pir_runtime.build_expansion_bundle",
+                    side_effect=ValueError(message),
+                ):
+                    with self.assertRaises(StudyOSError) as caught:
+                        self.service.request_problem_expansion(
+                            idempotency_key=f"expansion-conflict-classifier-{index}",
+                            problem_run_id=run_id,
+                            subject_id="subject-001",
+                            turn_id=turn_id,
+                            request_kind="why",
+                            learner_request="why?",
+                        )
+                self.assertEqual(caught.exception.category, "conflict")
 
     def test_response_evidence_identity_and_version_are_exact(self) -> None:
         started = self.start_problem("evidence-start")
@@ -310,10 +367,16 @@ class PIRRuntimeSemanticMutationTests(unittest.TestCase):
     def test_get_problem_turn_public_shape_is_exact(self) -> None:
         started = self.start_problem("get-shape-start")
         run_id = str(started["problem_run_id"])
-        result = self.service.get_problem_turn(
-            problem_run_id=run_id,
-            subject_id="subject-001",
-        )
+        with patch.object(
+            self.service.repository,
+            "transaction",
+            wraps=self.service.repository.transaction,
+        ) as transaction:
+            result = self.service.get_problem_turn(
+                problem_run_id=run_id,
+                subject_id="subject-001",
+            )
+        transaction.assert_called_once_with(immediate=False)
         self.assertEqual(set(result), {"problem_run_id", "run_status", "turn"})
         self.assertEqual(result["problem_run_id"], run_id)
         self.assertEqual(result["run_status"], RunStatus.ACTIVE.value)
