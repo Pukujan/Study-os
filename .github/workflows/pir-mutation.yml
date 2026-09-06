@@ -8,6 +8,7 @@ on:
       - "tests/test_pir_teaching_controller.py"
       - "tests/test_p4_pir_runtime_integration.py"
       - "tests/test_pir_critical_mutations.py"
+      - "tests/test_pir_mutation_authority.py"
       - "tests/test_pir_mutation_gate_contract.py"
       - "tools/check_pir_mutation_results.py"
       - "tools/export_pir_critical_mutants.py"
