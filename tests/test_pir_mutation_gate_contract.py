@@ -70,7 +70,6 @@ class PIRMutationGateContractTests(unittest.TestCase):
                     survivor_names.append(f"synthetic.unclassified.{len(survivor_names)}")
                 lines.extend(f"{name}: survived" for name in survivor_names)
                 for status in (
-                    "killed",
                     "no_tests",
                     "skipped",
                     "suspicious",
