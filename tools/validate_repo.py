@@ -25,6 +25,9 @@ AUTHORIZED_PUBLIC_RAW_PREFIXES = (
     ),
     "sessions/2026-09-04/sliding-window-pedagogy-calibration/raw/",
 )
+LEGACY_CALIBRATION_MANIFEST = Path(
+    "sessions/2026-09-04/sliding-window-pedagogy-calibration/manifest.json"
+)
 
 REQUIRED_FILES = [
     "README.md",
@@ -268,13 +271,62 @@ def validate_schemas() -> dict[str, dict[str, Any]]:
     return schemas
 
 
+def validate_legacy_calibration_manifest(manifest_path: Path) -> None:
+    manifest = load_json(manifest_path)
+    expected_identity = {
+        "session_id": "sliding-window-pedagogy-calibration",
+        "subject_id": "subject-001",
+        "domain": "dsa",
+    }
+    for key, expected in expected_identity.items():
+        if manifest.get(key) != expected:
+            raise ValidationFailure(
+                f"{manifest_path}: legacy calibration {key} must equal {expected!r}"
+            )
+
+    source = manifest.get("source")
+    if not isinstance(source, dict) or source.get("provider") != "chatgpt":
+        raise ValidationFailure(f"{manifest_path}: legacy calibration source must be ChatGPT")
+
+    artifacts = manifest.get("artifacts")
+    raw = artifacts.get("raw") if isinstance(artifacts, dict) else None
+    if not isinstance(raw, list) or not raw or any(not isinstance(path, str) for path in raw):
+        raise ValidationFailure(
+            f"{manifest_path}: legacy calibration must inventory non-empty raw artifact paths"
+        )
+
+    session_root = manifest_path.parent
+    declared = {str(path).replace("\\", "/") for path in raw}
+    actual = {
+        str(path.relative_to(session_root)).replace("\\", "/")
+        for path in (session_root / "raw").glob("*")
+        if path.is_file() and path.name != ".gitkeep"
+    }
+    if declared != actual:
+        missing = sorted(actual - declared)
+        nonexistent = sorted(declared - actual)
+        raise ValidationFailure(
+            f"{manifest_path}: legacy calibration raw inventory mismatch; "
+            f"undeclared={missing}, missing_files={nonexistent}"
+        )
+
+    evidence_boundary = manifest.get("evidence_boundary")
+    if not isinstance(evidence_boundary, str) or "not mastery" not in evidence_boundary.lower():
+        raise ValidationFailure(
+            f"{manifest_path}: legacy calibration must preserve the no-mastery evidence boundary"
+        )
+
+
 def validate_session_tree(schemas: dict[str, dict[str, Any]]) -> None:
     sessions_root = ROOT / "sessions"
     if not sessions_root.exists():
         return
 
     for manifest_path in sessions_root.glob("*/*/manifest.json"):
-        validate_instance(load_json(manifest_path), schemas["session"], manifest_path)
+        if manifest_path.relative_to(ROOT) == LEGACY_CALIBRATION_MANIFEST:
+            validate_legacy_calibration_manifest(manifest_path)
+        else:
+            validate_instance(load_json(manifest_path), schemas["session"], manifest_path)
 
     for events_path in sessions_root.glob("*/*/events/*.jsonl"):
         for line_number, line in enumerate(
