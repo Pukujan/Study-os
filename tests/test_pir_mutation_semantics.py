@@ -262,46 +262,41 @@ class PIRRuntimeSemanticMutationTests(unittest.TestCase):
             before_events,
         )
 
-    def test_response_conflict_classifier_handles_each_supported_stale_signal(self) -> None:
-        started = self.start_problem("response-conflict-classifier-start")
+    def test_controller_value_errors_do_not_gain_stale_turn_authority_from_text(self) -> None:
+        started = self.start_problem("controller-error-boundary-start")
         run_id = str(started["problem_run_id"])
         turn_id = self.response_turn_id(started)
         for index, message in enumerate(("stale", "current step")):
-            with self.subTest(message=message):
+            with self.subTest(operation="submit", message=message):
                 with patch(
                     "study_os.services.pir_runtime.submit_response",
                     side_effect=ValueError(message),
                 ):
                     with self.assertRaises(StudyOSError) as caught:
                         self.service.submit_problem_response(
-                            idempotency_key=f"response-conflict-classifier-{index}",
+                            idempotency_key=f"controller-error-submit-{index}",
                             problem_run_id=run_id,
                             subject_id="subject-001",
                             turn_id=turn_id,
                             response="8",
                         )
-                self.assertEqual(caught.exception.category, "conflict")
+                self.assertEqual(caught.exception.category, "validation_error")
 
-    def test_expansion_conflict_classifier_handles_each_supported_stale_signal(self) -> None:
-        started = self.start_problem("expansion-conflict-classifier-start")
-        run_id = str(started["problem_run_id"])
-        turn_id = self.response_turn_id(started)
-        for index, message in enumerate(("stale", "current step")):
-            with self.subTest(message=message):
+            with self.subTest(operation="expansion", message=message):
                 with patch(
                     "study_os.services.pir_runtime.build_expansion_bundle",
                     side_effect=ValueError(message),
                 ):
                     with self.assertRaises(StudyOSError) as caught:
                         self.service.request_problem_expansion(
-                            idempotency_key=f"expansion-conflict-classifier-{index}",
+                            idempotency_key=f"controller-error-expansion-{index}",
                             problem_run_id=run_id,
                             subject_id="subject-001",
                             turn_id=turn_id,
                             request_kind="why",
                             learner_request="why?",
                         )
-                self.assertEqual(caught.exception.category, "conflict")
+                self.assertEqual(caught.exception.category, "validation_error")
 
     def test_response_evidence_identity_and_version_are_exact(self) -> None:
         started = self.start_problem("evidence-start")
