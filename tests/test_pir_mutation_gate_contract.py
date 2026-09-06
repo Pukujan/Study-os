@@ -34,6 +34,7 @@ class PIRMutationGateContractTests(unittest.TestCase):
                 "tests/test_pir_critical_mutations.py",
                 "tests/test_pir_mutation_authority.py",
                 "tests/test_pir_mutation_semantics.py",
+                "tests/test_pir_mutation_contract_edges.py",
             },
         )
 
@@ -47,6 +48,7 @@ class PIRMutationGateContractTests(unittest.TestCase):
         self.assertIn("python tools/export_pir_critical_mutants.py", workflow)
         self.assertIn("python tools/check_pir_mutation_results.py", workflow)
         self.assertIn("tests/test_pir_mutation_authority.py", workflow)
+        self.assertIn("tests/test_pir_mutation_contract_edges.py", workflow)
         self.assertIn("timeout-minutes: 20", workflow)
         self.assertNotIn("junitxml", workflow)
         self.assertNotIn("continue-on-error", workflow)
