@@ -58,6 +58,7 @@ pytest_add_cli_args_test_selection = [
     "tests/test_pir_critical_mutations.py",
     "tests/test_pir_mutation_authority.py",
     "tests/test_pir_mutation_semantics.py",
+    "tests/test_pir_mutation_contract_edges.py",
 ]
 also_copy = ["contracts/"]
 use_setproctitle = false
