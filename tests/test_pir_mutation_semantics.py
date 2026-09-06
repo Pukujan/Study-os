@@ -269,6 +269,23 @@ class PIRControllerSemanticMutationTests(unittest.TestCase):
                 session_id="session-001",
             )
 
+        multiple_violations = duplicate_representation.model_copy(
+            update={"steps": (*self.asset.steps, step)}
+        )
+        with self.assertRaisesRegex(
+            ValueError,
+            (
+                "^canonical teaching asset is invalid: "
+                "DUPLICATE_REPRESENTATION, DUPLICATE_STEP$"
+            ),
+        ):
+            start_run(
+                multiple_violations,
+                problem_run_id="multi-invalid-asset-run",
+                subject_id="subject-001",
+                session_id="session-001",
+            )
+
     def test_integer_sequence_rejects_unapproved_x_separator(self) -> None:
         spec = AssessmentSpec(
             assessment_id="sequence",
