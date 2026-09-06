@@ -15,6 +15,7 @@ CRITICAL_MARKERS = (
     "study_os.services.pir_runtime.xǁPIRRuntimeMixinǁ_asset_for_state__mutmut_",
     "study_os.services.pir_runtime.xǁPIRRuntimeMixinǁ_current_problem_bundle__mutmut_",
     "study_os.services.pir_runtime.xǁPIRRuntimeMixinǁ_persist_problem_run__mutmut_",
+    "study_os.services.pir_runtime.xǁPIRRuntimeMixinǁ_require_fresh_problem_turn__mutmut_",
     "study_os.services.pir_runtime.xǁPIRRuntimeMixinǁstart_problem__mutmut_",
     "study_os.services.pir_runtime.xǁPIRRuntimeMixinǁget_problem_turn__mutmut_",
     "study_os.services.pir_runtime.xǁPIRRuntimeMixinǁsubmit_problem_response__mutmut_",
