@@ -44,3 +44,22 @@ source = ["src/study_os"]
 show_missing = true
 skip_covered = true
 fail_under = 70
+
+[tool.mutmut]
+source_paths = ["src/"]
+only_mutate = [
+    "src/study_os/pir/contracts.py",
+    "src/study_os/pir/controller.py",
+    "src/study_os/services/pir_runtime.py",
+]
+pytest_add_cli_args_test_selection = [
+    "tests/test_pir_teaching_controller.py",
+    "tests/test_p4_pir_runtime_integration.py",
+    "tests/test_pir_critical_mutations.py",
+    "tests/test_pir_mutation_authority.py",
+    "tests/test_pir_mutation_semantics.py",
+    "tests/test_pir_mutation_contract_edges.py",
+]
+also_copy = ["contracts/"]
+use_setproctitle = false
+max_stack_depth = -1
