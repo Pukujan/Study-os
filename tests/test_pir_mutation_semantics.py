@@ -6,7 +6,7 @@ import unittest
 
 from study_os import RuntimeConfig, StudyOSService
 from study_os.errors import StudyOSError
-from study_os.pir.contracts import RunStatus, StepKind, TransitionSpec
+from study_os.pir.contracts import ProblemRunState, RunStatus, StepKind, TransitionSpec
 from study_os.pir.controller import build_interaction_bundle, start_run, submit_response
 from study_os.pir.registry import CANONICAL_PROBLEM_ID, get_asset
 
@@ -39,7 +39,7 @@ class PIRControllerSemanticMutationTests(unittest.TestCase):
                 "steps": changed_steps,
             }
         )
-        state = start_run.__globals__["ProblemRunState"](
+        state = ProblemRunState(
             schema_version="study-os.problem-run-state.v0",
             problem_run_id="cycle-run",
             subject_id="subject-001",
@@ -220,6 +220,27 @@ class PIRRuntimeSemanticMutationTests(unittest.TestCase):
             (run_id,),
         ).fetchone()
         self.assertEqual(tuple(after_state), tuple(before_state))
+        self.assertEqual(
+            self.service.db.connection.execute("SELECT COUNT(*) FROM learning_events").fetchone()[0],
+            before_events,
+        )
+
+    def test_stale_expansion_is_conflict_and_writes_no_event(self) -> None:
+        started = self.start_problem("stale-expansion-start")
+        run_id = str(started["problem_run_id"])
+        before_events = self.service.db.connection.execute(
+            "SELECT COUNT(*) FROM learning_events"
+        ).fetchone()[0]
+        with self.assertRaises(StudyOSError) as caught:
+            self.service.request_problem_expansion(
+                idempotency_key="stale-expansion",
+                problem_run_id=run_id,
+                subject_id="subject-001",
+                turn_id=f"{run_id}:999:wrong-step",
+                request_kind="why",
+                learner_request="why?",
+            )
+        self.assertEqual(caught.exception.category, "conflict")
         self.assertEqual(
             self.service.db.connection.execute("SELECT COUNT(*) FROM learning_events").fetchone()[0],
             before_events,
