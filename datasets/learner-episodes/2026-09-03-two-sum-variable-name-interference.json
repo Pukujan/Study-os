@@ -1,0 +1,142 @@
+{
+  "record_version": "study-os.reviewed-learning-episode.v0",
+  "record_status": "reviewed_derivative",
+  "subject_id": "subject-001",
+  "episode_id": "episode-2026-09-03-two-sum-variable-name-interference",
+  "source_authority": "canonical_study_os_learning_session",
+  "runtime_persistence": {
+    "structured_write_status": "reported_failed_or_unverified",
+    "reported_failure": "HTTP 502 while attempting to save attempts/interventions",
+    "interpretation": "The persistence failure affects durable structured write verification, not the canonical origin of the learning episode."
+  },
+  "privacy": {
+    "raw_transcript_committed": false,
+    "external_solution_verbatim_committed": false,
+    "public_record_type": "reviewed_redacted_derivative"
+  },
+  "task": {
+    "domain": "dsa",
+    "language": "python",
+    "problem_context": "Two Sum precursor: dictionary mapping from number to index",
+    "external_source_context": "LeetCode-derived study sequence",
+    "content_storage_policy": "learner_evidence_and_representation_features_only"
+  },
+  "observed_failure": {
+    "failure_signature": "variable_name_semantic_interference",
+    "status": "observed_subject_level",
+    "description": "The variable name used for a dictionary carried an existing set-related meaning for the learner and became an avoidable barrier to understanding the dictionary operation itself.",
+    "teacher_failure_condition": "A tutor preserves or introduces a semantically misleading or learner-conflicting identifier even though the identifier is not part of the target concept and can be renamed without changing program behavior."
+  },
+  "self_reported": [
+    {
+      "id": "seen-associated-with-set",
+      "evidence_class": "self_reported",
+      "text": "The learner reported believing that the name 'seen' was associated with sets rather than dictionaries, which directly contributed to confusion about the operation."
+    },
+    {
+      "id": "index-by-num-still-confusing",
+      "evidence_class": "self_reported",
+      "text": "After the dictionary was renamed to a descriptive identifier meaning number-to-index, the learner still reported that the name was confusing."
+    },
+    {
+      "id": "box-clearer",
+      "evidence_class": "self_reported",
+      "text": "The learner reported that the neutral concrete identifier 'box' made the dictionary operation substantially clearer."
+    },
+    {
+      "id": "variable-name-is-barrier",
+      "evidence_class": "self_reported",
+      "text": "The learner explicitly identified the variable name itself as an important learning barrier and argued that arbitrary author naming should not become accidental concept difficulty."
+    }
+  ],
+  "observed": [
+    {
+      "id": "dictionary-storage-confusion-under-seen",
+      "evidence_class": "observed",
+      "text": "When asked to store number-to-index pairs in a dictionary named 'seen', the learner proposed checking the dictionary value instead of performing the intended assignment, then reported not understanding how the dictionary worked."
+    },
+    {
+      "id": "renaming-to-descriptive-name-did-not-resolve",
+      "evidence_class": "observed",
+      "text": "Renaming the same dictionary to a more descriptive number-to-index identifier did not resolve the learner's confusion."
+    },
+    {
+      "id": "neutral-concrete-name-supported-correct-retrieval",
+      "evidence_class": "observed",
+      "text": "After the mapping was represented with the neutral concrete identifier 'box' and a minimal key/value example, the learner correctly answered that retrieving the value stored under key 7 returns 1."
+    },
+    {
+      "id": "learner-generalized-author-language-risk",
+      "evidence_class": "observed",
+      "text": "The learner then generalized the episode into a Study OS design requirement: author-selected variable language should not be allowed to become unnecessary difficulty when the identifier can be safely normalized."
+    }
+  ],
+  "derived": [
+    {
+      "id": "identifier-normalization-operation",
+      "evidence_class": "derived",
+      "kind": "intervention_hypothesis",
+      "status": "proposed",
+      "text": "Study OS should test an identifier-normalization operation that replaces nonessential source identifiers with learner-intuitive names while preserving a reversible mapping to the original code."
+    },
+    {
+      "id": "naming-is-part-of-representation",
+      "evidence_class": "derived",
+      "kind": "representation_hypothesis",
+      "status": "proposed",
+      "text": "Variable naming should be treated as a representation dimension that can create semantic interference independently of program semantics."
+    },
+    {
+      "id": "teacher-should-minimize-accidental-language-cost",
+      "evidence_class": "derived",
+      "kind": "teacher_quality_hypothesis",
+      "status": "proposed",
+      "text": "When a variable name is not itself part of the learning objective, failing to normalize a learner-conflicting identifier can count as a teacher/system failure if it adds avoidable decoding cost without preserving useful target difficulty."
+    }
+  ],
+  "intervention": {
+    "type": "identifier_normalization_plus_minimal_example",
+    "identifier_sequence": [
+      "seen",
+      "descriptive number-to-index name",
+      "box"
+    ],
+    "target_operation_preserved": "dictionary key-to-value storage and lookup",
+    "program_semantics_changed_by_identifier_rename": false,
+    "immediate_response": {
+      "learner_reported_name_clarity_improvement": true,
+      "learner_correctly_retrieved_value_after_reframing": true
+    }
+  },
+  "system_evaluation_implications": {
+    "failure_mode": "non_intuitive_identifier_without_normalization",
+    "system_should_be_penalized_when": [
+      "an identifier creates learner confusion unrelated to the target concept",
+      "the identifier can be changed without altering program semantics or assessment validity",
+      "the tutor persists with the identifier despite direct learner confusion"
+    ],
+    "system_should_recover_by": [
+      "renaming the identifier to a lower-interference representation",
+      "preserving a reversible mapping to the source identifier",
+      "later reintroducing alternate/source identifiers after the concept is stable to build code-reading robustness"
+    ]
+  },
+  "claims_supported": [
+    "This canonical Study OS episode provides direct subject-level evidence that a variable name itself can become an avoidable learning barrier even when changing the identifier would not change program behavior.",
+    "For this learner, the identifier 'seen' carried a conflicting set-related interpretation and interfered with understanding the dictionary mapping operation.",
+    "A neutral concrete identifier was reported as clearer and was followed by a correct dictionary retrieval response.",
+    "The episode supports treating identifier choice as a measurable representation and teacher-quality variable."
+  ],
+  "not_yet_claimed": [
+    "The episode does not establish that 'box' is the best identifier for all learners or contexts.",
+    "The episode does not establish a universal naming rule.",
+    "The immediate correct response does not establish durable dictionary mastery, transfer, or retention.",
+    "The episode does not by itself quantify how much of the performance change came from identifier normalization versus the accompanying simplification; however, the learner's explicit naming confusion remains direct evidence that the identifier itself was a barrier."
+  ],
+  "follow_up_measurements": {
+    "same_operation_with_new_intuitive_identifier": "pending",
+    "same_operation_with_source_identifier_reintroduced": "pending",
+    "identifier_variation_transfer": "pending",
+    "delayed_retention": "pending"
+  }
+}

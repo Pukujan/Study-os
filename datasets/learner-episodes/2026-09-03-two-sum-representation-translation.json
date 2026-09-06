@@ -1,0 +1,126 @@
+{
+  "record_version": "study-os.reviewed-learning-episode.v0",
+  "record_status": "reviewed_derivative",
+  "subject_id": "subject-001",
+  "episode_id": "episode-2026-09-03-two-sum-representation-translation",
+  "source_authority": "canonical_study_os_learning_session",
+  "runtime_persistence": {
+    "structured_write_status": "reported_failed_or_unverified",
+    "reported_failure": "HTTP 502 while attempting to log the learning insight",
+    "interpretation": "The write failure affects durable structured persistence, not the canonical origin of the learning episode."
+  },
+  "privacy": {
+    "raw_transcript_committed": false,
+    "external_solution_verbatim_committed": false,
+    "public_record_type": "reviewed_redacted_derivative"
+  },
+  "task": {
+    "domain": "dsa",
+    "language": "python",
+    "problem": "Two Sum",
+    "external_source": "LeetCode",
+    "external_artifact_type": "authored_solution_screenshot",
+    "content_storage_policy": "metadata_and_representation_features_only"
+  },
+  "episode_context": {
+    "learner_goal": "Understand how to solve and read Two Sum in Python without spending most of the effort decoding an author's coding style.",
+    "external_representation": {
+      "loop_style": "index-first range(len(...)) outer loop with indexed value access",
+      "relevant_feature": "the learner must translate index -> collection lookup -> value while also reasoning about the algorithm"
+    },
+    "learner_proposed_representation": {
+      "loop_style": "enumerate(...) with explicit index and value",
+      "relevant_feature": "index and value are exposed directly"
+    }
+  },
+  "self_reported": [
+    {
+      "id": "decoding-external-answer-cost",
+      "evidence_class": "self_reported",
+      "text": "The learner reported that decoding how another author wrote a solution can displace attention from solving the underlying problem."
+    },
+    {
+      "id": "explicit-index-value-clearer",
+      "evidence_class": "self_reported",
+      "text": "The learner reported that the explicit index-and-value representation was less confusing than the index-first form used in the external solution."
+    },
+    {
+      "id": "study-os-intermediate-representation-value",
+      "evidence_class": "self_reported",
+      "text": "The learner identified this episode as a reason an AI-mediated intermediate representation in Study OS could be valuable."
+    }
+  ],
+  "observed": [
+    {
+      "id": "learner-generated-enumerate-alternative",
+      "evidence_class": "observed",
+      "text": "Before being given the optimized implementation, the learner independently proposed using Python enumerate to expose both index and value."
+    },
+    {
+      "id": "questions-focused-on-author-representation",
+      "evidence_class": "observed",
+      "text": "The interaction then concentrated on why the authored solution used range(len(...)), whether enumerate was available in the selected Python runtime, and why the author did not use it."
+    },
+    {
+      "id": "representation-rewrite-reduced-translation-step",
+      "evidence_class": "observed",
+      "text": "The tutor rewrote the outer iteration into an explicit index-and-value form, removing the repeated mental translation from index to value access."
+    },
+    {
+      "id": "learner-articulated-bottleneck",
+      "evidence_class": "observed",
+      "text": "After the rewrite and discussion, the learner explicitly articulated the bottleneck as decoding somebody else's representation rather than focusing on the problem-solving idea."
+    }
+  ],
+  "derived": [
+    {
+      "id": "representation-translation-overhead",
+      "evidence_class": "derived",
+      "kind": "failure_signature_candidate",
+      "status": "proposed",
+      "text": "A candidate failure signature is representation translation overhead: the learner may understand or generate a clearer equivalent representation while incurring avoidable working-memory cost when reading an externally authored form."
+    },
+    {
+      "id": "distinguish-representation-from-syntax-deficit",
+      "evidence_class": "derived",
+      "kind": "diagnostic_hypothesis",
+      "status": "proposed",
+      "text": "Do not automatically classify this episode as a Python syntax deficit. The learner demonstrated familiarity with enumerate and independently suggested it; the observed friction centered on the external representation."
+    },
+    {
+      "id": "normalize-then-expose-alternates",
+      "evidence_class": "derived",
+      "kind": "intervention_hypothesis",
+      "status": "proposed",
+      "text": "Test normalizing an unfamiliar external solution into a learner-comprehensible intermediate representation first, then later expose alternate author representations after the algorithmic invariant is stable."
+    }
+  ],
+  "intervention": {
+    "type": "representation_translation",
+    "from": "implicit index-to-value translation",
+    "to": "explicit index-and-value iteration plus plain-language algorithmic invariant",
+    "assistance_level": "conceptual_explanation",
+    "immediate_response": {
+      "learner_reported_clarity_improvement": true,
+      "learner_articulated_generalizable_product_insight": true
+    }
+  },
+  "claims_supported": [
+    "This canonical Study OS episode provides direct subject-level evidence that externally authored code representation can itself become a learning bottleneck.",
+    "The learner's independently proposed explicit index-and-value representation was used to reduce one translation step in the explanation.",
+    "The episode supports testing representation normalization as an adaptive intervention for this learner."
+  ],
+  "not_yet_claimed": [
+    "The episode does not establish durable Two Sum mastery.",
+    "The episode does not establish that enumerate is universally better for all learners or all problems.",
+    "The episode does not establish causal learning improvement from intermediate representation beyond the immediate interaction.",
+    "The episode does not yet contain an unaided reconstruction result, changed-surface transfer result, or delayed retention result."
+  ],
+  "follow_up_measurements": {
+    "unaided_reconstruction": "pending",
+    "changed_surface_transfer": "pending_hidden_task",
+    "delayed_retention": "pending",
+    "hidden_transfer_prompt_committed": false,
+    "reason_hidden": "Avoid contaminating a future transfer assessment by publishing the exact prompt before the learner attempts it."
+  }
+}
