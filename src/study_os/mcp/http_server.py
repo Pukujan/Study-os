@@ -29,10 +29,25 @@ SUPPORTED_PROTOCOL_VERSIONS = {
 }
 DEFAULT_PROTOCOL_VERSION = "2025-03-26"
 MAX_REQUEST_BYTES = 1024 * 1024
-GPT_ACTION_JSON_FIELDS = frozenset({"payload", "response", "capability_state", "assistance_state", "resume"})
+GPT_ACTION_JSON_FIELDS = frozenset(
+    {"payload", "response", "capability_state", "assistance_state", "resume"}
+)
 
 
-def _json_error(category: str, message: str, *, details: dict[str, Any] | None = None) -> dict[str, Any]:
+def _gpt_action_json_fields(name: str) -> frozenset[str]:
+    # record_attempt.response is legacy arbitrary JSON, while
+    # submit_problem_response.response is literal learner-authored text.
+    if name == "submit_problem_response":
+        return GPT_ACTION_JSON_FIELDS - {"response"}
+    return GPT_ACTION_JSON_FIELDS
+
+
+def _json_error(
+    category: str,
+    message: str,
+    *,
+    details: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     return StudyOSError(category, message, False, details or {}).as_dict()
 
 
@@ -69,8 +84,18 @@ class _MCPRequestHandler(BaseHTTPRequestHandler):
         # Never log request bodies, credentials, or private source content.
         return
 
-    def _send_json(self, status: int, payload: dict[str, Any], *, headers: dict[str, str] | None = None) -> None:
-        encoded = json.dumps(payload, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+    def _send_json(
+        self,
+        status: int,
+        payload: dict[str, Any],
+        *,
+        headers: dict[str, str] | None = None,
+    ) -> None:
+        encoded = json.dumps(
+            payload,
+            separators=(",", ":"),
+            ensure_ascii=False,
+        ).encode("utf-8")
         self.send_response(status)
         self.send_header("Content-Type", "application/json")
         self.send_header("Content-Length", str(len(encoded)))
@@ -99,14 +124,31 @@ class _MCPRequestHandler(BaseHTTPRequestHandler):
     def _authorize(self) -> bool:
         origin = self.headers.get("Origin")
         if origin and origin not in self.server.allowed_origins:
-            self._send_json(HTTPStatus.FORBIDDEN, {"error": _json_error("validation_error", "Origin is not allowed", details={"origin": origin})["error"]})
+            self._send_json(
+                HTTPStatus.FORBIDDEN,
+                {
+                    "error": _json_error(
+                        "validation_error",
+                        "Origin is not allowed",
+                        details={"origin": origin},
+                    )["error"]
+                },
+            )
             return False
         expected_token = self.server.bearer_token
         if expected_token is not None:
-            if not secrets.compare_digest(self.headers.get("Authorization", ""), f"Bearer {expected_token}"):
+            if not secrets.compare_digest(
+                self.headers.get("Authorization", ""),
+                f"Bearer {expected_token}",
+            ):
                 self._send_json(
                     HTTPStatus.UNAUTHORIZED,
-                    {"error": _json_error("validation_error", "Bearer authentication required")["error"]},
+                    {
+                        "error": _json_error(
+                            "validation_error",
+                            "Bearer authentication required",
+                        )["error"]
+                    },
                     headers={"WWW-Authenticate": "Bearer"},
                 )
                 return False
@@ -118,15 +160,40 @@ class _MCPRequestHandler(BaseHTTPRequestHandler):
         except ValueError:
             length = -1
         if length < 0 or length > MAX_REQUEST_BYTES:
-            self._send_json(HTTPStatus.BAD_REQUEST, {"error": _json_error("validation_error", "Invalid or oversized Content-Length")["error"]})
+            self._send_json(
+                HTTPStatus.BAD_REQUEST,
+                {
+                    "error": _json_error(
+                        "validation_error",
+                        "Invalid or oversized Content-Length",
+                    )["error"]
+                },
+            )
             return None
         try:
             payload = json.loads(self.rfile.read(length).decode("utf-8"))
         except (UnicodeDecodeError, json.JSONDecodeError) as exc:
-            self._send_json(HTTPStatus.BAD_REQUEST, {"error": _json_error("validation_error", "Request body must be valid UTF-8 JSON", details={"exception": type(exc).__name__})["error"]})
+            self._send_json(
+                HTTPStatus.BAD_REQUEST,
+                {
+                    "error": _json_error(
+                        "validation_error",
+                        "Request body must be valid UTF-8 JSON",
+                        details={"exception": type(exc).__name__},
+                    )["error"]
+                },
+            )
             return None
         if not isinstance(payload, dict):
-            self._send_json(HTTPStatus.BAD_REQUEST, {"error": _json_error("validation_error", "Request body must be a JSON object")["error"]})
+            self._send_json(
+                HTTPStatus.BAD_REQUEST,
+                {
+                    "error": _json_error(
+                        "validation_error",
+                        "Request body must be a JSON object",
+                    )["error"]
+                },
+            )
             return None
         return payload
 
@@ -136,33 +203,62 @@ class _MCPRequestHandler(BaseHTTPRequestHandler):
             from ..services.runtime import StudyOSService
 
             service = StudyOSService(self.server.study_os_config)
-            response = MCPServer(service, contract_path=self.server.contract_path).handle_message(message)
+            response = MCPServer(
+                service,
+                contract_path=self.server.contract_path,
+            ).handle_message(message)
             if response and message.get("method") == "initialize":
                 requested = (message.get("params") or {}).get("protocolVersion")
                 if isinstance(response.get("result"), dict):
-                    response["result"]["protocolVersion"] = requested or DEFAULT_PROTOCOL_VERSION
+                    response["result"]["protocolVersion"] = (
+                        requested or DEFAULT_PROTOCOL_VERSION
+                    )
             return response
         finally:
             if service is not None:
                 service.close()
 
-    def _dispatch_action(self, name: str, arguments: dict[str, Any]) -> dict[str, Any]:
+    def _dispatch_action(
+        self,
+        name: str,
+        arguments: dict[str, Any],
+    ) -> dict[str, Any]:
         service = None
         try:
             from ..services.runtime import StudyOSService
 
             service = StudyOSService(self.server.study_os_config)
-            return MCPServer(service, contract_path=self.server.contract_path).call_tool(name, arguments)
+            return MCPServer(
+                service,
+                contract_path=self.server.contract_path,
+            ).call_tool(name, arguments)
         finally:
             if service is not None:
                 service.close()
 
     def _protocol_valid(self, message: dict[str, Any]) -> bool:
         header_version = self.headers.get("MCP-Protocol-Version")
-        requested = (message.get("params") or {}).get("protocolVersion") if message.get("method") == "initialize" else None
-        if (header_version and header_version not in SUPPORTED_PROTOCOL_VERSIONS) or (requested and requested not in SUPPORTED_PROTOCOL_VERSIONS):
+        requested = (
+            (message.get("params") or {}).get("protocolVersion")
+            if message.get("method") == "initialize"
+            else None
+        )
+        if (
+            header_version and header_version not in SUPPORTED_PROTOCOL_VERSIONS
+        ) or (requested and requested not in SUPPORTED_PROTOCOL_VERSIONS):
             version = header_version or requested
-            self._send_json(HTTPStatus.BAD_REQUEST, {"jsonrpc": "2.0", "id": message.get("id"), "error": _json_error("unsupported_version", "Unsupported MCP protocol version", details={"protocol_version": version})["error"]})
+            self._send_json(
+                HTTPStatus.BAD_REQUEST,
+                {
+                    "jsonrpc": "2.0",
+                    "id": message.get("id"),
+                    "error": _json_error(
+                        "unsupported_version",
+                        "Unsupported MCP protocol version",
+                        details={"protocol_version": version},
+                    )["error"],
+                },
+            )
             return False
         return True
 
@@ -172,7 +268,7 @@ class _MCPRequestHandler(BaseHTTPRequestHandler):
         arguments = self._read_json_body()
         if arguments is None:
             return
-        for field in GPT_ACTION_JSON_FIELDS:
+        for field in _gpt_action_json_fields(name):
             if isinstance(arguments.get(field), str):
                 try:
                     arguments[field] = json.loads(arguments[field])
@@ -183,12 +279,24 @@ class _MCPRequestHandler(BaseHTTPRequestHandler):
         except StudyOSError as exc:
             result = exc.as_dict()
         except Exception as exc:
-            result = _json_error("internal_error", "Unexpected Study OS service failure", details={"exception": type(exc).__name__})
+            result = _json_error(
+                "internal_error",
+                "Unexpected Study OS service failure",
+                details={"exception": type(exc).__name__},
+            )
         self._send_json(HTTPStatus.OK, result)
 
     def do_GET(self) -> None:
         if not self._path_matches():
-            self._send_json(HTTPStatus.NOT_FOUND, {"error": _json_error("not_found", "MCP endpoint not found")["error"]})
+            self._send_json(
+                HTTPStatus.NOT_FOUND,
+                {
+                    "error": _json_error(
+                        "not_found",
+                        "MCP endpoint not found",
+                    )["error"]
+                },
+            )
             return
         self.send_response(HTTPStatus.METHOD_NOT_ALLOWED)
         self.send_header("Allow", "POST")
@@ -198,7 +306,15 @@ class _MCPRequestHandler(BaseHTTPRequestHandler):
     def do_POST(self) -> None:
         action_name = self._action_name()
         if not self._path_matches() and action_name is None:
-            self._send_json(HTTPStatus.NOT_FOUND, {"error": _json_error("not_found", "MCP endpoint not found")["error"]})
+            self._send_json(
+                HTTPStatus.NOT_FOUND,
+                {
+                    "error": _json_error(
+                        "not_found",
+                        "MCP endpoint not found",
+                    )["error"]
+                },
+            )
             return
         if action_name is not None:
             self._handle_action(action_name)
@@ -213,9 +329,21 @@ class _MCPRequestHandler(BaseHTTPRequestHandler):
         try:
             response = self._dispatch(message)
         except StudyOSError as exc:
-            response = {"jsonrpc": "2.0", "id": message.get("id"), "error": exc.as_dict()["error"]}
+            response = {
+                "jsonrpc": "2.0",
+                "id": message.get("id"),
+                "error": exc.as_dict()["error"],
+            }
         except Exception as exc:
-            response = {"jsonrpc": "2.0", "id": message.get("id"), "error": _json_error("internal_error", "Unexpected MCP service failure", details={"exception": type(exc).__name__})["error"]}
+            response = {
+                "jsonrpc": "2.0",
+                "id": message.get("id"),
+                "error": _json_error(
+                    "internal_error",
+                    "Unexpected MCP service failure",
+                    details={"exception": type(exc).__name__},
+                )["error"],
+            }
         if "id" not in message or response is None:
             self._send_empty(HTTPStatus.ACCEPTED)
         else:
@@ -225,8 +353,19 @@ class _MCPRequestHandler(BaseHTTPRequestHandler):
         message = self._read_json_body()
         if message is None:
             return False
-        if message.get("jsonrpc") != "2.0" or not isinstance(message.get("method"), str):
-            self._send_json(HTTPStatus.BAD_REQUEST, {"error": _json_error("validation_error", "Request body must be a JSON-RPC 2.0 request or notification")["error"]})
+        if message.get("jsonrpc") != "2.0" or not isinstance(
+            message.get("method"),
+            str,
+        ):
+            self._send_json(
+                HTTPStatus.BAD_REQUEST,
+                {
+                    "error": _json_error(
+                        "validation_error",
+                        "Request body must be a JSON-RPC 2.0 request or notification",
+                    )["error"]
+                },
+            )
             return False
         self._message_body = message
         return True
