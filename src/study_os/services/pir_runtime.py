@@ -220,6 +220,21 @@ class PIRRuntimeMixin:
                 problem_run_id=updated.problem_run_id,
             )
 
+    @staticmethod
+    def _require_fresh_problem_turn(state: ProblemRunState, turn_id: str) -> None:
+        if state.status != RunStatus.ACTIVE or state.current_step_id is None:
+            raise validation("operation requires an active problem run")
+        expected_turn_id = (
+            f"{state.problem_run_id}:{state.transition_seq}:{state.current_step_id}"
+        )
+        if turn_id != expected_turn_id:
+            raise conflict(
+                "turn_id is stale or does not match current problem step",
+                problem_run_id=state.problem_run_id,
+                expected_turn_id=expected_turn_id,
+                received_turn_id=turn_id,
+            )
+
     def resolve_problem(self, *, problem_text: str, domain: str) -> dict[str, Any]:
         try:
             asset = resolve_known_problem(problem_text, domain)
@@ -360,6 +375,7 @@ class PIRRuntimeMixin:
                 return cached
             state = self._load_problem_run(connection, problem_run_id, subject_id)
             asset = self._asset_for_state(state)
+            self._require_fresh_problem_turn(state, turn_id)
             step_id = state.current_step_id
             try:
                 transition = submit_response(
@@ -369,8 +385,6 @@ class PIRRuntimeMixin:
                     response=response,
                 )
             except ValueError as exc:
-                if "stale" in str(exc) or "current step" in str(exc):
-                    raise conflict(str(exc), problem_run_id=problem_run_id) from exc
                 raise validation(str(exc)) from exc
 
             attempt_id = new_id()
@@ -476,6 +490,7 @@ class PIRRuntimeMixin:
                 return cached
             state = self._load_problem_run(connection, problem_run_id, subject_id)
             asset = self._asset_for_state(state)
+            self._require_fresh_problem_turn(state, turn_id)
             try:
                 bundle = build_expansion_bundle(
                     asset,
@@ -484,8 +499,6 @@ class PIRRuntimeMixin:
                     kind=kind,
                 )
             except ValueError as exc:
-                if "stale" in str(exc) or "current step" in str(exc):
-                    raise conflict(str(exc), problem_run_id=problem_run_id) from exc
                 raise validation(str(exc)) from exc
 
             event_id = new_id()
