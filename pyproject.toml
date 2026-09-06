@@ -57,4 +57,4 @@ pytest_add_cli_args_test_selection = [
     "tests/test_p4_pir_runtime_integration.py",
 ]
 use_setproctitle = false
-max_stack_depth = 12
+max_stack_depth = -1
