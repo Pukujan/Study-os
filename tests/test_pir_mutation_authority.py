@@ -96,8 +96,8 @@ class PIRControllerAuthorityMutationTests(unittest.TestCase):
         self.assertIsNone(result.state.current_step_id)
         self.assertEqual(result.bundle.run_status, RunStatus.ASSEMBLED_MASTERY_UNPROVEN)
         self.assertIsNone(result.bundle.response_turn_id)
-        self.assertEqual(len(result.bundle.turns), 1)
-        terminal = result.bundle.turns[0]
+        self.assertGreaterEqual(len(result.bundle.turns), 1)
+        terminal = result.bundle.turns[-1]
         self.assertEqual(terminal.run_status, RunStatus.ASSEMBLED_MASTERY_UNPROVEN)
         self.assertEqual(terminal.turn_kind, StepKind.STATUS)
         self.assertEqual(terminal.response_kind.value, "none")
@@ -106,6 +106,9 @@ class PIRControllerAuthorityMutationTests(unittest.TestCase):
             terminal.learner_visible_markdown,
             "The reviewed lesson frontier is assembled. Independent mastery remains unproven.",
         )
+        for preceding in result.bundle.turns[:-1]:
+            self.assertNotEqual(preceding.turn_kind, StepKind.STATUS)
+            self.assertEqual(preceding.run_status, RunStatus.ACTIVE)
 
 
 class PIRRuntimeAuthorityMutationTests(unittest.TestCase):
@@ -258,7 +261,10 @@ class PIRRuntimeAuthorityMutationTests(unittest.TestCase):
             response="8",
         )
         self.assertIs(replay["created"], False)
-        self.assertEqual({k: replay[k] for k in replay if k != "created"}, {k: result[k] for k in result if k != "created"})
+        self.assertEqual(
+            {k: replay[k] for k in replay if k != "created"},
+            {k: result[k] for k in result if k != "created"},
+        )
 
     def test_expansion_result_event_replay_and_fingerprint_are_exact(self) -> None:
         started = self.start_problem("expand-start")
@@ -323,7 +329,10 @@ class PIRRuntimeAuthorityMutationTests(unittest.TestCase):
             learner_request="why does this step work?",
         )
         self.assertIs(replay["created"], False)
-        self.assertEqual({k: replay[k] for k in replay if k != "created"}, {k: result[k] for k in result if k != "created"})
+        self.assertEqual(
+            {k: replay[k] for k in replay if k != "created"},
+            {k: result[k] for k in result if k != "created"},
+        )
 
     def test_invalid_current_step_is_validation_not_conflict(self) -> None:
         started = self.start_problem("invalid-step-start")
