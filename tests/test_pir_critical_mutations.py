@@ -129,7 +129,7 @@ class PIRControllerCriticalMutationTests(unittest.TestCase):
         self.assertEqual(expanded.run_status, RunStatus.ACTIVE)
         self.assertEqual(expanded.response_turn_id, turn_id)
         self.assertEqual(len(expanded.turns), 2)
-        self.assertEqual(expanded.turns[0].turn_id, f"{turn_id}:why")
+        self.assertEqual(expanded.turns[0].turn_id, f"{turn_id}:expansion:why")
         self.assertEqual(expanded.turns[0].canonical_step_id, state.current_step_id)
         self.assertEqual(expanded.turns[-1].turn_id, turn_id)
         self.assertEqual(expanded.turns[-1].canonical_step_id, state.current_step_id)
