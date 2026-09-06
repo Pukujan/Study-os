@@ -399,6 +399,8 @@ def build_interaction_bundle(
     current = state
     turns: list[TeachingTurn] = []
     auto_seen: set[str] = set()
+    auto_hops = 0
+    max_auto_hops = len(step_by_id)
 
     while True:
         if current.current_step_id is None:
@@ -418,6 +420,9 @@ def build_interaction_bundle(
                 run_status=current.status,
             )
 
+        auto_hops += 1
+        if auto_hops > max_auto_hops:
+            raise ValueError("automatic teaching-step traversal exceeded finite asset bound")
         if step.step_id in auto_seen:
             raise ValueError("automatic teaching-step cycle detected")
         auto_seen.add(step.step_id)
