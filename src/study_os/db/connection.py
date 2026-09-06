@@ -11,7 +11,7 @@ from ..config import RuntimeConfig
 from ..errors import unavailable, unsupported
 
 
-LATEST_SCHEMA_VERSION = 1
+LATEST_SCHEMA_VERSION = 2
 MIGRATION_DIR = Path(__file__).with_name("migrations")
 
 
@@ -68,7 +68,9 @@ def migrate_database(path: str | Path, *, create_parent: bool = True) -> int:
             except sqlite3.OperationalError as exc:
                 connection.rollback()
                 if "locked" in str(exc).lower() or "busy" in str(exc).lower():
-                    raise unavailable("Database is temporarily unavailable during migration") from exc
+                    raise unavailable(
+                        "Database is temporarily unavailable during migration"
+                    ) from exc
                 raise
         if current != LATEST_SCHEMA_VERSION:
             raise unsupported(
@@ -112,7 +114,11 @@ class Database:
 
     def reopen(self) -> None:
         self.close()
-        self.connection = sqlite3.connect(self.config.db_path, timeout=5.0, isolation_level=None)
+        self.connection = sqlite3.connect(
+            self.config.db_path,
+            timeout=5.0,
+            isolation_level=None,
+        )
         self.connection.row_factory = sqlite3.Row
         self.connection.execute("PRAGMA foreign_keys = ON")
         self.connection.execute("PRAGMA busy_timeout = 5000")
