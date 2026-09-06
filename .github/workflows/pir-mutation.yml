@@ -10,6 +10,7 @@ on:
       - "tests/test_pir_critical_mutations.py"
       - "tests/test_pir_mutation_authority.py"
       - "tests/test_pir_mutation_semantics.py"
+      - "tests/test_pir_mutation_contract_edges.py"
       - "tests/test_pir_mutation_gate_contract.py"
       - "tools/check_pir_mutation_results.py"
       - "tools/export_pir_critical_mutants.py"
