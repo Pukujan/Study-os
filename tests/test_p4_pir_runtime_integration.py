@@ -251,7 +251,7 @@ class PIRRuntimeIntegrationTests(unittest.TestCase):
         rendered = "\n".join(
             turn["learner_visible_markdown"] for turn in current["turn"]["turns"]
         )
-        self.assertIn("Independent mastery remains unproven", rendered)
+        self.assertIn("Independent mastery is not established", rendered)
         self.assertNotIn("completed_validated", rendered)
 
     def test_mcp_v04_exposes_exactly_twenty_semantic_tools(self) -> None:
