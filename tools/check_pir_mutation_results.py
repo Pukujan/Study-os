@@ -231,13 +231,16 @@ def validate_stats(stats: dict[str, int]) -> tuple[str, ...]:
 
 def validate_results(stats: dict[str, int], results: dict[str, str]) -> tuple[str, ...]:
     errors: list[str] = []
-    if len(results) != stats["total"]:
+    unresolved_total = stats["total"] - stats["killed"]
+    if len(results) != unresolved_total:
         errors.append(
-            "mutation results do not contain the complete measured population: "
-            f"total={stats['total']}, results={len(results)}"
+            "mutation results do not contain the complete unresolved population: "
+            f"expected={unresolved_total}, results={len(results)}"
         )
 
     for status in STATUS_KEYS:
+        if status == "killed":
+            continue
         observed = sum(result == status for result in results.values())
         if observed != stats[status]:
             errors.append(
