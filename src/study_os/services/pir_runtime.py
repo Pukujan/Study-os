@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any
 
 from ..errors import conflict, integrity, not_found, validation
 from ..pir.contracts import (
+    CanonicalTeachingAsset,
     ExpansionKind,
     ProblemRunState,
     ResponseKind,
@@ -221,9 +222,23 @@ class PIRRuntimeMixin:
             )
 
     @staticmethod
-    def _require_fresh_problem_turn(state: ProblemRunState, turn_id: str) -> None:
+    def _require_fresh_problem_turn(
+        asset: CanonicalTeachingAsset,
+        state: ProblemRunState,
+        turn_id: str,
+    ) -> None:
         if state.status != RunStatus.ACTIVE or state.current_step_id is None:
             raise validation("operation requires an active problem run")
+        step = next(
+            (item for item in asset.steps if item.step_id == state.current_step_id),
+            None,
+        )
+        if step is None or step.kind != StepKind.PROBE:
+            raise validation(
+                "persisted problem run is not at a valid probe step",
+                problem_run_id=state.problem_run_id,
+                current_step_id=state.current_step_id,
+            )
         expected_turn_id = (
             f"{state.problem_run_id}:{state.transition_seq}:{state.current_step_id}"
         )
@@ -375,7 +390,7 @@ class PIRRuntimeMixin:
                 return cached
             state = self._load_problem_run(connection, problem_run_id, subject_id)
             asset = self._asset_for_state(state)
-            self._require_fresh_problem_turn(state, turn_id)
+            self._require_fresh_problem_turn(asset, state, turn_id)
             step_id = state.current_step_id
             try:
                 transition = submit_response(
@@ -490,7 +505,7 @@ class PIRRuntimeMixin:
                 return cached
             state = self._load_problem_run(connection, problem_run_id, subject_id)
             asset = self._asset_for_state(state)
-            self._require_fresh_problem_turn(state, turn_id)
+            self._require_fresh_problem_turn(asset, state, turn_id)
             try:
                 bundle = build_expansion_bundle(
                     asset,
