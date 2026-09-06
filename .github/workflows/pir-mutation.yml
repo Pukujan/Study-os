@@ -7,6 +7,8 @@ on:
       - "src/study_os/services/pir_runtime.py"
       - "tests/test_pir_teaching_controller.py"
       - "tests/test_p4_pir_runtime_integration.py"
+      - "tests/test_pir_mutation_gate_contract.py"
+      - "tools/check_pir_mutation_results.py"
       - "pyproject.toml"
       - ".github/workflows/pir-mutation.yml"
 
@@ -47,14 +49,22 @@ jobs:
           rm -rf mutants .mutmut-cache
           mutmut run
 
-      - name: Export mutation report
+      - name: Export mutation evidence
         if: always()
-        run: mutmut junitxml > mutmut.xml || true
+        run: |
+          mutmut results --all > mutmut-results.txt || true
+          mutmut export-cicd-stats || true
+
+      - name: Enforce mutation result policy
+        if: always()
+        run: python tools/check_pir_mutation_results.py
 
       - name: Upload mutation report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: pir-mutmut-report
-          path: mutmut.xml
+          path: |
+            mutmut-results.txt
+            mutants/mutmut-cicd-stats.json
           if-no-files-found: ignore
