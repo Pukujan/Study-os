@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 import sqlite3
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from ..errors import conflict, integrity, not_found, validation
 from ..pir.contracts import (
@@ -23,9 +23,22 @@ from ..pir.controller import (
 from ..pir.registry import get_asset, resolve_known_problem
 from .runtime_base import canonical_json, new_id, request_fingerprint, utc_now
 
+if TYPE_CHECKING:
+    from ..db.repositories.sqlite import SQLiteRepository
+
 
 class PIRRuntimeMixin:
     """Durable known-problem PIR semantics layered onto StudyOSService."""
+
+    if TYPE_CHECKING:
+        repository: SQLiteRepository
+
+        def _session(
+            self,
+            connection: sqlite3.Connection,
+            session_id: str,
+            subject_id: str,
+        ) -> sqlite3.Row: ...
 
     def _problem_operation_check(
         self,
