@@ -8,8 +8,23 @@ from unittest.mock import patch
 
 from study_os import RuntimeConfig, StudyOSService
 from study_os.errors import StudyOSError
-from study_os.pir.contracts import ProblemRunState, RunStatus, StepKind, TransitionSpec
-from study_os.pir.controller import build_interaction_bundle, start_run, submit_response
+from study_os.pir.contracts import (
+    AssessmentKind,
+    AssessmentSpec,
+    ProblemRunState,
+    ResponseKind,
+    RunStatus,
+    StepKind,
+    TransitionSpec,
+)
+from study_os.pir.controller import (
+    AssetViolationCode,
+    build_interaction_bundle,
+    classify_response,
+    start_run,
+    submit_response,
+    validate_asset,
+)
 from study_os.pir.registry import CANONICAL_PROBLEM_ID, get_asset
 
 
@@ -57,6 +72,248 @@ class PIRControllerSemanticMutationTests(unittest.TestCase):
         )
         with self.assertRaisesRegex(ValueError, "^automatic teaching-step cycle detected$"):
             build_interaction_bundle(cycling_asset, state)
+
+    def _replace_step(self, changed_step):
+        return self.asset.model_copy(
+            update={
+                "steps": tuple(
+                    changed_step if step.step_id == changed_step.step_id else step
+                    for step in self.asset.steps
+                )
+            }
+        )
+
+    def _assert_violation(self, asset, code: AssetViolationCode, detail: str) -> None:
+        observed = {(item.code, item.detail) for item in validate_asset(asset)}
+        self.assertIn((code, detail), observed)
+
+    def test_asset_validation_reports_exact_structural_violations(self) -> None:
+        representation = self.asset.representations[0]
+        duplicate_representation = self.asset.model_copy(
+            update={"representations": (*self.asset.representations, representation)}
+        )
+        self._assert_violation(
+            duplicate_representation,
+            AssetViolationCode.DUPLICATE_REPRESENTATION,
+            f"duplicate representation: {representation.representation_id}",
+        )
+
+        step = self.asset.steps[0]
+        duplicate_step = self.asset.model_copy(update={"steps": (*self.asset.steps, step)})
+        self._assert_violation(
+            duplicate_step,
+            AssetViolationCode.DUPLICATE_STEP,
+            f"duplicate step: {step.step_id}",
+        )
+
+        assessment = self.asset.assessments[0]
+        duplicate_assessment = self.asset.model_copy(
+            update={"assessments": (*self.asset.assessments, assessment)}
+        )
+        self._assert_violation(
+            duplicate_assessment,
+            AssetViolationCode.DUPLICATE_ASSESSMENT,
+            f"duplicate assessment: {assessment.assessment_id}",
+        )
+
+        expansion = self.asset.expansions[0]
+        duplicate_expansion = self.asset.model_copy(
+            update={"expansions": (*self.asset.expansions, expansion)}
+        )
+        self._assert_violation(
+            duplicate_expansion,
+            AssetViolationCode.DUPLICATE_EXPANSION,
+            f"duplicate expansion: {expansion.step_id}:{expansion.kind.value}",
+        )
+
+        unknown_entry = self.asset.model_copy(update={"entry_step_id": "missing-step"})
+        self._assert_violation(
+            unknown_entry,
+            AssetViolationCode.UNKNOWN_ENTRY_STEP,
+            "unknown entry step: missing-step",
+        )
+
+        changed_step = step.model_copy(update={"representation_id": "missing-representation"})
+        self._assert_violation(
+            self._replace_step(changed_step),
+            AssetViolationCode.UNKNOWN_REPRESENTATION,
+            f"step {step.step_id} references unknown representation missing-representation",
+        )
+
+        represented_step = next(
+            item
+            for item in self.asset.steps
+            if next(
+                rep
+                for rep in self.asset.representations
+                if rep.representation_id == item.representation_id
+            ).visible_components
+        )
+        represented = next(
+            rep
+            for rep in self.asset.representations
+            if rep.representation_id == represented_step.representation_id
+        )
+        forbidden = represented.visible_components[0]
+        forbidden_step = represented_step.model_copy(update={"forbidden_components": (forbidden,)})
+        self._assert_violation(
+            self._replace_step(forbidden_step),
+            AssetViolationCode.FORBIDDEN_COMPONENT_VISIBLE,
+            f"step {represented_step.step_id} exposes forbidden {forbidden}",
+        )
+
+        probe = next(item for item in self.asset.steps if item.kind == StepKind.PROBE)
+        unknown_assessment = probe.model_copy(update={"assessment_id": "missing-assessment"})
+        self._assert_violation(
+            self._replace_step(unknown_assessment),
+            AssetViolationCode.UNKNOWN_ASSESSMENT,
+            f"probe {probe.step_id} references unknown assessment",
+        )
+
+        probe_assessment = next(
+            item for item in self.asset.assessments if item.assessment_id == probe.assessment_id
+        )
+        mismatched_kind = {
+            AssessmentKind.INTEGER: ResponseKind.TEXT,
+            AssessmentKind.INTEGER_SEQUENCE: ResponseKind.INTEGER,
+            AssessmentKind.TEXT: ResponseKind.INTEGER,
+        }[probe_assessment.kind]
+        mismatched_probe = probe.model_copy(update={"response_kind": mismatched_kind})
+        self._assert_violation(
+            self._replace_step(mismatched_probe),
+            AssetViolationCode.RESPONSE_KIND_MISMATCH,
+            (
+                f"step {probe.step_id} response kind {mismatched_kind.value} "
+                f"does not match {probe_assessment.kind.value} assessment"
+            ),
+        )
+
+        partial_probe = next(
+            item
+            for item in self.asset.steps
+            if item.kind == StepKind.PROBE
+            and (spec := next(
+                candidate
+                for candidate in self.asset.assessments
+                if candidate.assessment_id == item.assessment_id
+            ))
+            and (spec.partial_values or spec.partial_text)
+        )
+        without_partial = partial_probe.model_copy(
+            update={
+                "outcome_transitions": tuple(
+                    route
+                    for route in partial_probe.outcome_transitions
+                    if route.outcome is None or route.outcome.value != "partial"
+                )
+            }
+        )
+        self._assert_violation(
+            self._replace_step(without_partial),
+            AssetViolationCode.MISSING_OUTCOME_ROUTE,
+            f"step {partial_probe.step_id} lacks partial route",
+        )
+
+        probe_route = probe.outcome_transitions[0]
+        bad_probe_route = probe_route.model_copy(
+            update={"next_step_id": "missing-step", "exit_status": None}
+        )
+        bad_probe = probe.model_copy(
+            update={
+                "outcome_transitions": (bad_probe_route, *probe.outcome_transitions[1:])
+            }
+        )
+        self._assert_violation(
+            self._replace_step(bad_probe),
+            AssetViolationCode.UNKNOWN_TRANSITION_TARGET,
+            f"step {probe.step_id} targets unknown step missing-step",
+        )
+
+        automatic = next(item for item in self.asset.steps if item.kind != StepKind.PROBE)
+        bad_automatic = automatic.model_copy(
+            update={"automatic_transition": TransitionSpec(next_step_id="missing-step")}
+        )
+        self._assert_violation(
+            self._replace_step(bad_automatic),
+            AssetViolationCode.UNKNOWN_TRANSITION_TARGET,
+            f"step {automatic.step_id} targets unknown step missing-step",
+        )
+
+        unknown_expansion_step = expansion.model_copy(update={"step_id": "missing-step"})
+        self._assert_violation(
+            self.asset.model_copy(update={"expansions": (unknown_expansion_step,)}),
+            AssetViolationCode.UNKNOWN_EXPANSION_STEP,
+            "expansion references unknown step missing-step",
+        )
+
+        unknown_expansion_representation = expansion.model_copy(
+            update={"representation_id": "missing-representation"}
+        )
+        self._assert_violation(
+            self.asset.model_copy(update={"expansions": (unknown_expansion_representation,)}),
+            AssetViolationCode.UNKNOWN_EXPANSION_REPRESENTATION,
+            (
+                f"expansion {expansion.step_id}:{expansion.kind.value} references "
+                "unknown representation missing-representation"
+            ),
+        )
+
+        with self.assertRaisesRegex(
+            ValueError,
+            "^canonical teaching asset is invalid: DUPLICATE_REPRESENTATION$",
+        ):
+            start_run(
+                duplicate_representation,
+                problem_run_id="invalid-asset-run",
+                subject_id="subject-001",
+                session_id="session-001",
+            )
+
+    def test_integer_sequence_rejects_unapproved_x_separator(self) -> None:
+        spec = AssessmentSpec(
+            assessment_id="sequence",
+            kind=AssessmentKind.INTEGER_SEQUENCE,
+            expected_values=(1, 2),
+        )
+        with self.assertRaises(ValueError):
+            classify_response(spec, "1X2")
+
+    def test_invalid_integer_without_partial_answer_stays_invalid(self) -> None:
+        spec = AssessmentSpec(
+            assessment_id="integer",
+            kind=AssessmentKind.INTEGER,
+            expected_values=(8,),
+        )
+        with self.assertRaises(ValueError):
+            classify_response(spec, "not-an-integer")
+
+    def test_single_automatic_terminal_step_uses_full_finite_bound(self) -> None:
+        automatic = next(item for item in self.asset.steps if item.kind != StepKind.PROBE)
+        terminal_step = automatic.model_copy(
+            update={
+                "automatic_transition": TransitionSpec(
+                    exit_status=RunStatus.ASSEMBLED_MASTERY_UNPROVEN
+                )
+            }
+        )
+        terminal_asset = self.asset.model_copy(
+            update={
+                "entry_step_id": terminal_step.step_id,
+                "steps": (terminal_step,),
+                "assessments": (),
+                "expansions": (),
+            }
+        )
+        state, bundle = start_run(
+            terminal_asset,
+            problem_run_id="single-auto-terminal",
+            subject_id="subject-001",
+            session_id="session-001",
+        )
+        self.assertEqual(state.status, RunStatus.ASSEMBLED_MASTERY_UNPROVEN)
+        self.assertIsNone(state.current_step_id)
+        self.assertEqual(len(bundle.turns), 1)
+        self.assertIsNone(bundle.response_turn_id)
 
     def test_direct_terminal_status_representation_is_exact(self) -> None:
         state, bundle = start_run(
@@ -146,6 +403,30 @@ class PIRRuntimeSemanticMutationTests(unittest.TestCase):
         if not isinstance(step_id, str) or not step_id:
             raise AssertionError("expected canonical step id")
         return step_id
+
+    def test_resolve_problem_public_shape_is_exact(self) -> None:
+        known = self.service.resolve_problem(
+            problem_text="maximum sum contiguous window size k",
+            domain="dsa",
+        )
+        self.assertEqual(
+            set(known),
+            {"status", "canonical_problem_id", "canonical_pir_revision", "reason"},
+        )
+        self.assertEqual(known["status"], "known")
+        self.assertEqual(known["canonical_problem_id"], CANONICAL_PROBLEM_ID)
+
+        unknown = self.service.resolve_problem(
+            problem_text="find the shortest path in an unweighted graph",
+            domain="dsa",
+        )
+        self.assertEqual(
+            set(unknown),
+            {"status", "canonical_problem_id", "canonical_pir_revision", "reason"},
+        )
+        self.assertEqual(unknown["status"], "needs_compilation")
+        self.assertIsNone(unknown["canonical_problem_id"])
+        self.assertIsNone(unknown["canonical_pir_revision"])
 
     def test_blank_idempotency_key_fails_closed(self) -> None:
         before = self.service.db.connection.execute(
