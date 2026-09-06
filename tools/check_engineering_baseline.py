@@ -24,6 +24,7 @@ STUDY_OS_ROOT = ROOT / "src" / "study_os"
 PURE_LOGIC_ROOTS = (
     STUDY_OS_ROOT / "adaptive",
     STUDY_OS_ROOT / "curriculum",
+    STUDY_OS_ROOT / "pir",
 )
 FORBIDDEN_PURE_LOGIC_PREFIXES = (
     "study_os.db",
@@ -46,6 +47,7 @@ FORBIDDEN_TRANSPORT_PREFIXES = (
     "study_os.curriculum",
     "study_os.db",
     "study_os.evidence",
+    "study_os.pir",
 )
 
 TOP_LEVEL_PACKAGES = (
@@ -55,8 +57,17 @@ TOP_LEVEL_PACKAGES = (
     "db",
     "evidence",
     "mcp",
+    "pir",
     "services",
 )
+
+EXPECTED_PIR_TOOLS = {
+    "resolve_problem",
+    "start_problem",
+    "get_problem_turn",
+    "submit_problem_response",
+    "request_problem_expansion",
+}
 
 
 class BaselineFailure(RuntimeError):
@@ -96,8 +107,16 @@ def check_version_consistency() -> None:
         raise BaselineFailure(
             f"approved MCP tool-count drift: contract={actual!r}, manifest={approved_tool_count!r}"
         )
-    if approved_tool_count != 15:
-        raise BaselineFailure("approved MCP semantic boundary must remain exactly 15 tools")
+    if approved_tool_count != 20:
+        raise BaselineFailure("approved MCP semantic boundary must contain exactly 20 tools")
+    names = {
+        tool.get("name") for tool in tools if isinstance(tool, dict) and isinstance(tool.get("name"), str)
+    }
+    missing_pir_tools = sorted(EXPECTED_PIR_TOOLS - names)
+    if missing_pir_tools:
+        raise BaselineFailure(
+            "MCP v0.4 lost required PIR semantic operations: " + ", ".join(missing_pir_tools)
+        )
 
 
 def _imported_modules(path: Path) -> set[str]:
@@ -156,7 +175,9 @@ def _matches_prefix(module: str, prefixes: tuple[str, ...]) -> bool:
     return any(module == prefix or module.startswith(prefix + ".") for prefix in prefixes)
 
 
-def _boundary_violations(roots: tuple[Path, ...], forbidden_prefixes: tuple[str, ...]) -> list[str]:
+def _boundary_violations(
+    roots: tuple[Path, ...], forbidden_prefixes: tuple[str, ...]
+) -> list[str]:
     violations: list[str] = []
     for root in roots:
         for path in sorted(root.rglob("*.py")):
@@ -170,7 +191,7 @@ def check_pure_logic_boundaries() -> None:
     violations = _boundary_violations(PURE_LOGIC_ROOTS, FORBIDDEN_PURE_LOGIC_PREFIXES)
     if violations:
         raise BaselineFailure(
-            "adaptive/curriculum pure logic crossed persistence/transport boundary: "
+            "adaptive/curriculum/PIR pure logic crossed persistence/transport boundary: "
             + "; ".join(violations)
         )
 
@@ -256,8 +277,8 @@ def check_top_level_dependency_cycles() -> None:
 
 def main() -> int:
     checks = (
-        ("version and 15-tool consistency", check_version_consistency),
-        ("adaptive/curriculum architecture boundary", check_pure_logic_boundaries),
+        ("version and 20-tool consistency", check_version_consistency),
+        ("adaptive/curriculum/PIR architecture boundary", check_pure_logic_boundaries),
         ("application architecture boundary", check_application_boundaries),
         ("MCP transport architecture boundary", check_transport_boundaries),
         ("top-level package dependency cycles", check_top_level_dependency_cycles),
