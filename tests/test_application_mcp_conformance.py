@@ -408,11 +408,13 @@ class ApplicationMcpConformanceTests(unittest.TestCase):
         ).fetchone()[0]
         self.assertEqual(count, 0)
 
-    def test_public_mcp_tool_set_is_exactly_fourteen_with_bounded_append(self) -> None:
+    def test_public_mcp_tool_set_is_exactly_twenty_with_bounded_append(self) -> None:
         names = MCPServer(self.service).list_tool_names()
-        self.assertEqual(len(names), 15)
+        self.assertEqual(len(names), 20)
         self.assertEqual(len(names), len(set(names)))
         self.assertIn("append_conversation_turn", names)
+        self.assertIn("resolve_problem", names)
+        self.assertIn("submit_problem_response", names)
 
 
 if __name__ == "__main__":
