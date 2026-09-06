@@ -33,6 +33,7 @@ class PIRMutationGateContractTests(unittest.TestCase):
                 "tests/test_p4_pir_runtime_integration.py",
                 "tests/test_pir_critical_mutations.py",
                 "tests/test_pir_mutation_authority.py",
+                "tests/test_pir_mutation_semantics.py",
             },
         )
 
