@@ -10,6 +10,7 @@ on:
       - "tests/test_pir_critical_mutations.py"
       - "tests/test_pir_mutation_gate_contract.py"
       - "tools/check_pir_mutation_results.py"
+      - "tools/export_pir_critical_mutants.py"
       - "pyproject.toml"
       - ".github/workflows/pir-mutation.yml"
 
@@ -55,6 +56,7 @@ jobs:
         run: |
           mutmut results > mutmut-results.txt || true
           mutmut export-cicd-stats || true
+          python tools/export_pir_critical_mutants.py || true
 
       - name: Enforce mutation result policy
         if: always()
@@ -67,5 +69,6 @@ jobs:
           name: pir-mutmut-report
           path: |
             mutmut-results.txt
+            pir-critical-survivor-diffs.txt
             mutants/mutmut-cicd-stats.json
           if-no-files-found: ignore
