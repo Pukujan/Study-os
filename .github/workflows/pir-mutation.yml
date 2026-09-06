@@ -52,7 +52,7 @@ jobs:
       - name: Export mutation evidence
         if: always()
         run: |
-          mutmut results --all > mutmut-results.txt || true
+          mutmut results > mutmut-results.txt || true
           mutmut export-cicd-stats || true
 
       - name: Enforce mutation result policy
