@@ -50,7 +50,6 @@ source_paths = ["src/"]
 only_mutate = [
     "src/study_os/pir/contracts.py",
     "src/study_os/pir/controller.py",
-    "src/study_os/pir/registry.py",
     "src/study_os/services/pir_runtime.py",
 ]
 pytest_add_cli_args_test_selection = [
