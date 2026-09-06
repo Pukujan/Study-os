@@ -264,7 +264,7 @@ class LocalRuntimeTests(unittest.TestCase):
 
     def test_mcp_exposes_exact_contract_and_no_generic_tools(self):
         server = MCPServer(self.service)
-        contract = json.loads((ROOT / "contracts/study-os-mcp-tools.v0.3.json").read_text(encoding="utf-8"))
+        contract = json.loads((ROOT / "contracts/study-os-mcp-tools.v0.4.json").read_text(encoding="utf-8"))
         expected = [tool["name"] for tool in contract["tools"]]
         self.assertEqual(server.list_tool_names(), expected)
         self.assertEqual(set(server.list_tool_names()), set(expected))
@@ -283,7 +283,7 @@ class LocalRuntimeTests(unittest.TestCase):
     def test_stale_schema_and_missing_evidence_root_are_unhealthy(self):
         self.service.db.connection.execute("PRAGMA user_version = 999")
         self.assertFalse(self.service.doctor()["healthy"])
-        self.service.db.connection.execute("PRAGMA user_version = 1")
+        self.service.db.connection.execute(f"PRAGMA user_version = {LATEST_SCHEMA_VERSION}")
         shutil.rmtree(self.config.evidence_root)
         health = self.service.doctor()
         self.assertFalse(health["healthy"])
