@@ -25,6 +25,7 @@ class PIRMutationGateContractTests(unittest.TestCase):
             },
         )
         self.assertNotIn("src/study_os/pir/registry.py", config["only_mutate"])
+        self.assertEqual(config["max_stack_depth"], -1)
         self.assertEqual(
             set(config["pytest_add_cli_args_test_selection"]),
             {
@@ -38,7 +39,7 @@ class PIRMutationGateContractTests(unittest.TestCase):
         self.assertIn("pull_request:", workflow)
         self.assertIn("mutmut==3.7.0", workflow)
         self.assertIn("mutmut run", workflow)
-        self.assertIn("mutmut results --all", workflow)
+        self.assertIn("mutmut results > mutmut-results.txt", workflow)
         self.assertIn("mutmut export-cicd-stats", workflow)
         self.assertIn("python tools/check_pir_mutation_results.py", workflow)
         self.assertIn("timeout-minutes: 20", workflow)
