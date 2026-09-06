@@ -47,9 +47,13 @@ REQUIRED_FILES = [
     "docs/ERROR_IDEMPOTENCY_CONTRACT.md",
     "contracts/study-os-mcp-tools.v0.1.json",
     "contracts/study-os-mcp-tools.v0.3.json",
+    "contracts/study-os-mcp-tools.v0.4.json",
     "src/study_os/services/runtime.py",
+    "src/study_os/services/pir_runtime.py",
+    "src/study_os/pir/registry.py",
     "src/study_os/mcp/server.py",
     "src/study_os/db/migrations/0001_initial.sql",
+    "src/study_os/db/migrations/0002_pir_problem_runs.sql",
     "plugins/study-os-ingest/skill.md",
     "plugins/study-os-checkpoint/skill.md",
     "schemas/session-manifest.schema.json",
@@ -144,10 +148,10 @@ def check_manifest() -> None:
 
 
 def check_mcp_contract() -> None:
-    contract_path = ROOT / "contracts" / "study-os-mcp-tools.v0.3.json"
+    contract_path = ROOT / "contracts" / "study-os-mcp-tools.v0.4.json"
     contract = load_json(contract_path)
-    if contract.get("contract_version") != "0.3.0":
-        raise ValidationFailure("current MCP contract version must be 0.3.0")
+    if contract.get("contract_version") != "0.4.0":
+        raise ValidationFailure("current MCP contract version must be 0.4.0")
     principles = contract.get("principles", {})
     for key in (
         "semantic_tools_only",
@@ -195,14 +199,22 @@ def check_mcp_contract() -> None:
     )
     if any(any(fragment in name.lower() for fragment in forbidden_fragments) for name in names):
         raise ValidationFailure("MCP contract exposes a prohibited generic machine tool")
+    required_pir_tools = {
+        "resolve_problem",
+        "start_problem",
+        "get_problem_turn",
+        "submit_problem_response",
+        "request_problem_expansion",
+    }
     if (
-        len(tools) != 15
+        len(tools) != 20
         or "append_conversation_turn" not in names
         or "resume_learning_context" not in names
+        or not required_pir_tools.issubset(set(names))
     ):
         raise ValidationFailure(
-            "current MCP semantic boundary must contain exactly 15 tools including "
-            "append_conversation_turn and resume_learning_context"
+            "current MCP semantic boundary must contain exactly 20 tools including "
+            "durable source-turn continuity and the five reviewed PIR operations"
         )
     for tool in tools:
         for field in ("mutating", "idempotency_required", "required_input", "required_output"):
@@ -222,6 +234,8 @@ def check_runtime_layout() -> None:
         ROOT / "src" / "study_os" / "db" / "repositories" / "sqlite.py",
         ROOT / "src" / "study_os" / "evidence" / "store.py",
         ROOT / "src" / "study_os" / "services" / "runtime.py",
+        ROOT / "src" / "study_os" / "services" / "pir_runtime.py",
+        ROOT / "src" / "study_os" / "pir" / "registry.py",
         ROOT / "src" / "study_os" / "mcp" / "server.py",
         ROOT / "cli" / "study_os.py",
     ]
@@ -265,7 +279,6 @@ def validate_schemas() -> dict[str, dict[str, Any]]:
     schemas: dict[str, dict[str, Any]] = {}
     for key, filename in SCHEMA_FILES.items():
         schemas[key] = load_schema(filename)
-    # Validate all schema files, not only schemas currently used for data walking.
     for path in sorted(SCHEMA_DIR.glob("*.schema.json")):
         Draft202012Validator.check_schema(load_json(path))
     return schemas
