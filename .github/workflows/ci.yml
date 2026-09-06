@@ -65,7 +65,7 @@ jobs:
       - name: Smoke test installed wheel
         run: |
           python -m venv /tmp/study-os-wheel-smoke
-          /tmp/study-os-wheel-smoke/bin/python -m pip install --no-deps dist/*.whl
+          /tmp/study-os-wheel-smoke/bin/python -m pip install dist/*.whl
           /tmp/study-os-wheel-smoke/bin/python tools/verify_built_package.py
 
       - name: Run tests with branch coverage gate
@@ -113,7 +113,7 @@ jobs:
       - name: Smoke test installed wheel
         run: |
           python -m venv /tmp/study-os-wheel-smoke-311
-          /tmp/study-os-wheel-smoke-311/bin/python -m pip install --no-deps dist/*.whl
+          /tmp/study-os-wheel-smoke-311/bin/python -m pip install dist/*.whl
           /tmp/study-os-wheel-smoke-311/bin/python tools/verify_built_package.py
 
       - name: Run full unittest and Hypothesis suite

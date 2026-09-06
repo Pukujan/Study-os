@@ -4,14 +4,15 @@ from __future__ import annotations
 
 from typing import Iterable
 
+from .pir_runtime import PIRRuntimeMixin
 from .retention import retention_result_payload, validate_retention_probe_id, validate_scheduled_probe
 from .runtime_base import StudyOSService as BaseStudyOSService
 from .runtime_base import canonical_json, new_id, os, utc_now  # noqa: F401
 from ..errors import validation
 
 
-class StudyOSService(BaseStudyOSService):
-    """Add bounded P2 semantics without duplicating the P0 service implementation."""
+class StudyOSService(PIRRuntimeMixin, BaseStudyOSService):
+    """Add bounded P2/PIR semantics without duplicating the P0 service implementation."""
 
     def record_assessment(
         self,
@@ -25,7 +26,11 @@ class StudyOSService(BaseStudyOSService):
         evidence_ids: Iterable[str],
         retention_probe_id: str | None = None,
     ) -> dict:
-        for field_name, value in (("capability", capability), ("result", result), ("assistance_level", assistance_level)):
+        for field_name, value in (
+            ("capability", capability),
+            ("result", result),
+            ("assistance_level", assistance_level),
+        ):
             if not isinstance(value, str) or not value.strip():
                 raise validation(f"{field_name} must be a non-empty string")
         probe_id = validate_retention_probe_id(retention_probe_id)
@@ -40,14 +45,20 @@ class StudyOSService(BaseStudyOSService):
             "retention_probe_id": probe_id,
         }
         with self.repository.transaction() as connection:
-            cached = self._idempotency_check(connection, "record_assessment", idempotency_key, request)
+            cached = self._idempotency_check(
+                connection,
+                "record_assessment",
+                idempotency_key,
+                request,
+            )
             if cached:
                 return cached
             self._session(connection, session_id, subject_id)
             resolved_ids = self._resolve_evidence(connection, ids, subject_id=subject_id)
             if probe_id is not None:
                 probe = connection.execute(
-                    "SELECT * FROM retention_probes WHERE retention_probe_id = ?", (probe_id,)
+                    "SELECT * FROM retention_probes WHERE retention_probe_id = ?",
+                    (probe_id,),
                 ).fetchone()
                 validate_scheduled_probe(
                     dict(probe) if probe is not None else None,
@@ -59,7 +70,8 @@ class StudyOSService(BaseStudyOSService):
             created_at = utc_now()
             connection.execute(
                 "INSERT INTO assessments "
-                "(assessment_id, session_id, subject_id, capability, result, assistance_level, evidence_ids_json, idempotency_key, created_at) "
+                "(assessment_id, session_id, subject_id, capability, result, "
+                "assistance_level, evidence_ids_json, idempotency_key, created_at) "
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (
                     assessment_id,
@@ -111,22 +123,29 @@ class StudyOSService(BaseStudyOSService):
     def resume(self, *, subject_id: str) -> dict:
         with self.repository.transaction(immediate=False) as connection:
             pointer = connection.execute(
-                "SELECT checkpoint_id FROM subject_current_checkpoint WHERE subject_id = ?", (subject_id,)
+                "SELECT checkpoint_id FROM subject_current_checkpoint WHERE subject_id = ?",
+                (subject_id,),
             ).fetchone()
             if pointer is None:
                 from ..errors import not_found
 
                 raise not_found("Subject has no accepted checkpoint", subject_id=subject_id)
-            checkpoint = self._checkpoint_payload(connection, subject_id, pointer["checkpoint_id"])
+            checkpoint = self._checkpoint_payload(
+                connection,
+                subject_id,
+                pointer["checkpoint_id"],
+            )
             probe = connection.execute(
-                "SELECT retention_probe_id, concept_id, due_at, status, source_checkpoint_id "
-                "FROM retention_probes WHERE subject_id = ? AND status = 'scheduled' "
+                "SELECT retention_probe_id, concept_id, due_at, status, "
+                "source_checkpoint_id FROM retention_probes "
+                "WHERE subject_id = ? AND status = 'scheduled' "
                 "ORDER BY due_at ASC, created_at ASC LIMIT 1",
                 (subject_id,),
             ).fetchone()
             recent_rows = connection.execute(
-                "SELECT representation_family, operation, representation_version, target_bottleneck, created_at "
-                "FROM interventions WHERE subject_id = ? ORDER BY created_at DESC LIMIT 5",
+                "SELECT representation_family, operation, representation_version, "
+                "target_bottleneck, created_at FROM interventions "
+                "WHERE subject_id = ? ORDER BY created_at DESC LIMIT 5",
                 (subject_id,),
             ).fetchall()
             next_probe = None

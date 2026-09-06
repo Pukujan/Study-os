@@ -15,7 +15,7 @@ from tools.check_application_contract_inventory import (
 
 ROOT = Path(__file__).resolve().parents[1]
 INVENTORY_PATH = ROOT / "contracts" / "application-operation-inventory.v0.1.json"
-MCP_CONTRACT_PATH = ROOT / "contracts" / "study-os-mcp-tools.v0.1.json"
+MCP_CONTRACT_PATH = ROOT / "contracts" / "study-os-mcp-tools.v0.4.json"
 
 
 def load_json(path: Path) -> dict[str, Any]:
@@ -31,12 +31,21 @@ class ApplicationContractInventoryTests(unittest.TestCase):
         self.mcp_contract = load_json(MCP_CONTRACT_PATH)
         self.runtime_methods = runtime_method_names()
 
-    def assert_invalid(self, inventory: dict[str, Any], mcp_contract: dict[str, Any] | None = None) -> None:
+    def assert_invalid(
+        self,
+        inventory: dict[str, Any],
+        mcp_contract: dict[str, Any] | None = None,
+    ) -> None:
         with self.assertRaises(ApplicationContractInventoryFailure):
-            validate_inventory(inventory, mcp_contract or self.mcp_contract, self.runtime_methods)
+            validate_inventory(
+                inventory,
+                mcp_contract or self.mcp_contract,
+                self.runtime_methods,
+            )
 
     def test_current_inventory_matches_mcp_and_runtime_boundaries(self) -> None:
         check_application_contract_inventory()
+        self.assertEqual(len(self.inventory["operations"]), 20)
 
     def test_inventory_phase_must_reflect_partial_implementation(self) -> None:
         mutated = copy.deepcopy(self.inventory)
@@ -50,38 +59,52 @@ class ApplicationContractInventoryTests(unittest.TestCase):
 
     def test_required_request_field_drift_is_rejected(self) -> None:
         mutated = copy.deepcopy(self.inventory)
-        operation = next(item for item in mutated["operations"] if item["mcp_tool"] == "checkpoint")
+        operation = next(
+            item for item in mutated["operations"] if item["mcp_tool"] == "checkpoint"
+        )
         operation["required_request_fields"].remove("evidence_ids")
         self.assert_invalid(mutated)
 
     def test_start_session_optional_field_or_normalization_drift_is_rejected(self) -> None:
         mutated = copy.deepcopy(self.inventory)
-        operation = next(item for item in mutated["operations"] if item["mcp_tool"] == "start_session")
+        operation = next(
+            item for item in mutated["operations"] if item["mcp_tool"] == "start_session"
+        )
         operation["optional_request_fields"].remove("metadata")
         self.assert_invalid(mutated)
 
         mutated = copy.deepcopy(self.inventory)
-        operation = next(item for item in mutated["operations"] if item["mcp_tool"] == "start_session")
+        operation = next(
+            item for item in mutated["operations"] if item["mcp_tool"] == "start_session"
+        )
         operation["request_normalization"]["metadata"] = "null_is_distinct"
         self.assert_invalid(mutated)
 
     def test_command_and_idempotency_drift_is_rejected(self) -> None:
         mutated = copy.deepcopy(self.inventory)
-        operation = next(item for item in mutated["operations"] if item["mcp_tool"] == "record_assessment")
+        operation = next(
+            item
+            for item in mutated["operations"]
+            if item["mcp_tool"] == "submit_problem_response"
+        )
         operation["kind"] = "query"
         operation["idempotency"] = "not_required"
         self.assert_invalid(mutated)
 
     def test_missing_runtime_method_is_rejected(self) -> None:
         mutated = copy.deepcopy(self.inventory)
-        operation = next(item for item in mutated["operations"] if item["mcp_tool"] == "status")
-        operation["current_service_method"] = "invented_status_method"
+        operation = next(
+            item for item in mutated["operations"] if item["mcp_tool"] == "start_problem"
+        )
+        operation["current_service_method"] = "invented_problem_method"
         self.assert_invalid(mutated)
 
-    def test_early_http_or_transport_authority_is_rejected(self) -> None:
+    def test_transport_cannot_gain_semantic_authority(self) -> None:
         mutated = copy.deepcopy(self.inventory)
-        operation = next(item for item in mutated["operations"] if item["mcp_tool"] == "resume")
-        operation["http_exposure"] = "enabled"
+        operation = next(
+            item for item in mutated["operations"] if item["mcp_tool"] == "resume"
+        )
+        operation["http_exposure"] = "unbounded_public_endpoint"
         operation["semantic_authority"] = "transport"
         self.assert_invalid(mutated)
 

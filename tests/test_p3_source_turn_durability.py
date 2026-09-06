@@ -202,7 +202,7 @@ class SourceTurnDurabilityTests(unittest.TestCase):
         )
         self.assertEqual(mcp["created"], True)
         self.assertEqual(mcp["capture_origin"], "live")
-        self.assertEqual(len(MCPServer(self.service).list_tool_names()), 15)
+        self.assertEqual(len(MCPServer(self.service).list_tool_names()), 20)
 
     def test_application_contract_rejects_invalid_turns(self) -> None:
         with self.assertRaises(ValidationError):
