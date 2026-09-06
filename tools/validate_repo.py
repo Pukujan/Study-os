@@ -18,9 +18,12 @@ from jsonschema import Draft202012Validator, FormatChecker
 
 ROOT = Path(__file__).resolve().parents[1]
 SCHEMA_DIR = ROOT / "schemas"
-AUTHORIZED_PUBLIC_RECOVERY_PREFIX = (
-    "sessions/2026-09-03/mcp-recovery-transcript-gap/raw/public-export/"
-    "chatgpt-6a8ca3b3-6434-83ea-a807-98080d8bcada/"
+AUTHORIZED_PUBLIC_RAW_PREFIXES = (
+    (
+        "sessions/2026-09-03/mcp-recovery-transcript-gap/raw/public-export/"
+        "chatgpt-6a8ca3b3-6434-83ea-a807-98080d8bcada/"
+    ),
+    "sessions/2026-09-04/sliding-window-pedagogy-calibration/raw/",
 )
 
 REQUIRED_FILES = [
@@ -111,7 +114,10 @@ def check_manifest() -> None:
         raise ValidationFailure("project.current_gate must be R0, R1, or R2")
 
     privacy = manifest["privacy"]
-    if privacy.get("repository_visibility") == "public" and privacy.get("raw_transcript_policy") != "local_or_private_by_default":
+    if (
+        privacy.get("repository_visibility") == "public"
+        and privacy.get("raw_transcript_policy") != "local_or_private_by_default"
+    ):
         raise ValidationFailure("Public repo must retain local/private raw transcript policy")
 
     fossil = manifest["fossil"]
@@ -153,24 +159,55 @@ def check_mcp_contract() -> None:
             raise ValidationFailure(f"MCP contract missing principle: {key}")
     if not principles["semantic_tools_only"]:
         raise ValidationFailure("MCP surface must remain semantic-tools-only")
-    if any(principles[key] for key in ("generic_sql_allowed", "generic_shell_allowed", "generic_file_write_allowed", "arbitrary_code_execution_allowed", "github_runtime_dependency", "fossil_runtime_dependency")):
+    if any(
+        principles[key]
+        for key in (
+            "generic_sql_allowed",
+            "generic_shell_allowed",
+            "generic_file_write_allowed",
+            "arbitrary_code_execution_allowed",
+            "github_runtime_dependency",
+            "fossil_runtime_dependency",
+        )
+    ):
         raise ValidationFailure("MCP contract permits a prohibited generic/runtime dependency")
     tools = contract.get("tools")
     if not isinstance(tools, list) or not tools:
         raise ValidationFailure("MCP contract must declare tools")
     names = [tool.get("name") for tool in tools]
-    if any(not isinstance(name, str) or not name for name in names) or len(names) != len(set(names)):
+    if (
+        any(not isinstance(name, str) or not name for name in names)
+        or len(names) != len(set(names))
+    ):
         raise ValidationFailure("MCP tool names must be unique non-empty strings")
-    forbidden_fragments = ("sql", "shell", "terminal", "exec", "execute_code", "run_code", "write_file", "filesystem")
+    forbidden_fragments = (
+        "sql",
+        "shell",
+        "terminal",
+        "exec",
+        "execute_code",
+        "run_code",
+        "write_file",
+        "filesystem",
+    )
     if any(any(fragment in name.lower() for fragment in forbidden_fragments) for name in names):
         raise ValidationFailure("MCP contract exposes a prohibited generic machine tool")
-    if len(tools) != 15 or "append_conversation_turn" not in names or "resume_learning_context" not in names:
-        raise ValidationFailure("current MCP semantic boundary must contain exactly 15 tools including append_conversation_turn and resume_learning_context")
+    if (
+        len(tools) != 15
+        or "append_conversation_turn" not in names
+        or "resume_learning_context" not in names
+    ):
+        raise ValidationFailure(
+            "current MCP semantic boundary must contain exactly 15 tools including "
+            "append_conversation_turn and resume_learning_context"
+        )
     for tool in tools:
         for field in ("mutating", "idempotency_required", "required_input", "required_output"):
             if field not in tool:
                 raise ValidationFailure(f"MCP tool {tool.get('name')} is missing {field}")
-        if tool["mutating"] and (not tool["idempotency_required"] or "idempotency_key" not in tool["required_input"]):
+        if tool["mutating"] and (
+            not tool["idempotency_required"] or "idempotency_key" not in tool["required_input"]
+        ):
             raise ValidationFailure(f"Mutating MCP tool {tool['name']} must require idempotency_key")
 
 
@@ -209,7 +246,7 @@ def check_public_data_boundary() -> None:
     for path in tracked_files():
         normalized = path.replace("\\", "/")
         if "/raw/" in normalized and normalized.startswith("sessions/"):
-            if normalized.startswith(AUTHORIZED_PUBLIC_RECOVERY_PREFIX):
+            if any(normalized.startswith(prefix) for prefix in AUTHORIZED_PUBLIC_RAW_PREFIXES):
                 continue
             if not normalized.endswith("/raw/.gitkeep"):
                 violations.append(normalized)
@@ -240,13 +277,17 @@ def validate_session_tree(schemas: dict[str, dict[str, Any]]) -> None:
         validate_instance(load_json(manifest_path), schemas["session"], manifest_path)
 
     for events_path in sessions_root.glob("*/*/events/*.jsonl"):
-        for line_number, line in enumerate(events_path.read_text(encoding="utf-8").splitlines(), start=1):
+        for line_number, line in enumerate(
+            events_path.read_text(encoding="utf-8").splitlines(), start=1
+        ):
             if not line.strip():
                 continue
             try:
                 event = json.loads(line)
             except json.JSONDecodeError as exc:
-                raise ValidationFailure(f"{events_path}:{line_number}: invalid JSON: {exc}") from exc
+                raise ValidationFailure(
+                    f"{events_path}:{line_number}: invalid JSON: {exc}"
+                ) from exc
             validate_instance(event, schemas["event"], Path(f"{events_path}:{line_number}"))
 
     for episode_path in sessions_root.glob("*/*/episodes/*.json"):
@@ -278,12 +319,15 @@ def validate_subject_checkpoints(schemas: dict[str, dict[str, Any]]) -> None:
                     )
             elif checkpoint_path is None or checkpoint_id is None:
                 raise ValidationFailure(
-                    f"{current_path}: active/paused/retention/completed state requires checkpoint reference"
+                    f"{current_path}: active/paused/retention/completed state requires "
+                    "checkpoint reference"
                 )
             else:
                 resolved = ROOT / checkpoint_path
                 if not resolved.is_file():
-                    raise ValidationFailure(f"{current_path}: checkpoint does not exist: {checkpoint_path}")
+                    raise ValidationFailure(
+                        f"{current_path}: checkpoint does not exist: {checkpoint_path}"
+                    )
                 checkpoint = load_json(resolved)
                 validate_instance(checkpoint, schemas["checkpoint"], resolved)
                 if checkpoint.get("checkpoint_id") != checkpoint_id:
