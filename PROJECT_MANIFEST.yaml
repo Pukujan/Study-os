@@ -1,4 +1,4 @@
-manifest_version: "0.2.2"
+manifest_version: "0.2.3"
 project:
   name: Study OS
   repository: Pukujan/Study-os
@@ -45,7 +45,7 @@ research:
 canonical_paths:
   schemas: schemas/
   contracts: contracts/
-  mcp_contract: contracts/study-os-mcp-tools.v0.3.json
+  mcp_contract: contracts/study-os-mcp-tools.v0.4.json
   application_contract_inventory: contracts/application-operation-inventory.v0.1.json
   application_contract_architecture: docs/APPLICATION_CONTRACT_ARCHITECTURE.md
   application_contract_source: src/study_os/application/contracts.py
@@ -77,8 +77,8 @@ runtime:
   operational_database:
     engine: sqlite
     role: canonical_live_learner_state
-    current_schema_version: 1
-    migration_series: "0001"
+    current_schema_version: 2
+    migration_series: "0001-0002"
     migrations_required: true
   private_evidence_store:
     default_root: ~/.study-os/evidence/
@@ -88,8 +88,8 @@ runtime:
     intended_name: "@StudyOS"
     protocol: mcp
     semantic_tools_only: true
-    semantic_contract_version: "0.3.0"
-    approved_tool_count: 15
+    semantic_contract_version: "0.4.0"
+    approved_tool_count: 20
     direct_localhost_from_chatgpt: false
     deployed_private_transport_configuration_in_public_repo: false
   checkpoint_source_of_truth_when_runtime_active: local_database
@@ -214,7 +214,7 @@ engineering:
     - curriculum_control_policy_conformance
     - deterministic_application_schema_rendering
     - repository_validation
-    - version_and_15_tool_consistency
+    - version_and_20_tool_consistency
     - adaptive_curriculum_architecture_boundary
     - mcp_transport_architecture_boundary
     - top_level_package_dependency_cycles
@@ -287,8 +287,6 @@ open_risks:
   - synthetic_simulation_mistaken_for_human_learning_evidence
 
 next_milestone: >-
-  Complete the focused P4 vertical slice audit and tests for one explicitly
-  pinned real course node, then add only the minimal reversible persistence
-  required for deterministic control-state, decision, representation-lineage,
-  module-version, and outcome provenance. Keep adaptive authority bounded and
-  preserve the existing P3 source-evidence guarantees.
+  Validate the known sliding-window canonical PIR through MCP v0.4, schema v2,
+  restart/resume, GPT Actions projection, and live local deployment before
+  enabling arbitrary raw-problem compilation in the learner-facing product.
