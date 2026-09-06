@@ -53,13 +53,38 @@ class PIRMutationGateContractTests(unittest.TestCase):
         self.assertNotIn("junitxml", workflow)
         self.assertNotIn("continue-on-error", workflow)
 
-    def run_checker(self, stats: dict[str, int] | None) -> subprocess.CompletedProcess[str]:
+    def run_checker(
+        self,
+        stats: dict[str, int] | None,
+        *,
+        survivors: tuple[str, ...] = (),
+    ) -> subprocess.CompletedProcess[str]:
         with tempfile.TemporaryDirectory() as temp_dir:
-            path = Path(temp_dir) / "stats.json"
+            stats_path = Path(temp_dir) / "stats.json"
+            results_path = Path(temp_dir) / "results.txt"
             if stats is not None:
-                path.write_text(json.dumps(stats), encoding="utf-8")
+                stats_path.write_text(json.dumps(stats), encoding="utf-8")
+                lines: list[str] = []
+                survivor_names = list(survivors)
+                while len(survivor_names) < stats.get("survived", 0):
+                    survivor_names.append(f"synthetic.unclassified.{len(survivor_names)}")
+                lines.extend(f"{name}: survived" for name in survivor_names)
+                for status in (
+                    "killed",
+                    "no_tests",
+                    "skipped",
+                    "suspicious",
+                    "timeout",
+                    "check_was_interrupted_by_user",
+                    "segfault",
+                ):
+                    lines.extend(
+                        f"synthetic.{status}.{index}: {status}"
+                        for index in range(stats.get(status, 0))
+                    )
+                results_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
             return subprocess.run(
-                [sys.executable, str(CHECKER), str(path)],
+                [sys.executable, str(CHECKER), str(stats_path), str(results_path)],
                 check=False,
                 capture_output=True,
                 text=True,
@@ -81,20 +106,36 @@ class PIRMutationGateContractTests(unittest.TestCase):
         values.update(overrides)
         return values
 
-    def test_checker_accepts_only_fully_killed_mutants(self) -> None:
+    def test_checker_accepts_fully_killed_mutants(self) -> None:
         result = self.run_checker(self.stats())
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertIn("every measured mutant was killed", result.stdout)
+        self.assertIn("no unresolved non-equivalent semantic survivors", result.stdout)
 
-    def test_checker_rejects_survivor_and_no_test_mutants(self) -> None:
-        for stats in (
+    def test_checker_accepts_audited_equivalent_survivor(self) -> None:
+        result = self.run_checker(
             self.stats(total=4, killed=3, survived=1),
-            self.stats(total=4, killed=3, no_tests=1),
-        ):
-            with self.subTest(stats=stats):
-                result = self.run_checker(stats)
-                self.assertNotEqual(result.returncode, 0)
-                self.assertIn("blocking mutation status", result.stdout)
+            survivors=(
+                "study_os.pir.controller.x_build_interaction_bundle__mutmut_49",
+            ),
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("equivalent=1", result.stdout)
+        self.assertIn("unclassified=0", result.stdout)
+
+    def test_checker_rejects_unclassified_survivor(self) -> None:
+        result = self.run_checker(
+            self.stats(total=4, killed=3, survived=1),
+            survivors=(
+                "study_os.pir.controller.x_build_interaction_bundle__mutmut_16",
+            ),
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("unresolved non-equivalent or unaudited survivors remain", result.stdout)
+
+    def test_checker_rejects_no_test_mutants(self) -> None:
+        result = self.run_checker(self.stats(total=4, killed=3, no_tests=1))
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("blocking mutation status no_tests=1", result.stdout)
 
     def test_checker_rejects_suspicious_timeout_and_runtime_failures(self) -> None:
         for key in (
