@@ -32,6 +32,7 @@ class PIRMutationGateContractTests(unittest.TestCase):
                 "tests/test_pir_teaching_controller.py",
                 "tests/test_p4_pir_runtime_integration.py",
                 "tests/test_pir_critical_mutations.py",
+                "tests/test_pir_mutation_authority.py",
             },
         )
 
@@ -42,7 +43,9 @@ class PIRMutationGateContractTests(unittest.TestCase):
         self.assertIn("mutmut run", workflow)
         self.assertIn("mutmut results > mutmut-results.txt", workflow)
         self.assertIn("mutmut export-cicd-stats", workflow)
+        self.assertIn("python tools/export_pir_critical_mutants.py", workflow)
         self.assertIn("python tools/check_pir_mutation_results.py", workflow)
+        self.assertIn("tests/test_pir_mutation_authority.py", workflow)
         self.assertIn("timeout-minutes: 20", workflow)
         self.assertNotIn("junitxml", workflow)
         self.assertNotIn("continue-on-error", workflow)
