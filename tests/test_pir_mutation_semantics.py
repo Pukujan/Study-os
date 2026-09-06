@@ -304,6 +304,15 @@ class PIRControllerSemanticMutationTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             classify_response(spec, "not-an-integer")
 
+        partial_spec = AssessmentSpec(
+            assessment_id="partial-sequence",
+            kind=AssessmentKind.INTEGER_SEQUENCE,
+            expected_values=(1, 2),
+            partial_values=(1,),
+        )
+        with self.assertRaises(ValueError):
+            classify_response(partial_spec, "not-an-integer")
+
     def test_single_automatic_terminal_step_uses_full_finite_bound(self) -> None:
         automatic = next(item for item in self.asset.steps if item.kind != StepKind.PROBE)
         terminal_step = automatic.model_copy(
