@@ -63,6 +63,24 @@ class PIRMutationContractEdgeTests(unittest.TestCase):
         self.assertEqual(caught.exception.category, "validation_error")
         submit.assert_not_called()
 
+    def test_non_string_response_is_rejected_before_controller_execution(self) -> None:
+        started = self.start_problem("non-string-controller-start")
+        run_id = str(started["problem_run_id"])
+        turn_id = self.response_turn_id(started)
+
+        with patch("study_os.services.pir_runtime.submit_response") as submit:
+            submit.side_effect = AssertionError("controller must not receive a non-string response")
+            with self.assertRaises(StudyOSError) as caught:
+                self.service.submit_problem_response(
+                    idempotency_key="non-string-controller-submit",
+                    problem_run_id=run_id,
+                    subject_id="subject-001",
+                    turn_id=turn_id,
+                    response=7,  # type: ignore[arg-type]
+                )
+        self.assertEqual(caught.exception.category, "validation_error")
+        submit.assert_not_called()
+
     def test_blank_expansion_is_rejected_before_controller_execution(self) -> None:
         started = self.start_problem("blank-expansion-controller-start")
         run_id = str(started["problem_run_id"])
@@ -78,6 +96,25 @@ class PIRMutationContractEdgeTests(unittest.TestCase):
                     turn_id=turn_id,
                     request_kind="why",
                     learner_request="   ",
+                )
+        self.assertEqual(caught.exception.category, "validation_error")
+        build.assert_not_called()
+
+    def test_non_string_expansion_is_rejected_before_controller_execution(self) -> None:
+        started = self.start_problem("non-string-expansion-controller-start")
+        run_id = str(started["problem_run_id"])
+        turn_id = self.response_turn_id(started)
+
+        with patch("study_os.services.pir_runtime.build_expansion_bundle") as build:
+            build.side_effect = AssertionError("controller must not receive a non-string expansion")
+            with self.assertRaises(StudyOSError) as caught:
+                self.service.request_problem_expansion(
+                    idempotency_key="non-string-expansion-controller",
+                    problem_run_id=run_id,
+                    subject_id="subject-001",
+                    turn_id=turn_id,
+                    request_kind="why",
+                    learner_request=7,  # type: ignore[arg-type]
                 )
         self.assertEqual(caught.exception.category, "validation_error")
         build.assert_not_called()
