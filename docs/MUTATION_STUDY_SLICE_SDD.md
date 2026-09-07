@@ -51,3 +51,33 @@ A turn includes run_id, lesson_id, status, node_id, concept, prompt, legal choic
 ## Versioning
 
 Lesson ID is mutation-testing.v0. Semantic changes to answer keys or graph order require a new lesson revision.
+
+
+## Tutor presentation contract
+
+The adapter remains deterministic, while Luna presents each node as a small systems lab.
+
+For each canonical node Luna should present, in order:
+
+- the product/system context;
+- a compact implementation or state diagram;
+- a concrete failure/mutation;
+- a prediction or debugging task;
+- the canonical probe;
+- adapter-authoritative feedback;
+- only after a correct answer, a short theory extraction;
+- one sentence connecting the result to the next system.
+
+Target pacing is 75-80% practical interaction and 20-25% theory/explanation.
+
+Curriculum contexts, in order:
+
+1. cloud API rate limiting;
+2. idempotent distributed jobs;
+3. circuit breaker/retry state;
+4. feature rollout policy;
+5. ML model deployment gate;
+6. LLM tool authorization/evidence gate;
+7. Study-OS authority survivor capstone.
+
+The SQLite evidence model remains unchanged. Practical lab presentation is a tutor-layer concern and must not give Luna authority to alter canonical correctness or progression.
