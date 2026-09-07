@@ -55,3 +55,32 @@ Automated tests must prove deterministic progression, fail-closed invalid input,
 ## Deferred
 
 Production MCP additions, production DB migration, free-text LLM grading, FSRS scheduling, delayed retention, and a general lesson compiler.
+
+
+## Practical-first curriculum amendment
+
+The learner-facing course is approximately 75-80% practical and 20-25% theory. Theory follows observation rather than preceding it.
+
+Every lab uses this loop:
+
+1. understand a small product rule;
+2. predict a realistic failure;
+3. inspect or run a mutation;
+4. observe whether tests detect it;
+5. strengthen the test or classify the survivor;
+6. extract the formal mutation-testing concept;
+7. transfer it once to a related system.
+
+The product progression is:
+
+- Cloud API rate limiter: quota-boundary mutation -> killed/survived and oracle strength.
+- Idempotent cloud job: duplicate execution -> stateful semantic mutants.
+- Circuit breaker: threshold mutation -> temporal/state-machine testing.
+- Feature rollout gate: boolean mutation -> cohort isolation and blast radius.
+- ML deployment gate: weakened metric policy -> deterministic ML release assurance.
+- LLM tool authorization: weakened permission/approval gate -> AI authority boundaries.
+- Study-OS capstone: stale-turn mutation -> survivor classification and release policy.
+
+Do not begin with mutation-operator taxonomy or mutation-score mathematics. Introduce terminology only after the learner has encountered the concrete failure it explains.
+
+The capstone should use a Study-OS-style authority invariant and require the learner to classify the survivor and propose the behavioral test that should kill it.
