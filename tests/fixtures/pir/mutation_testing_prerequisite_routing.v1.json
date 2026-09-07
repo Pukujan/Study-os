@@ -1,0 +1,84 @@
+{
+  "fixture_version": "study-os.pedagogical-regression.v1",
+  "fixture_id": "mutation-testing.prerequisite-access.code-first.v1",
+  "privacy": "public_safe_synthetic",
+  "parent_concept": {
+    "node_id": "mutation_testing.behavioral_equivalence",
+    "representation_family": "source_code",
+    "canonical_attempt_submitted": false
+  },
+  "learner_evidence": {
+    "kind": "difficulty_report",
+    "text": "I don't know how the code works",
+    "evidence_class": "self_reported"
+  },
+  "allowed_diagnosis_hypotheses": [
+    "missing_prerequisite",
+    "representation_interference",
+    "decomposition_too_coarse",
+    "uncertain_mixed"
+  ],
+  "required_controller_effects": {
+    "parent_progression_blocked": true,
+    "parent_assessment_blocked": true,
+    "parent_attempt_count_delta": 0,
+    "parent_incorrect_outcome_allowed": false,
+    "prerequisite_resolution_or_probe_required": true,
+    "micro_evidence_required_before_return": true
+  },
+  "allowed_operation_families": [
+    "smaller_step",
+    "change_representation",
+    "show_trace"
+  ],
+  "representation_contract": {
+    "allowed_families": [
+      "concrete_scenario",
+      "state_flow",
+      "decision_tree",
+      "sequence_trace",
+      "table",
+      "comparison_view"
+    ],
+    "semantic_roles": [
+      "capacity_or_limit",
+      "current_state_or_occupancy",
+      "candidate_change"
+    ],
+    "required_relationships": [
+      "candidate_change_is_evaluated_against_current_state_and_limit"
+    ],
+    "required_boundary_state": [
+      "state_at_or_near_limit"
+    ],
+    "preserved_semantics": [
+      "decision_behavior_changes_or_is_distinguished at the relevant boundary",
+      "parent target concept is not replaced by the analogy"
+    ],
+    "forbidden_complexity": [
+      "unexplained implementation syntax",
+      "unrelated variables",
+      "future parent solution"
+    ],
+    "code_visibility": "hidden_or_minimized",
+    "restorable_mapping_required": true
+  },
+  "required_path": [
+    "record_difficulty_evidence",
+    "record_diagnosis_hypothesis",
+    "block_parent_progression",
+    "resolve_or_probe_prerequisite",
+    "authorize_bounded_operation",
+    "render_versioned_prerequisite_representation",
+    "collect_micro_evidence",
+    "return_to_parent_when_policy_satisfied"
+  ],
+  "forbidden_paths": [
+    "repeat_same_code_first_parent_probe_as_only_remediation",
+    "record_parent_incorrect_without_parent_submission",
+    "mark_prerequisite_satisfied_from_explanation_display",
+    "mark_prerequisite_satisfied_from_self_report_alone",
+    "allow_model_to_advance_parent_directly",
+    "hard_code_theater_ticket_story_as_required_representation"
+  ]
+}
