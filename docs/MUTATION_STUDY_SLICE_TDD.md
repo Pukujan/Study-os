@@ -31,3 +31,17 @@ python tools/mutation_study_slice.py respond --db /tmp/mutation-study.sqlite --r
 python tools/mutation_study_slice.py status --db /tmp/mutation-study.sqlite --run-id RUN
 
 The smoke succeeds only if later processes see state written by earlier processes.
+
+
+## Practical-course acceptance checks
+
+Before READY TO STUDY, Luna B must additionally verify the learner-facing orchestration against the practical-first amendment:
+
+- each node is presented as a product/system problem before terminology is introduced;
+- no correct answer is disclosed before the learner commits a response;
+- theory extraction occurs after the practical result, not as a pre-lecture;
+- the lab sequence covers cloud state, distributed idempotency, state-machine reliability, rollout policy, ML deployment authority, LLM tool authority, and a Study-OS capstone;
+- progress is still written only through the deterministic adapter;
+- the final capstone requires transfer to an unfamiliar authority mutation rather than definition recall.
+
+These are tutor-orchestration acceptance criteria. Do not weaken the existing SQLite/state-machine contract tests.
