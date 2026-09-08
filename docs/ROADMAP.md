@@ -1,6 +1,6 @@
 # Study OS Roadmap
 
-Date: 2026-09-07
+Date: 2026-09-08
 Status: canonical execution roadmap
 Primary tracker: #63
 PIR integration tracker: #66
@@ -70,24 +70,42 @@ course state
 
 ## Accepted recent progress — known PIR
 
-The first known sliding-window canonical PIR has passed PAM Checkpoint A.
+The first known sliding-window canonical PIR has passed PAM Checkpoints A and B.
+
+PAM A:
 
 ```text
 PR #71 merged
 verified head: 0ccfc9245cc86acdd68587f4bf72158d18ac2070
+merge/deployment baseline: 151c819e3457ae41fa1810b5060d0101f91bc12a
 normal CI: PASS
 PIR Mutation Gate: PASS
 unresolved non-equivalent semantic survivors: 0
 ```
 
-The remaining integration sequence from #66 is:
+PAM B accepted local deployment evidence:
 
 ```text
-PAM B — pinned local MCP deployment + restart/resume
-→ PAM C — real Study OS GPT dogfood
+deployed baseline: 151c819e3457ae41fa1810b5060d0101f91bc12a
+schema: 2
+local tests: 342 / 342 PASS
+MCP/private transport: healthy
+semantic tools: 20, including five PIR tools
+known sliding-window smoke: PASS
+restart/resume: PASS
+retry/idempotency: PASS
+local_only_changes: []
 ```
 
-This sequence is independent of, but provides operational evidence for, the broader #63 controller/representation work.
+Current #66 checkpoint state:
+
+```text
+PAM A — PASSED
+PAM B — PASSED
+PAM C — NEXT / NOT YET CLAIMED
+```
+
+A later stale planning comment that regressed PAM B to “not yet passed” is superseded by the 2026-09-08 ledger correction in #66.
 
 ## P4.0 — Canonical contracts
 
@@ -143,13 +161,20 @@ source difficulty evidence
 → controller-authorized parent re-entry
 ```
 
+Canonical implementation/review PR:
+
+- `#75 — Add prerequisite-sensitive remediation control`
+
 Focused specs:
 
 - `docs/P4_PREREQUISITE_REMEDIATION_PDD.md`
 - `docs/P4_PREREQUISITE_REMEDIATION_SDD.md`
 - `docs/P4_PREREQUISITE_REMEDIATION_TDD.md`
+- `docs/P4_PREREQUISITE_REMEDIATION_DEFERRED_LIVE_REQUIREMENTS.md`
 
-This path remains shadow-only until separately promoted.
+Superseded planning PRs #73 and #74 are closed. Broader #73 ideas are candidate #63 backlog, not accepted scope; #74's unique future-live requirements were retained in the deferred-requirements document above.
+
+This path remains shadow-only until separately promoted and was not part of the accepted PAM-B deployment receipt.
 
 ## P4.2 — Operational improvement loop
 
@@ -241,6 +266,8 @@ An LLM-generated graph remains a candidate until validation accepts it.
 
 When learner state is unknown, use explicit diagnostic probes rather than fabricated mastery/prerequisite claims.
 
+Candidate future modules retained in Issue #63 from superseded PR #73 include typed targeted-turn specs, operation-scoped information budgets, exercise contracts, output-contract validation, offline automated authoring/evaluation, and Luna/Sol matched-state differential calibration. These are not prerequisites for PAM C or #75.
+
 ## Supporting P3 work
 
 Keep protecting:
@@ -280,17 +307,17 @@ Cost optimization follows validated product behavior, not the reverse.
 
 ## Current execution order
 
-1. Finish and review the prerequisite-sensitive remediation PR (#75) with focused tests and clean CI; keep it shadow-only.
-2. In a separate persistent-local lane, execute PAM B for the already-merged known PIR.
-3. Run PAM C through the real Study OS GPT and capture discrepancies as durable operational evidence.
-4. Use those trajectories to version diagnosis/controller/representation modules rather than making silent tutor-prompt edits.
-5. Add persistence/replay integration for the remediation path before any live authority promotion.
-6. Continue dogfooding through harder DSA/system-design tasks.
-7. Only after the known-problem live gates and separate compiler validation, consider arbitrary raw-problem → canonical graph compilation in the learner-facing product.
+1. **Run PAM C next** on the exact PAM-B deployment baseline `151c819e3457ae41fa1810b5060d0101f91bc12a`; preserve the live receipt before changing that baseline.
+2. Keep PR #75 green/reviewable and shadow-only; do not reinterpret it as part of PAM B/C baseline evidence.
+3. Capture PAM-C discrepancies as durable product evidence, especially renderer/progression/free-language failures.
+4. Review/merge #75 as a separate product-controller revision, then give any live promotion its own repo/local/live verification chain.
+5. Add persistent prerequisite-detour/return state, representation lineage/restoration, and live evidence-chain support before bounded live authority.
+6. Continue dogfooding through harder DSA/system-design tasks and version modules from observed failures.
+7. Only after the known-problem live gate and separate compiler validation, consider arbitrary raw-problem → canonical graph compilation in the learner-facing product.
 8. Consider beta/multi-user architecture only after repeated stable within-subject trajectories.
 
 ## Roadmap governance
 
-`docs/ROADMAP.md`, `docs/CURRENT_STATE.md`, `docs/HANDOFF.md`, `docs/DECISIONS.md`, the accepted P4 specs, Issue #63, and Issue #66 for the PIR deployment sequence are current planning authority.
+`docs/ROADMAP.md`, `docs/CURRENT_STATE.md`, `docs/HANDOFF.md`, `PROJECT_MANIFEST.yaml`, `docs/DECISIONS.md`, the accepted P4 specs, Issue #63, and Issue #66 for the pinned PIR checkpoint evidence are current planning authority.
 
-Historical issues and unchecked items remain lineage. They do not override newer accepted implementation/evidence.
+Historical issues, superseded PRs, stale comments, and unchecked items remain lineage. They do not override newer accepted implementation/evidence.
