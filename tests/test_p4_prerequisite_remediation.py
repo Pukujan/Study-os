@@ -27,14 +27,56 @@ class P4PrerequisiteRemediationTests(unittest.TestCase):
     def snapshot(self) -> LearnerSnapshot:
         return LearnerSnapshot.from_mapping(self.fixture["snapshot"])
 
+    def snapshot_with_statuses(self, statuses: dict[str, str]) -> LearnerSnapshot:
+        payload = json.loads(json.dumps(self.fixture["snapshot"]))
+        for competency_id, status in statuses.items():
+            payload["capabilities"][competency_id] = {
+                "status": status,
+                "assistance_level": "A0" if status.startswith("pass_") else None,
+                "evidence_ids": [f"assessment-{competency_id}"] if status.startswith("pass_") else [],
+            }
+        return LearnerSnapshot.from_mapping(payload)
+
     def diagnosis(self) -> DiagnosisProposal:
         return DiagnosisProposal.from_mapping(self.fixture["diagnosis_proposal"])
+
+    def diagnosis_with_single_hypothesis(
+        self,
+        *,
+        diagnosis_id: str,
+        family: str,
+        suspected_competency_ids: list[str],
+        source_evidence_id: str = "learner-turn-code-confusion",
+    ) -> DiagnosisProposal:
+        payload = dict(self.fixture["diagnosis_proposal"])
+        payload["hypotheses"] = [
+            {
+                "diagnosis_id": diagnosis_id,
+                "family": family,
+                "source_evidence_ids": [source_evidence_id],
+                "suspected_competency_ids": suspected_competency_ids,
+                "confidence": 0.8,
+                "status": "proposed",
+            }
+        ]
+        return DiagnosisProposal.from_mapping(payload)
 
     def route(self):
         parent = self.fixture["parent"]
         return propose_prerequisite_sensitive_remediation(
             self.snapshot(),
             self.diagnosis(),
+            parent_candidate_id=parent["candidate_id"],
+            parent_competency_id=parent["competency_id"],
+            ordered_prerequisite_ids=parent["ordered_prerequisite_ids"],
+            assistance_ceiling="A2",
+        )
+
+    def route_with(self, snapshot: LearnerSnapshot, diagnosis: DiagnosisProposal):
+        parent = self.fixture["parent"]
+        return propose_prerequisite_sensitive_remediation(
+            snapshot,
+            diagnosis,
             parent_candidate_id=parent["candidate_id"],
             parent_competency_id=parent["competency_id"],
             ordered_prerequisite_ids=parent["ordered_prerequisite_ids"],
@@ -81,61 +123,90 @@ class P4PrerequisiteRemediationTests(unittest.TestCase):
         self.assertEqual(diagnosis.prompt_version, "p4-diagnosis-proposal.v0.1")
 
     def test_ambiguous_missing_prerequisite_fails_closed(self):
-        payload = dict(self.fixture["diagnosis_proposal"])
-        payload["hypotheses"] = [
-            {
-                "diagnosis_id": "diag-ambiguous",
-                "family": "missing_prerequisite",
-                "source_evidence_ids": ["learner-turn-code-confusion"],
-                "suspected_competency_ids": [],
-                "confidence": 0.5,
-                "status": "proposed",
-            }
-        ]
-        diagnosis = DiagnosisProposal.from_mapping(payload)
-        parent = self.fixture["parent"]
-        proposal = propose_prerequisite_sensitive_remediation(
-            self.snapshot(),
-            diagnosis,
-            parent_candidate_id=parent["candidate_id"],
-            parent_competency_id=parent["competency_id"],
-            ordered_prerequisite_ids=parent["ordered_prerequisite_ids"],
+        diagnosis = self.diagnosis_with_single_hypothesis(
+            diagnosis_id="diag-ambiguous",
+            family="missing_prerequisite",
+            suspected_competency_ids=[],
         )
+        proposal = self.route_with(self.snapshot(), diagnosis)
 
         self.assertIsNone(proposal.selected)
         self.assertTrue(proposal.expected_evidence["progression_blocked"])
         self.assertTrue(proposal.expected_evidence["diagnostic_probe_required"])
         self.assertEqual(proposal.expected_evidence["required_next_evidence"], "diagnostic_probe")
 
-    def test_representation_only_remediation_keeps_parent_target(self):
-        payload = dict(self.fixture["diagnosis_proposal"])
-        payload["hypotheses"] = [
+    def test_noncanonical_suspected_prerequisite_does_not_fallback_to_only_missing(self):
+        snapshot = self.snapshot_with_statuses(
             {
-                "diagnosis_id": "diag-representation-only",
-                "family": "representation_interference",
-                "source_evidence_ids": ["learner-turn-visual-request"],
-                "suspected_competency_ids": [],
-                "confidence": 0.9,
-                "status": "proposed",
+                "program.boolean_decision": "pass_unaided",
+                "test.boundary_case": "pass_unaided",
             }
-        ]
-        diagnosis = DiagnosisProposal.from_mapping(payload)
-        parent = self.fixture["parent"]
-        proposal = propose_prerequisite_sensitive_remediation(
-            self.snapshot(),
-            diagnosis,
-            parent_candidate_id=parent["candidate_id"],
-            parent_competency_id=parent["competency_id"],
-            ordered_prerequisite_ids=parent["ordered_prerequisite_ids"],
         )
+        diagnosis = self.diagnosis_with_single_hypothesis(
+            diagnosis_id="diag-noncanonical",
+            family="missing_prerequisite",
+            suspected_competency_ids=["program.not_in_canonical_graph"],
+        )
+        proposal = self.route_with(snapshot, diagnosis)
+
+        self.assertIsNone(proposal.selected)
+        self.assertTrue(proposal.expected_evidence["diagnostic_probe_required"])
+        self.assertEqual(
+            proposal.expected_evidence["noncanonical_suspected_prerequisite_ids"],
+            ["program.not_in_canonical_graph"],
+        )
+        self.assertIsNone(proposal.expected_evidence["target_competency_id"])
+
+    def test_already_satisfied_suspect_does_not_retarget_different_missing_prerequisite(self):
+        snapshot = self.snapshot_with_statuses(
+            {
+                "program.comparison_semantics": "pass_unaided",
+                "program.boolean_decision": "pass_unaided",
+            }
+        )
+        diagnosis = self.diagnosis_with_single_hypothesis(
+            diagnosis_id="diag-stale-suspect",
+            family="missing_prerequisite",
+            suspected_competency_ids=["program.comparison_semantics"],
+        )
+        proposal = self.route_with(snapshot, diagnosis)
+
+        self.assertIsNone(proposal.selected)
+        self.assertTrue(proposal.expected_evidence["diagnostic_probe_required"])
+        self.assertEqual(proposal.expected_evidence["missing_prerequisite_ids"], ["test.boundary_case"])
+        self.assertIsNone(proposal.expected_evidence["target_competency_id"])
+
+    def test_representation_only_remediation_keeps_parent_target(self):
+        diagnosis = self.diagnosis_with_single_hypothesis(
+            diagnosis_id="diag-representation-only",
+            family="representation_interference",
+            suspected_competency_ids=[],
+            source_evidence_id="learner-turn-visual-request",
+        )
+        parent = self.fixture["parent"]
+        proposal = self.route_with(self.snapshot(), diagnosis)
 
         self.assertIsNotNone(proposal.selected)
         self.assertEqual(proposal.selected.candidate_id, parent["candidate_id"])
+        self.assertIn(parent["candidate_id"], proposal.candidates)
         self.assertEqual(proposal.selected.learning_operation, "change_representation")
         self.assertEqual(
             proposal.expected_evidence["target_competency_id"],
             parent["competency_id"],
         )
+
+    def test_assistance_target_never_exceeds_ceiling(self):
+        parent = self.fixture["parent"]
+        proposal = propose_prerequisite_sensitive_remediation(
+            self.snapshot(),
+            self.diagnosis(),
+            parent_candidate_id=parent["candidate_id"],
+            parent_competency_id=parent["competency_id"],
+            ordered_prerequisite_ids=parent["ordered_prerequisite_ids"],
+            assistance_ceiling="A1",
+        )
+        self.assertIsNotNone(proposal.selected)
+        self.assertEqual(proposal.selected.assistance_target, "A1")
 
     def test_representation_contract_surfaces_visual_intent_to_renderer(self):
         candidate = RepresentationCandidate.from_mapping(self.fixture["representation_candidate"])
