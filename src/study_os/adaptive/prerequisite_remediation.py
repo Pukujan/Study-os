@@ -86,9 +86,10 @@ def propose_prerequisite_sensitive_remediation(
     """Return a bounded remediation route without changing course progression.
 
     A missing-prerequisite diagnosis can route only to an unsatisfied canonical
-    prerequisite of the active parent competency.  Ambiguous diagnosis fails
-    closed and requests a diagnostic probe rather than guessing.  Representation
-    interference without a missing prerequisite remains on the same target.
+    prerequisite of the active parent competency.  Ambiguous or mismatched
+    diagnosis fails closed and requests a diagnostic probe rather than guessing.
+    Representation interference without a missing prerequisite remains on the
+    same target.
     """
 
     if snapshot.phase != "instruction":
@@ -103,7 +104,7 @@ def propose_prerequisite_sensitive_remediation(
     prerequisite_candidates = tuple(
         f"{parent_candidate_id}::prerequisite::{competency_id}" for competency_id in missing
     )
-    candidate_ids = prerequisite_candidates or (parent_candidate_id,)
+    candidate_ids = (parent_candidate_id, *prerequisite_candidates)
     selected: SelectedAction | None = None
     rationale: str
     expected: dict[str, object] = {
@@ -119,12 +120,20 @@ def propose_prerequisite_sensitive_remediation(
 
     target_prerequisite: str | None = None
     if "missing_prerequisite" in families:
-        suspected = set(diagnosis.suspected_competency_ids("missing_prerequisite"))
+        suspected_order = diagnosis.suspected_competency_ids("missing_prerequisite")
+        suspected = set(suspected_order)
+        canonical = set(prerequisites)
+        noncanonical_suspected = tuple(
+            competency_id for competency_id in suspected_order if competency_id not in canonical
+        )
+        expected["suspected_prerequisite_ids"] = list(suspected_order)
+        expected["noncanonical_suspected_prerequisite_ids"] = list(noncanonical_suspected)
+
         for competency_id in missing:
             if competency_id in suspected:
                 target_prerequisite = competency_id
                 break
-        if target_prerequisite is None and len(missing) == 1:
+        if target_prerequisite is None and not suspected_order and len(missing) == 1:
             target_prerequisite = missing[0]
 
         if target_prerequisite is not None:
@@ -152,8 +161,9 @@ def propose_prerequisite_sensitive_remediation(
             )
         else:
             rationale = (
-                "Missing-prerequisite diagnosis is ambiguous or does not match an unsatisfied canonical prerequisite; "
-                "fail closed and gather a diagnostic probe before selecting a remediation target."
+                "Missing-prerequisite diagnosis is ambiguous, noncanonical, already satisfied, "
+                "or does not match an unsatisfied canonical prerequisite; fail closed and gather "
+                "a diagnostic probe before selecting a remediation target."
             )
             expected.update(
                 {
@@ -166,9 +176,7 @@ def propose_prerequisite_sensitive_remediation(
     elif families & {"representation_interference", "decomposition_too_coarse"}:
         operations = _authorized_operations(diagnosis, prerequisite_route=False)
         primary_operation = (
-            "change_representation"
-            if "change_representation" in operations
-            else "smaller_step"
+            "change_representation" if "change_representation" in operations else "smaller_step"
         )
         selected = SelectedAction(
             candidate_id=parent_candidate_id,
