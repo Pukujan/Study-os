@@ -1,6 +1,6 @@
 # Agent Handoff
 
-Last updated: 2026-09-07
+Last updated: 2026-09-08
 Primary tracker: #63
 PIR integration tracker: #66
 
@@ -26,32 +26,50 @@ GitHub contains public-safe architecture, contracts, tests, schemas and curated 
 
 ## PIR / PAM state
 
-The known sliding-window PIR integration has completed PAM Checkpoint A assurance.
+The known sliding-window PIR integration has completed PAM Checkpoints A and B.
 
-Accepted evidence:
+Accepted PAM-A evidence:
 
 ```text
 PR #71: merged
 verified PR head: 0ccfc9245cc86acdd68587f4bf72158d18ac2070
-normal CI: PASS on same SHA
-PIR Mutation Gate: PASS on same SHA
+merge/deployment baseline: 151c819e3457ae41fa1810b5060d0101f91bc12a
+normal CI: PASS on verified head
+PIR Mutation Gate: PASS on verified head
 mutants: 1268 total / 1064 killed / 204 classified survivors
 timeouts: 0
 other failures: 0
 unresolved non-equivalent semantic survivors: 0
 ```
 
-Do not reopen mutation assurance merely because raw survivors remain. Equivalent and diagnostic/non-authority survivors were explicitly classified by the gate.
-
-The existing #66 sequence remains:
+Accepted PAM-B evidence from Issue #66:
 
 ```text
-PAM A — complete
-→ PAM B — pinned local MCP deployment + restart/resume validation
-→ PAM C — first real Study OS GPT PIR dogfood receipt
+deployed revision: 151c819e3457ae41fa1810b5060d0101f91bc12a
+schema: 2 via reviewed 0002_pir_problem_runs.sql
+local tests: 342 / 342 PASS
+MCP/private transport: healthy
+semantic tools: 20 total, including 5 PIR tools
+generic capabilities: none
+known sliding-window resolution: PASS
+restart/resume: PASS on same ProblemRun + pinned revisions
+retry/idempotency: PASS
+local_only_changes: []
 ```
 
-PAM B is the next persistent-local/Luna deployment lane. Do not mix that deployment work with the P4 teaching-controller design branch.
+The initial Windows CRLF mismatch during PAM B was accepted as repository-byte/environment normalization, not a semantic local repair.
+
+Do not reopen PAM A or B unless new evidence invalidates their accepted claims.
+
+Current checkpoint state:
+
+```text
+PAM A — PASSED
+PAM B — PASSED
+PAM C — NEXT / NOT YET CLAIMED
+```
+
+A later Issue #66 planning comment accidentally regressed PAM B to “not yet passed”; the 2026-09-08 ledger correction supersedes that stale status.
 
 ## New operational teaching regression
 
@@ -69,9 +87,17 @@ Treat this as **system/pedagogical routing evidence**, not a learner task failur
 
 ## Current focused P4 delta
 
-Branch under development:
+Canonical review PR:
+
+`#75 — Add prerequisite-sensitive remediation control`
+
+Branch:
 
 `codex/p4-prerequisite-sensitive-remediation`
+
+Superseded planning PRs #73 and #74 are closed. Useful broader #73 concepts were retained as candidate Issue #63 backlog; #74's unique deferred live-authority requirements were preserved in:
+
+- `docs/P4_PREREQUISITE_REMEDIATION_DEFERRED_LIVE_REQUIREMENTS.md`
 
 Focused specs:
 
@@ -112,6 +138,8 @@ Public-safe regression fixture:
 Focused tests:
 
 - `tests/test_p4_prerequisite_remediation.py`
+
+This path remains **shadow authority** in this slice and is not part of the accepted PAM-B deployment receipt.
 
 ## Authority boundary
 
@@ -165,30 +193,28 @@ When learner state is uncertain, prefer an explicit diagnostic probe over fabric
 Read current material in this order:
 
 1. Issue #63
-2. Issue #66 for the PIR/PAM deployment sequence
+2. Issue #66 for PIR/PAM checkpoint evidence
 3. `docs/P4_DETERMINISTIC_LEARNING_CONTROLLER_PDD.md`
 4. `docs/P4_DETERMINISTIC_LEARNING_CONTROLLER_SDD.md`
 5. `docs/ADR-0016-deterministic-learning-control.md`
 6. focused prerequisite-remediation PDD/SDD/TDD
-7. `docs/ROADMAP.md`
-8. `docs/CURRENT_STATE.md`
-9. `PROJECT_MANIFEST.yaml`
-10. latest accepted `docs/DECISIONS.md`
+7. `docs/P4_PREREQUISITE_REMEDIATION_DEFERRED_LIVE_REQUIREMENTS.md`
+8. `docs/ROADMAP.md`
+9. `docs/CURRENT_STATE.md`
+10. `PROJECT_MANIFEST.yaml`
+11. latest accepted `docs/DECISIONS.md`
 
-Historical checklists do not override later accepted implementation/evidence.
+Historical checklists and superseded PRs do not override later accepted evidence.
 
 ## Immediate next work
 
-For the focused prerequisite-remediation branch:
-
-1. run the focused regression suite;
-2. run compile/lint/type/repository validation;
-3. use normal PR CI as clean independent attestation;
-4. fix only implementation/spec-conforming failures;
-5. do not promote the new adaptive path beyond shadow authority in this slice;
-6. merge only after review/green evidence.
-
-In parallel, a separate persistent local session may execute PAM B from #66 against the merged known PIR revision. It must not redesign this teaching architecture merely to obtain deployment green.
+1. Keep PR #75 green/reviewable and do not reinterpret its shadow code as part of the PAM-B deployment receipt.
+2. Run **PAM C** through the real Study OS GPT against the exact PAM-B deployment baseline `151c819e3457ae41fa1810b5060d0101f91bc12a`.
+3. During PAM C, verify backend-authorized renderer-safe state, free-language requests without unauthorized advancement, durable learner/assistant turns, and discrepancy capture.
+4. Preserve the PAM-C receipt before changing the deployed baseline.
+5. Review/merge #75 as a separate product-controller revision; promote it only through its own repo/local/live evidence sequence.
+6. Use PAM-C and later prerequisite-remediation dogfood trajectories to drive versioned controller/representation changes rather than silent prompt edits.
+7. Keep general learner-facing raw-problem compilation deferred until its separate compiler/validation gate.
 
 ## Non-negotiable invariants
 
@@ -204,6 +230,7 @@ In parallel, a separate persistent local session may execute PAM B from #66 agai
 10. Historical/replay evidence never masquerades as learner-experienced outcome.
 11. Source/authentic representations remain restorable where claimed.
 12. Arbitrary raw-problem compilation remains deferred until separately validated.
+13. Accepted PAM receipts remain pinned to their exact revisions and cannot be silently reinterpreted after later product changes.
 
 ## Known hazards
 
@@ -212,4 +239,5 @@ In parallel, a separate persistent local session may execute PAM B from #66 agai
 - one learner trajectory is not population evidence;
 - model-generated decomposition must not become canonical without validation;
 - local deployment state can drift from public contracts;
-- a tutor/model must not reinterpret controller output as permission to advance.
+- a tutor/model must not reinterpret controller output as permission to advance;
+- stale planning comments can regress accepted checkpoint status unless evidence receipts remain explicitly pinned.
