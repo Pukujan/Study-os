@@ -1,6 +1,6 @@
 # Current State
 
-Date: 2026-09-07
+Date: 2026-09-08
 Status: P4 deterministic learning controller + versioned representation engine
 Primary tracker: #63
 PIR integration tracker: #66
@@ -13,13 +13,14 @@ P3 durability/cross-chat continuity is supporting infrastructure. Canonical live
 
 ## Known PIR integration state
 
-The first canonical sliding-window PIR integration has completed PAM Checkpoint A assurance.
+The first canonical sliding-window PIR integration has completed PAM Checkpoints A and B.
 
-Accepted exact evidence:
+Accepted PAM-A evidence:
 
 ```text
 PR #71: merged
 verified head: 0ccfc9245cc86acdd68587f4bf72158d18ac2070
+merge/deployment baseline: 151c819e3457ae41fa1810b5060d0101f91bc12a
 normal CI: PASS
 PIR Mutation Gate: PASS
 mutation totals: 1268 total / 1064 killed / 204 classified survivors
@@ -27,14 +28,34 @@ unresolved non-equivalent semantic survivors: 0
 timeouts/other mutation failures: 0
 ```
 
-The remaining #66 sequence is:
+Accepted PAM-B evidence from Issue #66:
 
 ```text
-PAM B — pinned local MCP deployment + restart/resume validation
-PAM C — real Study OS GPT PIR dogfood receipt
+deployed revision: 151c819e3457ae41fa1810b5060d0101f91bc12a
+schema: 2
+local tests: 342 / 342 PASS
+MCP/private transport: healthy
+semantic tool inventory: 20, including 5 PIR tools
+generic capabilities: none
+known sliding-window resolution: PASS
+restart/resume: PASS
+retry/idempotency: PASS
+local_only_changes: []
 ```
 
-Do not treat raw mutation survivor count as an unresolved blocker when the enforced semantic classification gate is satisfied.
+The initial Windows CRLF audit mismatch was accepted as environment/repository-byte normalization rather than a semantic local repair.
+
+Current #66 checkpoint state is:
+
+```text
+PAM A — PASSED
+PAM B — PASSED
+PAM C — NEXT / NOT YET CLAIMED
+```
+
+A later planning comment accidentally regressed PAM B to “not yet passed” without invalidating the accepted local receipt. The 2026-09-08 #66 ledger correction supersedes that stale status.
+
+Do not treat raw mutation survivor count as an unresolved blocker when the enforced semantic classification gate is satisfied, and do not reopen A/B without new invalidating evidence.
 
 ## Product thesis
 
@@ -95,13 +116,17 @@ This is a controller/representation routing failure, not evidence that the learn
 
 ## Focused P4 implementation delta
 
-Current development branch:
+Canonical development/review PR:
+
+`#75 — Add prerequisite-sensitive remediation control`
+
+Branch:
 
 `codex/p4-prerequisite-sensitive-remediation`
 
-Draft PR:
+Superseded planning PRs #73 and #74 are closed. #74's unique deferred live-authority requirements are preserved in:
 
-`#75 — Add prerequisite-sensitive remediation control`
+- `docs/P4_PREREQUISITE_REMEDIATION_DEFERRED_LIVE_REQUIREMENTS.md`.
 
 The focused path is:
 
@@ -125,9 +150,10 @@ New/updated artifacts include:
 - `schemas/p4-diagnosis-proposal.schema.json`;
 - `prompts/p4/diagnosis-proposal.v0.1.md`;
 - focused PDD/SDD/TDD;
+- deferred live-authority requirements;
 - public-safe regression fixture and tests.
 
-This path remains **shadow authority** in this slice.
+This path remains **shadow authority** in this slice and was not part of the accepted PAM-B deployment receipt.
 
 ## Versioned prompt/schema strategy
 
@@ -167,18 +193,21 @@ raw unfamiliar problem
 
 An LLM-generated prerequisite graph is not canonical merely because it is well-formed.
 
+Broader candidate modules from superseded PR #73 — typed targeted-turn specs, information budgets, exercise contracts, output validation, offline automated authoring, and Luna/Sol differential calibration — are recorded as Issue #63 backlog rather than accepted current scope.
+
 ## Design authority
 
 Current authority includes:
 
 - Issue #63;
-- Issue #66 for PIR/PAM sequencing;
+- Issue #66 for PIR/PAM evidence;
 - `docs/P4_DETERMINISTIC_LEARNING_CONTROLLER_PDD.md`;
 - `docs/P4_DETERMINISTIC_LEARNING_CONTROLLER_SDD.md`;
 - `docs/ADR-0016-deterministic-learning-control.md`;
 - `docs/P4_PREREQUISITE_REMEDIATION_PDD.md`;
 - `docs/P4_PREREQUISITE_REMEDIATION_SDD.md`;
 - `docs/P4_PREREQUISITE_REMEDIATION_TDD.md`;
+- `docs/P4_PREREQUISITE_REMEDIATION_DEFERRED_LIVE_REQUIREMENTS.md`;
 - `docs/ROADMAP.md`;
 - `docs/HANDOFF.md`;
 - `PROJECT_MANIFEST.yaml`;
@@ -186,12 +215,13 @@ Current authority includes:
 
 ## Immediate execution priorities
 
-1. Finish PR #75 focused tests and clean CI.
-2. Keep prerequisite-sensitive remediation shadow-only in this slice.
-3. In a separate persistent-local lane, execute PAM B for the already-merged known PIR.
-4. After PAM B, run PAM C through the real Study OS GPT and capture discrepancies as operational evidence.
-5. Feed those real trajectories into versioned controller/representation improvements.
-6. Do not enable arbitrary raw-problem compilation until the known-problem deployment/live gates and separate compiler validation are satisfied.
+1. Keep PR #75 reviewable/green and shadow-only; do not fold it into the historical PAM-B claim.
+2. Run PAM C through the real Study OS GPT against exact deployed baseline `151c819e3457ae41fa1810b5060d0101f91bc12a`.
+3. Capture renderer/progression/free-language discrepancies as durable operational evidence while preserving learner/assistant turns.
+4. Close the PAM-C receipt before changing the deployed baseline.
+5. Review/merge #75 as a separate product-controller revision and give any later live promotion its own repo/local/live evidence chain.
+6. Feed real trajectories into versioned controller/representation improvements.
+7. Do not enable arbitrary raw-problem compilation until its separate compiler validation gate is satisfied.
 
 ## Core invariants
 
@@ -203,4 +233,5 @@ Current authority includes:
 - Representation adaptation must preserve the target skill.
 - Assistance cannot exceed policy ceilings.
 - Module/prompt/schema evolution is explicit and replayable.
+- Accepted PAM receipts stay pinned to the exact revisions/evidence they attest.
 - Subject-001 evidence does not imply population-level efficacy.
