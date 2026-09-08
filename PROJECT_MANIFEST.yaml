@@ -1,4 +1,4 @@
-manifest_version: "0.2.4"
+manifest_version: "0.2.5"
 project:
   name: Study OS
   repository: Pukujan/Study-os
@@ -152,6 +152,12 @@ learning:
     track: ALG
     domain: dsa
     language: python
+  pir_integration_checkpoints:
+    pam_a: passed
+    pam_b: passed
+    pam_c: not_started
+    deployment_baseline: "151c819e3457ae41fa1810b5060d0101f91bc12a"
+    assurance_head: "0ccfc9245cc86acdd68587f4bf72158d18ac2070"
   curriculum_track_namespace:
     - ALG
     - SWE
@@ -294,8 +300,8 @@ open_risks:
   - prerequisite_misdiagnosis_routes_to_wrong_remediation
 
 next_milestone: >-
-  PAM Checkpoint A for the known sliding-window PIR is complete. Validate the
-  merged PIR through pinned local MCP deployment/restart-resume (PAM B), then a
-  real Study OS GPT dogfood session (PAM C), while keeping the new prerequisite-
-  sensitive remediation path in shadow/spec verification. Do not enable arbitrary
-  raw-problem compilation in the learner-facing product before those gates.
+  PAM Checkpoints A and B for the known sliding-window PIR are complete. Run one
+  clean real Study OS GPT dogfood session against the exact PAM-B deployment
+  baseline (PAM C), while keeping prerequisite-sensitive remediation in separate
+  shadow/spec review. Do not enable arbitrary raw-problem compilation in the
+  learner-facing product before its separate validation gate.
