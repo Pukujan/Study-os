@@ -1,6 +1,6 @@
 """Versioned structured diagnosis proposals for bounded learning control.
 
-Diagnosis is derived evidence.  A model may propose hypotheses and representation
+Diagnosis is derived evidence. A model may propose hypotheses and representation
 signals, but this module deliberately grants no course-progression authority.
 The deterministic controller consumes these records separately.
 """
@@ -41,7 +41,7 @@ def _non_empty(value: str, field_name: str) -> str:
 def _string_tuple(values: Sequence[str] | None, field_name: str) -> tuple[str, ...]:
     if values is None:
         return ()
-    if isinstance(values, (str, bytes)):
+    if isinstance(values, (str, bytes)) or not isinstance(values, Sequence):
         raise ValueError(f"{field_name} must be an array of strings")
     result = tuple(values)
     if any(not isinstance(value, str) or not value.strip() for value in result):
@@ -49,6 +49,23 @@ def _string_tuple(values: Sequence[str] | None, field_name: str) -> tuple[str, .
     if len(result) != len(set(result)):
         raise ValueError(f"{field_name} must be unique")
     return result
+
+
+def _mapping(value: Any, field_name: str) -> Mapping[str, Any]:
+    if not isinstance(value, Mapping):
+        raise ValueError(f"{field_name} must be an object")
+    return value
+
+
+def _mapping_array(value: Any, field_name: str) -> tuple[Mapping[str, Any], ...]:
+    if isinstance(value, (str, bytes)) or not isinstance(value, Sequence):
+        raise ValueError(f"{field_name} must be an array of objects")
+    result: list[Mapping[str, Any]] = []
+    for item in value:
+        if not isinstance(item, Mapping):
+            raise ValueError(f"{field_name} must contain objects")
+        result.append(item)
+    return tuple(result)
 
 
 def _confidence(value: float | None) -> float | None:
@@ -101,6 +118,7 @@ class DiagnosisHypothesis:
 
     @classmethod
     def from_mapping(cls, value: Mapping[str, Any]) -> "DiagnosisHypothesis":
+        value = _mapping(value, "diagnosis hypothesis")
         _reject_unknown(
             value,
             {
@@ -116,8 +134,10 @@ class DiagnosisHypothesis:
         return cls(
             diagnosis_id=str(value.get("diagnosis_id", "")),
             family=str(value.get("family", "")),
-            source_evidence_ids=tuple(value.get("source_evidence_ids", ())),
-            suspected_competency_ids=tuple(value.get("suspected_competency_ids", ())),
+            source_evidence_ids=_string_tuple(value.get("source_evidence_ids"), "source_evidence_ids"),
+            suspected_competency_ids=_string_tuple(
+                value.get("suspected_competency_ids"), "suspected_competency_ids"
+            ),
             confidence=value.get("confidence"),
             status=str(value.get("status", "proposed")),
         )
@@ -137,7 +157,7 @@ class DiagnosisHypothesis:
 class RepresentationSignals:
     """Structured learner-facing representation preferences inferred from evidence.
 
-    These are signals, not permission to render or advance.  A downstream
+    These are signals, not permission to render or advance. A downstream
     representation policy still applies semantic-fidelity and assistance gates.
     """
 
@@ -168,6 +188,7 @@ class RepresentationSignals:
 
     @classmethod
     def from_mapping(cls, value: Mapping[str, Any]) -> "RepresentationSignals":
+        value = _mapping(value, "representation signals")
         _reject_unknown(
             value,
             {
@@ -179,12 +200,10 @@ class RepresentationSignals:
             "representation signals",
         )
         return cls(
-            requested_families=tuple(value.get("requested_families", ())),
-            avoid_families=tuple(value.get("avoid_families", ())),
+            requested_families=_string_tuple(value.get("requested_families"), "requested_families"),
+            avoid_families=_string_tuple(value.get("avoid_families"), "avoid_families"),
             code_visibility=str(value.get("code_visibility", "unspecified")),
-            interaction_granularity=str(
-                value.get("interaction_granularity", "unspecified")
-            ),
+            interaction_granularity=str(value.get("interaction_granularity", "unspecified")),
         )
 
     def to_dict(self) -> dict[str, Any]:
@@ -229,6 +248,7 @@ class DiagnosisProposal:
 
     @classmethod
     def from_mapping(cls, value: Mapping[str, Any]) -> "DiagnosisProposal":
+        value = _mapping(value, "diagnosis proposal")
         _reject_unknown(
             value,
             {
@@ -241,20 +261,15 @@ class DiagnosisProposal:
             },
             "diagnosis proposal",
         )
-        raw_hypotheses = value.get("hypotheses", ())
-        if isinstance(raw_hypotheses, (str, bytes)):
-            raise ValueError("hypotheses must be an array")
-        raw_signals = value.get("representation_signals", {})
-        if not isinstance(raw_signals, Mapping):
-            raise ValueError("representation_signals must be an object")
+        raw_hypotheses = _mapping_array(value.get("hypotheses", ()), "hypotheses")
+        raw_signals = _mapping(value.get("representation_signals", {}), "representation_signals")
         return cls(
             schema_version=str(value.get("schema_version", "")),
             prompt_version=str(value.get("prompt_version", "")),
             model_adapter=str(value.get("model_adapter", "")),
-            source_evidence_ids=tuple(value.get("source_evidence_ids", ())),
+            source_evidence_ids=_string_tuple(value.get("source_evidence_ids"), "source_evidence_ids"),
             hypotheses=tuple(
-                DiagnosisHypothesis.from_mapping(hypothesis)
-                for hypothesis in raw_hypotheses
+                DiagnosisHypothesis.from_mapping(hypothesis) for hypothesis in raw_hypotheses
             ),
             representation_signals=RepresentationSignals.from_mapping(raw_signals),
         )
