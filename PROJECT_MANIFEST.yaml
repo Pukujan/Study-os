@@ -1,4 +1,4 @@
-manifest_version: "0.2.3"
+manifest_version: "0.2.4"
 project:
   name: Study OS
   repository: Pukujan/Study-os
@@ -51,6 +51,8 @@ canonical_paths:
   application_contract_source: src/study_os/application/contracts.py
   curriculum_control_policy: contracts/curriculum-control-policy.v0.1.json
   curriculum_control_architecture: docs/CURRICULUM_CONTROL_ARCHITECTURE.md
+  diagnosis_prompt: prompts/p4/diagnosis-proposal.v0.1.md
+  diagnosis_schema: schemas/p4-diagnosis-proposal.schema.json
   local_runtime_source: src/study_os/
   local_runtime_cli: cli/study_os.py
   local_runtime_migrations: src/study_os/db/migrations/
@@ -139,6 +141,7 @@ schemas:
   competency_graph: "0.1.0"
   learner_snapshot: "0.1.0"
   decision_proposal: "0.1.0"
+  diagnosis_proposal: "0.1.0"
   attempt_telemetry: "0.1.0"
 
 learning:
@@ -186,6 +189,9 @@ learning:
     - fsrs_retention_adapter
     - evidence_gated_scaffold_controller
     - contextual_representation_policy
+    - structured_diagnosis_proposal
+    - prerequisite_sensitive_remediation_router
+    - structured_representation_constraints
     - learner_relative_complexity
     - tutor_behavior_regression
     - shadow_proposal_to_outcome_linkage
@@ -285,8 +291,11 @@ open_risks:
   - deployed_private_transport_drift_from_public_contract
   - adaptive_component_promoted_before_verification
   - synthetic_simulation_mistaken_for_human_learning_evidence
+  - prerequisite_misdiagnosis_routes_to_wrong_remediation
 
 next_milestone: >-
-  Validate the known sliding-window canonical PIR through MCP v0.4, schema v2,
-  restart/resume, GPT Actions projection, and live local deployment before
-  enabling arbitrary raw-problem compilation in the learner-facing product.
+  PAM Checkpoint A for the known sliding-window PIR is complete. Validate the
+  merged PIR through pinned local MCP deployment/restart-resume (PAM B), then a
+  real Study OS GPT dogfood session (PAM C), while keeping the new prerequisite-
+  sensitive remediation path in shadow/spec verification. Do not enable arbitrary
+  raw-problem compilation in the learner-facing product before those gates.
