@@ -1,0 +1,135 @@
+{
+  "fixture_version": "0.1.0",
+  "case_id": "mutation_lab_code_first_confusion",
+  "evidence_summary": [
+    {
+      "evidence_id": "learner-turn-code-confusion",
+      "evidence_class": "observed",
+      "summary": "Learner reports that the code-first explanation is not understandable enough to answer the task."
+    },
+    {
+      "evidence_id": "learner-turn-visual-request",
+      "evidence_class": "observed",
+      "summary": "Learner reports continued confusion and explicitly requests a chart or visual representation."
+    }
+  ],
+  "parent": {
+    "candidate_id": "mutation.boundary-detection.lab1",
+    "competency_id": "mutation.boundary_detection",
+    "ordered_prerequisite_ids": [
+      "program.comparison_semantics",
+      "program.boolean_decision",
+      "test.boundary_case"
+    ]
+  },
+  "snapshot": {
+    "snapshot_version": "0.1.0",
+    "subject_id": "subject-regression",
+    "checkpoint_id": null,
+    "phase": "instruction",
+    "current_focus": "mutation boundary detection",
+    "capabilities": {
+      "program.comparison_semantics": {
+        "status": "not_tested",
+        "assistance_level": null,
+        "evidence_ids": []
+      },
+      "program.boolean_decision": {
+        "status": "not_tested",
+        "assistance_level": null,
+        "evidence_ids": []
+      },
+      "test.boundary_case": {
+        "status": "not_tested",
+        "assistance_level": null,
+        "evidence_ids": []
+      }
+    },
+    "open_hypotheses": [],
+    "active_misconceptions": [],
+    "retention_state": {},
+    "recent_exposures": [],
+    "active_goal_ids": [],
+    "interaction_constraints": {}
+  },
+  "diagnosis_proposal": {
+    "schema_version": "0.1.0",
+    "prompt_version": "p4-diagnosis-proposal.v0.1",
+    "model_adapter": "fixture-structured-diagnosis",
+    "source_evidence_ids": [
+      "learner-turn-code-confusion",
+      "learner-turn-visual-request"
+    ],
+    "hypotheses": [
+      {
+        "diagnosis_id": "diag-missing-comparison",
+        "family": "missing_prerequisite",
+        "source_evidence_ids": ["learner-turn-code-confusion"],
+        "suspected_competency_ids": ["program.comparison_semantics"],
+        "confidence": 0.8,
+        "status": "proposed"
+      },
+      {
+        "diagnosis_id": "diag-code-first",
+        "family": "representation_interference",
+        "source_evidence_ids": [
+          "learner-turn-code-confusion",
+          "learner-turn-visual-request"
+        ],
+        "suspected_competency_ids": [],
+        "confidence": 0.9,
+        "status": "proposed"
+      }
+    ],
+    "representation_signals": {
+      "requested_families": ["concrete_scenario", "decision_tree"],
+      "avoid_families": ["source_code", "table"],
+      "code_visibility": "hide_initially",
+      "interaction_granularity": "single_probe"
+    }
+  },
+  "representation_candidate": {
+    "candidate_id": "comparison.capacity-decision-tree.v1",
+    "task_id": "prereq.comparison-semantics.microprobe",
+    "competency_id": "program.comparison_semantics",
+    "representation_id": "capacity-decision-tree.v1",
+    "representation_family": "decision_tree",
+    "representation_version": "0.1.0",
+    "operation": "show_trace",
+    "assistance_target": "A2",
+    "target_bottleneck": "code-first comparison semantics",
+    "bottleneck_match": 1.0,
+    "semantic_validated": true,
+    "semantic_roles": {
+      "state": "current_capacity_usage",
+      "threshold": "capacity_limit",
+      "decision": "allow_or_reject"
+    },
+    "required_structure": [
+      "one_root_condition",
+      "two_outcome_branches",
+      "explicit_boundary_state"
+    ],
+    "forbidden_features": [
+      "source_code_primary",
+      "dense_table_primary"
+    ],
+    "code_visibility": "hidden",
+    "interaction_granularity": "single_probe",
+    "outcomes": {}
+  },
+  "expected": {
+    "parent_progression_blocked": true,
+    "canonical_parent_attempts_added": 0,
+    "target_competency_id": "program.comparison_semantics",
+    "required_next_evidence": "behavioral_micro_probe",
+    "authorized_operations": [
+      "smaller_step",
+      "change_representation",
+      "show_trace"
+    ],
+    "selected_representation_family": "decision_tree",
+    "code_visibility": "hidden",
+    "interaction_granularity": "single_probe"
+  }
+}
