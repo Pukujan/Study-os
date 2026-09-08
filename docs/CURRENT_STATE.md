@@ -1,60 +1,78 @@
 # Current State
 
-Date: 2026-09-03
-Status: P4 deterministic learning controller + representation engine
+Date: 2026-09-08
+Status: P4 deterministic learning controller + versioned representation engine
 Primary tracker: #63
+PIR integration tracker: #66
 
 ## Current product reality
 
 Study OS is actively used through the GPT app for real learning.
 
-The source-turn durability and cross-chat continuity work is operational for normal longitudinal use. Historical recovery of the user-authorized transcript source has also completed successfully. P3 now remains supporting infrastructure rather than the product-development center.
+P3 durability/cross-chat continuity is supporting infrastructure. Canonical live learner state remains local in SQLite/private evidence storage; GitHub contains public-safe architecture, contracts, tests, schemas, curated fixtures, and reproducibility evidence.
 
-Canonical live learner state/evidence remains local:
+## Known PIR integration state
+
+The first canonical sliding-window PIR integration has completed PAM Checkpoints A and B.
+
+Accepted PAM-A evidence:
 
 ```text
-/root/.study-os
-SQLite + private evidence store
+PR #71: merged
+verified head: 0ccfc9245cc86acdd68587f4bf72158d18ac2070
+merge/deployment baseline: 151c819e3457ae41fa1810b5060d0101f91bc12a
+normal CI: PASS
+PIR Mutation Gate: PASS
+mutation totals: 1268 total / 1064 killed / 204 classified survivors
+unresolved non-equivalent semantic survivors: 0
+timeouts/other mutation failures: 0
 ```
 
-GitHub remains architecture/spec/contracts/tests/public-safe lineage, not the live learner database.
+Accepted PAM-B evidence from Issue #66:
 
-## Accepted historical recovery state
+```text
+deployed revision: 151c819e3457ae41fa1810b5060d0101f91bc12a
+schema: 2
+local tests: 342 / 342 PASS
+MCP/private transport: healthy
+semantic tool inventory: 20, including 5 PIR tools
+generic capabilities: none
+known sliding-window resolution: PASS
+restart/resume: PASS
+retry/idempotency: PASS
+local_only_changes: []
+```
 
-The published historical recovery source was reconstructed and hash-verified, preserved as immutable local evidence, reviewed, and reconciled into `subject-001`.
+The initial Windows CRLF audit mismatch was accepted as environment/repository-byte normalization rather than a semantic local repair.
 
-Accepted receipt:
+Current #66 checkpoint state is:
 
-- source Markdown SHA-256: `07becb3c24c2876354dd496ba57e1832df23763eda7b4c85b19891e77b7b5a7d`;
-- 34 reviewed outer turns accepted and backfilled;
-- 50 nested/embedded headings ignored rather than double-counted;
-- second reconciliation added zero turns;
-- existing attempts/events/assessments/checkpoints remained unchanged;
-- message/artifact/on-disk hashes passed;
-- backup/restore and doctor passed;
-- source evidence exhausted for this export;
-- original ChatGPT conversation completeness remains `NOT_ESTABLISHED`.
+```text
+PAM A — PASSED
+PAM B — PASSED
+PAM C — NEXT / NOT YET CLAIMED
+```
 
-See `docs/HISTORICAL_TRANSCRIPT_RECOVERY_RECEIPT.md`.
+A later planning comment accidentally regressed PAM B to “not yet passed” without invalidating the accepted local receipt. The 2026-09-08 #66 ledger correction supersedes that stale status.
 
-No further recovery from this exact source is required. Additional recovery is warranted only if a stronger/new source provides genuinely missing evidence.
+Do not treat raw mutation survivor count as an unresolved blocker when the enforced semantic classification gate is satisfied, and do not reopen A/B without new invalidating evidence.
 
-## Current product thesis
+## Product thesis
 
-Study OS addresses the mismatch between a learner and the representation chosen by a course/source author.
+Study OS addresses the mismatch between the target concept and the representation chosen by a course/source/tutor.
 
 Difficulty may come from:
 
 - the target concept itself;
 - a missing prerequisite;
 - terminology/identifier interference;
-- notation or source wording;
+- notation/source wording;
 - code/control-flow representation;
-- amount of context/information;
+- amount of information/context;
 - task decomposition/granularity;
 - assistance level.
 
-The product should use AI to adapt the representation while deterministic code/state controls curriculum progression and allowed teaching behavior.
+The product architecture remains:
 
 ```text
 course/source
@@ -67,148 +85,153 @@ course/source
 → deterministic outcome/state transition
 ```
 
-## Early operational evidence
+AI generates hypotheses/representations inside a bounded envelope. It does not own curriculum progression or mastery.
 
-The recovered historical sequence around dictionaries/Two Sum exposed a useful product-discovery pattern:
+## New operational regression evidence
 
-- the variable name `seen` conflicted with the learner's prior association with sets;
-- `index_by_num` remained confusing;
-- neutral `box` terminology was self-reported as clearer;
-- a subsequent dictionary lookup was answered correctly.
+A mutation-testing study session produced a useful P4 failure trajectory before any canonical learner response was submitted.
 
-Interpretation boundary:
+Observed/public-safe summary:
 
-- **observed:** confusion persisted before the intervention and a later lookup answer was correct;
-- **self-reported:** `box` was clearer;
-- **derived/proposed:** identifier semantic interference may have contributed;
-- **not proven:** renaming alone caused the improvement.
+- the code-first representation was not understandable enough to attempt the task;
+- repeated same-target explanation did not resolve the barrier;
+- the learner requested a chart/visual representation;
+- a later concrete capacity/ticket framing was more intuitive;
+- canonical learner attempts remained zero.
 
-The intervention also simplified/decomposed the task, so representation change and decomposition must remain separate first-class variables.
-
-## Current architectural priority
-
-Define and implement the smallest real deterministic learning-control loop.
-
-The system must make every learner-facing teaching action reconstructable as:
+Interpretation:
 
 ```text
-course node/version
-+ learner-control state
-+ evidence
-→ controller authorization
-→ operation(s)/version
-→ representation/version
-→ bounded AI response
-→ learner outcome
-→ deterministic next state
+observed:
+  representation confusion + explicit visual request + no canonical task answer
+
+derived/proposed:
+  possible missing prerequisite and representation interference
+
+not proven:
+  one specific analogy/visual caused better learning
 ```
 
-The AI is allowed to generate/transform under an authorized operation. It is not allowed to silently advance curriculum or mark mastery.
+This is a controller/representation routing failure, not evidence that the learner failed the mutation-testing concept.
 
-## Current design authority
+## Focused P4 implementation delta
 
-- Issue #63
-- `docs/P4_DETERMINISTIC_LEARNING_CONTROLLER_PDD.md`
-- `docs/P4_DETERMINISTIC_LEARNING_CONTROLLER_SDD.md`
-- `docs/ADR-0016-deterministic-learning-control.md`
-- `docs/ROADMAP.md`
-- latest accepted entries in `docs/DECISIONS.md`
+Canonical development/review PR:
 
-## Current semantic objects to stabilize
+`#75 — Add prerequisite-sensitive remediation control`
 
-P4.0 focuses on contracts for:
+Branch:
 
-- course node/version;
-- prerequisite/progression policy;
-- learner-control state;
-- pedagogical operation/version;
-- diagnosis hypothesis/version;
-- representation/version + reversible mapping;
-- controller decision;
-- assistance level/ceiling;
-- module-version set;
-- learner outcome;
-- offline replay evaluation.
+`codex/p4-prerequisite-sensitive-remediation`
 
-These semantic objects may reuse existing runtime tables. New schema should be additive only where existing data cannot express the required invariants.
+Superseded planning PRs #73 and #74 are closed. #74's unique deferred live-authority requirements are preserved in:
 
-## Operational improvement loop
+- `docs/P4_PREREQUISITE_REMEDIATION_DEFERRED_LIVE_REQUIREMENTS.md`.
 
-Now that sessions can persist across chats, real learning should continuously improve the system through versioned data rather than hidden prompt edits.
+The focused path is:
 
 ```text
-real trajectory
-→ immutable source evidence
-→ normalized operation/outcome
-→ identify controller/representation failure
-→ module version N+1
-→ offline replay
-→ prospective dogfood
-→ keep/promote/revert
+learner/source difficulty evidence
+→ versioned schema-constrained DiagnosisProposal
+→ deterministic prerequisite-sensitive remediation router
+→ parent progression blocked
+→ canonical prerequisite selected only when justified
+→ bounded operation set
+→ structured representation constraints
+→ behavioral micro-probe
+→ later controller-authorized parent re-entry
 ```
 
-Replay is counterfactual system evaluation. It is never recorded as if the learner actually experienced the candidate intervention.
+New/updated artifacts include:
 
-## Longitudinal target
+- `src/study_os/adaptive/diagnosis.py`;
+- `src/study_os/adaptive/prerequisite_remediation.py`;
+- richer `RepresentationCandidate` structural constraints;
+- `schemas/p4-diagnosis-proposal.schema.json`;
+- `prompts/p4/diagnosis-proposal.v0.1.md`;
+- focused PDD/SDD/TDD;
+- deferred live-authority requirements;
+- public-safe regression fixture and tests.
 
-Continue learning through progressively harder material:
+This path remains **shadow authority** in this slice and was not part of the accepted PAM-B deployment receipt.
+
+## Versioned prompt/schema strategy
+
+For unfamiliar learner-evidence patterns, the LLM may propose diagnosis via a pinned prompt and strict structured output.
+
+The deterministic runtime then decides what those hypotheses are permitted to change.
+
+Version independently where relevant:
+
+- diagnosis prompt/template;
+- diagnosis schema;
+- model/provider adapter;
+- controller/policy;
+- operation registry;
+- representation candidate/version;
+- representation rendering prompt;
+- assessment/learner-state derivation.
+
+Prompt changes must not silently rewrite the meaning of historical diagnosis evidence.
+
+## Unfamiliar problems / no-dataset boundary
+
+No curated dataset is required for the first safe architecture because uncertainty can remain explicit and diagnostic probes can gather evidence online.
+
+However, arbitrary learner-facing raw-problem compilation is still deferred.
+
+Future path:
 
 ```text
-Python/DSA foundations
-→ LeetCode-style problems
-→ complex DSA
-→ system design
-→ AI-system reasoning/debugging
+raw unfamiliar problem
+→ versioned semantic/decomposition compiler prompt
+→ schema-constrained candidate graph
+→ deterministic graph validation
+→ accepted canonical graph version
+→ deterministic teaching controller
 ```
 
-Increasing task complexity is a feature of the development process: it should expose where the controller's diagnosis, decomposition, representation, assistance, restoration, or progression policy breaks.
+An LLM-generated prerequisite graph is not canonical merely because it is well-formed.
 
-Within-learner trajectories are valuable product evidence but not population-level proof.
+Broader candidate modules from superseded PR #73 — typed targeted-turn specs, information budgets, exercise contracts, output validation, offline automated authoring, and Luna/Sol differential calibration — are recorded as Issue #63 backlog rather than accepted current scope.
 
-## Later expansion
+## Design authority
 
-After repeated stable trajectories exist on harder material, beta/authenticated users can test which mechanisms generalize and which need personalization.
+Current authority includes:
 
-Production multi-user architecture is not a current requirement.
-
-## Long-horizon cost direction
-
-Do not optimize inference cost now. Preserve interfaces that later allow LLM-backed modules to be replaced or front-routed by:
-
-- parsers/AST/compiler transforms;
-- deterministic traces/static analysis;
-- terminology/identifier rewriting;
-- retrieval/cached validated representations;
-- sentence embeddings/transformers;
-- small classifiers/task-specific models;
-- templates/IR transforms;
-- constrained LLM fallback.
-
-The stable asset is the controller/representation contract and operational data, not any particular model implementation.
-
-## Supporting P3 state
-
-Keep protecting:
-
-- durable source-turn capture;
-- idempotent retry semantics;
-- cross-chat continuity;
-- backup/restore;
-- doctor/integrity;
-- future reconciliation if genuinely new historical source evidence appears;
-- structured curriculum provenance.
-
-Core invariant remains:
-
-> No silent learner-evidence loss.
+- Issue #63;
+- Issue #66 for PIR/PAM evidence;
+- `docs/P4_DETERMINISTIC_LEARNING_CONTROLLER_PDD.md`;
+- `docs/P4_DETERMINISTIC_LEARNING_CONTROLLER_SDD.md`;
+- `docs/ADR-0016-deterministic-learning-control.md`;
+- `docs/P4_PREREQUISITE_REMEDIATION_PDD.md`;
+- `docs/P4_PREREQUISITE_REMEDIATION_SDD.md`;
+- `docs/P4_PREREQUISITE_REMEDIATION_TDD.md`;
+- `docs/P4_PREREQUISITE_REMEDIATION_DEFERRED_LIVE_REQUIREMENTS.md`;
+- `docs/ROADMAP.md`;
+- `docs/HANDOFF.md`;
+- `PROJECT_MANIFEST.yaml`;
+- latest accepted `docs/DECISIONS.md` entries.
 
 ## Immediate execution priorities
 
-1. Accept/freeze P4 PDD/SDD and decision invariants.
-2. Audit the current runtime/schema against P4 contracts.
-3. Reuse existing durable data structures wherever semantics align.
-4. Design only the smallest additive migration/data changes required.
-5. Implement one real current course-node deterministic loop.
-6. Bound GPT behavior with explicit course state + learner state + authorized operation.
-7. Record exact decision/representation/module versions and subsequent outcomes.
-8. Continue normal learning and extend the system from observed failures.
+1. Keep PR #75 reviewable/green and shadow-only; do not fold it into the historical PAM-B claim.
+2. Run PAM C through the real Study OS GPT against exact deployed baseline `151c819e3457ae41fa1810b5060d0101f91bc12a`.
+3. Capture renderer/progression/free-language discrepancies as durable operational evidence while preserving learner/assistant turns.
+4. Close the PAM-C receipt before changing the deployed baseline.
+5. Review/merge #75 as a separate product-controller revision and give any later live promotion its own repo/local/live evidence chain.
+6. Feed real trajectories into versioned controller/representation improvements.
+7. Do not enable arbitrary raw-problem compilation until its separate compiler validation gate is satisfied.
+
+## Core invariants
+
+- No silent learner-evidence loss.
+- Transcript confusion alone is not mastery or task-failure evidence.
+- Canonical prerequisites and progression are code/state controlled.
+- AI diagnosis remains a hypothesis.
+- Ambiguous prerequisite diagnosis fails closed.
+- Representation adaptation must preserve the target skill.
+- Assistance cannot exceed policy ceilings.
+- Module/prompt/schema evolution is explicit and replayable.
+- Accepted PAM receipts stay pinned to the exact revisions/evidence they attest.
+- Subject-001 evidence does not imply population-level efficacy.

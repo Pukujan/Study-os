@@ -20,12 +20,14 @@ from .contracts import (
     SelectedAction,
 )
 
-REPRESENTATION_POLICY_VERSION = "0.1.0"
+REPRESENTATION_POLICY_VERSION = "0.2.0"
 BOTTLENECK_WEIGHT = 0.55
 BEHAVIORAL_EFFECT_WEIGHT = 0.35
 UNTESTED_EXPLORATION_BONUS = 0.12
 ONE_WINDOW_EXPLORATION_BONUS = 0.04
 RECENT_EXPOSURE_PENALTY = 0.15
+CODE_VISIBILITY = frozenset({"unspecified", "hidden", "allowed", "required"})
+INTERACTION_GRANULARITY = frozenset({"unspecified", "single_probe", "multi_part"})
 OUTCOME_WINDOW_WEIGHTS = {
     "immediate": 1.0,
     "faded": 2.0,
@@ -38,6 +40,17 @@ def _non_empty(value: str, field_name: str) -> str:
     if not isinstance(value, str) or not value.strip():
         raise ValueError(f"{field_name} must be a non-empty string")
     return value
+
+
+def _string_tuple(values: Sequence[str], field_name: str) -> tuple[str, ...]:
+    if isinstance(values, (str, bytes)):
+        raise ValueError(f"{field_name} must be an array of strings")
+    result = tuple(values)
+    if any(not isinstance(value, str) or not value.strip() for value in result):
+        raise ValueError(f"{field_name} must contain non-empty strings")
+    if len(result) != len(set(result)):
+        raise ValueError(f"{field_name} must be unique")
+    return result
 
 
 def _unit_interval(value: float, field_name: str) -> float:
@@ -120,6 +133,11 @@ class RepresentationCandidate:
     target_bottleneck: str
     bottleneck_match: float
     semantic_validated: bool
+    semantic_roles: Mapping[str, str] = field(default_factory=dict)
+    required_structure: tuple[str, ...] = ()
+    forbidden_features: tuple[str, ...] = ()
+    code_visibility: str = "unspecified"
+    interaction_granularity: str = "unspecified"
     outcomes: RepresentationOutcomeSummary = field(default_factory=RepresentationOutcomeSummary)
 
     def __post_init__(self) -> None:
@@ -139,6 +157,32 @@ class RepresentationCandidate:
         object.__setattr__(self, "bottleneck_match", _unit_interval(self.bottleneck_match, "bottleneck_match"))
         if not isinstance(self.semantic_validated, bool):
             raise ValueError("semantic_validated must be boolean")
+        semantic_roles = dict(self.semantic_roles)
+        if any(
+            not isinstance(key, str)
+            or not key.strip()
+            or not isinstance(value, str)
+            or not value.strip()
+            for key, value in semantic_roles.items()
+        ):
+            raise ValueError("semantic_roles must map non-empty strings to non-empty strings")
+        object.__setattr__(self, "semantic_roles", semantic_roles)
+        object.__setattr__(
+            self,
+            "required_structure",
+            _string_tuple(self.required_structure, "required_structure"),
+        )
+        object.__setattr__(
+            self,
+            "forbidden_features",
+            _string_tuple(self.forbidden_features, "forbidden_features"),
+        )
+        if self.code_visibility not in CODE_VISIBILITY:
+            raise ValueError(f"unsupported code_visibility: {self.code_visibility}")
+        if self.interaction_granularity not in INTERACTION_GRANULARITY:
+            raise ValueError(
+                f"unsupported interaction_granularity: {self.interaction_granularity}"
+            )
 
     @classmethod
     def from_mapping(cls, value: Mapping[str, Any]) -> "RepresentationCandidate":
@@ -154,6 +198,13 @@ class RepresentationCandidate:
             target_bottleneck=str(value.get("target_bottleneck", "")),
             bottleneck_match=cast(float, value.get("bottleneck_match")),
             semantic_validated=cast(bool, value.get("semantic_validated")),
+            semantic_roles=dict(value.get("semantic_roles", {})),
+            required_structure=tuple(value.get("required_structure", ())),
+            forbidden_features=tuple(value.get("forbidden_features", ())),
+            code_visibility=str(value.get("code_visibility", "unspecified")),
+            interaction_granularity=str(
+                value.get("interaction_granularity", "unspecified")
+            ),
             outcomes=RepresentationOutcomeSummary.from_mapping(value.get("outcomes", {})),
         )
 
@@ -253,6 +304,13 @@ def propose_representation_intervention(
             "representation_family": selected.representation_family,
             "representation_version": selected.representation_version,
             "target_bottleneck": selected.target_bottleneck,
+            "representation_constraints": {
+                "semantic_roles": dict(selected.semantic_roles),
+                "required_structure": list(selected.required_structure),
+                "forbidden_features": list(selected.forbidden_features),
+                "code_visibility": selected.code_visibility,
+                "interaction_granularity": selected.interaction_granularity,
+            },
             "behavioral_assessment_required": True,
             "outcome_windows": ["immediate", "faded", "transfer", "delayed"],
             "policy_status": "heuristic_shadow_only_not_calibrated",
