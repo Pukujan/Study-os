@@ -122,6 +122,17 @@ class P4PrerequisiteRemediationTests(unittest.TestCase):
         self.assertEqual(diagnosis.schema_version, "0.1.0")
         self.assertEqual(diagnosis.prompt_version, "p4-diagnosis-proposal.v0.1")
 
+    def test_diagnosis_parser_rejects_malformed_array_shapes(self):
+        malformed_hypotheses = dict(self.fixture["diagnosis_proposal"])
+        malformed_hypotheses["hypotheses"] = ["not-an-object"]
+        with self.assertRaisesRegex(ValueError, "hypotheses must contain objects"):
+            DiagnosisProposal.from_mapping(malformed_hypotheses)
+
+        malformed_sources = dict(self.fixture["diagnosis_proposal"])
+        malformed_sources["source_evidence_ids"] = "learner-turn-code-confusion"
+        with self.assertRaisesRegex(ValueError, "source_evidence_ids must be an array"):
+            DiagnosisProposal.from_mapping(malformed_sources)
+
     def test_ambiguous_missing_prerequisite_fails_closed(self):
         diagnosis = self.diagnosis_with_single_hypothesis(
             diagnosis_id="diag-ambiguous",
