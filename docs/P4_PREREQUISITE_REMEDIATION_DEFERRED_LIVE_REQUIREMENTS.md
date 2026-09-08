@@ -129,13 +129,15 @@ The executor may **not**:
 
 ## 7. Sequencing
 
-The accepted project sequence remains:
+The accepted project sequence is now:
 
 ```text
-PAM A known-PIR assurance — COMPLETE
-→ PAM B pinned local deployment / restart-resume validation
-→ PAM C real Study OS GPT known-PIR dogfood
+PAM A known-PIR assurance — PASSED
+PAM B pinned local deployment / restart-resume validation — PASSED
+PAM C real Study OS GPT known-PIR dogfood — NEXT / NOT YET CLAIMED
 ```
+
+The accepted PAM-B receipt is pinned to deployment baseline `151c819e3457ae41fa1810b5060d0101f91bc12a`; PR #75 is not part of that historical receipt.
 
 PR #75 is separate product-controller work and remains shadow/spec verification until explicitly promoted through its own reviewed evidence.
 
