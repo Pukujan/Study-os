@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -15,6 +16,7 @@ spec = importlib.util.spec_from_file_location("dsa_replay", HARNESS_PATH)
 if spec is None or spec.loader is None:
     raise RuntimeError("unable to load DSA replay harness")
 dsa_replay = importlib.util.module_from_spec(spec)
+sys.modules[spec.name] = dsa_replay
 spec.loader.exec_module(dsa_replay)
 
 
@@ -59,9 +61,9 @@ class DSAConversationReplayTests(unittest.TestCase):
             }
         }
         message = (
-            "target = 9\n"
-            "num    = 3\n"
-            "needed = 6\n\n"
+            "| target | 9 |\n"
+            "| num | 3 |\n"
+            "| needed | 6 |\n\n"
             "`needed = target - num`\n"
             "What is needed when num = 4?"
         )
