@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import shlex
 import subprocess
 import sys
@@ -98,6 +99,9 @@ def validate_corpus(corpus: dict[str, Any]) -> list[str]:
 
 
 def _contains_term(text: str, term: str) -> bool:
+    if re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", term):
+        pattern = rf"(?<![A-Za-z0-9_]){re.escape(term)}(?![A-Za-z0-9_])"
+        return re.search(pattern, text, flags=re.IGNORECASE) is not None
     return term.casefold() in text.casefold()
 
 
