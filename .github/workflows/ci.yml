@@ -123,6 +123,8 @@ jobs:
     name: Windows Git-normalized source reproducibility
     runs-on: windows-latest
     timeout-minutes: 10
+    env:
+      PYTHONPATH: src
 
     steps:
       - name: Check out repository
