@@ -260,6 +260,22 @@ class LunaActor:
             self.opencode.post(f"/session/{self.session_id}/abort", {})
         except RuntimeError:
             pass
+        # OpenCode can finalize a tool part at the same instant the bounded
+        # polling window expires. Read once after abort so a complete backend
+        # result is never discarded merely because Luna kept reasoning.
+        messages = self.opencode.get(f"/session/{self.session_id}/message?limit=50")
+        if isinstance(messages, list):
+            for message in messages:
+                if not isinstance(message, dict):
+                    continue
+                info = message.get("info", {})
+                if not isinstance(info, dict) or info.get("id") in known_message_ids:
+                    continue
+                if info.get("role") != "assistant" or info.get("agent") != AGENT:
+                    continue
+                backend_text = self._tool_backend_text(message)
+                if backend_text:
+                    return backend_text
         raise RuntimeError("Luna did not return a backend learner-visible turn")
 
     def ask(self, payload: dict[str, Any]) -> str:
