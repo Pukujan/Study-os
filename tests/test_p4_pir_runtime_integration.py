@@ -294,6 +294,22 @@ class PIRRuntimeIntegrationTests(unittest.TestCase):
         ):
             self.assertIn(name, names)
 
+        expansion = next(
+            tool
+            for tool in server.list_tools()
+            if tool["name"] == "request_problem_expansion"
+        )
+        self.assertEqual(
+            expansion["inputSchema"]["properties"]["request_kind"]["enum"],
+            [
+                "why",
+                "easier_example",
+                "more_detail",
+                "repeat_representation",
+                "clarify_term",
+            ],
+        )
+
         resolution = server.call_tool(
             "resolve_problem",
             {
