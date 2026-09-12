@@ -33,8 +33,10 @@ python3 tools/replay_dsa_conversations.py run \
 ```
 
 The checked-in adapter is intentionally harness-only. It creates one
-headless OpenCode HTTP session per scenario with `agent: luna`, seeds an
-isolated Study OS PIR run, then sends one bounded prompt per learner turn.
+headless OpenCode HTTP session per learner turn with `agent: luna`, seeds one
+isolated Study OS PIR run per scenario, then sends one bounded prompt. When
+the backend tool returns, the adapter stops any later free-form continuation
+and emits that backend text unchanged.
 It reads optional overrides from `STUDY_OS_REPLAY_AGENT`,
 `STUDY_OS_REPLAY_OPENCODE_URL`, `STUDY_OS_REPLAY_MCP_URL`, and
 `STUDY_OS_REPLAY_TIMEOUT`; it contains no machine-specific paths or

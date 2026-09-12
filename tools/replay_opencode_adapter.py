@@ -6,6 +6,7 @@ from __future__ import annotations
 import json
 import os
 import sys
+import time
 from typing import Any
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
@@ -24,13 +25,19 @@ class JsonHttpClient:
     def __init__(self, base_url: str) -> None:
         self.base_url = base_url.rstrip("/")
 
-    def post(self, path: str, payload: dict[str, Any]) -> dict[str, Any]:
-        body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+    def request(
+        self, method: str, path: str, payload: dict[str, Any] | None = None
+    ) -> Any:
+        body = (
+            json.dumps(payload, ensure_ascii=False).encode("utf-8")
+            if payload is not None
+            else None
+        )
         request = Request(
             self.base_url + path,
             data=body,
             headers={"Content-Type": "application/json", "Accept": "application/json"},
-            method="POST",
+            method=method,
         )
         try:
             with urlopen(request, timeout=TIMEOUT) as response:
@@ -40,13 +47,27 @@ class JsonHttpClient:
             if isinstance(detail, bytes):
                 detail = detail.decode("utf-8", errors="replace")
             raise RuntimeError(f"HTTP request failed: {detail or exc}") from exc
+        if not raw:
+            return None
         try:
             value = json.loads(raw)
         except json.JSONDecodeError as exc:
             raise RuntimeError("HTTP endpoint returned invalid JSON") from exc
         if not isinstance(value, dict):
-            raise RuntimeError("HTTP endpoint response must be an object")
+            return value
         return value
+
+    def post(self, path: str, payload: dict[str, Any]) -> dict[str, Any]:
+        value = self.request("POST", path, payload)
+        if not isinstance(value, dict):
+            raise RuntimeError("HTTP POST endpoint response must be an object")
+        return value
+
+    def post_async(self, path: str, payload: dict[str, Any]) -> None:
+        self.request("POST", path, payload)
+
+    def get(self, path: str) -> Any:
+        return self.request("GET", path)
 
 
 class McpClient:
@@ -182,10 +203,13 @@ class LunaActor:
                 return LunaActor._markdown_from_bundle(output["turn"])
         return ""
 
-    def _create_luna_session(self, scenario_id: str) -> None:
+    def _create_luna_session(self, scenario_id: str, turn_index: int) -> None:
         result = self.opencode.post(
             "/session",
-            {"title": f"Study OS replay: {scenario_id}", "agent": AGENT},
+            {
+                "title": f"Study OS replay: {scenario_id} turn {turn_index}",
+                "agent": AGENT,
+            },
         )
         if result.get("agent") != AGENT:
             raise RuntimeError(
@@ -193,19 +217,68 @@ class LunaActor:
             )
         self.session_id = str(result["id"])
 
+    def _wait_for_backend_text(self, known_message_ids: set[str]) -> str:
+        if not self.session_id:
+            raise RuntimeError("Luna session is not initialized")
+        deadline = time.monotonic() + TIMEOUT
+        while time.monotonic() < deadline:
+            messages = self.opencode.get(
+                f"/session/{self.session_id}/message?limit=50"
+            )
+            if not isinstance(messages, list):
+                raise RuntimeError("OpenCode message list was not an array")
+            for message in messages:
+                if not isinstance(message, dict):
+                    continue
+                info = message.get("info", {})
+                message_id = info.get("id") if isinstance(info, dict) else None
+                if message_id in known_message_ids:
+                    continue
+                if not isinstance(info, dict) or info.get("role") != "assistant":
+                    continue
+                if info.get("agent") != AGENT:
+                    raise RuntimeError(f"response was not produced by {AGENT!r}: {info!r}")
+                backend_text = self._tool_backend_text(message)
+                if backend_text:
+                    # The backend result is authoritative. Stop any later free-form
+                    # continuation before it can rewrite the learner-visible text.
+                    try:
+                        self.opencode.post(f"/session/{self.session_id}/abort", {})
+                    except RuntimeError:
+                        pass
+                    return backend_text
+            time.sleep(0.5)
+        try:
+            self.opencode.post(f"/session/{self.session_id}/abort", {})
+        except RuntimeError:
+            pass
+        raise RuntimeError("Luna did not return a backend learner-visible turn")
+
     def ask(self, payload: dict[str, Any]) -> str:
         scenario_id = str(payload.get("scenario_id", ""))
         if scenario_id != self.scenario_id:
             self.scenario_id = scenario_id
-            self.session_id = None
             self._prepare_run(payload)
-            self._create_luna_session(scenario_id)
-        if not self.session_id or not self.problem_run_id or not self.subject_id:
+        if not self.problem_run_id or not self.subject_id:
             raise RuntimeError("Luna replay state is not initialized")
-        response = self.opencode.post(
-            f"/session/{self.session_id}/message",
+        self._create_luna_session(scenario_id, int(payload.get("turn_index", 0)))
+        known_messages = self.opencode.get(
+            f"/session/{self.session_id}/message?limit=50"
+        )
+        known_message_ids = {
+            message.get("info", {}).get("id")
+            for message in known_messages
+            if isinstance(message, dict) and isinstance(message.get("info"), dict)
+        }
+        self.opencode.post_async(
+            f"/session/{self.session_id}/prompt_async",
             {
                 "agent": AGENT,
+                "tools": {
+                    "study-os-replay_get_problem_turn": True,
+                    "study-os-replay_submit_problem_response": True,
+                    "study-os-replay_request_problem_expansion": True,
+                },
                 "parts": [
                     {
                         "type": "text",
@@ -219,21 +292,7 @@ class LunaActor:
                 ],
             },
         )
-        info = response.get("info")
-        if not isinstance(info, dict) or info.get("agent") != AGENT:
-            raise RuntimeError(f"response was not produced by {AGENT!r}: {info!r}")
-        texts = [
-            part["text"]
-            for part in response.get("parts", [])
-            if isinstance(part, dict)
-            and part.get("type") == "text"
-            and isinstance(part.get("text"), str)
-            and part["text"].strip()
-        ]
-        answer = texts[-1].strip() if texts else ""
-        backend_text = self._tool_backend_text(response)
-        if backend_text and answer != backend_text:
-            print("Luna rewrote backend learner-visible text", file=sys.stderr)
+        answer = self._wait_for_backend_text(known_message_ids)
         refreshed = self.mcp.call(
             "get_problem_turn",
             {"problem_run_id": self.problem_run_id, "subject_id": self.subject_id},
