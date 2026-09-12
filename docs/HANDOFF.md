@@ -3,6 +3,16 @@
 Last updated: 2026-09-12
 Primary tracker: #63
 
+## Immediate execution authority — PR #77 truthful replay recovery
+
+Until the truthful learner-visible replay gates pass, the authoritative execution plan is:
+
+`docs/PR77_TRUTHFUL_REPLAY_RECOVERY_PLAN.md`
+
+This temporarily supersedes older "next architecture" sequencing in this handoff for PR #77 work. Do not add new tutoring architecture merely because an older P4 phase below suggests it. The immediate loop is: make the replay truthful, run the real learner-visible path, classify the first trustworthy divergence, fix that concrete failure, and rerun from the beginning.
+
+PR #77 must remain draft until its claim matches its evidence. In particular, backend tool output is not a substitute for Luna's final learner-visible answer, expected corpus stage must not be leaked to the actor, and live learner messages must follow actual deterministic controller state rather than a scripted future stage.
+
 ## Current phase
 
 **P4 — deterministic learning controller + versioned representation engine + operational improvement loop.**
