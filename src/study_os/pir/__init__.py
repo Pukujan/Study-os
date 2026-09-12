@@ -8,6 +8,7 @@ from .contracts import (
     ExpansionSpec,
     LearnerOutcome,
     ProblemRunState,
+    PresentationContract,
     RepresentationSpec,
     ResponseKind,
     RunStatus,
@@ -16,6 +17,7 @@ from .contracts import (
     TeachingStep,
     TeachingTurn,
     TransitionSpec,
+    VariableBinding,
 )
 from .controller import (
     AssetViolation,

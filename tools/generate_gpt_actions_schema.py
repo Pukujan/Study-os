@@ -14,9 +14,25 @@ CONTRACT_PATH = ROOT / "contracts" / "study-os-mcp-tools.v0.4.json"
 JSON_OBJECT_INPUT_FIELDS = {"payload", "capability_state", "assistance_state", "resume"}
 ARRAY_FIELDS = {"evidence_ids", "source_session_ids", "source_ids"}
 NULLABLE_OUTPUT_FIELDS = {"canonical_problem_id", "canonical_pir_revision"}
+INPUT_ENUMS = {
+    ("request_problem_expansion", "request_kind"): [
+        "why",
+        "easier_example",
+        "more_detail",
+        "repeat_representation",
+        "clarify_term",
+    ]
+}
 
 
 def _input_field_schema(operation: str, name: str) -> dict[str, Any]:
+    enum = INPUT_ENUMS.get((operation, name))
+    if enum:
+        return {
+            "type": "string",
+            "enum": enum,
+            "description": "Choose one supported expansion kind exactly.",
+        }
     if operation == "record_attempt" and name == "response":
         return {
             "type": "string",

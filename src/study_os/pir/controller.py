@@ -40,6 +40,12 @@ class AssetViolationCode(StrEnum):
     MISSING_OUTCOME_ROUTE = "MISSING_OUTCOME_ROUTE"
     UNKNOWN_EXPANSION_STEP = "UNKNOWN_EXPANSION_STEP"
     UNKNOWN_EXPANSION_REPRESENTATION = "UNKNOWN_EXPANSION_REPRESENTATION"
+    PRESENTATION_VARIABLE_MAP_INVALID = "PRESENTATION_VARIABLE_MAP_INVALID"
+    PRESENTATION_FORBIDDEN_TERM = "PRESENTATION_FORBIDDEN_TERM"
+    PRESENTATION_RELATION_MISSING = "PRESENTATION_RELATION_MISSING"
+    PRESENTATION_VISUAL_MISSING = "PRESENTATION_VISUAL_MISSING"
+    PRESENTATION_PROSE_BUDGET_EXCEEDED = "PRESENTATION_PROSE_BUDGET_EXCEEDED"
+    PRESENTATION_CHECK_MISSING = "PRESENTATION_CHECK_MISSING"
 
 
 class AssetViolation(BaseModel):
@@ -73,6 +79,18 @@ def _representation_map(asset: CanonicalTeachingAsset) -> dict[str, Representati
 
 def _assessment_map(asset: CanonicalTeachingAsset) -> dict[str, AssessmentSpec]:
     return {assessment.assessment_id: assessment for assessment in asset.assessments}
+
+
+def _contains_identifier(text: str, identifier: str) -> bool:
+    return re.search(
+        rf"(?<![A-Za-z0-9_]){re.escape(identifier)}(?![A-Za-z0-9_])",
+        text,
+    ) is not None
+
+
+def _starts_with_visual(markdown: str) -> bool:
+    first = next((line.strip() for line in markdown.splitlines() if line.strip()), "")
+    return first.startswith(("```", "|", "index:", "nums:", "value:", "[") )
 
 
 def validate_asset(asset: CanonicalTeachingAsset) -> tuple[AssetViolation, ...]:
@@ -115,6 +133,95 @@ def validate_asset(asset: CanonicalTeachingAsset) -> tuple[AssetViolation, ...]:
     step_by_id = _step_map(asset)
     representation_by_id = _representation_map(asset)
     assessment_by_id = _assessment_map(asset)
+
+    contract = asset.presentation_contract
+    if contract is not None:
+        variable_names = tuple(binding.name for binding in contract.required_variable_map)
+        for duplicate in _duplicates(variable_names):
+            violations.append(
+                AssetViolation(
+                    code=AssetViolationCode.PRESENTATION_VARIABLE_MAP_INVALID,
+                    detail=f"presentation variable map repeats {duplicate}",
+                )
+            )
+        mapped_forbidden = set(variable_names) & set(contract.forbidden_variable_names)
+        for name in sorted(mapped_forbidden):
+            violations.append(
+                AssetViolation(
+                    code=AssetViolationCode.PRESENTATION_VARIABLE_MAP_INVALID,
+                    detail=f"presentation variable map forbids and requires {name}",
+                )
+            )
+        if contract.max_relations_per_turn != 1:
+            violations.append(
+                AssetViolation(
+                    code=AssetViolationCode.PRESENTATION_VARIABLE_MAP_INVALID,
+                    detail="deterministic teaching contract must allow exactly one relation per turn",
+                )
+            )
+        for representation in asset.representations:
+            if representation.relation_id is None:
+                violations.append(
+                    AssetViolation(
+                        code=AssetViolationCode.PRESENTATION_RELATION_MISSING,
+                        detail=(
+                            f"representation {representation.representation_id} lacks its "
+                            "data-defined active relation"
+                        ),
+                    )
+                )
+            nonempty_lines = sum(
+                bool(line.strip()) for line in representation.learner_visible_markdown.splitlines()
+            )
+            if nonempty_lines > contract.max_nonempty_lines:
+                violations.append(
+                    AssetViolation(
+                        code=AssetViolationCode.PRESENTATION_PROSE_BUDGET_EXCEEDED,
+                        detail=(
+                            f"representation {representation.representation_id} has "
+                            f"{nonempty_lines} non-empty lines; max is {contract.max_nonempty_lines}"
+                        ),
+                    )
+                )
+            if contract.visual_required and not representation.visible_components:
+                violations.append(
+                    AssetViolation(
+                        code=AssetViolationCode.PRESENTATION_VISUAL_MISSING,
+                        detail=f"representation {representation.representation_id} has no visual components",
+                    )
+                )
+            if contract.visual_before_explanation and not _starts_with_visual(
+                representation.learner_visible_markdown
+            ):
+                violations.append(
+                    AssetViolation(
+                        code=AssetViolationCode.PRESENTATION_VISUAL_MISSING,
+                        detail=(
+                            f"representation {representation.representation_id} must start with its visual"
+                        ),
+                    )
+                )
+            if contract.tiny_check_required and representation.check_question is None:
+                violations.append(
+                    AssetViolation(
+                        code=AssetViolationCode.PRESENTATION_CHECK_MISSING,
+                        detail=(
+                            f"representation {representation.representation_id} lacks a data-defined "
+                            "tiny check"
+                        ),
+                    )
+                )
+            for forbidden in contract.forbidden_variable_names:
+                if _contains_identifier(representation.learner_visible_markdown, forbidden):
+                    violations.append(
+                        AssetViolation(
+                            code=AssetViolationCode.PRESENTATION_FORBIDDEN_TERM,
+                            detail=(
+                                f"representation {representation.representation_id} exposes "
+                                f"forbidden variable {forbidden}"
+                            ),
+                        )
+                    )
 
     if asset.entry_step_id not in step_by_id:
         violations.append(
@@ -361,6 +468,8 @@ def _make_turn(
         response_kind=step.response_kind,
         allowed_actions=actions,
         run_status=state.status,
+        relation_id=representation.relation_id,
+        render_mode="verbatim",
     )
 
 
@@ -418,6 +527,7 @@ def build_interaction_bundle(
                 turns=tuple(turns),
                 response_turn_id=turn.turn_id,
                 run_status=current.status,
+                presentation_contract=asset.presentation_contract,
             )
 
         auto_hops += 1
@@ -436,6 +546,7 @@ def build_interaction_bundle(
                 turns=tuple(turns),
                 response_turn_id=None,
                 run_status=current.status,
+                presentation_contract=asset.presentation_contract,
             )
 
 
@@ -518,6 +629,7 @@ def submit_response(
             turns=(terminal_turn,),
             response_turn_id=None,
             run_status=next_state.status,
+            presentation_contract=asset.presentation_contract,
         )
         return ResponseResult(outcome=outcome, state=next_state, bundle=bundle)
 
@@ -571,4 +683,5 @@ def build_expansion_bundle(
         turns=(expansion_turn, probe_turn),
         response_turn_id=turn_id,
         run_status=state.status,
+        presentation_contract=asset.presentation_contract,
     )
