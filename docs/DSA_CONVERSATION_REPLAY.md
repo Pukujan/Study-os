@@ -32,8 +32,9 @@ python3 tools/replay_dsa_conversations.py run \
   --report artifacts/luna-dsa-replay.json
 ```
 
-The checked-in OpenCode adapter is intentionally harness-only. It reads the
-model and executable from `STUDY_OS_REPLAY_MODEL` and
+The checked-in OpenCode adapter is intentionally harness-only. It selects the
+configured `luna` agent by default and reads optional overrides from
+`STUDY_OS_REPLAY_AGENT`, `STUDY_OS_REPLAY_MODEL`, and
 `STUDY_OS_REPLAY_OPENCODE`, so it contains no machine-specific paths or
 credentials. Set `STUDY_OS_REPLAY_ACTOR_CMD` to the same command to opt into
 the connected regression test; ordinary CI skips that test because it cannot

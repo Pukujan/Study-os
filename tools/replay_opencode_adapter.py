@@ -15,8 +15,12 @@ import sys
 from typing import Any
 
 
-MODEL = os.environ.get("STUDY_OS_REPLAY_MODEL", "litellm/grok-4.6")
-OPENCODE = os.environ.get("STUDY_OS_REPLAY_OPENCODE", "opencode")
+AGENT = os.environ.get("STUDY_OS_REPLAY_AGENT", "luna")
+MODEL = os.environ.get("STUDY_OS_REPLAY_MODEL")
+OPENCODE = os.environ.get(
+    "STUDY_OS_REPLAY_OPENCODE",
+    "opencode.cmd" if os.name == "nt" else "opencode",
+)
 
 
 class OpenCodeActor:
@@ -67,9 +71,11 @@ class OpenCodeActor:
             "json",
             "--log-level",
             "ERROR",
-            "--model",
-            MODEL,
+            "--agent",
+            AGENT,
         ]
+        if MODEL:
+            command.extend(["--model", MODEL])
         if self.session_id:
             command.extend(["--session", self.session_id])
         command.append(self._prompt(payload))
@@ -120,6 +126,10 @@ class OpenCodeActor:
 
 
 def main() -> int:
+    # The parent replay harness speaks UTF-8 JSONL even on Windows, where a
+    # console/pipe can otherwise select a legacy code page for stdout.
+    sys.stdin.reconfigure(encoding="utf-8", errors="replace")
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     actor = OpenCodeActor()
     try:
         for line in sys.stdin:
