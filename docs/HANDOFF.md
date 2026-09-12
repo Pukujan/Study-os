@@ -21,11 +21,20 @@ The Windows PIR mutation checker now hashes Git-normalized bytes via
 `git hash-object --path --stdin`, and CI includes a Windows reproducibility
 job. The replay harness remains separate from product architecture.
 
-Unresolved: the previous live run used a temporary OpenCode adapter and an
-available local model, not a maintained Luna adapter. Its 15-turn Two Sum
-report is evidence of the old path and must not be treated as a full 210-turn
-result. A disposable runtime and a sanitized adapter are required before the
-full replay can be rerun without writing into the active learner store.
+Live replay evidence is now available in
+`artifacts/study-os-pr77-live-two-sum-dictionary.json`. It used one isolated
+headless OpenCode HTTP session per learner turn with the configured `luna`
+agent (`gpt-5.5` through the local LiteLLM provider), and Study OS MCP owned
+the complete learner-visible output. The 15-turn lane produced 3 passes and
+12 failures; its first divergence is turn 3, where the corpus expects the
+`needed` stage even though the learner has not answered the active goal probe,
+so the deterministic backend correctly repeats the goal chart.
+
+The full corpus is 14 problems / 210 learner turns, but the reviewed asset
+registry currently contains only Two Sum and Sliding Window. The other 12
+problems fail closed at `resolve_problem` with `status: needs_compilation`.
+Therefore no 210-turn pass result exists yet; adding those assets and
+recalibrating the scripted stage expectations are separate required work.
 
 The product center is no longer persistence repair or an abstract research gate. Study OS is being used for real learning, and the next architecture should make AI teaching behavior deterministic at the control layer while keeping representation generation flexible and versioned.
 

@@ -73,7 +73,10 @@ The adapter must return one JSON line:
 
 or a JSON string containing the reply.
 
-The adapter should exercise the **normal Study OS learner-facing path**. Do not bypass Study OS and directly prompt Luna if the purpose of the run is to validate the product.
+The adapter uses OpenCode only as a headless transport to the configured
+`luna` agent. Study OS MCP seeds and owns the PIR run, and the adapter emits
+the backend's complete learner-visible markdown unchanged; it does not use
+ordinary ChatGPT tutoring or a second tutoring controller.
 
 The hidden expected assertions are deliberately not sent to the actor.
 
@@ -152,3 +155,11 @@ only generalize after the replay passes
 A green controller test is not a substitute for a green learner-visible replay.
 
 A green replay is also not a mastery claim. It only establishes that Study OS produced the expected teaching behavior under these scripted conversations.
+
+## Current live evidence
+
+`artifacts/study-os-pr77-live-two-sum-dictionary.json` records the first
+connected 15-turn lane against the direct Luna/MCP path: 3 passes, 12
+failures, first divergence at turn 3 (`needed`). The full 210-turn corpus
+cannot run to completion until the remaining 12 problems have reviewed PIR
+assets; they currently fail closed during problem resolution.
