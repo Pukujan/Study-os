@@ -41,14 +41,16 @@ class DSAConversationReplayTests(unittest.TestCase):
                 any(turn["expected"]["visual_required"] for turn in scenario["turns"])
             )
 
-    def test_actor_payload_does_not_leak_hidden_assertions(self) -> None:
+    def test_actor_payload_does_not_leak_hidden_assertions_or_stage(self) -> None:
         scenario = self.corpus["scenarios"][0]
         turn = scenario["turns"][0]
         payload = dsa_replay._actor_payload(scenario, turn, 0, [])
         serialized = json.dumps(payload)
         self.assertNotIn("expected", payload)
+        self.assertNotIn("stage", payload)
         self.assertNotIn("must_include_any", serialized)
         self.assertNotIn("must_not_include", serialized)
+        self.assertNotIn(str(turn["stage"]), serialized)
 
     def test_evaluator_accepts_stage_aligned_visual_question(self) -> None:
         turn = {
