@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
+import subprocess
 from pathlib import Path
 from typing import Any
 
@@ -23,8 +23,8 @@ HARD_BLOCKING_KEYS = tuple(
 )
 
 AUDIT_SOURCE_BLOBS = {
-    "src/study_os/pir/contracts.py": "6368763e90d1d44d0cbb6dd085a860d679cc8ee1",
-    "src/study_os/pir/controller.py": "d7ca54f109e53f9900d5d1bf75c36c4b9586b2b4",
+    "src/study_os/pir/contracts.py": "ced1177b1706c649aeb279b99bb4eeaee60e2878",
+    "src/study_os/pir/controller.py": "a00fa2a68bc0103df1d6d8e0ea1f30ad002ce438",
     "src/study_os/services/pir_runtime.py": "b73638f37b8e62269c7f212e3ca15ce801f521af",
 }
 
@@ -184,9 +184,30 @@ def load_results(path: Path) -> dict[str, str]:
 
 
 def git_blob_sha(path: Path) -> str:
-    data = path.read_bytes()
-    header = f"blob {len(data)}\0".encode("ascii")
-    return hashlib.sha1(header + data).hexdigest()
+    """Hash the bytes Git would store, not the platform working-tree bytes.
+
+    On Windows, ``core.autocrlf`` can leave CRLF in the checkout while the
+    index/source audit is LF.  ``git hash-object --path --stdin`` applies the
+    configured clean filters and therefore produces the same blob ID on
+    Windows, WSL, and Linux.
+    """
+
+    root = ROOT.resolve()
+    relative = path.resolve().relative_to(root).as_posix()
+    result = subprocess.run(
+        ["git", "hash-object", "--path", relative, "--stdin"],
+        input=path.read_bytes(),
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+    )
+    if result.returncode != 0:
+        detail = result.stderr.decode("utf-8", errors="replace").strip()
+        raise RuntimeError(f"git hash-object failed for {relative}: {detail}")
+    observed = result.stdout.decode("ascii", errors="strict").strip()
+    if len(observed) != 40:
+        raise RuntimeError(f"git hash-object returned an invalid blob id for {relative}")
+    return observed
 
 
 def validate_source_audit(root: Path) -> tuple[str, ...]:

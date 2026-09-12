@@ -9,12 +9,14 @@ from .contracts import (
     ExpansionKind,
     ExpansionSpec,
     LearnerOutcome,
+    PresentationContract,
     RepresentationSpec,
     ResponseKind,
     RunStatus,
     StepKind,
     TeachingStep,
     TransitionSpec,
+    VariableBinding,
 )
 from .controller import validate_asset
 
@@ -22,6 +24,8 @@ from .controller import validate_asset
 SOURCE_PIR_COMMIT = "43599ff8ed75bd7ceeab980d078e3a2570c7725d"
 CANONICAL_PROBLEM_ID = "sliding-window.max-sum-k.sep4.v1"
 CANONICAL_PIR_REVISION = "sep4.sliding-window.production-known-problem.v1"
+TWO_SUM_CANONICAL_PROBLEM_ID = "two-sum.dictionary.box.v1"
+TWO_SUM_CANONICAL_PIR_REVISION = "sep4.two-sum.dictionary.production-known-problem.v1"
 
 
 def _representation(
@@ -474,7 +478,441 @@ def sliding_window_asset() -> CanonicalTeachingAsset:
     return asset
 
 
-_ASSETS = {CANONICAL_PROBLEM_ID: sliding_window_asset()}
+def two_sum_asset() -> CanonicalTeachingAsset:
+    """Return the reviewed, deterministic Two Sum teaching asset.
+
+    The visible markdown is authored here as canonical output.  The model can
+    route a learner request or submit a response, but it cannot substitute a
+    different variable name or rewrite the backend turn.
+    """
+
+    contract = PresentationContract(
+        required_variable_map=(
+            VariableBinding(name="nums", role="input list of numbers"),
+            VariableBinding(name="target", role="sum to find"),
+            VariableBinding(name="box", role="number to earlier-index map"),
+            VariableBinding(name="i", role="current index"),
+            VariableBinding(name="num", role="nums[i]"),
+            VariableBinding(name="needed", role="target - num"),
+        ),
+        forbidden_variable_names=("seen", "lookup", "index_by_num"),
+        visual_required=True,
+        visual_before_explanation=True,
+        max_relations_per_turn=1,
+        max_nonempty_lines=12,
+        tiny_check_required=True,
+        render_mode="verbatim",
+    )
+
+    def rep(
+        representation_id: str,
+        relation_id: str,
+        markdown: str,
+        *components: str,
+        check_question: str,
+    ) -> RepresentationSpec:
+        return RepresentationSpec(
+            representation_id=representation_id,
+            learner_visible_markdown=markdown,
+            visible_components=components,
+            relation_id=relation_id,
+            check_question=check_question,
+        )
+
+    visual_components = ("problem_anchor", "index_row", "nums_row", "box_row")
+    reps = (
+        rep(
+            "r.two_sum.anchor",
+            "goal",
+            "```text\n"
+            "index | 0 | 1 | 2 | 3\n"
+            "nums  | 2 | 7 | 11 | 15\n"
+            "target: 9\n"
+            "```\n"
+            "Goal: return the two indexes whose values add to `target`.\n"
+            "Check: which indexes make 2 + 7 = 9?",
+            *visual_components,
+            check_question="which indexes make 2 + 7 = 9?",
+        ),
+        rep(
+            "r.two_sum.anchor_probe",
+            "goal",
+            "```text\n"
+            "index | 0 | 1 | 2 | 3\n"
+            "nums  | 2 | 7 | 11 | 15\n"
+            "target: 9\n"
+            "```\n"
+            "Return indexes, not values.\n"
+            "Which answer is correct: `[2, 7]` or `[0, 1]`?",
+            *visual_components,
+            check_question="which answer is correct: [2, 7] or [0, 1]?",
+        ),
+        rep(
+            "r.two_sum.anchor_repair",
+            "goal",
+            "```text\n"
+            "index | 0 | 1 | 2 | 3\n"
+            "nums  | 2 | 7 | 11 | 15\n"
+            "target: 9\n"
+            "```\n"
+            "The answer names positions in `nums`, so use indexes.\n"
+            "Which indexes hold 2 and 7?",
+            *visual_components,
+            check_question="which indexes hold 2 and 7?",
+        ),
+        rep(
+            "r.two_sum.needed",
+            "needed",
+            "```text\n"
+            "i = 0 | num = 2 | target = 9\n"
+            "needed = ?\n"
+            "```\n"
+            "One relation: `needed = target - num`.\n"
+            "What is `needed`?",
+            *visual_components,
+            check_question="what is needed when target is 9 and num is 2?",
+        ),
+        rep(
+            "r.two_sum.needed_repair",
+            "needed",
+            "```text\n"
+            "target = 9 | num = 2\n"
+            "needed = target - num = 9 - 2 = ?\n"
+            "```\n"
+            "Keep the subtraction order: target first.\n"
+            "What number completes `2 + needed = 9`?",
+            *visual_components,
+            check_question="what number completes 2 + needed = 9?",
+        ),
+        rep(
+            "r.two_sum.box",
+            "box_role",
+            "```text\n"
+            "box = {2: 0}\n"
+            "left  = number | right = index\n"
+            "```\n"
+            "One relation: `box` stores an earlier number with its index.\n"
+            "If `needed = 2`, what value is in `box[needed]`?",
+            *visual_components,
+            check_question="if needed is 2, what value is in box[needed]?",
+        ),
+        rep(
+            "r.two_sum.box_repair",
+            "box_role",
+            "```text\n"
+            "box = {2: 0}\n"
+            "box[needed] = box[2] = ?\n"
+            "```\n"
+            "The value on the right is the earlier index.\n"
+            "What index does `box[2]` give?",
+            *visual_components,
+            check_question="what index does box[2] give?",
+        ),
+        rep(
+            "r.two_sum.order",
+            "check_then_add",
+            "```text\n"
+            "current: i | num | needed\n"
+            "box: earlier numbers only\n"
+            "```\n"
+            "One relation: check `box` before adding the current `num`.\n"
+            "Which comes first: check or add?",
+            *visual_components,
+            check_question="which comes first: check or add?",
+        ),
+        rep(
+            "r.two_sum.order_repair",
+            "check_then_add",
+            "```text\n"
+            "check box -> if absent -> box[num] = i\n"
+            "```\n"
+            "Checking first prevents pairing the current index with itself.\n"
+            "Say the order in two words.",
+            *visual_components,
+            check_question="what is the two-word order?",
+        ),
+        rep(
+            "r.two_sum.loop",
+            "return_pair",
+            "```text\n"
+            "i, num = current index, current value\n"
+            "needed = target - num\n"
+            "pair = [box[needed], i]\n"
+            "```\n"
+            "One relation: `box[needed]` is old index and `i` is current index.\n"
+            "What pair is returned?",
+            *visual_components,
+            check_question="what pair is returned when box[needed] is 0 and i is 1?",
+        ),
+        rep(
+            "r.two_sum.loop_repair",
+            "return_pair",
+            "```text\n"
+            "old index = box[needed]\n"
+            "current index = i\n"
+            "return = [old index, current index]\n"
+            "```\n"
+            "Keep both indexes; do not return the values.\n"
+            "Write the return expression.",
+            *visual_components,
+            check_question="what expression returns both indexes?",
+        ),
+        rep(
+            "r.two_sum.final",
+            "assembled_algorithm",
+            "```python\n"
+            "for i, num in enumerate(nums):\n"
+            "    needed = target - num\n"
+            "    if needed in box:\n"
+            "        return [box[needed], i]\n"
+            "    box[num] = i\n"
+            "```\n"
+            "The reviewed path uses `nums`, `target`, `box`, `i`, `num`, and `needed`.\n"
+            "Check: where is the earlier index returned from?",
+            *visual_components,
+            check_question="where is the earlier index returned from?",
+        ),
+        rep(
+            "r.two_sum.needed_why",
+            "needed",
+            "```text\n"
+            "num + needed = target\n"
+            "needed = target - num\n"
+            "```\n"
+            "The subtraction isolates the partner value.\n"
+            "Why subtract `num` from `target`?",
+            *visual_components,
+            check_question="why subtract num from target?",
+        ),
+        rep(
+            "r.two_sum.box_why",
+            "box_role",
+            "```text\n"
+            "box: number -> earlier index\n"
+            "{2: 0} -> number 2 was at index 0\n"
+            "```\n"
+            "The map lets one check find the earlier index.\n"
+            "What does the right side store?",
+            *visual_components,
+            check_question="what does the right side of box store?",
+        ),
+    )
+
+    def route(outcome: LearnerOutcome, next_step_id: str) -> TransitionSpec:
+        return TransitionSpec(outcome=outcome, next_step_id=next_step_id)
+
+    asset = CanonicalTeachingAsset(
+        schema_version="study-os.canonical-teaching-asset.v0",
+        canonical_problem_id=TWO_SUM_CANONICAL_PROBLEM_ID,
+        canonical_pir_revision=TWO_SUM_CANONICAL_PIR_REVISION,
+        source_pir_repository="Pukujan/study-os",
+        source_pir_commit="151c819e3457ae41fa1810b5060d0101f91bc12a",
+        controller_revision="study-os.pir-controller.v0",
+        renderer_revision="study-os.markdown-renderer.v0",
+        assessment_revision="study-os.pir-assessment.v0",
+        entry_step_id="two_sum_anchor",
+        aliases=(
+            "two sum",
+            "given nums and target, return indices of two numbers whose sum is target",
+            "given nums and target return indices of two numbers whose sum is target",
+            "find two numbers in nums that add to target",
+        ),
+        representations=reps,
+        assessments=(
+            AssessmentSpec(
+                assessment_id="a.two_sum_goal",
+                kind=AssessmentKind.INTEGER_SEQUENCE,
+                expected_values=(0, 1),
+                partial_values=(2, 7),
+            ),
+            AssessmentSpec(
+                assessment_id="a.two_sum_needed",
+                kind=AssessmentKind.INTEGER,
+                expected_values=(7,),
+            ),
+            AssessmentSpec(
+                assessment_id="a.two_sum_box",
+                kind=AssessmentKind.INTEGER,
+                expected_values=(0,),
+            ),
+            AssessmentSpec(
+                assessment_id="a.two_sum_order",
+                kind=AssessmentKind.TEXT,
+                expected_text=("check first then add", "check before add"),
+            ),
+            AssessmentSpec(
+                assessment_id="a.two_sum_loop",
+                kind=AssessmentKind.TEXT,
+                expected_text=("return [box[needed], i]",),
+            ),
+        ),
+        steps=(
+            TeachingStep(
+                step_id="two_sum_anchor",
+                kind=StepKind.EXPLAIN,
+                representation_id="r.two_sum.anchor",
+                required_components=visual_components,
+                automatic_transition=TransitionSpec(next_step_id="two_sum_goal_probe"),
+            ),
+            TeachingStep(
+                step_id="two_sum_goal_probe",
+                kind=StepKind.PROBE,
+                representation_id="r.two_sum.anchor_probe",
+                required_components=visual_components,
+                response_kind=ResponseKind.INTEGER_SEQUENCE,
+                assessment_id="a.two_sum_goal",
+                outcome_transitions=(
+                    route(LearnerOutcome.CORRECT, "two_sum_needed_bridge"),
+                    route(LearnerOutcome.PARTIAL, "two_sum_anchor_repair"),
+                    route(LearnerOutcome.INCORRECT, "two_sum_anchor_repair"),
+                ),
+            ),
+            TeachingStep(
+                step_id="two_sum_anchor_repair",
+                kind=StepKind.CORRECT,
+                representation_id="r.two_sum.anchor_repair",
+                required_components=visual_components,
+                automatic_transition=TransitionSpec(next_step_id="two_sum_goal_probe"),
+            ),
+            TeachingStep(
+                step_id="two_sum_needed_bridge",
+                kind=StepKind.EXPLAIN,
+                representation_id="r.two_sum.needed",
+                required_components=visual_components,
+                automatic_transition=TransitionSpec(next_step_id="two_sum_needed_probe"),
+            ),
+            TeachingStep(
+                step_id="two_sum_needed_probe",
+                kind=StepKind.PROBE,
+                representation_id="r.two_sum.needed",
+                required_components=visual_components,
+                response_kind=ResponseKind.INTEGER,
+                assessment_id="a.two_sum_needed",
+                outcome_transitions=(
+                    route(LearnerOutcome.CORRECT, "two_sum_box_bridge"),
+                    route(LearnerOutcome.INCORRECT, "two_sum_needed_repair"),
+                ),
+            ),
+            TeachingStep(
+                step_id="two_sum_needed_repair",
+                kind=StepKind.CORRECT,
+                representation_id="r.two_sum.needed_repair",
+                required_components=visual_components,
+                automatic_transition=TransitionSpec(next_step_id="two_sum_needed_probe"),
+            ),
+            TeachingStep(
+                step_id="two_sum_box_bridge",
+                kind=StepKind.EXPLAIN,
+                representation_id="r.two_sum.box",
+                required_components=visual_components,
+                automatic_transition=TransitionSpec(next_step_id="two_sum_box_probe"),
+            ),
+            TeachingStep(
+                step_id="two_sum_box_probe",
+                kind=StepKind.PROBE,
+                representation_id="r.two_sum.box",
+                required_components=visual_components,
+                response_kind=ResponseKind.INTEGER,
+                assessment_id="a.two_sum_box",
+                outcome_transitions=(
+                    route(LearnerOutcome.CORRECT, "two_sum_order_bridge"),
+                    route(LearnerOutcome.INCORRECT, "two_sum_box_repair"),
+                ),
+            ),
+            TeachingStep(
+                step_id="two_sum_box_repair",
+                kind=StepKind.CORRECT,
+                representation_id="r.two_sum.box_repair",
+                required_components=visual_components,
+                automatic_transition=TransitionSpec(next_step_id="two_sum_box_probe"),
+            ),
+            TeachingStep(
+                step_id="two_sum_order_bridge",
+                kind=StepKind.EXPLAIN,
+                representation_id="r.two_sum.order",
+                required_components=visual_components,
+                automatic_transition=TransitionSpec(next_step_id="two_sum_order_probe"),
+            ),
+            TeachingStep(
+                step_id="two_sum_order_probe",
+                kind=StepKind.PROBE,
+                representation_id="r.two_sum.order",
+                required_components=visual_components,
+                response_kind=ResponseKind.TEXT,
+                assessment_id="a.two_sum_order",
+                outcome_transitions=(
+                    route(LearnerOutcome.CORRECT, "two_sum_loop_bridge"),
+                    route(LearnerOutcome.INCORRECT, "two_sum_order_repair"),
+                ),
+            ),
+            TeachingStep(
+                step_id="two_sum_order_repair",
+                kind=StepKind.CORRECT,
+                representation_id="r.two_sum.order_repair",
+                required_components=visual_components,
+                automatic_transition=TransitionSpec(next_step_id="two_sum_order_probe"),
+            ),
+            TeachingStep(
+                step_id="two_sum_loop_bridge",
+                kind=StepKind.EXPLAIN,
+                representation_id="r.two_sum.loop",
+                required_components=visual_components,
+                automatic_transition=TransitionSpec(next_step_id="two_sum_loop_probe"),
+            ),
+            TeachingStep(
+                step_id="two_sum_loop_probe",
+                kind=StepKind.PROBE,
+                representation_id="r.two_sum.loop",
+                required_components=visual_components,
+                response_kind=ResponseKind.TEXT,
+                assessment_id="a.two_sum_loop",
+                outcome_transitions=(
+                    route(LearnerOutcome.CORRECT, "two_sum_final"),
+                    route(LearnerOutcome.INCORRECT, "two_sum_loop_repair"),
+                ),
+            ),
+            TeachingStep(
+                step_id="two_sum_loop_repair",
+                kind=StepKind.CORRECT,
+                representation_id="r.two_sum.loop_repair",
+                required_components=visual_components,
+                automatic_transition=TransitionSpec(next_step_id="two_sum_loop_probe"),
+            ),
+            TeachingStep(
+                step_id="two_sum_final",
+                kind=StepKind.ASSEMBLE,
+                representation_id="r.two_sum.final",
+                required_components=visual_components,
+                automatic_transition=TransitionSpec(
+                    exit_status=RunStatus.ASSEMBLED_MASTERY_UNPROVEN
+                ),
+            ),
+        ),
+        expansions=(
+            ExpansionSpec(
+                step_id="two_sum_needed_probe",
+                kind=ExpansionKind.WHY,
+                representation_id="r.two_sum.needed_why",
+            ),
+            ExpansionSpec(
+                step_id="two_sum_box_probe",
+                kind=ExpansionKind.WHY,
+                representation_id="r.two_sum.box_why",
+            ),
+        ),
+        presentation_contract=contract,
+    )
+    violations = validate_asset(asset)
+    if violations:
+        codes = ", ".join(item.code.value for item in violations)
+        raise RuntimeError(f"built-in Two Sum PIR asset is invalid: {codes}")
+    return asset
+
+
+_ASSETS = {
+    CANONICAL_PROBLEM_ID: sliding_window_asset(),
+    TWO_SUM_CANONICAL_PROBLEM_ID: two_sum_asset(),
+}
 
 
 def get_asset(canonical_problem_id: str) -> CanonicalTeachingAsset | None:
@@ -494,6 +932,8 @@ def resolve_known_problem(problem_text: str, domain: str) -> CanonicalTeachingAs
         return None
 
     normalized = _normalize_problem_text(problem_text)
-    asset = _ASSETS[CANONICAL_PROBLEM_ID]
-    aliases = {_normalize_problem_text(alias) for alias in asset.aliases}
-    return asset if normalized in aliases else None
+    for asset in _ASSETS.values():
+        aliases = {_normalize_problem_text(alias) for alias in asset.aliases}
+        if normalized in aliases:
+            return asset
+    return None

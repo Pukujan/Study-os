@@ -28,9 +28,16 @@ Run the entire corpus through the actual local actor:
 
 ```bash
 python3 tools/replay_dsa_conversations.py run \
-  --actor-cmd "python3 /path/to/local_luna_study_os_adapter.py" \
+  --actor-cmd "python3 tools/replay_opencode_adapter.py" \
   --report artifacts/luna-dsa-replay.json
 ```
+
+The checked-in OpenCode adapter is intentionally harness-only. It reads the
+model and executable from `STUDY_OS_REPLAY_MODEL` and
+`STUDY_OS_REPLAY_OPENCODE`, so it contains no machine-specific paths or
+credentials. Set `STUDY_OS_REPLAY_ACTOR_CMD` to the same command to opt into
+the connected regression test; ordinary CI skips that test because it cannot
+provide a live Study OS/MCP session.
 
 The actor command stays alive for the whole run and speaks JSONL over stdin/stdout.
 

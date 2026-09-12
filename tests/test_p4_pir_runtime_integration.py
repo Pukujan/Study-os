@@ -9,7 +9,7 @@ from study_os import RuntimeConfig, StudyOSService
 from study_os.db.connection import LATEST_SCHEMA_VERSION
 from study_os.errors import StudyOSError
 from study_os.mcp.server import MCPServer
-from study_os.pir.registry import CANONICAL_PROBLEM_ID
+from study_os.pir.registry import CANONICAL_PROBLEM_ID, TWO_SUM_CANONICAL_PROBLEM_ID
 
 
 class PIRRuntimeIntegrationTests(unittest.TestCase):
@@ -62,6 +62,33 @@ class PIRRuntimeIntegrationTests(unittest.TestCase):
         )
         self.assertEqual(unknown["status"], "needs_compilation")
         self.assertIsNone(unknown["canonical_problem_id"])
+
+    def test_two_sum_resolution_returns_complete_verbatim_bundle(self) -> None:
+        known = self.service.resolve_problem(
+            problem_text="Given nums and target, return indices of two numbers whose sum is target.",
+            domain="dsa",
+        )
+        self.assertEqual(known["status"], "known")
+        self.assertEqual(known["canonical_problem_id"], TWO_SUM_CANONICAL_PROBLEM_ID)
+
+        started = self.service.start_problem(
+            idempotency_key="two-sum-start",
+            session_id=str(self.session["session_id"]),
+            subject_id="subject-001",
+            canonical_problem_id=TWO_SUM_CANONICAL_PROBLEM_ID,
+        )
+        bundle = started["turn"]
+        self.assertIsInstance(bundle, dict)
+        assert isinstance(bundle, dict)
+        contract = bundle["presentation_contract"]
+        self.assertEqual(contract["render_mode"], "verbatim")
+        self.assertEqual(
+            [item["name"] for item in contract["required_variable_map"]],
+            ["nums", "target", "box", "i", "num", "needed"],
+        )
+        turn = bundle["turns"][-1]
+        self.assertEqual(turn["render_mode"], "verbatim")
+        self.assertIn("```text", turn["learner_visible_markdown"])
 
     def test_start_problem_pins_asset_and_retries_idempotently(self) -> None:
         first = self.start_problem()

@@ -1,11 +1,31 @@
 # Agent Handoff
 
-Last updated: 2026-09-03
+Last updated: 2026-09-12
 Primary tracker: #63
 
 ## Current phase
 
 **P4 — deterministic learning controller + versioned representation engine + operational improvement loop.**
+
+## Latest evidence-bearing change
+
+PR #77 remains draft. The branch now includes a deterministic Two Sum
+known-problem asset and a data-defined learner-facing presentation contract:
+the exact variable map is `nums`, `target`, `box`, `i`, `num`, `needed`; `seen`,
+`lookup`, and `index_by_num` are forbidden; each turn carries one relation,
+one tiny check, a visual-first markdown payload, a prose budget, and
+`render_mode: verbatim`. The MCP/application bundle returns that complete
+payload unchanged.
+
+The Windows PIR mutation checker now hashes Git-normalized bytes via
+`git hash-object --path --stdin`, and CI includes a Windows reproducibility
+job. The replay harness remains separate from product architecture.
+
+Unresolved: the previous live run used a temporary OpenCode adapter and an
+available local model, not a maintained Luna adapter. Its 15-turn Two Sum
+report is evidence of the old path and must not be treated as a full 210-turn
+result. A disposable runtime and a sanitized adapter are required before the
+full replay can be rerun without writing into the active learner store.
 
 The product center is no longer persistence repair or an abstract research gate. Study OS is being used for real learning, and the next architecture should make AI teaching behavior deterministic at the control layer while keeping representation generation flexible and versioned.
 
