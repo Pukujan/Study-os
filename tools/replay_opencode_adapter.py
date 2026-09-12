@@ -1,19 +1,25 @@
 #!/usr/bin/env python3
-"""Run replay turns through isolated Luna sessions and Study OS MCP."""
+"""Run truthful learner-visible replay turns through Luna and Study OS MCP.
+
+The adapter deliberately preserves two separate pieces of evidence for every turn:
+1. the learner-visible markdown returned by the Study OS tool; and
+2. Luna's final completed assistant text after the tool call.
+
+The replay must never substitute (1) for (2).  Their equality is an acceptance
+condition when the active presentation contract requires verbatim rendering.
+"""
 
 from __future__ import annotations
 
 import json
 import os
 import sys
-import time
 from typing import Any
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
 
 AGENT = os.environ.get("STUDY_OS_REPLAY_AGENT", "luna")
-MODEL = os.environ.get("STUDY_OS_REPLAY_MODEL")
 OPENCODE_URL = os.environ.get(
     "STUDY_OS_REPLAY_OPENCODE_URL", "http://127.0.0.1:4097"
 )
@@ -50,24 +56,15 @@ class JsonHttpClient:
         if not raw:
             return None
         try:
-            value = json.loads(raw)
+            return json.loads(raw)
         except json.JSONDecodeError as exc:
             raise RuntimeError("HTTP endpoint returned invalid JSON") from exc
-        if not isinstance(value, dict):
-            return value
-        return value
 
     def post(self, path: str, payload: dict[str, Any]) -> dict[str, Any]:
         value = self.request("POST", path, payload)
         if not isinstance(value, dict):
             raise RuntimeError("HTTP POST endpoint response must be an object")
         return value
-
-    def post_async(self, path: str, payload: dict[str, Any]) -> None:
-        self.request("POST", path, payload)
-
-    def get(self, path: str) -> Any:
-        return self.request("GET", path)
 
 
 class McpClient:
@@ -101,7 +98,7 @@ class McpClient:
 
 
 class LunaActor:
-    """JSONL actor with one direct Luna session for each replay scenario."""
+    """JSONL actor backed by the normal Luna -> Study OS MCP product path."""
 
     def __init__(self) -> None:
         self.opencode = JsonHttpClient(OPENCODE_URL)
@@ -118,6 +115,70 @@ class LunaActor:
         if not turns or not isinstance(turns[-1], dict):
             return ""
         return str(turns[-1].get("learner_visible_markdown", ""))
+
+    @staticmethod
+    def _step_from_bundle(bundle: dict[str, Any] | None) -> str | None:
+        if not bundle:
+            return None
+        turns = bundle.get("turns", [])
+        if not turns or not isinstance(turns[-1], dict):
+            return None
+        value = turns[-1].get("canonical_step_id")
+        return str(value) if value is not None else None
+
+    @staticmethod
+    def _assistant_text(message: dict[str, Any]) -> str:
+        chunks: list[str] = []
+        for part in message.get("parts", []):
+            if not isinstance(part, dict) or part.get("type") != "text":
+                continue
+            text = part.get("text")
+            if isinstance(text, str):
+                chunks.append(text)
+        return "".join(chunks)
+
+    @staticmethod
+    def _tool_name(part: dict[str, Any]) -> str | None:
+        for candidate in (
+            part.get("tool"),
+            part.get("name"),
+            part.get("tool_name"),
+        ):
+            if isinstance(candidate, str) and candidate:
+                return candidate
+        state = part.get("state")
+        if isinstance(state, dict):
+            for key in ("tool", "name", "tool_name"):
+                candidate = state.get(key)
+                if isinstance(candidate, str) and candidate:
+                    return candidate
+        return None
+
+    @classmethod
+    def _tool_snapshots(cls, response: dict[str, Any]) -> list[dict[str, Any]]:
+        snapshots: list[dict[str, Any]] = []
+        for part in response.get("parts", []):
+            if not isinstance(part, dict) or part.get("type") != "tool":
+                continue
+            state = part.get("state", {})
+            raw = state.get("output") if isinstance(state, dict) else None
+            if not isinstance(raw, str):
+                continue
+            try:
+                output = json.loads(raw)
+            except json.JSONDecodeError:
+                continue
+            if not isinstance(output, dict) or not isinstance(output.get("turn"), dict):
+                continue
+            bundle = output["turn"]
+            snapshots.append(
+                {
+                    "tool_name": cls._tool_name(part),
+                    "backend_message": cls._markdown_from_bundle(bundle),
+                    "backend_step": cls._step_from_bundle(bundle),
+                }
+            )
+        return snapshots
 
     def _prepare_run(self, payload: dict[str, Any]) -> None:
         scenario_id = str(payload["scenario_id"])
@@ -151,8 +212,30 @@ class LunaActor:
         self.problem_run_id = str(started["problem_run_id"])
         self.current_turn = started.get("turn")
 
+    def _ensure_run(self, payload: dict[str, Any]) -> None:
+        scenario_id = str(payload.get("scenario_id", ""))
+        if not scenario_id:
+            raise RuntimeError("replay payload is missing scenario_id")
+        if scenario_id != self.scenario_id:
+            self.scenario_id = scenario_id
+            self._prepare_run(payload)
+
+    def state(self, payload: dict[str, Any]) -> dict[str, Any]:
+        """Return actual backend state without asking Luna to produce a turn."""
+        self._ensure_run(payload)
+        return {
+            "backend_step": self._step_from_bundle(self.current_turn),
+            "backend_message": self._markdown_from_bundle(self.current_turn or {}),
+            "problem_run_id": self.problem_run_id,
+        }
+
     @staticmethod
-    def _prompt(payload: dict[str, Any], run_id: str, subject_id: str, turn: dict[str, Any] | None) -> str:
+    def _prompt(
+        payload: dict[str, Any],
+        run_id: str,
+        subject_id: str,
+        turn: dict[str, Any] | None,
+    ) -> str:
         history = payload.get("history", [])
         history_text = "\n".join(
             f"{item.get('role', 'unknown')}: {item.get('content', '')}"
@@ -174,13 +257,12 @@ class LunaActor:
             "learner's exact response. If they request why, clarification, or "
             "more detail, call request_problem_expansion only when the current "
             "probe supports that expansion. Otherwise call get_problem_turn. "
-            "After a successful tool returns, "
-            "your final text must equal its `turn.turns[-1].learner_visible_markdown` "
-            "exactly, copied unchanged. Do not author, summarize, or reformat it; "
-            "do not mention this replay or hidden checks. If a tool returns a "
-            "validation error, do not retry it and do not use any file, shell, "
-            "patch, or other non-Study-OS tool; call get_problem_turn once and "
-            "copy that backend text.\n\n"
+            "After a successful tool returns, your final text must equal its "
+            "`turn.turns[-1].learner_visible_markdown` exactly, copied unchanged. "
+            "Do not author, summarize, or reformat it; do not mention this replay "
+            "or hidden checks. If a tool returns a validation error, do not retry "
+            "it and do not use any file, shell, patch, or other non-Study-OS tool; "
+            "call get_problem_turn once and copy that backend text.\n\n"
             f"problem_run_id: {run_id}\nsubject_id: {subject_id}\n"
             f"current_turn_id: {turn_id}\ncurrent_backend_step: {step_id}\n"
             f"current_backend_allowed_actions: {json.dumps(allowed_actions)}\n"
@@ -188,114 +270,35 @@ class LunaActor:
             f"Problem: {payload.get('title')}\n"
             f"Problem statement: {payload.get('problem')}\n"
             f"Approved variables: {json.dumps(payload.get('variables', {}), ensure_ascii=False)}\n"
-            f"Current stage: {payload.get('stage')}\n"
             f"Learner's latest message:\n{payload.get('learner_message', '')}\n\n"
             f"Recent conversation:\n{history_text}\n\n"
             "Return only the exact learner-visible backend text."
         )
 
-    @staticmethod
-    def _tool_backend_text(response: dict[str, Any]) -> str:
-        for part in response.get("parts", []):
-            if not isinstance(part, dict) or part.get("type") != "tool":
-                continue
-            state = part.get("state", {})
-            raw = state.get("output") if isinstance(state, dict) else None
-            if not isinstance(raw, str):
-                continue
-            try:
-                output = json.loads(raw)
-            except json.JSONDecodeError:
-                continue
-            if isinstance(output, dict) and isinstance(output.get("turn"), dict):
-                return LunaActor._markdown_from_bundle(output["turn"])
-        return ""
-
     def _create_luna_session(self, scenario_id: str, turn_index: int) -> None:
         result = self.opencode.post(
             "/session",
-            {
-                "title": f"Study OS replay: {scenario_id} turn {turn_index}",
-                "agent": AGENT,
-            },
+            {"title": f"Study OS replay: {scenario_id} turn {turn_index}"},
         )
-        if result.get("agent") != AGENT:
-            raise RuntimeError(
-                f"headless server created {result.get('agent')!r}, expected {AGENT!r}"
-            )
         self.session_id = str(result["id"])
 
-    def _wait_for_backend_text(self, known_message_ids: set[str]) -> str:
-        if not self.session_id:
-            raise RuntimeError("Luna session is not initialized")
-        deadline = time.monotonic() + TIMEOUT
-        while time.monotonic() < deadline:
-            messages = self.opencode.get(
-                f"/session/{self.session_id}/message?limit=50"
-            )
-            if not isinstance(messages, list):
-                raise RuntimeError("OpenCode message list was not an array")
-            for message in messages:
-                if not isinstance(message, dict):
-                    continue
-                info = message.get("info", {})
-                message_id = info.get("id") if isinstance(info, dict) else None
-                if message_id in known_message_ids:
-                    continue
-                if not isinstance(info, dict) or info.get("role") != "assistant":
-                    continue
-                if info.get("agent") != AGENT:
-                    raise RuntimeError(f"response was not produced by {AGENT!r}: {info!r}")
-                backend_text = self._tool_backend_text(message)
-                if backend_text:
-                    # The backend result is authoritative. Stop any later free-form
-                    # continuation before it can rewrite the learner-visible text.
-                    try:
-                        self.opencode.post(f"/session/{self.session_id}/abort", {})
-                    except RuntimeError:
-                        pass
-                    return backend_text
-            time.sleep(0.5)
-        try:
-            self.opencode.post(f"/session/{self.session_id}/abort", {})
-        except RuntimeError:
-            pass
-        # OpenCode can finalize a tool part at the same instant the bounded
-        # polling window expires. Read once after abort so a complete backend
-        # result is never discarded merely because Luna kept reasoning.
-        messages = self.opencode.get(f"/session/{self.session_id}/message?limit=50")
-        if isinstance(messages, list):
-            for message in messages:
-                if not isinstance(message, dict):
-                    continue
-                info = message.get("info", {})
-                if not isinstance(info, dict) or info.get("id") in known_message_ids:
-                    continue
-                if info.get("role") != "assistant" or info.get("agent") != AGENT:
-                    continue
-                backend_text = self._tool_backend_text(message)
-                if backend_text:
-                    return backend_text
-        raise RuntimeError("Luna did not return a backend learner-visible turn")
-
-    def ask(self, payload: dict[str, Any]) -> str:
-        scenario_id = str(payload.get("scenario_id", ""))
-        if scenario_id != self.scenario_id:
-            self.scenario_id = scenario_id
-            self._prepare_run(payload)
+    def ask(self, payload: dict[str, Any]) -> dict[str, Any]:
+        self._ensure_run(payload)
         if not self.problem_run_id or not self.subject_id:
             raise RuntimeError("Luna replay state is not initialized")
-        self._create_luna_session(scenario_id, int(payload.get("turn_index", 0)))
-        known_messages = self.opencode.get(
-            f"/session/{self.session_id}/message?limit=50"
-        )
-        known_message_ids = {
-            message.get("info", {}).get("id")
-            for message in known_messages
-            if isinstance(message, dict) and isinstance(message.get("info"), dict)
-        }
-        self.opencode.post_async(
-            f"/session/{self.session_id}/prompt_async",
+
+        scenario_id = str(payload["scenario_id"])
+        turn_index = int(payload.get("turn_index", 0))
+        backend_step_before = self._step_from_bundle(self.current_turn)
+        self._create_luna_session(scenario_id, turn_index)
+        if not self.session_id:
+            raise RuntimeError("Luna session was not created")
+
+        # Use the synchronous message endpoint.  It returns only after Luna has
+        # completed the assistant response, so the replay can inspect what the
+        # learner would actually see rather than aborting at the first tool result.
+        response = self.opencode.post(
+            f"/session/{self.session_id}/message",
             {
                 "agent": AGENT,
                 "tools": {
@@ -316,15 +319,42 @@ class LunaActor:
                 ],
             },
         )
-        answer = self._wait_for_backend_text(known_message_ids)
+        info = response.get("info", {})
+        if isinstance(info, dict):
+            role = info.get("role")
+            response_agent = info.get("agent")
+            if role not in (None, "assistant"):
+                raise RuntimeError(f"OpenCode returned non-assistant response: {info!r}")
+            if response_agent not in (None, AGENT):
+                raise RuntimeError(
+                    f"response was not produced by {AGENT!r}: {response_agent!r}"
+                )
+
+        snapshots = self._tool_snapshots(response)
+        snapshots = [item for item in snapshots if item["backend_message"]]
+        if not snapshots:
+            raise RuntimeError("Luna completed without a Study OS learner-visible tool result")
+        authoritative = snapshots[-1]
+        assistant_message = self._assistant_text(response)
+        if not assistant_message:
+            raise RuntimeError("Luna completed without final learner-visible text")
+
         refreshed = self.mcp.call(
             "get_problem_turn",
             {"problem_run_id": self.problem_run_id, "subject_id": self.subject_id},
         )
         self.current_turn = refreshed.get("turn")
-        if not answer:
-            raise RuntimeError("Luna response contained no learner-visible text")
-        return answer
+        backend_step_after = self._step_from_bundle(self.current_turn)
+
+        return {
+            "assistant_message": assistant_message,
+            "backend_message": authoritative["backend_message"],
+            "backend_step_before": backend_step_before,
+            "backend_step_after": backend_step_after,
+            "tool_backend_step": authoritative["backend_step"],
+            "tool_name": authoritative["tool_name"],
+            "verbatim_match": assistant_message == authoritative["backend_message"],
+        }
 
 
 def main() -> int:
@@ -335,10 +365,12 @@ def main() -> int:
         for line in sys.stdin:
             if not line.strip():
                 continue
-            answer = actor.ask(json.loads(line))
-            sys.stdout.write(
-                json.dumps({"assistant_message": answer}, ensure_ascii=False) + "\n"
-            )
+            payload = json.loads(line)
+            if payload.get("type") == "study_os_replay_state":
+                result = actor.state(payload)
+            else:
+                result = actor.ask(payload)
+            sys.stdout.write(json.dumps(result, ensure_ascii=False) + "\n")
             sys.stdout.flush()
     except Exception as exc:  # pragma: no cover - surfaced by replay harness
         print(f"Luna replay adapter failed: {exc}", file=sys.stderr)
