@@ -163,6 +163,9 @@ class LunaActor:
         if not turn_id and turn and turn.get("turns"):
             turn_id = turn["turns"][-1].get("turn_id")
         visible = LunaActor._markdown_from_bundle(turn or {})
+        current = turn.get("turns", [])[-1] if turn and turn.get("turns") else {}
+        allowed_actions = current.get("allowed_actions", []) if isinstance(current, dict) else []
+        step_id = current.get("canonical_step_id") if isinstance(current, dict) else None
         return (
             "You are Luna handling exactly one bounded learner turn in an "
             "already-active Study OS PIR run. Use the connected Study OS MCP "
@@ -171,12 +174,17 @@ class LunaActor:
             "learner's exact response. If they request why, clarification, or "
             "more detail, call request_problem_expansion only when the current "
             "probe supports that expansion. Otherwise call get_problem_turn. "
-            "After the tool returns, "
+            "After a successful tool returns, "
             "your final text must equal its `turn.turns[-1].learner_visible_markdown` "
             "exactly, copied unchanged. Do not author, summarize, or reformat it; "
-            "do not mention this replay or hidden checks.\n\n"
+            "do not mention this replay or hidden checks. If a tool returns a "
+            "validation error, do not retry it and do not use any file, shell, "
+            "patch, or other non-Study-OS tool; call get_problem_turn once and "
+            "copy that backend text.\n\n"
             f"problem_run_id: {run_id}\nsubject_id: {subject_id}\n"
-            f"current_turn_id: {turn_id}\ncurrent_backend_text:\n{visible}\n\n"
+            f"current_turn_id: {turn_id}\ncurrent_backend_step: {step_id}\n"
+            f"current_backend_allowed_actions: {json.dumps(allowed_actions)}\n"
+            f"current_backend_text:\n{visible}\n\n"
             f"Problem: {payload.get('title')}\n"
             f"Problem statement: {payload.get('problem')}\n"
             f"Approved variables: {json.dumps(payload.get('variables', {}), ensure_ascii=False)}\n"
