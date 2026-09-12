@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-"""Replay realistic DSA tutoring conversations against a local Study OS/Luna surface.
+"""Replay and grade the broad DSA learner-visible benchmark corpus.
 
-The harness has two lanes:
-1. run: drive the actor through the corpus and grade each visible assistant reply.
-2. grade: independently grade an already-captured JSONL transcript.
+This file owns the 14-problem / 210-turn *benchmark* lane.  It deliberately does
+not claim that those turns executed through canonical Study OS problem assets.
+The stateful product lane lives in ``replay_stateful_study_os.py``.
 
-The actor never receives the expected assertions. That prevents the tutor from
-"passing the test" by reading the answer key.
+The actor receives realistic learner dialogue and public problem context only.
+Hidden expectations, expected stage labels, and grading assertions never cross
+the actor boundary.
 """
 
 from __future__ import annotations
@@ -109,7 +110,18 @@ def _looks_visual(text: str) -> bool:
     lines = [line for line in text.splitlines() if line.strip()]
     if "```" in text:
         return True
-    visual_markers = ("|", "->", "→", "↓", "↑", "[", "]", "index:", "stack:", "queue:")
+    visual_markers = (
+        "|",
+        "->",
+        "→",
+        "↓",
+        "↑",
+        "[",
+        "]",
+        "index:",
+        "stack:",
+        "queue:",
+    )
     marked_lines = sum(any(marker in line for marker in visual_markers) for line in lines)
     return marked_lines >= 2
 
@@ -118,7 +130,6 @@ def evaluate_response(turn: dict[str, Any], assistant_message: str) -> list[Viol
     expected = turn["expected"]
     violations: list[Violation] = []
     text = assistant_message.strip()
-
     if not text:
         return [Violation("EMPTY_RESPONSE", "assistant response is empty")]
 
@@ -166,16 +177,11 @@ def evaluate_response(turn: dict[str, Any], assistant_message: str) -> list[Viol
                 "turn should end in a learner-sized check/question",
             )
         )
-
     return violations
 
 
 class JsonLineActor:
-    """Long-running local actor using one JSON request/response per line.
-
-    A small local wrapper can connect this protocol to the normal Study OS
-    GPT/MCP path or Luna. The request deliberately excludes hidden assertions.
-    """
+    """Long-running actor using one JSON request/response per line."""
 
     def __init__(self, command: str) -> None:
         argv = shlex.split(command)
@@ -200,12 +206,11 @@ class JsonLineActor:
             self.process.terminate()
             self.process.wait(timeout=5)
 
-    def ask(self, payload: dict[str, Any]) -> str:
+    def request(self, payload: dict[str, Any]) -> dict[str, Any]:
         if self.process.stdin is None or self.process.stdout is None:
             raise RuntimeError("actor pipes unavailable")
         if self.process.poll() is not None:
             raise RuntimeError(f"actor exited with code {self.process.returncode}")
-
         self.process.stdin.write(json.dumps(payload, ensure_ascii=False) + "\n")
         self.process.stdin.flush()
         line = self.process.stdout.readline()
@@ -213,10 +218,17 @@ class JsonLineActor:
             raise RuntimeError("actor closed stdout before replying")
         raw = json.loads(line)
         if isinstance(raw, str):
+            return {"assistant_message": raw}
+        if isinstance(raw, dict):
             return raw
-        if isinstance(raw, dict) and isinstance(raw.get("assistant_message"), str):
-            return raw["assistant_message"]
-        raise RuntimeError("actor response must be JSON string or {assistant_message: string}")
+        raise RuntimeError("actor response must be a JSON string or object")
+
+    def ask(self, payload: dict[str, Any]) -> str:
+        raw = self.request(payload)
+        message = raw.get("assistant_message")
+        if not isinstance(message, str):
+            raise RuntimeError("actor response is missing assistant_message")
+        return message
 
 
 def _actor_payload(
@@ -225,6 +237,7 @@ def _actor_payload(
     turn_index: int,
     history: list[dict[str, str]],
 ) -> dict[str, Any]:
+    """Build actor-visible input without leaking the hidden grading stage."""
     return {
         "type": "study_os_replay_turn",
         "scenario_id": scenario["id"],
@@ -232,7 +245,6 @@ def _actor_payload(
         "problem": scenario["problem"],
         "variables": scenario["variables"],
         "visual_family": scenario["visual_family"],
-        "stage": turn["stage"],
         "turn_index": turn_index,
         "learner_message": turn["learner_message"],
         "history": history,
@@ -240,8 +252,7 @@ def _actor_payload(
 
 
 def _iter_selected(
-    corpus: dict[str, Any],
-    scenario_ids: set[str] | None,
+    corpus: dict[str, Any], scenario_ids: set[str] | None
 ) -> Iterable[dict[str, Any]]:
     for scenario in corpus["scenarios"]:
         if scenario_ids is None or scenario["id"] in scenario_ids:
@@ -255,6 +266,7 @@ def run_actor(
     scenario_ids: set[str] | None,
     max_turns: int | None,
 ) -> dict[str, Any]:
+    """Run the broad scripted benchmark; this is not the stateful product gate."""
     actor = JsonLineActor(command)
     records: list[dict[str, Any]] = []
     executed = 0
@@ -274,10 +286,7 @@ def run_actor(
                         "stage": turn["stage"],
                         "learner_message": turn["learner_message"],
                         "assistant_message": assistant_message,
-                        "violations": [
-                            {"code": item.code, "detail": item.detail}
-                            for item in violations
-                        ],
+                        "violations": [item.__dict__ for item in violations],
                     }
                 )
                 history.extend(
@@ -291,8 +300,7 @@ def run_actor(
                 break
     finally:
         actor.close()
-
-    return build_report(corpus, records, source="actor")
+    return build_report(corpus, records, source="benchmark-actor")
 
 
 def _load_transcript(path: Path) -> list[dict[str, Any]]:
@@ -308,10 +316,7 @@ def _load_transcript(path: Path) -> list[dict[str, Any]]:
     return records
 
 
-def grade_transcript(
-    corpus: dict[str, Any],
-    transcript_path: Path,
-) -> dict[str, Any]:
+def grade_transcript(corpus: dict[str, Any], transcript_path: Path) -> dict[str, Any]:
     source_records = _load_transcript(transcript_path)
     by_key: dict[tuple[str, int], dict[str, Any]] = {}
     for record in source_records:
@@ -323,8 +328,7 @@ def grade_transcript(
     graded: list[dict[str, Any]] = []
     for scenario in corpus["scenarios"]:
         for turn_index, turn in enumerate(scenario["turns"]):
-            key = (scenario["id"], turn_index)
-            source = by_key.get(key)
+            source = by_key.get((scenario["id"], turn_index))
             if source is None:
                 continue
             assistant_message = str(source.get("assistant_message", ""))
@@ -336,20 +340,14 @@ def grade_transcript(
                     "stage": turn["stage"],
                     "learner_message": turn["learner_message"],
                     "assistant_message": assistant_message,
-                    "violations": [
-                        {"code": item.code, "detail": item.detail}
-                        for item in violations
-                    ],
+                    "violations": [item.__dict__ for item in violations],
                 }
             )
     return build_report(corpus, graded, source=str(transcript_path))
 
 
 def build_report(
-    corpus: dict[str, Any],
-    records: list[dict[str, Any]],
-    *,
-    source: str,
+    corpus: dict[str, Any], records: list[dict[str, Any]], *, source: str
 ) -> dict[str, Any]:
     problem_count, corpus_turn_count = corpus_counts(corpus)
     failed_records = [item for item in records if item["violations"]]
@@ -366,50 +364,36 @@ def build_report(
             code = violation["code"]
             violation_counts[code] = violation_counts.get(code, 0) + 1
 
-    first_divergence = failed_records[0] if failed_records else None
     return {
-        "schema_version": "study-os.dsa-conversation-replay-report.v0.1",
+        "schema_version": "study-os.dsa-conversation-replay-report.v0.2",
         "source": source,
-        "corpus": {
-            "problems": problem_count,
-            "learner_turns": corpus_turn_count,
-        },
+        "corpus": {"problems": problem_count, "learner_turns": corpus_turn_count},
         "executed_turns": len(records),
         "passed_turns": len(records) - len(failed_records),
         "failed_turns": len(failed_records),
         "pass_rate": (
-            (len(records) - len(failed_records)) / len(records)
-            if records
-            else 0.0
+            (len(records) - len(failed_records)) / len(records) if records else 0.0
         ),
         "violation_counts": dict(sorted(violation_counts.items())),
         "scenario_summary": scenario_summary,
-        "first_divergence": first_divergence,
+        "first_divergence": failed_records[0] if failed_records else None,
         "records": records,
     }
 
 
 def _print_summary(report: dict[str, Any]) -> None:
     corpus = report["corpus"]
+    print(f"corpus: {corpus['problems']} problems / {corpus['learner_turns']} learner turns")
     print(
-        f"corpus: {corpus['problems']} problems / "
-        f"{corpus['learner_turns']} learner turns"
+        f"executed: {report['executed_turns']} | passed: {report['passed_turns']} | "
+        f"failed: {report['failed_turns']} | pass_rate: {report['pass_rate']:.1%}"
     )
-    print(
-        f"executed: {report['executed_turns']} | "
-        f"passed: {report['passed_turns']} | "
-        f"failed: {report['failed_turns']} | "
-        f"pass_rate: {report['pass_rate']:.1%}"
-    )
-    if report["violation_counts"]:
-        print("violations:")
-        for code, count in report["violation_counts"].items():
-            print(f"  {code}: {count}")
+    for code, count in report["violation_counts"].items():
+        print(f"  {code}: {count}")
     first = report["first_divergence"]
     if first:
         print(
-            "first divergence: "
-            f"{first['scenario_id']} turn {first['turn_index']} "
+            f"first divergence: {first['scenario_id']} turn {first['turn_index']} "
             f"({first['stage']})"
         )
         print(f"learner: {first['learner_message']}")
@@ -422,10 +406,7 @@ def _write_report(report: dict[str, Any], path: Path | None) -> None:
     if path is None:
         return
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(
-        json.dumps(report, indent=2, ensure_ascii=False) + "\n",
-        encoding="utf-8",
-    )
+    path.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     print(f"report: {path}")
 
 
@@ -433,25 +414,19 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
     parser.add_argument("--corpus", type=Path, default=DEFAULT_CORPUS)
     subparsers = parser.add_subparsers(dest="command", required=True)
-
-    subparsers.add_parser("validate", help="validate the replay corpus")
+    subparsers.add_parser("validate", help="validate the broad replay corpus")
 
     run_parser = subparsers.add_parser(
-        "run",
-        help="drive a local Luna/Study OS actor over the realistic learner corpus",
+        "run", help="run the broad scripted benchmark (not the stateful product gate)"
     )
     run_parser.add_argument("--actor-cmd", required=True)
     run_parser.add_argument("--scenario", action="append", default=[])
     run_parser.add_argument("--max-turns", type=int)
     run_parser.add_argument("--report", type=Path)
 
-    grade_parser = subparsers.add_parser(
-        "grade",
-        help="independently grade a captured JSONL transcript",
-    )
+    grade_parser = subparsers.add_parser("grade", help="grade a captured benchmark JSONL transcript")
     grade_parser.add_argument("--transcript", type=Path, required=True)
     grade_parser.add_argument("--report", type=Path)
-
     return parser
 
 
@@ -470,18 +445,14 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if args.command == "run":
-        scenario_ids = set(args.scenario) or None
         report = run_actor(
             corpus,
             args.actor_cmd,
-            scenario_ids=scenario_ids,
+            scenario_ids=set(args.scenario) or None,
             max_turns=args.max_turns,
         )
-        _print_summary(report)
-        _write_report(report, args.report)
-        return 1 if report["failed_turns"] else 0
-
-    report = grade_transcript(corpus, args.transcript)
+    else:
+        report = grade_transcript(corpus, args.transcript)
     _print_summary(report)
     _write_report(report, args.report)
     return 1 if report["failed_turns"] else 0
