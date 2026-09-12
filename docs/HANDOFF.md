@@ -3,15 +3,36 @@
 Last updated: 2026-09-12
 Primary tracker: #63
 
-## Immediate execution authority — PR #77 truthful replay recovery
+## Immediate execution authority — PR #77 dual-Luna transcript
 
-Until the truthful learner-visible replay gates pass, the authoritative execution plan is:
+The current user-directed objective for PR #77 is **not automated judging**. The immediate artifact is a full raw conversation between two independent Luna roles:
 
-`docs/PR77_TRUTHFUL_REPLAY_RECOVERY_PLAN.md`
+```text
+local Luna — realistic student
+        ↓
+local Luna — teacher through the real Study OS learner-facing path
+        ↓
+raw transcript only
+```
 
-This temporarily supersedes older "next architecture" sequencing in this handoff for PR #77 work. Do not add new tutoring architecture merely because an older P4 phase below suggests it. The immediate loop is: make the replay truthful, run the real learner-visible path, classify the first trustworthy divergence, fix that concrete failure, and rerun from the beginning.
+Read `docs/DUAL_LUNA_RAW_TRANSCRIPT.md` before doing further PR #77 work.
 
-PR #77 must remain draft until its claim matches its evidence. In particular, backend tool output is not a substitute for Luna's final learner-visible answer, expected corpus stage must not be leaked to the actor, and live learner messages must follow actual deterministic controller state rather than a scripted future stage.
+Default evidence target:
+
+- 14 DSA problems from the existing corpus;
+- 15 learner/teacher exchanges per problem;
+- 210 learner messages + 210 teacher responses;
+- 420 visible messages total;
+- JSONL + readable Markdown transcript;
+- no automated score, pass/fail, violation report, or repair during generation.
+
+After the raw transcript exists, bring it back for comparison against the calibration dataset and historical teaching examples. Only then decide what needs to change in prompts, schema-driven generation, problem decomposition, canonical teaching assets, or deterministic control.
+
+Do **not** assume OpenCode is part of the user's Luna runtime. `tools/replay_opencode_adapter.py` is experimental branch code from an earlier assumption and is not evidence that the user's local Luna exists inside OpenCode. The new `tools/run_dual_luna_transcript.py` deliberately accepts runtime-agnostic student and teacher commands.
+
+Do **not** give either Luna the corpus answer key. The student receives only the problem, recent conversation, and a coarse behavioral signal such as clarification / plausible wrong attempt / recovery. The teacher receives the problem, learner message, and recent conversation and must use the normal Study OS product path.
+
+PR #77 remains draft. Do not claim the 210-exchange two-Luna run happened until the actual local Luna student and actual Study OS teacher runtime have produced and saved the transcript.
 
 ## Current phase
 
@@ -19,34 +40,11 @@ PR #77 must remain draft until its claim matches its evidence. In particular, ba
 
 ## Latest evidence-bearing change
 
-PR #77 remains draft. The branch now includes a deterministic Two Sum
-known-problem asset and a data-defined learner-facing presentation contract:
-the exact variable map is `nums`, `target`, `box`, `i`, `num`, `needed`; `seen`,
-`lookup`, and `index_by_num` are forbidden; each turn carries one relation,
-one tiny check, a visual-first markdown payload, a prose budget, and
-`render_mode: verbatim`. The MCP/application bundle returns that complete
-payload unchanged.
+PR #77 now includes `tools/run_dual_luna_transcript.py`, a runtime-agnostic orchestration harness for the requested two-Luna experiment, plus tests and `docs/DUAL_LUNA_RAW_TRANSCRIPT.md`.
 
-The Windows PIR mutation checker now hashes Git-normalized bytes via
-`git hash-object --path --stdin`, and CI includes a Windows reproducibility
-job. The replay harness remains separate from product architecture.
+The branch also contains earlier replay/controller work, including a deterministic Two Sum asset and stateful replay experiments. Those are supporting implementation history, not substitutes for the requested raw two-Luna transcript.
 
-Live replay evidence is now available in
-`artifacts/study-os-pr77-live-two-sum-dictionary.json`. It used one isolated
-headless OpenCode HTTP session per learner turn with the configured `luna`
-agent (`gpt-5.5` through the local LiteLLM provider), and Study OS MCP owned
-the complete learner-visible output. The 15-turn lane produced 3 passes and
-12 failures; its first divergence is turn 3, where the corpus expects the
-`needed` stage even though the learner has not answered the active goal probe,
-so the deterministic backend correctly repeats the goal chart.
-
-The full corpus is 14 problems / 210 learner turns, but the reviewed asset
-registry currently contains only Two Sum and Sliding Window. The other 12
-problems fail closed at `resolve_problem` with `status: needs_compilation`.
-Therefore no 210-turn pass result exists yet; adding those assets and
-recalibrating the scripted stage expectations are separate required work.
-
-The product center is no longer persistence repair or an abstract research gate. Study OS is being used for real learning, and the next architecture should make AI teaching behavior deterministic at the control layer while keeping representation generation flexible and versioned.
+The full existing DSA corpus is 14 problems / 210 scripted learner turns. Its problem statements and coarse learner-signal pattern are reused to guide the student role, but its expected output assertions, stage labels, forbidden terms, and grading rubric are not sent to either Luna in the dual-Luna run.
 
 ## Accepted live foundation
 
@@ -146,13 +144,14 @@ AI may not silently advance curriculum or mark mastery.
 Read in this order:
 
 1. Issue #63
-2. `docs/P4_DETERMINISTIC_LEARNING_CONTROLLER_PDD.md`
-3. `docs/P4_DETERMINISTIC_LEARNING_CONTROLLER_SDD.md`
-4. `docs/ADR-0016-deterministic-learning-control.md`
-5. `docs/ROADMAP.md`
-6. `docs/CURRENT_STATE.md`
-7. latest accepted `docs/DECISIONS.md`
-8. supporting P3 durability/reconciliation docs as needed
+2. `docs/DUAL_LUNA_RAW_TRANSCRIPT.md` for the immediate PR #77 experiment
+3. `docs/P4_DETERMINISTIC_LEARNING_CONTROLLER_PDD.md`
+4. `docs/P4_DETERMINISTIC_LEARNING_CONTROLLER_SDD.md`
+5. `docs/ADR-0016-deterministic-learning-control.md`
+6. `docs/ROADMAP.md`
+7. `docs/CURRENT_STATE.md`
+8. latest accepted `docs/DECISIONS.md`
+9. supporting P3 durability/reconciliation docs as needed
 
 ## Early product-discovery evidence
 
@@ -201,51 +200,11 @@ ReplayEvaluation
 
 Exact table names are not mandated. Reuse existing runtime structures wherever semantics already fit.
 
-## Immediate Luna task — audit completed
+## Prior Luna architecture audit
 
-### Phase 1 — architecture/schema audit — complete
+The previous architecture/schema audit found that the P3/P2 durable substrate is healthy, while several P4 semantic objects remained design targets. That work remains historical context, but it does not supersede the immediate request to observe the actual teaching conversation first.
 
-1. Pulled latest `main` at `7f39f747d5c2d362d1ba95597e7001fd6ecdafda`.
-2. Read Issue #63 + P4 PDD/SDD + ADR-0016.
-3. Inspected current runtime schema/service/MCP contracts against each P4 semantic object.
-4. Recorded the mapping and live read-only runtime observation in
-   `docs/P4_RUNTIME_SCHEMA_AUDIT.md`.
-
-The audit found that the P3/P2 durable substrate is healthy, but no P4-specific
-course-node, learner-control, authoritative decision, module-set, outcome, or
-replay records exist yet. The first implementation candidate is the existing
-versioned `dsa.extrema.update_order@0.1.0` slice; the live `sliding-window`
-checkpoint must not be relabeled to that node without an explicit pinned
-course definition.
-
-The mapping is:
-
-```text
-P4 semantic object
-→ existing table/type/service support
-→ gap
-→ proposed reuse/additive change
-```
-
-5. Do **not** add schema merely because the design document names an object. Reuse existing durable structures where semantics align.
-6. Identify the smallest real current course node suitable for the first vertical slice.
-
-### Phase 2 — proposed smallest vertical slice — next
-
-Design before implementation:
-
-```text
-real course node/version
-→ learner-control state
-→ one deterministic progression policy
-→ operation registry subset
-→ bounded GPT operation envelope
-→ representation/version provenance
-→ learner response/outcome
-→ deterministic state transition
-```
-
-Initial operation subset:
+Initial operation concepts remain:
 
 - `try_unaided`
 - `rename_terms`
@@ -254,10 +213,7 @@ Initial operation subset:
 - `give_hint`
 - `restore_original`
 
-The focused TDD/implementation handoff is recorded at the end of
-`docs/P4_RUNTIME_SCHEMA_AUDIT.md`. New persistent semantics will require an
-additive, reversible migration; do not change the live learner store until
-those tests and the migration plan are reviewed.
+Do not expand these merely because they exist in design docs. Use the raw transcript to determine which mechanisms are actually needed.
 
 ## Operational improvement loop
 
