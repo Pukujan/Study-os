@@ -56,6 +56,13 @@ class PIRRuntimeIntegrationTests(unittest.TestCase):
         self.assertEqual(known["status"], "known")
         self.assertEqual(known["canonical_problem_id"], CANONICAL_PROBLEM_ID)
 
+        corpus_alias = self.service.resolve_problem(
+            problem_text="Find the maximum sum of any contiguous window of size k.",
+            domain="dsa",
+        )
+        self.assertEqual(corpus_alias["status"], "known")
+        self.assertEqual(corpus_alias["canonical_problem_id"], CANONICAL_PROBLEM_ID)
+
         unknown = self.service.resolve_problem(
             problem_text="find the shortest path in an unweighted graph",
             domain="dsa",

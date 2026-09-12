@@ -72,6 +72,7 @@ def sliding_window_asset() -> CanonicalTeachingAsset:
         aliases=(
             "given an array a and integer k find the maximum sum of any contiguous window of size k",
             "find the maximum sum of a contiguous subarray of size k",
+            "find the maximum sum of any contiguous window of size k",
             "maximum sum contiguous window size k",
             "sliding window maximum sum size k",
         ),
