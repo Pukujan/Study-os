@@ -17,7 +17,7 @@ import json
 import shlex
 import subprocess
 from pathlib import Path
-from typing import Any, Protocol
+from typing import Any, Callable, Protocol
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -27,6 +27,8 @@ DEFAULT_MARKDOWN = ROOT / "artifacts" / "dual-luna-dsa-transcript.md"
 DEFAULT_TURNS_PER_PROBLEM = 15
 DEFAULT_MIN_PROBLEMS = 10
 DEFAULT_MIN_EXCHANGES = 210
+
+RecordCallback = Callable[[dict[str, Any], list[dict[str, Any]]], None]
 
 
 class Actor(Protocol):
@@ -66,12 +68,12 @@ class JsonLineActor:
         line = self.process.stdout.readline()
         if line == "":
             raise RuntimeError(f"{self.label} actor closed stdout before replying")
-        raw = json.loads(line)
-        if isinstance(raw, str):
-            return {"message": raw}
-        if not isinstance(raw, dict):
+        raw_result = json.loads(line)
+        if isinstance(raw_result, str):
+            return {"message": raw_result}
+        if not isinstance(raw_result, dict):
             raise RuntimeError(f"{self.label} actor response must be a JSON object")
-        return raw
+        return raw_result
 
     def close(self) -> None:
         if self.process.stdin and not self.process.stdin.closed:
@@ -89,6 +91,36 @@ def load_corpus(path: Path = DEFAULT_CORPUS) -> dict[str, Any]:
     if not isinstance(corpus, dict) or not isinstance(corpus.get("scenarios"), list):
         raise ValueError("corpus must contain a scenarios array")
     return corpus
+
+
+def load_jsonl(path: Path) -> list[dict[str, Any]]:
+    """Load an existing raw transcript so a long run can continue after interruption."""
+
+    if not path.exists():
+        return []
+    records: list[dict[str, Any]] = []
+    with path.open("r", encoding="utf-8") as handle:
+        for line_number, line in enumerate(handle, start=1):
+            if not line.strip():
+                continue
+            try:
+                record = json.loads(line)
+            except json.JSONDecodeError as exc:
+                raise ValueError(f"invalid JSONL at {path}:{line_number}: {exc}") from exc
+            if not isinstance(record, dict):
+                raise ValueError(f"transcript record at {path}:{line_number} is not an object")
+            for field in (
+                "scenario_id",
+                "turn_index",
+                "learner_message",
+                "teacher_message",
+            ):
+                if field not in record:
+                    raise ValueError(
+                        f"transcript record at {path}:{line_number} is missing {field}"
+                    )
+            records.append(record)
+    return records
 
 
 def _extract_message(result: dict[str, Any], *, role: str) -> str:
@@ -144,7 +176,9 @@ def build_student_payload(
             "complete solution before the conversation earns it. Keep the wording informal "
             "and human."
         ),
-        "conversation": conversation[-16:],
+        # The whole current-problem conversation is small (15 exchanges) and makes a
+        # restarted local actor able to continue naturally without hidden state.
+        "conversation": list(conversation),
     }
 
 
@@ -170,7 +204,7 @@ def build_teacher_payload(
             "Do not bypass Study OS to answer as an ordinary standalone tutor. Return the "
             "final message that the learner would actually see."
         ),
-        "conversation": conversation[-16:],
+        "conversation": list(conversation),
     }
 
 
@@ -187,6 +221,36 @@ def select_scenarios(
     return selected
 
 
+def _existing_scenario_records(
+    records: list[dict[str, Any]],
+    scenario_id: str,
+    *,
+    turns_per_problem: int,
+) -> list[dict[str, Any]]:
+    matching = [item for item in records if str(item.get("scenario_id")) == scenario_id]
+    matching.sort(key=lambda item: int(item["turn_index"]))
+    if len(matching) > turns_per_problem:
+        raise ValueError(
+            f"existing transcript has {len(matching)} turns for {scenario_id}; "
+            f"requested only {turns_per_problem}"
+        )
+    indices = [int(item["turn_index"]) for item in matching]
+    if indices != list(range(len(indices))):
+        raise ValueError(
+            f"existing transcript for {scenario_id} must be contiguous from turn 0; "
+            f"found {indices}"
+        )
+    return matching
+
+
+def _conversation_from_records(records: list[dict[str, Any]]) -> list[dict[str, str]]:
+    conversation: list[dict[str, str]] = []
+    for record in records:
+        conversation.append({"role": "learner", "content": str(record["learner_message"])})
+        conversation.append({"role": "teacher", "content": str(record["teacher_message"])})
+    return conversation
+
+
 def run_transcript(
     corpus: dict[str, Any],
     student: Actor,
@@ -194,16 +258,25 @@ def run_transcript(
     *,
     scenario_ids: set[str] | None = None,
     turns_per_problem: int = DEFAULT_TURNS_PER_PROBLEM,
+    existing_records: list[dict[str, Any]] | None = None,
+    on_record: RecordCallback | None = None,
 ) -> list[dict[str, Any]]:
-    """Run the conversation and return raw exchange records only."""
+    """Run or resume the conversation and return raw exchange records only."""
 
     if turns_per_problem < 1:
         raise ValueError("turns_per_problem must be >= 1")
 
-    records: list[dict[str, Any]] = []
+    records: list[dict[str, Any]] = list(existing_records or [])
     for scenario in select_scenarios(corpus, scenario_ids):
-        conversation: list[dict[str, str]] = []
-        for turn_index in range(turns_per_problem):
+        scenario_id = str(scenario["id"])
+        previous = _existing_scenario_records(
+            records,
+            scenario_id,
+            turns_per_problem=turns_per_problem,
+        )
+        conversation = _conversation_from_records(previous)
+
+        for turn_index in range(len(previous), turns_per_problem):
             student_result = student.ask(
                 build_student_payload(
                     scenario,
@@ -225,18 +298,19 @@ def run_transcript(
             teacher_message = _extract_message(teacher_result, role="teacher")
             conversation.append({"role": "teacher", "content": teacher_message})
 
-            records.append(
-                {
-                    "schema_version": "study-os.dual-luna-exchange.v0.1",
-                    "scenario_id": scenario["id"],
-                    "title": scenario["title"],
-                    "problem": scenario["problem"],
-                    "turn_index": turn_index,
-                    "learner_signal": _learner_signal(scenario, turn_index),
-                    "learner_message": learner_message,
-                    "teacher_message": teacher_message,
-                }
-            )
+            record = {
+                "schema_version": "study-os.dual-luna-exchange.v0.1",
+                "scenario_id": scenario["id"],
+                "title": scenario["title"],
+                "problem": scenario["problem"],
+                "turn_index": turn_index,
+                "learner_signal": _learner_signal(scenario, turn_index),
+                "learner_message": learner_message,
+                "teacher_message": teacher_message,
+            }
+            records.append(record)
+            if on_record is not None:
+                on_record(record, records)
     return records
 
 
@@ -258,10 +332,14 @@ def validate_run_size(
 
 
 def write_jsonl(records: list[dict[str, Any]], path: Path) -> None:
+    """Atomically replace the JSONL snapshot so an interrupted run is resumable."""
+
     path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("w", encoding="utf-8") as handle:
+    temp_path = path.with_name(path.name + ".tmp")
+    with temp_path.open("w", encoding="utf-8") as handle:
         for record in records:
             handle.write(json.dumps(record, ensure_ascii=False) + "\n")
+    temp_path.replace(path)
 
 
 def render_markdown(records: list[dict[str, Any]]) -> str:
@@ -304,7 +382,9 @@ def render_markdown(records: list[dict[str, Any]]) -> str:
 
 def write_markdown(records: list[dict[str, Any]], path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(render_markdown(records), encoding="utf-8")
+    temp_path = path.with_name(path.name + ".tmp")
+    temp_path.write_text(render_markdown(records), encoding="utf-8")
+    temp_path.replace(path)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -333,6 +413,11 @@ def main() -> int:
     corpus = load_corpus(args.corpus)
     student = JsonLineActor(args.student_cmd, label="student Luna")
     teacher = JsonLineActor(args.teacher_cmd, label="teacher Luna")
+
+    def checkpoint(_record: dict[str, Any], records: list[dict[str, Any]]) -> None:
+        write_jsonl(records, args.jsonl)
+        write_markdown(records, args.markdown)
+
     try:
         records = run_transcript(
             corpus,
@@ -340,6 +425,7 @@ def main() -> int:
             teacher,
             scenario_ids=set(args.scenario) or None,
             turns_per_problem=args.turns_per_problem,
+            on_record=checkpoint,
         )
     finally:
         student.close()
