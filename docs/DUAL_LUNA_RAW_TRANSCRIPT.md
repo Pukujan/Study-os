@@ -6,121 +6,66 @@ The immediate goal is to collect a large, realistic learner-visible transcript b
 
 ## Experiment
 
-Two independent Luna roles participate:
-
 ```text
-local Luna — student role
-        ↓ one realistic learner message
-local Luna — teacher role through the normal Study OS path
+local Luna — realistic student
+        ↓ one learner message
+local Luna — teacher through Study OS MCP
         ↓ final learner-visible Study OS response
 raw transcript recorder
 ```
 
-The student Luna is guided to behave like a realistic beginner: ask focused clarification questions, make plausible mistakes, attempt recovery, and react to what the teacher just said. It is not given the dataset's expected teaching output, stage, forbidden terms, required terms, or grading rubric.
+The student asks questions, makes plausible mistakes, attempts recovery, and reacts to the teacher. It receives no expected teaching output, stage, forbidden terms, required terms, or grading rubric.
 
-The teacher Luna must use the real Study OS learner-facing path. The transcript runner does not contain a substitute tutor and does not authorize bypassing Study OS.
+The teacher must use the real Study OS path. Free-form teacher answers that did not complete a Study OS MCP call are rejected by the local harness and are not recorded.
 
 ## Scale
 
-The current dataset contains 14 DSA scenarios. The default run uses 15 learner/teacher exchanges per scenario:
-
-- 14 problems;
+- 14 DSA problems;
+- 15 learner/teacher exchanges per problem;
 - 210 learner messages;
 - 210 teacher responses;
 - 420 visible messages total.
 
-That exceeds the requested 10-problem minimum while producing 210 back-and-forth exchanges.
-
-## What the runner does not do
-
-`tools/run_dual_luna_transcript.py` performs **no grading, scoring, pass/fail decision, pedagogical comparison, or automatic repair**. The primary artifacts are the complete raw transcript in JSONL and readable Markdown.
-
-After the transcript exists, it should be brought back for human/model review against the existing calibration dataset and historical teaching examples. Decisions about prompt changes, schema-driven generation, decomposition, canonical assets, or controller behavior should come from that observed transcript rather than from assumptions made before the run.
-
-## Runtime boundary
-
-The orchestration layer is deliberately runtime-agnostic. It requires two JSONL commands:
+## Preferred local execution
 
 ```bash
-python tools/run_dual_luna_transcript.py \
-  --student-cmd "<local Luna student adapter>" \
-  --teacher-cmd "<local Luna teacher / Study OS adapter>"
+python tools/run_dual_luna_local_codex.py
 ```
 
-No OpenCode installation or `luna` OpenCode agent is assumed.
+This is the preferred path because it removes the test-infrastructure friction that came from hosted child tasks. It automatically checks the local runtime, registers this checkout's Study OS stdio MCP with Codex under a test-only name, runs two local resumable Codex/Luna roles, suppresses local approval/sandbox pauses for this harness, verifies teacher Study OS tool use, checkpoints every completed exchange, and resumes interrupted transcripts.
 
-Each command is a long-running process. It reads one JSON object per stdin line and writes one JSON object per stdout line.
+See `docs/DUAL_LUNA_LOCAL_EXECUTION_HANDOFF.md` for the exact local behavior.
 
-### Student actor
+`tools/run_dual_luna_transcript.py` remains the runtime-agnostic orchestration core and fallback actor interface; it is not the normal path the user should have to wire manually.
 
-Input type: `dual_luna_student_turn`
+No OpenCode installation or OpenCode `luna` agent is assumed.
 
-Important fields:
+## Evidence boundary
 
-- `scenario_id`
-- `title`
-- `problem`
-- `turn_index`
-- `learner_signal`
-- `instruction`
-- recent `conversation`
+Generation performs **no pedagogical grading, scoring, pass/fail decision, comparison, or automatic repair**. The purpose is to observe what Study OS actually shows a realistic learner.
 
-The student returns one of:
+After the raw transcript exists, bring it back for review against the existing calibration dataset and historical teaching examples. Only then decide whether the observed failures require prompt changes, schema-constrained generation, decomposition, canonical assets, controller changes, or something else.
 
-```json
-{"student_message": "..."}
-```
+## Dataset boundary
 
-or a generic:
+The existing DSA corpus supplies only:
 
-```json
-{"message": "..."}
-```
+- scenario id/title;
+- problem statement;
+- a coarse learner-behavior signal such as `clarification`, `wrong_or_uncertain`, or `recovery_or_check`.
 
-The student does not receive dataset `expected`, stage, variable-preservation rubric, forbidden terms, or other answer-key fields.
+Neither Luna receives the corpus `expected` assertions, stage labels, variable-preservation rubric, forbidden terms, required terms, or answer key.
 
-### Teacher actor
-
-Input type: `dual_luna_teacher_turn`
-
-Important fields:
-
-- `scenario_id`
-- `title`
-- `problem`
-- `turn_index`
-- `learner_message`
-- `instruction`
-- recent `conversation`
-
-The teacher returns the final learner-visible Study OS response as one of:
-
-```json
-{"teacher_message": "..."}
-```
-
-```json
-{"assistant_message": "..."}
-```
-
-or:
-
-```json
-{"message": "..."}
-```
-
-The teacher actor is responsible for actually invoking the normal Study OS product path. The orchestration runner does not emulate Study OS.
+Every turn includes the full conversation for that current problem. This makes a local Luna session restart recoverable without changing the logical learner/teacher conversation.
 
 ## Outputs
-
-Defaults:
 
 ```text
 artifacts/dual-luna-dsa-transcript.jsonl
 artifacts/dual-luna-dsa-transcript.md
 ```
 
-Every JSONL record contains only transcript/provenance fields:
+Each JSONL record contains only raw transcript/provenance fields:
 
 ```text
 scenario_id
@@ -134,17 +79,20 @@ teacher_message
 
 There are intentionally no `violations`, `score`, `passed`, `expected`, or verdict fields.
 
-## Development-only short run
+The files are updated after every completed exchange. Re-running the preferred local command continues from the existing JSONL artifact unless `--fresh` is explicitly supplied.
 
-A small wiring test can be run without satisfying the 10-problem / 210-exchange floor:
+## Development-only smoke
 
 ```bash
-python tools/run_dual_luna_transcript.py \
-  --student-cmd "<student adapter>" \
-  --teacher-cmd "<teacher adapter>" \
+python tools/run_dual_luna_local_codex.py \
+  --fresh \
   --scenario two-sum-dictionary \
   --turns-per-problem 3 \
   --allow-short-run
 ```
 
-A real evidence run should omit `--allow-short-run`.
+The real evidence run is simply:
+
+```bash
+python tools/run_dual_luna_local_codex.py
+```
