@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib.util
 import json
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 from typing import Any
@@ -21,7 +22,11 @@ spec.loader.exec_module(dual_luna)
 
 
 class FakeStudent:
+    def __init__(self) -> None:
+        self.calls: list[dict[str, Any]] = []
+
     def ask(self, payload: dict[str, Any]) -> dict[str, Any]:
+        self.calls.append(payload)
         return {
             "student_message": (
                 f"student {payload['scenario_id']} turn {payload['turn_index']} "
@@ -34,7 +39,11 @@ class FakeStudent:
 
 
 class FakeTeacher:
+    def __init__(self) -> None:
+        self.calls: list[dict[str, Any]] = []
+
     def ask(self, payload: dict[str, Any]) -> dict[str, Any]:
+        self.calls.append(payload)
         return {
             "teacher_message": (
                 f"teacher {payload['scenario_id']} turn {payload['turn_index']}"
@@ -78,6 +87,20 @@ class DualLunaTranscriptTests(unittest.TestCase):
         self.assertNotIn("variables", payload)
         self.assertNotIn("stage", payload)
 
+    def test_full_problem_conversation_is_preserved_for_restart_recovery(self) -> None:
+        scenario = self.corpus["scenarios"][0]
+        conversation = [
+            {"role": "teacher" if index % 2 else "learner", "content": str(index)}
+            for index in range(30)
+        ]
+        payload = dual_luna.build_student_payload(
+            scenario,
+            turn_index=14,
+            conversation=conversation,
+        )
+        self.assertEqual(payload["conversation"], conversation)
+        self.assertEqual(len(payload["conversation"]), 30)
+
     def test_default_full_run_is_14_problems_and_210_exchanges(self) -> None:
         records = dual_luna.run_transcript(
             self.corpus,
@@ -104,6 +127,62 @@ class DualLunaTranscriptTests(unittest.TestCase):
             self.assertNotIn("expected", record)
             self.assertTrue(record["learner_message"])
             self.assertTrue(record["teacher_message"])
+
+    def test_resume_continues_from_next_uncaptured_exchange(self) -> None:
+        first_student = FakeStudent()
+        first_teacher = FakeTeacher()
+        initial = dual_luna.run_transcript(
+            self.corpus,
+            first_student,
+            first_teacher,
+            scenario_ids={"two-sum-dictionary"},
+            turns_per_problem=1,
+        )
+        self.assertEqual(len(initial), 1)
+
+        student = FakeStudent()
+        teacher = FakeTeacher()
+        resumed = dual_luna.run_transcript(
+            self.corpus,
+            student,
+            teacher,
+            scenario_ids={"two-sum-dictionary"},
+            turns_per_problem=3,
+            existing_records=initial,
+        )
+
+        self.assertEqual(len(resumed), 3)
+        self.assertEqual([call["turn_index"] for call in student.calls], [1, 2])
+        self.assertEqual([call["turn_index"] for call in teacher.calls], [1, 2])
+        self.assertEqual(len(student.calls[0]["conversation"]), 2)
+        self.assertEqual(len(student.calls[1]["conversation"]), 4)
+
+    def test_checkpoint_callback_runs_after_every_completed_exchange(self) -> None:
+        snapshots: list[int] = []
+        records = dual_luna.run_transcript(
+            self.corpus,
+            FakeStudent(),
+            FakeTeacher(),
+            scenario_ids={"two-sum-dictionary"},
+            turns_per_problem=3,
+            on_record=lambda _record, all_records: snapshots.append(len(all_records)),
+        )
+        self.assertEqual(len(records), 3)
+        self.assertEqual(snapshots, [1, 2, 3])
+
+    def test_jsonl_round_trip_supports_resume(self) -> None:
+        records = dual_luna.run_transcript(
+            self.corpus,
+            FakeStudent(),
+            FakeTeacher(),
+            scenario_ids={"two-sum-dictionary"},
+            turns_per_problem=2,
+        )
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "transcript.jsonl"
+            dual_luna.write_jsonl(records, path)
+            restored = dual_luna.load_jsonl(path)
+        self.assertEqual(restored, records)
 
     def test_markdown_is_readable_full_conversation(self) -> None:
         records = dual_luna.run_transcript(
