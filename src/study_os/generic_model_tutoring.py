@@ -230,6 +230,8 @@ class GenerationContract:
     plan_provenance: TeachingPlanProvenance
     variable_bindings: Mapping[str, VariableSpec] = field(default_factory=dict, repr=False)
     forbidden_terms: tuple[str, ...] = ()
+    visual_required: bool = True
+    visual_before_explanation: bool = True
 
     def __post_init__(self) -> None:
         for field_name in ("turn_index", "active_concept_index"):
@@ -285,6 +287,10 @@ class GenerationContract:
         if len(terms) != len({item.casefold() for item in terms}):
             raise ModelTutoringError("forbidden_terms must contain unique values")
         object.__setattr__(self, "forbidden_terms", terms)
+        if not isinstance(self.visual_required, bool):
+            raise ModelTutoringError("visual_required must be boolean")
+        if not isinstance(self.visual_before_explanation, bool):
+            raise ModelTutoringError("visual_before_explanation must be boolean")
 
         terminal = tuple(_require_text(item, "terminal_behavior[]") for item in self.terminal_behavior)
         if not terminal:
@@ -381,6 +387,8 @@ class GenerationContract:
             "prompt_provenance": self.prompt_provenance.to_payload(),
             "plan_provenance": _plan_provenance_payload(self.plan_provenance),
             "forbidden_terms": list(self.forbidden_terms),
+            "visual_required": self.visual_required,
+            "visual_before_explanation": self.visual_before_explanation,
         }
 
     def to_payload(self) -> dict[str, Any]:
@@ -467,6 +475,18 @@ def _representation_present(text: str, requirement: RepresentationRequirement) -
     return kind in lowered and operation in lowered
 
 
+def _looks_visual(text: str) -> bool:
+    """Recognize a small learner-visible chart/trace without authoring one."""
+
+    return (
+        "```" in text
+        or "|" in text
+        or "→" in text
+        or "->" in text
+        or ("[" in text and "]" in text and "\n" in text)
+    )
+
+
 def validate_generated_response(text: str, contract: GenerationContract) -> None:
     """Validate one bounded response; this function never creates response text."""
 
@@ -505,6 +525,13 @@ def validate_generated_response(text: str, contract: GenerationContract) -> None
     ]
     if forbidden_terms:
         raise ModelTutoringError(f"forbidden source terms leaked: {forbidden_terms}")
+
+    if contract.visual_required and not _looks_visual(text):
+        raise ModelTutoringError("required visual is missing")
+    if contract.visual_before_explanation:
+        first = next((line.strip() for line in text.splitlines() if line.strip()), "")
+        if not first.startswith(("```", "|", "[", "index:", "nums:", "value:")):
+            raise ModelTutoringError("visual must precede explanation")
 
     forbidden = [
         name for name in contract.forbidden_variables
@@ -567,6 +594,8 @@ class GenericModelTutoringController:
         generation_prompt_version: str = GENERATION_PROMPT_VERSION,
         model_identifier: str | None = None,
         forbidden_terms: Sequence[str] = (),
+        visual_required: bool = True,
+        visual_before_explanation: bool = True,
     ) -> None:
         if not isinstance(plan, TeachingPlan):
             raise ModelTutoringError("controller requires a validated TeachingPlan")
@@ -595,6 +624,12 @@ class GenericModelTutoringController:
         if len(normalized_terms) != len({item.casefold() for item in normalized_terms}):
             raise ModelTutoringError("forbidden_terms must contain unique values")
         self.forbidden_terms = normalized_terms
+        if not isinstance(visual_required, bool):
+            raise ModelTutoringError("visual_required must be boolean")
+        if not isinstance(visual_before_explanation, bool):
+            raise ModelTutoringError("visual_before_explanation must be boolean")
+        self.visual_required = visual_required
+        self.visual_before_explanation = visual_before_explanation
 
     @staticmethod
     def _validate_concept_order(plan: TeachingPlan) -> None:
@@ -662,6 +697,8 @@ class GenericModelTutoringController:
             plan_provenance=self.plan.provenance,
             variable_bindings=self.plan.variables,
             forbidden_terms=self.forbidden_terms,
+            visual_required=self.visual_required,
+            visual_before_explanation=self.visual_before_explanation,
         )
 
     def authorize(
@@ -790,6 +827,8 @@ def build_generation_prompt(
         f"Active concept: {contract.active_concept_id}\n"
         f"Allowed variables: {list(contract.allowed_variables)}\n"
         f"Forbidden source terms: {list(contract.forbidden_terms)}\n"
+        f"Visual required: {contract.visual_required}; visual must precede explanation: "
+        f"{contract.visual_before_explanation}\n"
         f"Representation requirements: {json.dumps(requirements, ensure_ascii=False)}\n"
         f"Semantic invariants: {json.dumps(invariants, ensure_ascii=False)}\n"
         f"Completion evidence: {json.dumps(completion, ensure_ascii=False)}\n"

@@ -185,6 +185,7 @@ class FakeTeacher:
             "teacher_message": json.dumps(
                 {
                     "response": (
+                        f"```text\n{allowed[0]} at cursor\n```\n"
                         f"Representation: {requirement['id']}\n"
                         f"{requirement['kind']} {requirement['operation']}: {allowed[0]}\n?"
                     )

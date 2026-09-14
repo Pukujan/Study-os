@@ -281,22 +281,22 @@ class GenericModelTutoringTests(unittest.TestCase):
             learner_message="I am still working it out.",
         )
         contract = authorization.contract
-        valid = "Representation: trace-pattern\nstateful trace: items at cursor\n?"
+        valid = "```text\nitems at cursor\n```\nRepresentation: trace-pattern\nstateful trace: items at cursor\n?"
         self.assertIsNone(validate_generated_response(valid, contract))
 
         with self.assertRaisesRegex(ModelTutoringError, "representation"):
             validate_generated_response("items at cursor?", contract)
         with self.assertRaisesRegex(ModelTutoringError, "outside the active"):
             validate_generated_response(
-                "Representation: trace-pattern\nstateful trace: bucket is ready?", contract
+                "```text\nitems at cursor\n```\nRepresentation: trace-pattern\nstateful trace: bucket is ready?", contract
             )
         with self.assertRaisesRegex(ModelTutoringError, "internal"):
             validate_generated_response(
-                "Representation: trace-pattern\nstateful trace: needs_compilation?",
+                "```text\nitems at cursor\n```\nRepresentation: trace-pattern\nstateful trace: needs_compilation?",
                 contract,
             )
         too_many_lines = "\n".join(
-            ["Representation: trace-pattern", "stateful trace: items at cursor"]
+            ["```text", "items at cursor", "```", "Representation: trace-pattern", "stateful trace: items at cursor"]
             + ["more" for _ in range(19)]
         )
         with self.assertRaisesRegex(ModelTutoringError, "line"):
@@ -315,7 +315,7 @@ class GenericModelTutoringTests(unittest.TestCase):
         )
         with self.assertRaisesRegex(ModelTutoringError, "forbidden source terms"):
             validate_generated_response(
-                "Representation: trace-pattern\nstateful trace: items at cursor\n"
+                "```text\nitems at cursor\n```\nRepresentation: trace-pattern\nstateful trace: items at cursor\n"
                 "The seen alias is not allowed?",
                 authorization.contract,
             )

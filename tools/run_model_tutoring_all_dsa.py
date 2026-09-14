@@ -547,6 +547,8 @@ def _replay_prefix(
     *,
     scenario_id: str,
     forbidden_terms: Sequence[str] = (),
+    visual_required: bool = True,
+    visual_before_explanation: bool = True,
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]], GenericModelTutoringController]:
     """Return only the validated matching prefix and reconstruct controller state."""
 
@@ -554,6 +556,8 @@ def _replay_prefix(
         plan,
         model_identifier=plan.provenance.model_identifier,
         forbidden_terms=forbidden_terms,
+        visual_required=visual_required,
+        visual_before_explanation=visual_before_explanation,
     )
     transcript = _scenario_rows(transcript_rows, scenario_id)
     traces = _scenario_rows(trace_rows, scenario_id)
@@ -684,6 +688,8 @@ def _prepare_existing(
             trace_rows,
             scenario_id=scenario_id,
             forbidden_terms=tuple(scenario.get("forbidden_aliases", ())),
+            visual_required=bool(scenario.get("visual_family")),
+            visual_before_explanation=True,
         )
         normalized_transcript.extend(prefix_transcript)
         normalized_trace.extend(prefix_trace)
@@ -977,6 +983,8 @@ def run_all_dsa(
             trace,
             scenario_id=scenario_id,
             forbidden_terms=tuple(scenario.get("forbidden_aliases", ())),
+            visual_required=bool(scenario.get("visual_family")),
+            visual_before_explanation=True,
         )
         transcript = [row for row in transcript if str(row.get("scenario_id")) != scenario_id]
         trace = [row for row in trace if str(row.get("scenario_id")) != scenario_id]
