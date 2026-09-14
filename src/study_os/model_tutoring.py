@@ -1,9 +1,8 @@
 """Bounded model/schema tutoring kernel for the Contains Duplicate pilot.
 
-This module deliberately contains policy and validation only.  It has no canonical
-lesson prose.  A model proposes a diagnosis and writes a response; the controller
-selects the current concept and the validator decides whether the response may reach
-the learner.
+The model proposes diagnosis, learner-outcome evidence, and learner-visible prose.
+Deterministic code owns stage transitions, assistance ceilings, provenance, and
+presentation invariants. No canonical lesson prose lives here.
 """
 
 from __future__ import annotations
@@ -14,8 +13,8 @@ from dataclasses import dataclass
 from typing import Any, Mapping
 
 
-TRACE_SCHEMA_VERSION = "study-os.model-tutoring-trace.v0.1"
-PROMPT_VERSION = "study-os.model-tutoring-pilot.v1"
+TRACE_SCHEMA_VERSION = "study-os.model-tutoring-trace.v0.2"
+PROMPT_VERSION = "study-os.model-tutoring-pilot.v2"
 SCENARIO_ID = "contains-duplicate-set"
 MODEL_VARIABLES = ("nums", "box", "num")
 FORBIDDEN_VARIABLES = ("seen",)
@@ -72,6 +71,7 @@ OPERATIONS = {
     "assemble",
 }
 ASSISTANCE_LEVELS = {"A0", "A1", "A2"}
+LEARNER_OUTCOMES = {"demonstrated", "not_yet", "uncertain"}
 
 _DIAGNOSIS_ALIASES = {
     "mental_model": "concept_failure",
@@ -102,6 +102,14 @@ _ASSISTANCE_ALIASES = {
     "medium": "A2",
     "none": "A0",
 }
+_OUTCOME_ALIASES = {
+    "correct": "demonstrated",
+    "pass": "demonstrated",
+    "incorrect": "not_yet",
+    "wrong": "not_yet",
+    "partial": "uncertain",
+    "unclear": "uncertain",
+}
 
 
 class ModelTutoringError(ValueError):
@@ -131,9 +139,7 @@ class ModelDiagnosis:
         values["diagnosis_family"] = _DIAGNOSIS_ALIASES.get(
             values["diagnosis_family"], values["diagnosis_family"]
         )
-        values["operation"] = _OPERATION_ALIASES.get(
-            values["operation"], values["operation"]
-        )
+        values["operation"] = _OPERATION_ALIASES.get(values["operation"], values["operation"])
         values["assistance_level"] = _ASSISTANCE_ALIASES.get(
             values["assistance_level"], values["assistance_level"]
         )
@@ -146,6 +152,41 @@ class ModelDiagnosis:
         if not isinstance(values["decomposition"], str):
             raise ModelTutoringError("decomposition must be a string")
         return cls(**values)
+
+
+@dataclass(frozen=True)
+class LearnerAssessment:
+    """Model-proposed outcome tied to verbatim learner evidence."""
+
+    learner_outcome: str
+    evidence_quote: str = ""
+    rationale: str = ""
+
+    @classmethod
+    def from_payload(
+        cls,
+        payload: Mapping[str, Any],
+        *,
+        learner_message: str,
+    ) -> "LearnerAssessment":
+        if not isinstance(payload, Mapping):
+            raise ModelTutoringError("learner assessment must be an object")
+        outcome = payload.get("learner_outcome")
+        quote = payload.get("evidence_quote", "")
+        rationale = payload.get("rationale", "")
+        if not isinstance(outcome, str) or not outcome.strip():
+            raise ModelTutoringError("learner assessment requires learner_outcome")
+        outcome = _OUTCOME_ALIASES.get(outcome, outcome)
+        if outcome not in LEARNER_OUTCOMES:
+            raise ModelTutoringError("unsupported learner outcome")
+        if not isinstance(quote, str) or not isinstance(rationale, str):
+            raise ModelTutoringError("assessment evidence_quote and rationale must be strings")
+        quote = quote.strip()
+        if quote and quote.casefold() not in learner_message.casefold():
+            raise ModelTutoringError("assessment evidence_quote must be verbatim learner text")
+        if outcome == "demonstrated" and not quote:
+            raise ModelTutoringError("demonstrated outcome requires verbatim learner evidence")
+        return cls(outcome, quote, rationale.strip())
 
 
 @dataclass(frozen=True)
@@ -172,12 +213,15 @@ class GenerationContract:
     scenario_id: str
     turn_index: int
     learner_signal: str
+    learner_outcome: str
+    evidence_quote: str
     stage: str
     target_concept: str
     allowed_variables: tuple[str, ...]
     forbidden_variables: tuple[str, ...]
     required_anchors: tuple[str, ...]
     forbidden_terms: tuple[str, ...]
+    required_completion_terms: tuple[str, ...] = ()
     visual_required: bool = True
     visual_before_explanation: bool = True
     max_nonempty_lines: int = 12
@@ -187,7 +231,13 @@ class GenerationContract:
     prompt_version: str = PROMPT_VERSION
     model_identifier: str = "gpt-5.6-luna"
 
-    def trace(self, diagnosis: ModelDiagnosis, *, advance: bool) -> dict[str, Any]:
+    def trace(
+        self,
+        diagnosis: ModelDiagnosis,
+        assessment: LearnerAssessment,
+        *,
+        advance: bool,
+    ) -> dict[str, Any]:
         return {
             "schema_version": TRACE_SCHEMA_VERSION,
             "scenario_id": self.scenario_id,
@@ -197,6 +247,8 @@ class GenerationContract:
             "diagnosis_family": diagnosis.diagnosis_family,
             "operation": diagnosis.operation,
             "assistance_level": diagnosis.assistance_level,
+            "learner_outcome": assessment.learner_outcome,
+            "evidence_quote": assessment.evidence_quote,
             "advance": advance,
             "allowed_variables": list(self.allowed_variables),
             "forbidden_variables": list(self.forbidden_variables),
@@ -210,6 +262,7 @@ class GenerationContract:
 class Authorization:
     contract: GenerationContract
     diagnosis: ModelDiagnosis
+    assessment: LearnerAssessment
     trace: dict[str, Any]
     next_state: ModelTutoringState
 
@@ -237,8 +290,6 @@ def _nonempty_lines(text: str) -> int:
 
 
 def _relation_count(text: str) -> int:
-    # The generation contract asks for one explicit relation line.  This is a
-    # structural guard, not a prose template or canonical lesson.
     return sum(
         1
         for line in text.splitlines()
@@ -250,11 +301,16 @@ def validate_generated_response(text: str, contract: GenerationContract) -> None
     if not isinstance(text, str) or not text.strip():
         raise ModelTutoringError("generated response is empty")
     lowered = text.lower()
-    missing = [
-        term for term in contract.required_anchors if term.lower() not in lowered
-    ]
+    missing = [term for term in contract.required_anchors if term.lower() not in lowered]
     if missing:
         raise ModelTutoringError(f"missing required anchors: {missing}")
+    completion_missing = [
+        term for term in contract.required_completion_terms if term.lower() not in lowered
+    ]
+    if completion_missing:
+        raise ModelTutoringError(f"missing required loop completion: {completion_missing}")
+    if contract.required_completion_terms and "return false" not in lowered:
+        raise ModelTutoringError("final loop turn must explicitly establish `return False`")
     forbidden = [
         term for term in contract.forbidden_terms if term and term.lower() in lowered
     ]
@@ -279,11 +335,9 @@ def validate_generated_response(text: str, contract: GenerationContract) -> None
         raise ModelTutoringError("full implementation leaked before loop assembly")
 
 
-def parse_model_turn(raw: str) -> tuple[ModelDiagnosis, str]:
-    """Parse the teacher's strict JSON envelope, tolerating one code fence."""
-
+def _json_object(raw: str, *, label: str) -> dict[str, Any]:
     if not isinstance(raw, str):
-        raise ModelTutoringError("model turn must be text")
+        raise ModelTutoringError(f"{label} must be text")
     text = raw.strip()
     if text.startswith("```"):
         lines = text.splitlines()
@@ -292,52 +346,42 @@ def parse_model_turn(raw: str) -> tuple[ModelDiagnosis, str]:
     try:
         payload = json.loads(text)
     except json.JSONDecodeError as exc:
-        raise ModelTutoringError("model turn must be a JSON object") from exc
+        raise ModelTutoringError(f"{label} must be a JSON object") from exc
     if not isinstance(payload, dict):
-        raise ModelTutoringError("model turn must be a JSON object")
+        raise ModelTutoringError(f"{label} must be a JSON object")
+    return payload
+
+
+def parse_model_decision(raw: str, *, learner_message: str) -> tuple[ModelDiagnosis, LearnerAssessment]:
+    payload = _json_object(raw, label="model diagnosis")
     diagnosis_payload = payload.get("diagnosis", payload)
+    assessment_payload = payload.get("assessment", payload)
     diagnosis = ModelDiagnosis.from_payload(diagnosis_payload)
+    assessment = LearnerAssessment.from_payload(
+        assessment_payload,
+        learner_message=learner_message,
+    )
+    return diagnosis, assessment
+
+
+def parse_model_diagnosis(raw: str) -> ModelDiagnosis:
+    """Backward-compatible diagnosis parser; progression code must use parse_model_decision."""
+
+    payload = _json_object(raw, label="model diagnosis")
+    return ModelDiagnosis.from_payload(payload.get("diagnosis", payload))
+
+
+def parse_model_turn(raw: str) -> tuple[ModelDiagnosis, str]:
+    payload = _json_object(raw, label="model turn")
+    diagnosis = ModelDiagnosis.from_payload(payload.get("diagnosis", payload))
     response = payload.get("response")
     if not isinstance(response, str) or not response.strip():
         raise ModelTutoringError("model turn requires a learner-visible response")
     return diagnosis, response.strip()
 
 
-def parse_model_diagnosis(raw: str) -> ModelDiagnosis:
-    """Parse the diagnosis-phase JSON envelope without a learner response."""
-
-    if not isinstance(raw, str):
-        raise ModelTutoringError("model diagnosis must be text")
-    text = raw.strip()
-    if text.startswith("```"):
-        lines = text.splitlines()
-        if len(lines) >= 3:
-            text = "\n".join(lines[1:-1]).strip()
-    try:
-        payload = json.loads(text)
-    except json.JSONDecodeError as exc:
-        raise ModelTutoringError("model diagnosis must be a JSON object") from exc
-    if not isinstance(payload, dict):
-        raise ModelTutoringError("model diagnosis must be a JSON object")
-    return ModelDiagnosis.from_payload(payload.get("diagnosis", payload))
-
-
 def parse_generation_response(raw: str) -> str:
-    """Parse the generation-phase JSON without accepting extra learner text."""
-
-    if not isinstance(raw, str):
-        raise ModelTutoringError("model generation must be text")
-    text = raw.strip()
-    if text.startswith("```"):
-        lines = text.splitlines()
-        if len(lines) >= 3:
-            text = "\n".join(lines[1:-1]).strip()
-    try:
-        payload = json.loads(text)
-    except json.JSONDecodeError as exc:
-        raise ModelTutoringError("model generation must be a JSON object") from exc
-    if not isinstance(payload, dict):
-        raise ModelTutoringError("model generation must be a JSON object")
+    payload = _json_object(raw, label="model generation")
     response = payload.get("response")
     if not isinstance(response, str) or not response.strip():
         raise ModelTutoringError("model generation requires response")
@@ -361,53 +405,58 @@ class ModelTutoringController:
     def authorize(
         self,
         diagnosis: ModelDiagnosis,
+        assessment: LearnerAssessment,
         *,
+        learner_message: str,
         scenario_id: str = SCENARIO_ID,
         turn_index: int,
-        learner_signal: str,
+        learner_signal: str = "unspecified",
     ) -> Authorization:
         if scenario_id != SCENARIO_ID:
             raise ModelTutoringError("pilot controller only accepts contains-duplicate-set")
         if turn_index < 0:
             raise ModelTutoringError("turn_index must be non-negative")
-        if learner_signal not in {"clarification", "wrong_or_uncertain", "recovery_or_check"}:
-            raise ModelTutoringError("unsupported learner signal")
+        if not isinstance(learner_message, str) or not learner_message.strip():
+            raise ModelTutoringError("learner_message is required for progression evidence")
+        if assessment.evidence_quote and assessment.evidence_quote.casefold() not in learner_message.casefold():
+            raise ModelTutoringError("progression evidence is not present in learner message")
+        if assessment.learner_outcome == "demonstrated" and not assessment.evidence_quote:
+            raise ModelTutoringError("demonstrated outcome requires learner evidence")
+
         stage = self.state.stage
         advance = (
-            learner_signal == "recovery_or_check"
+            assessment.learner_outcome == "demonstrated"
             and self.state.stage_index < len(STAGE_ORDER) - 1
         )
+        final_loop_turn = stage == "loop" and turn_index >= 14
         contract = GenerationContract(
             scenario_id=scenario_id,
             turn_index=turn_index,
             learner_signal=learner_signal,
+            learner_outcome=assessment.learner_outcome,
+            evidence_quote=assessment.evidence_quote,
             stage=stage,
             target_concept=STAGE_TO_CONCEPT[stage],
             allowed_variables=STAGE_REQUIRED_VARIABLES[stage],
             forbidden_variables=FORBIDDEN_VARIABLES,
             required_anchors=STAGE_ANCHORS[stage],
             forbidden_terms=STAGE_FORBIDDEN[stage],
+            required_completion_terms=("return", "false") if final_loop_turn else (),
             advance_allowed=advance,
             prompt_version=self.prompt_version,
             model_identifier=self.model_identifier,
         )
-        next_state = self.state
-        if advance:
-            next_state = ModelTutoringState(
-                stage_index=self.state.stage_index + 1,
-                mastery_proven=False,
-                turns_seen=self.state.turns_seen + 1,
-            )
-        else:
-            next_state = ModelTutoringState(
-                stage_index=self.state.stage_index,
-                mastery_proven=False,
-                turns_seen=self.state.turns_seen + 1,
-            )
+        next_index = self.state.stage_index + (1 if advance else 0)
+        next_state = ModelTutoringState(
+            stage_index=next_index,
+            mastery_proven=False,
+            turns_seen=self.state.turns_seen + 1,
+        )
         return Authorization(
             contract=contract,
             diagnosis=diagnosis,
-            trace=contract.trace(diagnosis, advance=advance),
+            assessment=assessment,
+            trace=contract.trace(diagnosis, assessment, advance=advance),
             next_state=next_state,
         )
 
@@ -424,19 +473,23 @@ def build_generation_prompt(
     """Build a bounded prompt; it contains policy, never a canonical lesson."""
 
     history = history or []
+    completion = (
+        " This is the final loop turn: explicitly teach/check the no-duplicate completion `return False`."
+        if contract.required_completion_terms
+        else ""
+    )
     return (
-        "Generate one bounded Study OS tutoring turn. Return JSON only with keys "
-        '`diagnosis` (diagnosis_family, operation, assistance_level, decomposition) '
-        "and `response` (the learner-visible markdown).\n"
-        "You may diagnose the learner, but the controller owns progression. Keep the "
-        "current concept and do not solve future concepts. The response must start with "
-        "a small visual, contain exactly one line beginning `Relation:`, use only the "
-        f"allowed variables {list(contract.allowed_variables)}, never use {list(contract.forbidden_variables)}, "
-        f"include one of {list(contract.required_anchors)}, avoid {list(contract.forbidden_terms)}, "
+        "Generate one bounded Study OS tutoring turn. Return JSON only with key `response` "
+        "containing learner-visible markdown. The controller already assessed the learner; "
+        "do not change progression or claim mastery. Start with a small visual, contain "
+        "exactly one line beginning `Relation:`, use only the allowed variables "
+        f"{list(contract.allowed_variables)}, never use {list(contract.forbidden_variables)}, "
+        f"include {list(contract.required_anchors)}, avoid {list(contract.forbidden_terms)}, "
         f"ask one tiny question, and stay within {contract.max_nonempty_lines} non-empty lines. "
         f"Current concept: {contract.target_concept}; stage: {contract.stage}; "
-        f"learner signal: {contract.learner_signal}.\n\n"
-        "Learner message:\n"
+        f"assessed learner outcome: {contract.learner_outcome}; evidence quote: {contract.evidence_quote!r}."
+        + completion
+        + "\n\nLearner message:\n"
         + learner_message
         + "\n\nRecent conversation:\n"
         + json.dumps(history[-6:], ensure_ascii=False)
@@ -449,6 +502,8 @@ __all__ = [
     "DIAGNOSIS_FAMILIES",
     "FORBIDDEN_VARIABLES",
     "GenerationContract",
+    "LEARNER_OUTCOMES",
+    "LearnerAssessment",
     "ModelDiagnosis",
     "ModelTutoringController",
     "ModelTutoringError",
@@ -456,12 +511,14 @@ __all__ = [
     "OPERATIONS",
     "PROMPT_VERSION",
     "SCENARIO_ID",
+    "STAGE_ANCHORS",
     "STAGE_ORDER",
     "STAGE_REQUIRED_VARIABLES",
     "STAGE_TO_CONCEPT",
     "build_generation_prompt",
-    "parse_model_turn",
-    "parse_model_diagnosis",
     "parse_generation_response",
+    "parse_model_decision",
+    "parse_model_diagnosis",
+    "parse_model_turn",
     "validate_generated_response",
 ]
