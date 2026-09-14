@@ -22,6 +22,39 @@ sys.modules[spec.name] = acceptance
 spec.loader.exec_module(acceptance)
 
 
+def semantic_teacher(stage: str, *, final: bool = False) -> str:
+    if stage == "anchor":
+        body = (
+            "```text\nnums: [4, 1, 4]\n4 repeats\n```\n"
+            "Relation: A duplicate means the same value appears at least twice in nums.\n"
+        )
+    elif stage == "box-meaning":
+        body = (
+            "```text\nnums: [4, 1, 4]\nbox: [4, 1]\nnum: 4\n```\n"
+            "Relation: box contains earlier nums values already passed before the current num.\n"
+        )
+    elif stage == "membership":
+        body = (
+            "```text\nbox: [4, 1]\nnum: 4\n4 in box -> match\n```\n"
+            "Relation: membership asks whether the current num already matches a value in box.\n"
+        )
+    elif stage == "order":
+        body = (
+            "```text\nnum: 4\ncheck box -> match\nadd -> skip\n```\n"
+            "Relation: check num in box before add.\n"
+        )
+    elif stage == "loop":
+        body = (
+            "```text\nnum -> check box\nmatch -> return True\nno match -> add\n```\n"
+            "Relation: each num is checked against box before any add.\n"
+        )
+        if final:
+            body += "If the scan ends with no duplicate, `return False`.\n"
+    else:
+        raise AssertionError(stage)
+    return body + "Tiny check: what happens next?"
+
+
 class ModelTutoringAcceptanceTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
@@ -43,10 +76,6 @@ class ModelTutoringAcceptanceTests(unittest.TestCase):
         concepts = self._concepts()
         for index, concept in enumerate(concepts):
             stage = acceptance.CONCEPT_TO_STAGE[concept]
-            expected = self.stage_contracts[stage]
-            anchors = expected["must_include_any"]
-            visual = " ".join(str(item) for item in anchors)
-            extra = "\nIf no duplicate is found after the scan: `return False`." if index == 14 else ""
             rows.append(
                 {
                     "schema_version": "study-os.model-tutoring-exchange.v0.2",
@@ -56,7 +85,8 @@ class ModelTutoringAcceptanceTests(unittest.TestCase):
                     "turn_index": index,
                     "learner_signal": self.scenario["turns"][index]["learner_signal"],
                     "learner_message": f"learner evidence turn {index}",
-                    "teacher_message": f"```text\n{visual}\n```\n{extra}\nTiny check: what next?",
+                    "teacher_message": semantic_teacher(stage, final=index == 14),
+                    "controller_stage": stage,
                 }
             )
         return rows
@@ -84,7 +114,7 @@ class ModelTutoringAcceptanceTests(unittest.TestCase):
                     "allowed_variables": sorted(acceptance.STAGE_REQUIRED_VARIABLES[stage]),
                     "forbidden_variables": list(self.scenario["forbidden_aliases"]),
                     "visual_required": True,
-                    "prompt_version": "pilot-test-v2",
+                    "prompt_version": "pilot-test-v3",
                     "model_identifier": "test-model",
                 }
             )
@@ -102,6 +132,41 @@ class ModelTutoringAcceptanceTests(unittest.TestCase):
             require_trace=True,
         )
         self.assertTrue(report["accepted"], report["failures"])
+
+    def test_box_cannot_be_redefined_as_boolean_result(self) -> None:
+        transcript = self._passing_transcript()
+        transcript[3]["teacher_message"] = (
+            "```text\nnums: [6,1,6]\nnum = 6 -> box = true\n```\n"
+            "Relation: box holds the yes/no result for whether nums has a duplicate.\n"
+            "Tiny check: true or false?"
+        )
+        report = acceptance.evaluate(
+            transcript_rows=transcript,
+            scenario=self.scenario,
+            trace_rows=self._passing_trace(),
+            require_trace=True,
+        )
+        codes = {item["code"] for item in report["failures"]}
+        self.assertIn("BOX_SEMANTIC_DRIFT", codes)
+        self.assertIn("BOX_MEANING_DRIFT", codes)
+
+    def test_membership_requires_current_num_against_box(self) -> None:
+        transcript = self._passing_transcript()
+        transcript[6]["teacher_message"] = (
+            "```text\nnums: [7,3,7]\nbox: [7]\nnum: 7\n```\n"
+            "Relation: duplicates exist somewhere in nums.\n"
+            "Tiny check: what next?"
+        )
+        report = acceptance.evaluate(
+            transcript_rows=transcript,
+            scenario=self.scenario,
+            trace_rows=self._passing_trace(),
+            require_trace=True,
+        )
+        self.assertIn(
+            "MEMBERSHIP_SEMANTIC_DRIFT",
+            {item["code"] for item in report["failures"]},
+        )
 
     def test_recovery_signal_cannot_force_advance_without_demonstrated_outcome(self) -> None:
         trace = self._passing_trace()
@@ -124,7 +189,10 @@ class ModelTutoringAcceptanceTests(unittest.TestCase):
             trace_rows=trace,
             require_trace=True,
         )
-        self.assertIn("EVIDENCE_NOT_IN_LEARNER_MESSAGE", {item["code"] for item in report["failures"]})
+        self.assertIn(
+            "EVIDENCE_NOT_IN_LEARNER_MESSAGE",
+            {item["code"] for item in report["failures"]},
+        )
 
     def test_progression_must_follow_actual_advance_trace(self) -> None:
         trace = self._passing_trace()
@@ -139,14 +207,17 @@ class ModelTutoringAcceptanceTests(unittest.TestCase):
 
     def test_final_loop_must_explicitly_establish_return_false(self) -> None:
         transcript = self._passing_transcript()
-        transcript[-1]["teacher_message"] = "```text\nnums box num\n```\nTiny check: what next?"
+        transcript[-1]["teacher_message"] = semantic_teacher("loop", final=False)
         report = acceptance.evaluate(
             transcript_rows=transcript,
             scenario=self.scenario,
             trace_rows=self._passing_trace(),
             require_trace=True,
         )
-        self.assertIn("LOOP_COMPLETION_MISSING", {item["code"] for item in report["failures"]})
+        self.assertIn(
+            "LOOP_COMPLETION_MISSING",
+            {item["code"] for item in report["failures"]},
+        )
 
     def test_existing_needs_compilation_transcript_is_rejected(self) -> None:
         rows = acceptance.load_jsonl(RAW_TRANSCRIPT_PATH)
@@ -157,7 +228,10 @@ class ModelTutoringAcceptanceTests(unittest.TestCase):
             require_trace=False,
         )
         self.assertFalse(report["accepted"])
-        self.assertIn("PRODUCT_INTERNAL_STATE_LEAK", {item["code"] for item in report["failures"]})
+        self.assertIn(
+            "PRODUCT_INTERNAL_STATE_LEAK",
+            {item["code"] for item in report["failures"]},
+        )
 
     def test_final_acceptance_requires_model_trace(self) -> None:
         report = acceptance.evaluate(
