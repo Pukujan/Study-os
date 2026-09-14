@@ -25,12 +25,23 @@ from study_os.model_tutoring import (  # noqa: E402
 
 
 def response_for(stage: str, values: str = "[4, 7, 4]", *, final: bool = False) -> str:
-    anchors = STAGE_ANCHORS[stage]
+    if stage == "anchor":
+        relation = "Relation: duplicate means the same value appears twice in nums."
+    elif stage == "box-meaning":
+        relation = "Relation: box contains earlier nums values already passed before the current num."
+    elif stage == "membership":
+        relation = "Relation: membership checks whether the current num already matches a value in box."
+    elif stage == "order":
+        relation = "Relation: check num in box before add."
+    elif stage == "loop":
+        relation = "Relation: each num is checked against box before any add."
+    else:
+        anchors = STAGE_ANCHORS[stage]
+        relation = f"Relation: {anchors[0]} connects to {anchors[-1]}."
     tail = "\nIf the scan finishes with no match: `return False`." if final else ""
     return (
         f"```text\nnums = {values}\nbox = {{4}}\nnum = 4\n```\n"
-        f"Relation: {anchors[0]} connects to {anchors[-1]}."
-        f"{tail}\nTiny check: what do you notice?"
+        f"{relation}{tail}\nTiny check: what do you notice?"
     )
 
 
@@ -47,7 +58,9 @@ class ModelTutoringPilotTests(unittest.TestCase):
 
     def test_trace_schema_is_valid(self) -> None:
         schema = json.loads(
-            (ROOT / "contracts/model-tutoring-trace.v0.2.schema.json").read_text(encoding="utf-8")
+            (ROOT / "contracts/model-tutoring-trace.v0.2.schema.json").read_text(
+                encoding="utf-8"
+            )
         )
         Draft202012Validator.check_schema(schema)
 
@@ -143,6 +156,31 @@ class ModelTutoringPilotTests(unittest.TestCase):
                 contract,
             )
 
+    def test_box_semantics_cannot_be_redefined_as_boolean(self) -> None:
+        controller = ModelTutoringController()
+        first_message = "4 appears twice"
+        first = controller.authorize(
+            self.diagnosis,
+            self.assessment("demonstrated", first_message),
+            turn_index=0,
+            learner_message=first_message,
+        )
+        controller.commit(first)
+        message = "what is box"
+        contract = controller.authorize(
+            self.diagnosis,
+            self.assessment("uncertain", message),
+            turn_index=1,
+            learner_message=message,
+        ).contract
+        validate_generated_response(response_for("box-meaning"), contract)
+        with self.assertRaises(ModelTutoringError):
+            validate_generated_response(
+                "```text\nnums=[4,1,4]\nnum=4\nbox=true\n```\n"
+                "Relation: box holds the yes/no result.\nTiny check: true or false?",
+                contract,
+            )
+
     def test_final_loop_contract_requires_explicit_return_false(self) -> None:
         controller = ModelTutoringController()
         for index in range(4):
@@ -184,6 +222,7 @@ class ModelTutoringPilotTests(unittest.TestCase):
             prompt = build_generation_prompt(contract, learner_message=learner_message)
             self.assertIn("duplicate_meaning", prompt)
             self.assertIn("nums", prompt)
+            self.assertIn("semantic rule:", prompt)
             self.assertFalse(contract.advance_allowed)
 
     def test_stateful_random_outcomes_never_skip_or_claim_mastery(self) -> None:
@@ -198,7 +237,9 @@ class ModelTutoringPilotTests(unittest.TestCase):
                 self.assessment(outcome, message),
                 turn_index=index,
                 learner_message=message,
-                learner_signal=rng.choice(("clarification", "wrong_or_uncertain", "recovery_or_check")),
+                learner_signal=rng.choice(
+                    ("clarification", "wrong_or_uncertain", "recovery_or_check")
+                ),
             )
             self.assertLessEqual(auth.next_state.stage_index - previous, 1)
             self.assertFalse(auth.next_state.mastery_proven)
