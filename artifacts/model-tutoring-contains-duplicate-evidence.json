@@ -1,33 +1,34 @@
 {
-  "schema_version": "study-os.model-tutoring-evidence.v0.2",
+  "schema_version": "study-os.model-tutoring-evidence.v0.3",
   "scenario_id": "contains-duplicate-set",
   "scope": "bounded Luna/model tutoring pilot",
   "hand_authored_canonical_lesson": false,
-  "historical_v0_1_run": {
+  "historical_v0_2_run": {
+    "commit": "51133368bc34673904ae4aa572b6c5e24a9cf440",
     "transcript_exchanges": 15,
     "trace_rows": 15,
     "visible_messages": 30,
     "model_identifier": "gpt-5.6-luna",
-    "study_os_mcp": "study-os-local-test",
-    "resolve_problem_call_required_on_every_teacher_request": true,
-    "checkpointed_each_turn": true,
-    "automated_gate_at_time": "passed v0.1",
+    "automated_gate_at_time": "accepted v0.2 with zero failures",
     "manual_review_status": "invalidated",
     "manual_review_findings": [
-      "progression was driven by scripted corpus learner_signal rather than evidence from the actual learner reply",
-      "the loop never explicitly established return False when the scan finishes without a duplicate"
+      "progression evidence binding worked and final return False was present",
+      "box semantics drifted: learner-visible turns treated box as a boolean/result instead of the calibrated collection of earlier nums values",
+      "the v0.2 gate checked anchors and structure but did not protect this semantic meaning"
     ]
   },
   "current_acceptance": {
-    "required_trace_schema": "study-os.model-tutoring-trace.v0.2",
-    "required_transcript_schema": "study-os.model-tutoring-exchange.v0.2",
+    "acceptance_schema": "study-os.model-tutoring-acceptance.v0.3",
+    "trace_schema": "study-os.model-tutoring-trace.v0.2",
+    "prompt_version": "study-os.model-tutoring-pilot.v3",
     "fresh_run_required": true,
     "accepted": false,
+    "semantic_requirements": [
+      "box is earlier/prior nums values, never the boolean answer",
+      "membership means current num already matches a value in box",
+      "check occurs before add",
+      "loop preserves num/box semantics and finishes with return False when no duplicate is found"
+    ],
     "command": "python tools/run_model_tutoring_contains_duplicate.py --fresh && python tools/check_model_tutoring_acceptance.py --transcript artifacts/model-tutoring-contains-duplicate.jsonl --trace artifacts/model-tutoring-contains-duplicate-trace.jsonl --scenario contains-duplicate-set --report artifacts/model-tutoring-contains-duplicate-acceptance.json"
-  },
-  "current_code_validation": {
-    "ci_status": "green before artifact invalidation metadata update",
-    "progression_rule": "advance only when learner_outcome is demonstrated and bound to a verbatim evidence_quote from the actual learner message",
-    "final_loop_requirement": "final learner-visible loop turn must explicitly establish return False"
   }
 }
