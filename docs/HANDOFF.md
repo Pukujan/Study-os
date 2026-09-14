@@ -3,66 +3,112 @@
 Last updated: 2026-09-14
 Primary tracker: #63
 
-## Immediate execution authority — Contains Duplicate model-tutoring pilot v0.2
+## Immediate execution authority — all-DSA generic model tutoring
 
-The 14-problem / 210-exchange raw dual-Luna evidence run is complete. Its key result was that only Two Sum and Sliding Window reached real teaching; 12 problems repeatedly exposed `needs_compilation` / reviewed-asset state.
+The one-problem Contains Duplicate pilot is no longer the completion target.
 
-The immediate product proof is now the bounded model/schema-driven `contains-duplicate-set` pilot described in:
+The next product proof is the full 14-problem / 210-exchange DSA corpus through one **generic** Luna + schema + deterministic-guardrail architecture.
 
-1. `docs/MODEL_TUTORING_PILOT_HANDOFF.md`
-2. `contracts/model-tutoring-trace.v0.2.schema.json`
-3. `tools/check_model_tutoring_acceptance.py`
-4. latest evidence/pilot update in Issue #63
+Primary execution authority:
 
-The first 15-turn model-tutoring artifact (v0.1) is **not current acceptance evidence**. Manual review found two holes: progression was authorized by the corpus's scripted `learner_signal` rather than the actual learner response, and the conversation never established the no-duplicate `return False` case.
+1. `docs/ALL_DSA_MODEL_TUTORING_HANDOFF.md`
+2. `datasets/dsa-conversation-replay.v0.1.json`
+3. latest model-tutoring evidence / semantic-gate updates in Issue #63
+4. current model-tutoring schemas, prompt registry/versioning, runners, and acceptance code produced under that handoff
 
-Current required path:
+The historical one-problem files remain useful evidence:
+
+- `docs/MODEL_TUTORING_PILOT_HANDOFF.md`
+- `tools/run_model_tutoring_contains_duplicate.py`
+- `tools/check_model_tutoring_acceptance.py`
+- v0.1/v0.2 Contains Duplicate transcripts/traces
+
+They are **not** the final architecture boundary.
+
+### Full-corpus target
 
 ```text
-real learner message
-      ↓
-Luna diagnosis + learner outcome
-      ↓
-verbatim evidence_quote bound to learner message
-      ↓
-deterministic controller: stay / advance at most one concept
-      ↓
-Luna bounded learner-visible generation
-      ↓
-deterministic presentation validation
-      ↓
+14 DSA problems
+× 15 exchanges
+= 210 learner/teacher exchanges
+= 420 learner-visible messages
+```
+
+All 14 problems must use the same generic model-generated teaching path. Do not add a hand-authored canonical lesson per problem and do not replace assets with scenario-specific controller code.
+
+### Required architecture
+
+```text
+raw problem
+    ↓
+Luna problem decomposer
+    ↓
+versioned structured teaching spec
+    - concepts / prerequisites
+    - variables + semantic roles
+    - representations
+    - semantic invariants
+    - completion/base conditions
+    - assistance boundaries
+    ↓
+generic deterministic schema + semantic validation
+    ↓
+learner state
+    ↓
+actual learner message
+    ↓
+Luna diagnosis + learner-outcome assessment
+    ↓
+verbatim learner evidence
+    ↓
+generic deterministic controller authorizes one operation
+    ↓
+Luna learner-visible generation
+    ↓
+generic structural + semantic validation
+    ↓
 learner
 ```
 
-The corpus `learner_signal` may guide Student Luna only. It is never progression evidence.
+Prompt, schema, and deterministic code have separate jobs:
 
-Fresh acceptance requires:
+- **prompt**: directs Luna's decomposition/diagnosis/generation behavior;
+- **schema**: makes Luna externalize concepts, semantics, evidence, variables, and progression claims in machine-checkable form;
+- **deterministic code**: validates generic invariants and owns state transitions; it does not author the lesson;
+- **acceptance/calibration**: judges the generated teaching plan and visible conversation against trusted behavior without leaking hidden benchmark assertions to the teacher.
 
-- 15 new Contains Duplicate exchanges from current HEAD;
-- transcript schema `study-os.model-tutoring-exchange.v0.2`;
-- trace schema `study-os.model-tutoring-trace.v0.2`;
-- every `demonstrated` outcome tied to a verbatim learner-message evidence quote;
-- no advancement for `not_yet` / `uncertain`;
-- no concept skip or backwards transition;
-- A0-A2 assistance ceiling;
-- calibrated variables/visual/question/output constraints;
-- no learner-visible compilation/asset jargon;
-- final loop turn explicitly establishes `return False` when the scan ends without a duplicate;
-- acceptance runner exits 0;
-- manual transcript + trace review after the run.
+Prompt versioning and prompt evaluation are mandatory for this phase. Every plan/turn must record prompt/model/schema provenance, and candidate prompt versions must be evaluated across all 14 problems plus metamorphic variants rather than on one scenario.
 
-Run locally with a fresh pilot:
+### Local Luna authority
 
-```bash
-python tools/run_model_tutoring_contains_duplicate.py --fresh
-python tools/check_model_tutoring_acceptance.py \
-  --transcript artifacts/model-tutoring-contains-duplicate.jsonl \
-  --trace artifacts/model-tutoring-contains-duplicate-trace.jsonl \
-  --scenario contains-duplicate-set \
-  --report artifacts/model-tutoring-contains-duplicate-acceptance.json
-```
+Local Luna owns the whole implementation/fix/test/rerun loop. It should not stop after one problem passes or ask for ordinary implementation decisions that can be resolved from repo evidence.
 
-Do **not** run another 210-turn corpus replay now. Do **not** expand to the other unsupported DSA problems until this bounded v0.2 pilot is accepted.
+It should keep fixing the **general architecture** until all 14 pass individually.
+
+### Terra
+
+There is no Terra-specific repository integration today. If Terra is available locally, use it as an independent diagnostic critic of failed teaching plans/transcripts/traces. Terra is advisory only: it does not interact with measured learners, authorize progression, alter acceptance reports, or feed hidden calibration answers into the teacher.
+
+Persist Terra diagnoses separately when used.
+
+### Existing semantic regression that must remain fixed
+
+Contains Duplicate exposed an important failure mode: structurally valid output silently changed the meaning of `box` from “earlier values already passed” into a boolean result. The current semantic correction must remain a regression test while the architecture is generalized.
+
+### Completion boundary
+
+Do not call the architecture proven until:
+
+- all 14 problems are taught through the generic model/schema path;
+- no problem falls back to learner-visible `needs_compilation`;
+- no new per-problem canonical lessons are added;
+- generated teaching plans and every turn have versioned provenance;
+- prompt evaluation exists across the full corpus + metamorphic variants;
+- TDD, differential, metamorphic, property/stateful, mutation, and prompt-regression gates pass;
+- the 14×15 dual-Luna run passes acceptance for every problem;
+- the final transcript/trace receive manual review.
+
+Keep PR #77 draft until this boundary is met.
 
 ## Current phase
 
@@ -122,6 +168,7 @@ Study OS code/state controls:
 
 AI may:
 
+- propose problem decompositions and structured teaching plans;
 - propose diagnosis hypotheses;
 - assess the current learner reply under an explicit schema;
 - quote learner evidence;
@@ -145,10 +192,12 @@ AI may not silently advance curriculum or mark mastery.
 11. Module evolution is explicit/versioned.
 12. Future non-LLM components must be able to fulfill the same module contracts.
 13. Generic SQL/shell/file MCP access remains prohibited.
+14. Generated problem semantics cannot silently mutate within a run.
+15. Prompt changes are explicitly versioned and evaluated before promotion.
 
 ## Deprioritized
 
-- another full 210-turn rerun before the v0.2 pilot passes;
+- one-problem-only proof loops as the final acceptance target;
 - broad frontend work;
 - video infrastructure;
 - generic multimodal platform work;
