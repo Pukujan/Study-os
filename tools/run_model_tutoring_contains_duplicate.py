@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 """Run the bounded model-tutoring pilot for Contains Duplicate.
 
-This is a pilot runner, not a replacement replay harness.  It reuses the existing
-local Codex actors and local Study OS MCP wiring, but inserts the model/schema seam:
-Luna diagnoses, the deterministic kernel authorizes, and Luna generates a bounded
-learner-visible response that is validated before persistence.
+Student behavior is guided by the calibration corpus, but progression is not. Luna
+assesses the actual learner message, the deterministic controller authorizes the
+next stage, and Luna renders one bounded learner-visible response.
 """
 
 from __future__ import annotations
@@ -26,17 +25,19 @@ import run_dual_luna_transcript as raw  # noqa: E402
 from study_os.model_tutoring import (  # noqa: E402
     ASSISTANCE_LEVELS,
     DIAGNOSIS_FAMILIES,
+    LEARNER_OUTCOMES,
+    OPERATIONS,
+    SCENARIO_ID,
+    STAGE_TO_CONCEPT,
+    LearnerAssessment,
     ModelDiagnosis,
     ModelTutoringController,
     ModelTutoringError,
-    OPERATIONS,
-    SCENARIO_ID,
     build_generation_prompt,
     parse_generation_response,
-    parse_model_diagnosis,
+    parse_model_decision,
     validate_generated_response,
 )
-
 
 DEFAULT_TRANSCRIPT = ROOT / "artifacts" / "model-tutoring-contains-duplicate.jsonl"
 DEFAULT_TRACE = ROOT / "artifacts" / "model-tutoring-contains-duplicate-trace.jsonl"
@@ -51,20 +52,24 @@ class PilotTeacherActor(local.CodexCliActor):
         return (
             "You are Luna, the adaptive teacher in a Study OS model-tutoring pilot. "
             f"For EVERY request call the local MCP server {self.mcp_name!r} using its "
-            "resolve_problem tool with the supplied problem text and domain dsa. The "
-            "tool may report that no reviewed asset exists; that is internal routing "
-            "evidence and must never appear in learner-visible output. Continue through "
-            "the supplied bounded generation contract. Do not edit files or use any "
+            "resolve_problem tool with the supplied problem text and domain dsa. The tool "
+            "may report that no reviewed asset exists; that is internal routing evidence "
+            "and must never appear in learner-visible output. Do not edit files or use "
             "other tools.\n\n"
-            "In diagnosis phase, return JSON only with a diagnosis object containing "
-            "diagnosis_family, operation, assistance_level, and a short decomposition; "
-            f"diagnosis_family MUST be one of {sorted(DIAGNOSIS_FAMILIES)}, operation "
-            f"MUST be one of {sorted(OPERATIONS)}, and assistance_level MUST be one of "
-            f"{sorted(ASSISTANCE_LEVELS)}; do not invent labels. Do not include a response. "
-            "In generation phase, return JSON only with a "
-            "response string; do not include commentary outside JSON. The deterministic "
-            "controller owns stage, progression, variables, assistance ceiling, and "
-            "mastery. Never claim mastery or change the current concept."
+            "In diagnosis phase, judge ONLY the learner's actual message against the "
+            "supplied current concept. Return JSON with `diagnosis` and `assessment`. "
+            "diagnosis contains diagnosis_family, operation, assistance_level, and a short "
+            "decomposition. assessment contains learner_outcome, evidence_quote, rationale. "
+            f"diagnosis_family must be one of {sorted(DIAGNOSIS_FAMILIES)}; operation one "
+            f"of {sorted(OPERATIONS)}; assistance one of {sorted(ASSISTANCE_LEVELS)}; "
+            f"learner_outcome one of {sorted(LEARNER_OUTCOMES)}. Mark `demonstrated` only "
+            "when the learner message itself demonstrates the current concept, and then "
+            "evidence_quote MUST be an exact verbatim substring of that learner message. "
+            "Questions, guesses, contradictions, or uncertainty are not demonstrated. "
+            "Do not use any corpus stage/signal as evidence. Do not include a response.\n\n"
+            "In generation phase, return JSON only with a `response` string. The "
+            "deterministic controller owns stage, progression, variables, assistance "
+            "ceiling, and mastery. Never claim mastery or change the current concept."
         )
 
     def _parse_events(self, stdout: str) -> tuple[str | None, str, bool, list[str]]:
@@ -85,9 +90,7 @@ class PilotTeacherActor(local.CodexCliActor):
             ):
                 resolved = True
         if not resolved:
-            raise RuntimeError(
-                "teacher did not complete the required Study OS resolve_problem MCP call"
-            )
+            raise RuntimeError("teacher did not complete the required Study OS resolve_problem MCP call")
         return thread_id, message, True, errors
 
 
@@ -108,7 +111,7 @@ def _load_rows(path: Path) -> list[dict[str, Any]]:
 def _matching_prefix(
     transcript: list[dict[str, Any]], trace: list[dict[str, Any]], scenario_id: str
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
-    """Resume only a contiguous common prefix; discard an incomplete final turn."""
+    """Resume only a contiguous v0.2 prefix; old signal-driven artifacts are invalid."""
 
     transcript = sorted(
         [row for row in transcript if str(row.get("scenario_id")) == scenario_id],
@@ -124,6 +127,10 @@ def _matching_prefix(
         if int(transcript[index].get("turn_index", -1)) != index:
             break
         if int(trace[index].get("turn_index", -1)) != index:
+            break
+        if not isinstance(transcript[index].get("model_assessment"), dict):
+            break
+        if trace[index].get("schema_version") != "study-os.model-tutoring-trace.v0.2":
             break
         common.append(transcript[index])
         common_trace.append(trace[index])
@@ -155,21 +162,28 @@ def _scenario(corpus: dict[str, Any]) -> dict[str, Any]:
 
 
 def _signal(scenario: dict[str, Any], index: int) -> str:
+    """Student-role guidance only; never used as progression evidence."""
+
     return str(scenario["turns"][index]["learner_signal"])
 
 
 def _replay_state(
     controller: ModelTutoringController,
-    scenario: dict[str, Any],
     rows: list[dict[str, Any]],
 ) -> None:
-    diagnosis = ModelDiagnosis("uncertain_mixed", "probe", "A1")
     for row in rows:
-        index = int(row["turn_index"])
+        learner_message = str(row["learner_message"])
+        diagnosis = ModelDiagnosis.from_payload(row["model_diagnosis"])
+        assessment = LearnerAssessment.from_payload(
+            row["model_assessment"],
+            learner_message=learner_message,
+        )
         authorization = controller.authorize(
             diagnosis,
-            turn_index=index,
-            learner_signal=_signal(scenario, index),
+            assessment,
+            turn_index=int(row["turn_index"]),
+            learner_message=learner_message,
+            learner_signal=str(row.get("learner_signal", "unspecified")),
         )
         controller.commit(authorization)
 
@@ -181,6 +195,7 @@ def _teacher_payload(
     learner_message: str,
     conversation: list[dict[str, str]],
     phase: str,
+    current_stage: str,
     contract: Any | None = None,
     previous_error: str | None = None,
 ) -> dict[str, Any]:
@@ -193,6 +208,8 @@ def _teacher_payload(
         "problem": scenario["problem"],
         "domain": "dsa",
         "turn_index": turn_index,
+        "current_stage": current_stage,
+        "target_concept": STAGE_TO_CONCEPT[current_stage],
         "learner_message": learner_message,
         "conversation": list(conversation),
     }
@@ -204,10 +221,18 @@ def _teacher_payload(
             history=conversation,
         )
     elif phase == "diagnosis":
-        payload["diagnosis_schema"] = {
-            "diagnosis_family": sorted(DIAGNOSIS_FAMILIES),
-            "operation": sorted(OPERATIONS),
-            "assistance_level": sorted(ASSISTANCE_LEVELS),
+        payload["decision_schema"] = {
+            "diagnosis": {
+                "diagnosis_family": sorted(DIAGNOSIS_FAMILIES),
+                "operation": sorted(OPERATIONS),
+                "assistance_level": sorted(ASSISTANCE_LEVELS),
+                "decomposition": "short string",
+            },
+            "assessment": {
+                "learner_outcome": sorted(LEARNER_OUTCOMES),
+                "evidence_quote": "verbatim substring of learner_message when demonstrated",
+                "rationale": "short string",
+            },
         }
     if previous_error:
         payload["repair_feedback"] = previous_error
@@ -228,7 +253,7 @@ def run_pilot(
     model_identifier: str = DEFAULT_MODEL,
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     controller = ModelTutoringController(model_identifier=model_identifier)
-    _replay_state(controller, scenario, transcript_rows)
+    _replay_state(controller, transcript_rows)
     conversation = raw._conversation_from_records(transcript_rows)
 
     for turn_index in range(len(transcript_rows), turns):
@@ -244,37 +269,45 @@ def run_pilot(
             {"role": "learner", "content": learner_message}
         ]
         learner_signal = _signal(scenario, turn_index)
+        current_stage = controller.state.stage
 
         diagnosis: ModelDiagnosis | None = None
-        diagnosis_error: str | None = None
-        diagnosis_raw: str = ""
+        assessment: LearnerAssessment | None = None
+        decision_error: str | None = None
+        decision_raw = ""
         for _attempt in range(3):
-            diagnosis_result = teacher.ask(
+            decision_result = teacher.ask(
                 _teacher_payload(
                     scenario=scenario,
                     turn_index=turn_index,
                     learner_message=learner_message,
                     conversation=conversation_with_learner,
                     phase="diagnosis",
-                    previous_error=diagnosis_error,
+                    current_stage=current_stage,
+                    previous_error=decision_error,
                 )
             )
             try:
-                diagnosis_raw = raw._extract_message(diagnosis_result, role="teacher")
-                diagnosis = parse_model_diagnosis(diagnosis_raw)
+                decision_raw = raw._extract_message(decision_result, role="teacher")
+                diagnosis, assessment = parse_model_decision(
+                    decision_raw,
+                    learner_message=learner_message,
+                )
                 break
             except ModelTutoringError as exc:
-                diagnosis_error = str(exc)
-        if diagnosis is None:
+                decision_error = str(exc)
+        if diagnosis is None or assessment is None:
             raise RuntimeError(
-                f"teacher diagnosis failed at turn {turn_index}: {diagnosis_error}; "
-                f"last response={diagnosis_raw[:800]!r}"
+                f"teacher decision failed at turn {turn_index}: {decision_error}; "
+                f"last response={decision_raw[:800]!r}"
             )
 
         authorization = controller.authorize(
             diagnosis,
+            assessment,
             scenario_id=SCENARIO_ID,
             turn_index=turn_index,
+            learner_message=learner_message,
             learner_signal=learner_signal,
         )
         generation_error: str | None = None
@@ -287,6 +320,7 @@ def run_pilot(
                     learner_message=learner_message,
                     conversation=conversation_with_learner,
                     phase="generation",
+                    current_stage=current_stage,
                     contract=authorization.contract,
                     previous_error=generation_error,
                 )
@@ -304,7 +338,7 @@ def run_pilot(
             raise RuntimeError(f"teacher generation failed at turn {turn_index}: {generation_error}")
 
         record = {
-            "schema_version": "study-os.model-tutoring-exchange.v0.1",
+            "schema_version": "study-os.model-tutoring-exchange.v0.2",
             "scenario_id": scenario["id"],
             "title": scenario["title"],
             "problem": scenario["problem"],
@@ -313,6 +347,7 @@ def run_pilot(
             "learner_message": learner_message,
             "teacher_message": generated,
             "model_diagnosis": asdict(diagnosis),
+            "model_assessment": asdict(assessment),
             "controller_stage": authorization.contract.stage,
         }
         transcript_rows.append(record)
@@ -327,7 +362,11 @@ def run_pilot(
         _write_jsonl(transcript_rows, transcript_path)
         _write_jsonl(trace_rows, trace_path)
         _write_markdown(transcript_rows, markdown_path)
-        print(f"captured contains-duplicate exchange {turn_index + 1}; total={len(transcript_rows)}")
+        print(
+            f"captured contains-duplicate exchange {turn_index + 1}; "
+            f"stage={current_stage}; outcome={assessment.learner_outcome}; "
+            f"next={controller.state.stage}"
+        )
 
     return transcript_rows, trace_rows
 
@@ -358,9 +397,9 @@ def main() -> int:
     else:
         transcript, trace = [], []
     transcript, trace = _matching_prefix(transcript, trace, SCENARIO_ID)
-    if transcript or trace:
-        _write_jsonl(transcript, args.transcript)
-        _write_jsonl(trace, args.trace)
+    _write_jsonl(transcript, args.transcript)
+    _write_jsonl(trace, args.trace)
+    _write_markdown(transcript, args.markdown)
 
     version = local.ensure_codex_available(args.codex_bin)
     print(f"local Codex: {version}")
