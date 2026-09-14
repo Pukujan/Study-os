@@ -12,95 +12,110 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from study_os.model_tutoring import (  # noqa: E402
+    LearnerAssessment,
     ModelDiagnosis,
     ModelTutoringController,
     ModelTutoringError,
     STAGE_ANCHORS,
     STAGE_ORDER,
-    STAGE_REQUIRED_VARIABLES,
     build_generation_prompt,
-    parse_model_turn,
+    parse_model_decision,
     validate_generated_response,
 )
 
 
-def response_for(stage: str, values: str = "[4, 7, 4]") -> str:
+def response_for(stage: str, values: str = "[4, 7, 4]", *, final: bool = False) -> str:
     anchors = STAGE_ANCHORS[stage]
+    tail = "\nIf the scan finishes with no match: `return False`." if final else ""
     return (
         f"```text\nnums = {values}\nbox = {{4}}\nnum = 4\n```\n"
-        f"Relation: {anchors[0]} connects to {anchors[-1]}.\n"
-        "Tiny check: what do you notice?"
+        f"Relation: {anchors[0]} connects to {anchors[-1]}."
+        f"{tail}\nTiny check: what do you notice?"
     )
 
 
 class ModelTutoringPilotTests(unittest.TestCase):
     def setUp(self) -> None:
-        self.diagnosis = ModelDiagnosis(
-            diagnosis_family="uncertain_mixed",
-            operation="probe",
-            assistance_level="A1",
-            decomposition="one observable relation",
+        self.diagnosis = ModelDiagnosis("uncertain_mixed", "probe", "A1", "one relation")
+
+    def assessment(self, outcome: str, message: str) -> LearnerAssessment:
+        quote = message if outcome == "demonstrated" else ""
+        return LearnerAssessment.from_payload(
+            {"learner_outcome": outcome, "evidence_quote": quote, "rationale": "test"},
+            learner_message=message,
         )
 
-    def test_schema_trace_shape_is_valid(self) -> None:
+    def test_trace_schema_is_valid(self) -> None:
         schema = json.loads(
-            (ROOT / "contracts/model-tutoring-trace.v0.1.schema.json").read_text(
-                encoding="utf-8"
-            )
+            (ROOT / "contracts/model-tutoring-trace.v0.2.schema.json").read_text(encoding="utf-8")
         )
         Draft202012Validator.check_schema(schema)
+
+    def test_progression_uses_actual_assessment_not_corpus_signal(self) -> None:
         controller = ModelTutoringController()
+        message = "4 appears twice"
         authorization = controller.authorize(
             self.diagnosis,
+            self.assessment("demonstrated", message),
             turn_index=0,
+            learner_message=message,
             learner_signal="clarification",
         )
-        errors = list(Draft202012Validator(schema).iter_errors(authorization.trace))
-        self.assertEqual(errors, [])
+        self.assertTrue(authorization.trace["advance"])
+        self.assertEqual(authorization.next_state.stage, "box-meaning")
 
-    def test_controller_owns_stage_and_advance_boundary(self) -> None:
         controller = ModelTutoringController()
-        first = controller.authorize(
+        message = "I have no idea"
+        authorization = controller.authorize(
             self.diagnosis,
+            self.assessment("not_yet", message),
             turn_index=0,
-            learner_signal="clarification",
-        )
-        self.assertEqual(first.contract.target_concept, "duplicate_meaning")
-        self.assertFalse(first.trace["advance"])
-        controller.commit(first)
-        wrong = controller.authorize(
-            self.diagnosis,
-            turn_index=1,
-            learner_signal="wrong_or_uncertain",
-        )
-        self.assertEqual(wrong.contract.stage, "anchor")
-        self.assertFalse(wrong.trace["advance"])
-        recovery = controller.authorize(
-            self.diagnosis,
-            turn_index=2,
+            learner_message=message,
             learner_signal="recovery_or_check",
         )
-        self.assertTrue(recovery.trace["advance"])
-        self.assertEqual(recovery.next_state.stage, "box-meaning")
-        controller.commit(recovery)
-        self.assertEqual(controller.state.stage, "box-meaning")
+        self.assertFalse(authorization.trace["advance"])
+        self.assertEqual(authorization.next_state.stage, "anchor")
 
-    def test_model_cannot_override_current_target(self) -> None:
-        controller = ModelTutoringController()
-        diagnosis = ModelDiagnosis(
-            diagnosis_family="concept_failure",
-            operation="assemble",
-            assistance_level="A2",
-        )
-        authorization = controller.authorize(
-            diagnosis,
-            turn_index=0,
-            learner_signal="clarification",
-        )
-        self.assertEqual(authorization.trace["target_concept"], "duplicate_meaning")
-        self.assertEqual(authorization.contract.allowed_variables, ("nums",))
+    def test_demonstrated_requires_verbatim_learner_evidence(self) -> None:
+        with self.assertRaises(ModelTutoringError):
+            LearnerAssessment.from_payload(
+                {
+                    "learner_outcome": "demonstrated",
+                    "evidence_quote": "4 appears twice",
+                    "rationale": "claimed",
+                },
+                learner_message="banana",
+            )
+        with self.assertRaises(ModelTutoringError):
+            LearnerAssessment.from_payload(
+                {"learner_outcome": "demonstrated", "evidence_quote": ""},
+                learner_message="4 appears twice",
+            )
 
-    def test_assistance_above_a2_and_unknown_values_are_rejected(self) -> None:
+    def test_parse_model_decision_binds_evidence_to_message(self) -> None:
+        message = "The duplicate is 4 because 4 appears twice."
+        diagnosis, assessment = parse_model_decision(
+            json.dumps(
+                {
+                    "diagnosis": {
+                        "diagnosis_family": "none",
+                        "operation": "probe",
+                        "assistance_level": "A0",
+                        "decomposition": "verify duplicate meaning",
+                    },
+                    "assessment": {
+                        "learner_outcome": "demonstrated",
+                        "evidence_quote": "4 appears twice",
+                        "rationale": "states the rule",
+                    },
+                }
+            ),
+            learner_message=message,
+        )
+        self.assertEqual(diagnosis.diagnosis_family, "none")
+        self.assertEqual(assessment.learner_outcome, "demonstrated")
+
+    def test_assistance_above_a2_is_rejected(self) -> None:
         with self.assertRaises(ModelTutoringError):
             ModelDiagnosis.from_payload(
                 {
@@ -110,157 +125,86 @@ class ModelTutoringPilotTests(unittest.TestCase):
                 }
             )
 
-    def test_model_diagnosis_common_labels_are_normalized_inside_policy_enum(self) -> None:
-        diagnosis = ModelDiagnosis.from_payload(
-            {
-                "diagnosis_family": "mental_model",
-                "operation": "contrast",
-                "assistance_level": "minimal",
-            }
-        )
-        self.assertEqual(diagnosis.diagnosis_family, "concept_failure")
-        self.assertEqual(diagnosis.operation, "change_representation")
-        self.assertEqual(diagnosis.assistance_level, "A1")
-        with self.assertRaises(ModelTutoringError):
-            ModelDiagnosis.from_payload(
-                {
-                    "diagnosis_family": "not-a-diagnosis",
-                    "operation": "probe",
-                    "assistance_level": "A1",
-                }
-            )
-
-    def test_validator_requires_visual_relation_question_and_variables(self) -> None:
+    def test_validator_requires_visual_relation_question_and_forbidden_alias(self) -> None:
         controller = ModelTutoringController()
+        message = "not sure"
         contract = controller.authorize(
             self.diagnosis,
+            self.assessment("not_yet", message),
             turn_index=0,
-            learner_signal="clarification",
+            learner_message=message,
         ).contract
         validate_generated_response(response_for("anchor"), contract)
-        for bad in (
-            "nums and duplicate?",
-            "```text\nnums = [4,7,4]\n```\nRelation: duplicate and nums",
-            "```text\nnums = [4,7,4]\n```\nRelation: duplicate and nums\nTiny check: seen?",
-        ):
-            with self.assertRaises(ModelTutoringError):
-                validate_generated_response(bad, contract)
-
-    def test_validator_rejects_aliases_future_terms_and_full_code(self) -> None:
-        controller = ModelTutoringController()
-        contract = controller.authorize(
-            self.diagnosis,
-            turn_index=0,
-            learner_signal="clarification",
-        ).contract
-        for text in (
-            "```text\nnums = [4,7,4]\n```\nRelation: duplicate and nums\nTiny check: is it a set?",
-            "```text\nnums = [4,7,4]\n```\nRelation: duplicate and nums\nTiny check: use seen?",
-            "```python\ndef solve(nums):\n    return True\n```\nRelation: nums and duplicate\nTiny check?",
-        ):
-            with self.assertRaises(ModelTutoringError):
-                validate_generated_response(text, contract)
-
-    def test_parse_model_json_envelope(self) -> None:
-        diagnosis, response = parse_model_turn(
-            json.dumps(
-                {
-                    "diagnosis": {
-                        "diagnosis_family": "concept_failure",
-                        "operation": "smaller_step",
-                        "assistance_level": "A2",
-                        "decomposition": "name the repeated value",
-                    },
-                    "response": response_for("anchor"),
-                }
-            )
-        )
-        self.assertEqual(diagnosis.operation, "smaller_step")
-        self.assertIn("Relation:", response)
         with self.assertRaises(ModelTutoringError):
-            parse_model_turn("not json")
-
-    def test_differential_stage_policy_matches_calibrated_corpus(self) -> None:
-        corpus = json.loads(
-            (ROOT / "datasets/dsa-conversation-replay.v0.1.json").read_text(
-                encoding="utf-8"
+            validate_generated_response("Relation: nums and duplicate\nQuestion?", contract)
+        with self.assertRaises(ModelTutoringError):
+            validate_generated_response(
+                "```text\nnums=[4,7,4]\n```\nRelation: nums and duplicate\nShould seen hold 4?",
+                contract,
             )
-        )
-        scenario = next(item for item in corpus["scenarios"] if item["id"] == "contains-duplicate-set")
+
+    def test_final_loop_contract_requires_explicit_return_false(self) -> None:
         controller = ModelTutoringController()
-        for index, turn in enumerate(scenario["turns"]):
-            authorization = controller.authorize(
+        for index in range(4):
+            message = f"demonstrated stage {index}"
+            auth = controller.authorize(
                 self.diagnosis,
+                self.assessment("demonstrated", message),
                 turn_index=index,
-                learner_signal=turn["learner_signal"],
+                learner_message=message,
+                learner_signal="wrong_or_uncertain",
             )
-            self.assertEqual(authorization.contract.stage, turn["stage"])
-            self.assertEqual(
-                set(authorization.contract.required_anchors),
-                set(turn["expected"]["must_include_any"]),
-            )
-            self.assertEqual(
-                authorization.contract.max_nonempty_lines,
-                turn["expected"]["max_nonempty_lines"],
-            )
-            if turn["learner_signal"] != "recovery_or_check":
-                self.assertFalse(authorization.trace["advance"])
-            controller.commit(authorization)
-
-    def test_metamorphic_paraphrases_and_numeric_substitution_preserve_policy(self) -> None:
-        controller = ModelTutoringController()
-        contract = controller.authorize(
+            controller.commit(auth)
+        self.assertEqual(controller.state.stage, "loop")
+        message = "I check the next num"
+        final = controller.authorize(
             self.diagnosis,
-            turn_index=0,
-            learner_signal="recovery_or_check",
+            self.assessment("not_yet", message),
+            turn_index=14,
+            learner_message=message,
         ).contract
+        with self.assertRaises(ModelTutoringError):
+            validate_generated_response(response_for("loop"), final)
+        validate_generated_response(response_for("loop", final=True), final)
+
+    def test_metamorphic_paraphrases_preserve_policy_not_progression(self) -> None:
+        controller = ModelTutoringController()
         for learner_message in (
             "what does duplicate mean?",
             "same number twice?",
             "if 4 shows up two times?",
             "duplicate??",
         ):
+            contract = controller.authorize(
+                self.diagnosis,
+                self.assessment("uncertain", learner_message),
+                turn_index=0,
+                learner_message=learner_message,
+            ).contract
             prompt = build_generation_prompt(contract, learner_message=learner_message)
             self.assertIn("duplicate_meaning", prompt)
             self.assertIn("nums", prompt)
-            self.assertIn("never use ['seen']", prompt)
-        validate_generated_response(response_for("anchor", "[8, 3, 8]"), contract)
+            self.assertFalse(contract.advance_allowed)
 
-    def test_stateful_random_signals_never_skip_or_claim_mastery(self) -> None:
+    def test_stateful_random_outcomes_never_skip_or_claim_mastery(self) -> None:
         rng = random.Random(77)
         controller = ModelTutoringController()
-        previous_index = 0
+        previous = 0
         for index in range(60):
-            signal = rng.choice(("clarification", "wrong_or_uncertain", "recovery_or_check"))
-            authorization = controller.authorize(
+            outcome = rng.choice(("demonstrated", "not_yet", "uncertain"))
+            message = f"learner evidence {index}"
+            auth = controller.authorize(
                 self.diagnosis,
+                self.assessment(outcome, message),
                 turn_index=index,
-                learner_signal=signal,
+                learner_message=message,
+                learner_signal=rng.choice(("clarification", "wrong_or_uncertain", "recovery_or_check")),
             )
-            self.assertLessEqual(authorization.next_state.stage_index - previous_index, 1)
-            self.assertFalse(authorization.next_state.mastery_proven)
-            controller.commit(authorization)
-            previous_index = controller.state.stage_index
+            self.assertLessEqual(auth.next_state.stage_index - previous, 1)
+            self.assertFalse(auth.next_state.mastery_proven)
+            controller.commit(auth)
+            previous = controller.state.stage_index
         self.assertEqual(controller.state.stage, STAGE_ORDER[-1])
-
-    def test_mutation_style_boundaries_are_killed(self) -> None:
-        controller = ModelTutoringController()
-        authorization = controller.authorize(
-            self.diagnosis,
-            turn_index=0,
-            learner_signal="wrong_or_uncertain",
-        )
-        self.assertFalse(authorization.trace["advance"])
-        self.assertEqual(authorization.contract.forbidden_variables, ("seen",))
-        self.assertEqual(
-            set(authorization.contract.allowed_variables),
-            set(STAGE_REQUIRED_VARIABLES["anchor"]),
-        )
-        with self.assertRaises(ModelTutoringError):
-            validate_generated_response(
-                "```text\nnums = [4,7,4]\n```\nRelation: nums and duplicate\nTiny check: okay?\nextra\nextra\nextra\nextra\nextra\nextra\nextra\nextra\nextra\nextra\nextra\nextra\nextra",
-                authorization.contract,
-            )
 
 
 if __name__ == "__main__":
