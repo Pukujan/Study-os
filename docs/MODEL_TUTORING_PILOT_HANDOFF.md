@@ -1,46 +1,47 @@
 # Model/schema-driven tutoring pilot handoff
 
-Status: ACTIVE execution authority after the dual-Luna raw transcript review.
+Status: ACTIVE execution authority after manual review of the first 15-turn pilot.
 
 ## Immediate product goal
 
 Do **not** hand-author another canonical teaching lesson for the pilot.
 
-Make `contains-duplicate-set` teachable through a bounded Luna/model path:
+Make `contains-duplicate-set` teachable through a bounded Luna/model path where progression depends on the learner's actual response:
 
 ```text
 learner message
     ↓
-Luna diagnosis / decomposition
-    ↓ structured decision trace
-controller validates allowed concept / assistance / variables / representation
+Luna diagnosis + learner-outcome assessment
+    ↓
+verbatim evidence_quote from the learner message
+    ↓
+deterministic controller authorizes stay / advance + bounded operation
     ↓
 Luna generates one learner-visible teaching turn
-    ↓ deterministic validation
+    ↓
+deterministic presentation validation
+    ↓
 learner sees the response
 ```
 
-The deterministic system remains authority for progression, assistance ceiling, mastery claims, evidence, and hard invariants. It must stop being the author of every learner-visible lesson.
+The deterministic system remains authority for progression mechanics, assistance ceiling, mastery claims, evidence binding, and hard invariants. Luna supplies adaptive diagnosis/decomposition, proposes the learner outcome, and writes the bounded teaching turn.
 
-## Why this is the next step
+## Why v0.2 exists
 
-The 14-problem / 210-exchange dual-Luna transcript proved:
+The 14-problem / 210-exchange dual-Luna transcript proved that static hand-authored assets do not scale: only Two Sum and Sliding Window reached real teaching, while 12 problems returned `needs_compilation` / reviewed-asset language.
 
-- only Two Sum and Sliding Window reached real teaching;
-- the other 12 problems repeatedly returned `needs_compilation` / reviewed-asset language;
-- the static-asset approach therefore does not scale to normal DSA coverage;
-- existing reviewed assets can still encode pedagogical drift;
-- assembled state currently blocks useful follow-up clarification.
+The first model-tutoring pilot then proved dynamic learner-visible teaching was possible, but manual review found two acceptance holes:
 
-The first architecture proof should therefore convert one unsupported problem to model/schema-driven tutoring without adding a hand-authored canonical lesson.
+1. progression was still driven by the corpus's scripted `learner_signal` (`recovery_or_check`) rather than evidence in the actual learner reply;
+2. the 15-turn conversation never established the final no-duplicate case, `return False`, even though the old gate passed.
+
+Those v0.1 artifacts are therefore historical evidence, not current acceptance evidence.
 
 ## Pilot scope
 
-Only `contains-duplicate-set` is required initially.
+Only `contains-duplicate-set` is required initially. Do not generalize until a **fresh v0.2 15-turn run** passes the acceptance gate and manual review.
 
-Do not generalize to all DSA problems until this pilot passes the acceptance gate and produces a reviewed transcript.
-
-The calibrated concept progression for the pilot is:
+Calibrated concept order:
 
 ```text
 duplicate meaning
@@ -51,46 +52,56 @@ membership
     ↓
 check before add
     ↓
-loop assembly
+loop assembly / finish-without-duplicate case
 ```
 
-The learner-facing variable names remain `nums`, `box`, and `num`; `seen` remains forbidden for this calibrated path.
+Learner-facing variable names remain `nums`, `box`, and `num`; `seen` remains forbidden for this calibrated path.
 
-## Required design work from local Luna
+## Progression authority
 
-Write/update a small PDD and SDD before implementation. Keep them executable and focused on this pilot rather than expanding architecture broadly.
+The corpus `learner_signal` is allowed only as simulation guidance for Student Luna. It is **not evidence** and must not authorize progression.
 
-The implementation must define:
+Teacher Luna must produce a structured assessment of the actual learner message:
 
-1. how Luna produces a structured diagnosis/decomposition;
-2. how the controller authorizes one pedagogical operation;
-3. how the generation prompt receives only bounded state/constraints;
-4. how generated learner-visible output is validated;
-5. how exact prompt/model/version provenance is recorded;
-6. how clarification/wrong answers remain on the current concept;
-7. how a successful verification advances at most one calibrated concept;
-8. how the path avoids a new hand-authored canonical teaching asset.
+```json
+{
+  "learner_outcome": "demonstrated | not_yet | uncertain",
+  "evidence_quote": "exact substring from the learner message when demonstrated",
+  "rationale": "short explanation"
+}
+```
+
+Rules:
+
+- `demonstrated` requires a non-empty `evidence_quote`;
+- the quote must occur verbatim in the learner message;
+- `not_yet` and `uncertain` never advance;
+- `demonstrated` may advance at most one concept;
+- the final `loop_assembly` concept cannot advance beyond the pilot;
+- transcript/self-report never establishes mastery.
 
 ## Required structured trace
 
 Every accepted teacher turn must emit one trace record matching:
 
-`contracts/model-tutoring-trace.v0.1.schema.json`
+`contracts/model-tutoring-trace.v0.2.schema.json`
 
-Important fields include:
+Required fields include:
 
 - `path_kind = model_generated`;
 - `target_concept`;
 - `diagnosis_family`;
 - `operation`;
 - `assistance_level`;
+- `learner_outcome`;
+- `evidence_quote`;
 - `advance`;
 - allowed / forbidden variables;
 - `visual_required`;
 - prompt version;
 - model identifier.
 
-For the pilot the target concept IDs are:
+Target concept IDs:
 
 ```text
 anchor       -> duplicate_meaning
@@ -102,7 +113,7 @@ loop         -> loop_assembly
 
 ## Acceptance runner
 
-The canonical gate is:
+Canonical gate:
 
 `tools/check_model_tutoring_acceptance.py`
 
@@ -116,93 +127,64 @@ python tools/check_model_tutoring_acceptance.py \
   --report artifacts/model-tutoring-contains-duplicate-acceptance.json
 ```
 
-Development-only transcript check:
-
-```bash
-python tools/check_model_tutoring_acceptance.py \
-  --transcript artifacts/model-tutoring-contains-duplicate.jsonl \
-  --scenario contains-duplicate-set \
-  --transcript-only
-```
-
-The final gate rejects, among other things:
+The v0.2 gate rejects, among other things:
 
 - `needs_compilation` and learner-visible asset/alias jargon;
-- missing calibrated anchors;
-- future-concept leakage;
-- forbidden variable aliases;
-- dropped visuals;
-- failure to ask a learner-sized question;
-- output-budget violations;
-- full implementation leakage before loop assembly;
-- missing model decision trace;
-- turns not marked model-generated;
-- target-concept drift;
+- missing calibrated anchors, visuals, tiny questions, or variable constraints;
+- future-concept/full-solution leakage;
 - assistance above A2;
-- advancement on clarification or wrong/uncertain turns;
-- missing variable/visual constraints;
-- missing prompt/model provenance.
+- non-model-generated turns or missing provenance;
+- advancement without `learner_outcome = demonstrated`;
+- demonstrated outcomes without a verbatim evidence quote;
+- evidence quotes not found in the real learner message;
+- concept skips, backwards movement, or progression inconsistent with the previous turn's `advance` decision;
+- failure to reach `loop_assembly`;
+- failure for the final learner-visible turn to explicitly establish `return False` after a full scan with no duplicate.
 
 ## Test strategy required before scaling
 
 ### TDD
 
-Implement the new path test-first. Unit tests should cover schema parsing, controller authorization, generation-envelope construction, validator rejection paths, trace persistence, retry/idempotency behavior, and assembled/follow-up behavior where touched.
+Cover assessment parsing, evidence binding, controller authorization, generation envelopes, validator rejection paths, trace persistence, resume behavior, and final loop completion.
 
-### Differential tests
+### Differential
 
-Use the calibrated corpus / trusted golden behavior as the primary oracle. Do not treat current production assets as stronger ground truth than the calibration data.
+Use the calibrated corpus / trusted golden behavior as the primary oracle for concept order, variables, visual requirements, assistance, and representation constraints. Do not treat current production assets as stronger ground truth.
 
-For the pilot, compare stage intent, variables, visual requirement, assistance, and progression semantics rather than exact prose.
+### Metamorphic
 
-### Metamorphic tests
+Paraphrases and numeric substitutions must preserve policy. A corpus signal change by itself must never change progression; progression changes only when the actual learner assessment changes.
 
-At minimum, demonstrate equivalent behavior for paraphrases such as:
+### Property/stateful
 
-- “what does duplicate mean?”
-- “same number twice?”
-- “if 4 shows up two times?”
-- “duplicate??”
+Generate learner-outcome sequences and prove the controller cannot skip concepts, advance more than one concept, exceed assistance ceiling, claim mastery, lose evidence binding, or use forbidden aliases.
 
-and value substitutions such as `[4,7,4]` → `[8,3,8]` without changing the pedagogical structure.
+### Mutation
 
-Wrong-answer paraphrases must not cause accidental advancement.
+Kill mutants that:
 
-### Property/stateful tests
-
-Generate valid/invalid learner sequences and prove the controller cannot:
-
-- skip concepts;
-- advance more than one concept;
-- exceed assistance ceiling;
-- claim mastery without evidence;
-- use forbidden aliases;
-- lose the required representation contract.
-
-### Mutation testing
-
-The critical deterministic kernel must kill mutants that:
-
-- advance two stages instead of one;
-- advance after a wrong answer;
-- remove the A2 assistance ceiling;
-- remove the forbidden `seen` rule;
-- make required visuals optional;
-- allow mastery from transcript/self-report;
-- bypass the model trace/provenance requirement;
-- turn assembled state into a clarification dead end if that code is touched.
-
-Prompt/behavior mutations should also be exercised where practical: removing one-concept-at-a-time, variable preservation, visual requirement, or retry behavior should cause transcript acceptance to degrade.
+- restore `recovery_or_check -> advance`;
+- allow `demonstrated` without learner evidence;
+- accept fabricated evidence quotes;
+- advance two stages;
+- exceed A2;
+- remove `seen` prohibition;
+- make visuals optional;
+- bypass trace/provenance;
+- omit the final `return False` completion requirement.
 
 ## End-to-end proof
 
-After unit/differential/metamorphic/mutation work is green, run the real local Luna student against the real Study OS Luna teacher for Contains Duplicate and save the 15-turn transcript + trace.
+Run a **fresh** local 15-turn pilot after these changes. Old v0.1 transcript/trace files must not be resumed; the runner deliberately rejects them as resumable prefixes.
 
 Do not call the architecture validated until:
 
-1. the acceptance runner exits 0;
-2. the transcript is manually reviewed against the calibrated teaching behavior;
-3. Contains Duplicate is taught without a hand-authored canonical lesson;
-4. no product-internal compilation/asset jargon reaches the learner.
+1. the new transcript uses `study-os.model-tutoring-exchange.v0.2`;
+2. every trace row uses `study-os.model-tutoring-trace.v0.2`;
+3. stage progression is justified by actual learner-message evidence, not corpus signals;
+4. the final loop teaches/checks the no-duplicate `return False` case;
+5. the acceptance runner exits 0;
+6. the fresh transcript and trace are manually reviewed;
+7. Contains Duplicate remains model-generated without a hand-authored canonical lesson.
 
-Only after that should the same path expand to problem #2.
+Only then expand the same path to problem #2.
