@@ -156,14 +156,26 @@ def _public_text(value: object, field_name: str) -> str:
     return value.strip()
 
 
-def _public_problem(scenario: Mapping[str, Any]) -> dict[str, str]:
-    """Return the public problem envelope, excluding all turn annotations."""
+def _public_problem(scenario: Mapping[str, Any]) -> dict[str, Any]:
+    """Return public problem identity and declared variable bindings.
 
+    Variable names are part of the learner-facing problem contract.  Turn
+    annotations (signals, stages, and expected assertions) remain excluded.
+    """
+
+    variables = scenario.get("variables", [])
+    if not isinstance(variables, list) or not all(
+        isinstance(item, str) and item.strip() for item in variables
+    ):
+        raise ValueError("scenario.variables must be a non-empty list of names")
+    if len(set(variables)) != len(variables):
+        raise ValueError("scenario.variables must contain unique names")
     return {
         "scenario_id": _public_text(scenario.get("id"), "scenario.id"),
         "title": _public_text(scenario.get("title"), "scenario.title"),
         "problem": _public_text(scenario.get("problem"), "scenario.problem"),
         "domain": "dsa",
+        "variable_names": list(variables),
     }
 
 
@@ -186,6 +198,7 @@ def build_decomposer_payload(
             "include learner data, evaluation material, or lesson prose."
         ),
         "teaching_plan_schema_version": TEACHING_PLAN_SCHEMA_VERSION,
+        "declared_variable_names": list(_public_problem(scenario)["variable_names"]),
     }
     if repair_feedback:
         payload["repair_feedback"] = repair_feedback
@@ -238,7 +251,14 @@ def parse_plan_response(
         "run_id": plan_provenance.run_id,
         "source_problem_id": plan_provenance.source_problem_id,
     }
-    return TeachingPlan.from_payload(normalized)
+    plan = TeachingPlan.from_payload(normalized)
+    declared = tuple(public["variable_names"])
+    if set(plan.variables) != set(declared):
+        raise TeachingPlanValidationError(
+            "model plan variable bindings must preserve the source problem's "
+            "declared variable names exactly"
+        )
+    return plan
 
 
 def build_diagnosis_payload(
