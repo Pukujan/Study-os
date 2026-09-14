@@ -1,125 +1,102 @@
 # Model/schema-driven tutoring pilot handoff
 
-Status: ACTIVE execution authority after manual review of the first 15-turn pilot.
+Status: ACTIVE. The v0.2 evidence-bound pilot reached the full 15 turns and passed its then-current automated gate, but manual review invalidated acceptance because learner-visible semantics drifted.
 
-## Immediate product goal
+## Current objective
 
-Do **not** hand-author another canonical teaching lesson for the pilot.
+Keep `contains-duplicate-set` model-generated. Do not add a hand-authored canonical lesson and do not rerun the 210-turn corpus.
 
-Make `contains-duplicate-set` teachable through a bounded Luna/model path where progression depends on the learner's actual response:
+The required path remains:
 
 ```text
-learner message
+actual learner message
     ↓
 Luna diagnosis + learner-outcome assessment
     ↓
-verbatim evidence_quote from the learner message
+verbatim evidence_quote from learner message
     ↓
-deterministic controller authorizes stay / advance + bounded operation
+deterministic controller authorizes stay / advance at most one concept
     ↓
-Luna generates one learner-visible teaching turn
+Luna bounded learner-visible generation
     ↓
-deterministic presentation validation
+deterministic structural + semantic validation
     ↓
-learner sees the response
+learner
 ```
 
-The deterministic system remains authority for progression mechanics, assistance ceiling, mastery claims, evidence binding, and hard invariants. Luna supplies adaptive diagnosis/decomposition, proposes the learner outcome, and writes the bounded teaching turn.
+## What v0.2 proved
 
-## Why v0.2 exists
+Commit `51133368bc34673904ae4aa572b6c5e24a9cf440` produced:
 
-The 14-problem / 210-exchange dual-Luna transcript proved that static hand-authored assets do not scale: only Two Sum and Sliding Window reached real teaching, while 12 problems returned `needs_compilation` / reviewed-asset language.
+- 15 fresh Luna exchanges / 30 visible messages;
+- `study-os.model-tutoring-exchange.v0.2` transcript;
+- evidence-bound `study-os.model-tutoring-trace.v0.2` trace;
+- progression based on actual learner-message evidence rather than scripted corpus signal;
+- explicit final no-duplicate `return False` handling;
+- automated acceptance v0.2 with zero failures.
 
-The first model-tutoring pilot then proved dynamic learner-visible teaching was possible, but manual review found two acceptance holes:
+Those are real gains, but they are not sufficient acceptance evidence.
 
-1. progression was still driven by the corpus's scripted `learner_signal` (`recovery_or_check`) rather than evidence in the actual learner reply;
-2. the 15-turn conversation never established the final no-duplicate case, `return False`, even though the old gate passed.
+## Manual semantic finding
 
-Those v0.1 artifacts are therefore historical evidence, not current acceptance evidence.
+The transcript redefined `box` as a boolean/result in the box-meaning and later stages. The calibrated corpus defines `box` as the collection of earlier values already passed. For example, the v0.2 transcript taught forms such as `box = true` and described box as holding the yes/no result.
 
-## Pilot scope
+That is a semantic teaching failure even though the response contained the expected variable names, visuals, questions, evidence, and stage progression. Therefore v0.2 acceptance is historical only.
 
-Only `contains-duplicate-set` is required initially. Do not generalize until a **fresh v0.2 15-turn run** passes the acceptance gate and manual review.
+## Current semantic contract (v0.3 acceptance)
 
-Calibrated concept order:
+The deterministic layer still does not author canonical lesson prose. It now protects the meaning of the calibrated concepts:
 
 ```text
-duplicate meaning
-    ↓
-box meaning
-    ↓
-membership
-    ↓
-check before add
-    ↓
-loop assembly / finish-without-duplicate case
+anchor:
+  duplicate = same value occurs at least twice in nums
+
+box-meaning:
+  box = collection of earlier/prior nums values already passed
+  box != boolean answer
+
+membership:
+  check whether current num already has an equal value in box
+
+order:
+  check num in box before add
+
+loop:
+  for each num:
+    if num already in box -> return True
+    otherwise -> add num
+  after full scan with no match -> return False
 ```
 
-Learner-facing variable names remain `nums`, `box`, and `num`; `seen` remains forbidden for this calibrated path.
+Luna may choose wording, examples, and visuals freely inside these semantics.
 
-## Progression authority
+## Current code/gate
 
-The corpus `learner_signal` is allowed only as simulation guidance for Student Luna. It is **not evidence** and must not authorize progression.
+- Prompt version: `study-os.model-tutoring-pilot.v3`
+- Trace schema: `contracts/model-tutoring-trace.v0.2.schema.json`
+- Acceptance schema: `study-os.model-tutoring-acceptance.v0.3`
+- Acceptance runner: `tools/check_model_tutoring_acceptance.py`
 
-Teacher Luna must produce a structured assessment of the actual learner message:
+The generator validator and acceptance runner now reject:
 
-```json
-{
-  "learner_outcome": "demonstrated | not_yet | uncertain",
-  "evidence_quote": "exact substring from the learner message when demonstrated",
-  "rationale": "short explanation"
-}
-```
+- `box = true/false` or descriptions of box as the boolean/result;
+- box-meaning turns that fail to describe prior/earlier values;
+- membership turns that do not connect current `num` to an equal value already in `box`;
+- add-before-check ordering;
+- all previous evidence/progression/visual/variable/provenance/internal-state failures;
+- missing final `return False` completion.
 
-Rules:
+## Required validation
 
-- `demonstrated` requires a non-empty `evidence_quote`;
-- the quote must occur verbatim in the learner message;
-- `not_yet` and `uncertain` never advance;
-- `demonstrated` may advance at most one concept;
-- the final `loop_assembly` concept cannot advance beyond the pilot;
-- transcript/self-report never establishes mastery.
+TDD, differential, metamorphic, stateful/property, and mutation tests must protect both structural rules and semantic meaning. A mutation that changes `box` from prior-values state into a boolean must fail.
 
-## Required structured trace
+## Fresh proof required
 
-Every accepted teacher turn must emit one trace record matching:
-
-`contracts/model-tutoring-trace.v0.2.schema.json`
-
-Required fields include:
-
-- `path_kind = model_generated`;
-- `target_concept`;
-- `diagnosis_family`;
-- `operation`;
-- `assistance_level`;
-- `learner_outcome`;
-- `evidence_quote`;
-- `advance`;
-- allowed / forbidden variables;
-- `visual_required`;
-- prompt version;
-- model identifier.
-
-Target concept IDs:
-
-```text
-anchor       -> duplicate_meaning
-box-meaning  -> box_meaning
-membership   -> membership
-order        -> check_before_add
-loop         -> loop_assembly
-```
-
-## Acceptance runner
-
-Canonical gate:
-
-`tools/check_model_tutoring_acceptance.py`
-
-Final acceptance command:
+Run only the bounded 15-turn pilot again:
 
 ```bash
+python tools/run_model_tutoring_contains_duplicate.py --fresh
+
 python tools/check_model_tutoring_acceptance.py \
   --transcript artifacts/model-tutoring-contains-duplicate.jsonl \
   --trace artifacts/model-tutoring-contains-duplicate-trace.jsonl \
@@ -127,64 +104,12 @@ python tools/check_model_tutoring_acceptance.py \
   --report artifacts/model-tutoring-contains-duplicate-acceptance.json
 ```
 
-The v0.2 gate rejects, among other things:
+Do not call the pilot accepted until:
 
-- `needs_compilation` and learner-visible asset/alias jargon;
-- missing calibrated anchors, visuals, tiny questions, or variable constraints;
-- future-concept/full-solution leakage;
-- assistance above A2;
-- non-model-generated turns or missing provenance;
-- advancement without `learner_outcome = demonstrated`;
-- demonstrated outcomes without a verbatim evidence quote;
-- evidence quotes not found in the real learner message;
-- concept skips, backwards movement, or progression inconsistent with the previous turn's `advance` decision;
-- failure to reach `loop_assembly`;
-- failure for the final learner-visible turn to explicitly establish `return False` after a full scan with no duplicate.
+1. the acceptance runner exits 0 under v0.3;
+2. the transcript keeps `box` as prior values throughout;
+3. learner evidence still controls progression;
+4. the final loop includes both duplicate detection and no-duplicate `return False`;
+5. the fresh transcript and trace are manually reviewed.
 
-## Test strategy required before scaling
-
-### TDD
-
-Cover assessment parsing, evidence binding, controller authorization, generation envelopes, validator rejection paths, trace persistence, resume behavior, and final loop completion.
-
-### Differential
-
-Use the calibrated corpus / trusted golden behavior as the primary oracle for concept order, variables, visual requirements, assistance, and representation constraints. Do not treat current production assets as stronger ground truth.
-
-### Metamorphic
-
-Paraphrases and numeric substitutions must preserve policy. A corpus signal change by itself must never change progression; progression changes only when the actual learner assessment changes.
-
-### Property/stateful
-
-Generate learner-outcome sequences and prove the controller cannot skip concepts, advance more than one concept, exceed assistance ceiling, claim mastery, lose evidence binding, or use forbidden aliases.
-
-### Mutation
-
-Kill mutants that:
-
-- restore `recovery_or_check -> advance`;
-- allow `demonstrated` without learner evidence;
-- accept fabricated evidence quotes;
-- advance two stages;
-- exceed A2;
-- remove `seen` prohibition;
-- make visuals optional;
-- bypass trace/provenance;
-- omit the final `return False` completion requirement.
-
-## End-to-end proof
-
-Run a **fresh** local 15-turn pilot after these changes. Old v0.1 transcript/trace files must not be resumed; the runner deliberately rejects them as resumable prefixes.
-
-Do not call the architecture validated until:
-
-1. the new transcript uses `study-os.model-tutoring-exchange.v0.2`;
-2. every trace row uses `study-os.model-tutoring-trace.v0.2`;
-3. stage progression is justified by actual learner-message evidence, not corpus signals;
-4. the final loop teaches/checks the no-duplicate `return False` case;
-5. the acceptance runner exits 0;
-6. the fresh transcript and trace are manually reviewed;
-7. Contains Duplicate remains model-generated without a hand-authored canonical lesson.
-
-Only then expand the same path to problem #2.
+Only then expand the same model/schema path to the next unsupported problem.
