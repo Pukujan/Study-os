@@ -1,8 +1,8 @@
 """Bounded model/schema tutoring kernel for the Contains Duplicate pilot.
 
 The model proposes diagnosis, learner-outcome evidence, and learner-visible prose.
-Deterministic code owns stage transitions, assistance ceilings, provenance, and
-presentation invariants. No canonical lesson prose lives here.
+Deterministic code owns stage transitions, assistance ceilings, provenance, semantic
+concept boundaries, and presentation invariants. No canonical lesson prose lives here.
 """
 
 from __future__ import annotations
@@ -12,9 +12,8 @@ import re
 from dataclasses import dataclass
 from typing import Any, Mapping
 
-
 TRACE_SCHEMA_VERSION = "study-os.model-tutoring-trace.v0.2"
-PROMPT_VERSION = "study-os.model-tutoring-pilot.v2"
+PROMPT_VERSION = "study-os.model-tutoring-pilot.v3"
 SCENARIO_ID = "contains-duplicate-set"
 MODEL_VARIABLES = ("nums", "box", "num")
 FORBIDDEN_VARIABLES = ("seen",)
@@ -47,68 +46,47 @@ STAGE_FORBIDDEN = {
     "order": ("seen", "full code"),
     "loop": ("seen",),
 }
+# These are semantic constraints, not canonical prose. Luna can phrase or visualize
+# them freely, but it may not redefine the meaning of the calibrated state.
+STAGE_SEMANTIC_RULES = {
+    "anchor": "duplicate means the same value occurs at least twice in nums",
+    "box-meaning": "box is a collection of earlier nums values already passed; box is not the boolean answer",
+    "membership": "membership asks whether the current num already has an equal value in box",
+    "order": "check whether num is in box before adding num to box",
+    "loop": "for each num: if num is already in box return true; otherwise add num; after the scan with no match return false",
+}
+
 DIAGNOSIS_FAMILIES = {
-    "none",
-    "missing_prerequisite",
-    "concept_failure",
-    "representation_interference",
-    "identifier_interference",
-    "information_overload",
-    "information_underload",
-    "decomposition_too_coarse",
-    "over_decomposition",
-    "over_help",
-    "uncertain_mixed",
+    "none", "missing_prerequisite", "concept_failure", "representation_interference",
+    "identifier_interference", "information_overload", "information_underload",
+    "decomposition_too_coarse", "over_decomposition", "over_help", "uncertain_mixed",
 }
 OPERATIONS = {
-    "explain",
-    "clarify",
-    "probe",
-    "smaller_step",
-    "show_trace",
-    "change_representation",
-    "give_hint",
-    "assemble",
+    "explain", "clarify", "probe", "smaller_step", "show_trace",
+    "change_representation", "give_hint", "assemble",
 }
 ASSISTANCE_LEVELS = {"A0", "A1", "A2"}
 LEARNER_OUTCOMES = {"demonstrated", "not_yet", "uncertain"}
 
 _DIAGNOSIS_ALIASES = {
-    "mental_model": "concept_failure",
-    "concept_gap": "concept_failure",
-    "conceptual": "concept_failure",
-    "recognition": "concept_failure",
-    "confusion": "concept_failure",
-    "representation": "representation_interference",
-    "identifier_confusion": "identifier_interference",
-    "mixed": "uncertain_mixed",
+    "mental_model": "concept_failure", "concept_gap": "concept_failure",
+    "conceptual": "concept_failure", "recognition": "concept_failure",
+    "confusion": "concept_failure", "representation": "representation_interference",
+    "identifier_confusion": "identifier_interference", "mixed": "uncertain_mixed",
 }
 _OPERATION_ALIASES = {
-    "contrast": "change_representation",
-    "teach": "explain",
-    "explain_concept": "explain",
-    "question": "probe",
-    "guide": "probe",
-    "small_step": "smaller_step",
-    "trace": "show_trace",
-    "hint": "give_hint",
-    "identify_required_state": "probe",
-    "seen_set_membership": "probe",
+    "contrast": "change_representation", "teach": "explain",
+    "explain_concept": "explain", "question": "probe", "guide": "probe",
+    "small_step": "smaller_step", "trace": "show_trace", "hint": "give_hint",
+    "identify_required_state": "probe", "seen_set_membership": "probe",
 }
 _ASSISTANCE_ALIASES = {
-    "minimal": "A1",
-    "low": "A1",
-    "moderate": "A2",
-    "medium": "A2",
-    "none": "A0",
+    "minimal": "A1", "low": "A1", "moderate": "A2", "medium": "A2", "none": "A0",
 }
 _OUTCOME_ALIASES = {
-    "correct": "demonstrated",
-    "pass": "demonstrated",
-    "incorrect": "not_yet",
-    "wrong": "not_yet",
-    "partial": "uncertain",
-    "unclear": "uncertain",
+    "correct": "demonstrated", "pass": "demonstrated",
+    "incorrect": "not_yet", "wrong": "not_yet",
+    "partial": "uncertain", "unclear": "uncertain",
 }
 
 
@@ -164,10 +142,7 @@ class LearnerAssessment:
 
     @classmethod
     def from_payload(
-        cls,
-        payload: Mapping[str, Any],
-        *,
-        learner_message: str,
+        cls, payload: Mapping[str, Any], *, learner_message: str
     ) -> "LearnerAssessment":
         if not isinstance(payload, Mapping):
             raise ModelTutoringError("learner assessment must be an object")
@@ -191,8 +166,6 @@ class LearnerAssessment:
 
 @dataclass(frozen=True)
 class ModelTutoringState:
-    """Deterministic state; model output is never stored as authority."""
-
     stage_index: int = 0
     mastery_proven: bool = False
     turns_seen: int = 0
@@ -221,6 +194,7 @@ class GenerationContract:
     forbidden_variables: tuple[str, ...]
     required_anchors: tuple[str, ...]
     forbidden_terms: tuple[str, ...]
+    semantic_rule: str
     required_completion_terms: tuple[str, ...] = ()
     visual_required: bool = True
     visual_before_explanation: bool = True
@@ -232,11 +206,7 @@ class GenerationContract:
     model_identifier: str = "gpt-5.6-luna"
 
     def trace(
-        self,
-        diagnosis: ModelDiagnosis,
-        assessment: LearnerAssessment,
-        *,
-        advance: bool,
+        self, diagnosis: ModelDiagnosis, assessment: LearnerAssessment, *, advance: bool
     ) -> dict[str, Any]:
         return {
             "schema_version": TRACE_SCHEMA_VERSION,
@@ -277,10 +247,7 @@ def _contains_identifier(text: str, identifier: str) -> bool:
 
 def _has_visual(text: str) -> bool:
     return (
-        "```" in text
-        or "|" in text
-        or "→" in text
-        or "->" in text
+        "```" in text or "|" in text or "→" in text or "->" in text
         or ("[" in text and "]" in text and "\n" in text)
     )
 
@@ -291,10 +258,54 @@ def _nonempty_lines(text: str) -> int:
 
 def _relation_count(text: str) -> int:
     return sum(
-        1
-        for line in text.splitlines()
+        1 for line in text.splitlines()
         if re.match(r"^\s*(?:one\s+)?relation\s*:", line, flags=re.IGNORECASE)
     )
+
+
+def _validate_semantic_boundary(text: str, contract: GenerationContract) -> None:
+    lowered = text.casefold()
+    if contract.stage == "box-meaning":
+        boolean_box = re.search(
+            r"\bbox\s*(?:=|is|becomes?|holds?)\s*(?:true|false|yes/no|boolean)",
+            lowered,
+        )
+        if boolean_box or "box holds the yes/no" in lowered or "box holds yes/no" in lowered:
+            raise ModelTutoringError(
+                "box meaning drifted: box must hold earlier values, not the boolean result"
+            )
+        prior_signal = any(
+            phrase in lowered
+            for phrase in (
+                "earlier", "prior", "already passed", "already checked",
+                "previous", "values already", "numbers already",
+            )
+        )
+        if not prior_signal:
+            raise ModelTutoringError(
+                "box-meaning turn must explain that box contains earlier/prior nums values"
+            )
+    elif contract.stage == "membership":
+        membership_signal = (
+            re.search(r"\bnum\s+in\s+box\b", lowered) is not None
+            or (
+                "num" in lowered
+                and "box" in lowered
+                and any(word in lowered for word in ("match", "already", "contains"))
+            )
+        )
+        if not membership_signal:
+            raise ModelTutoringError(
+                "membership turn must connect current num to an equal value already in box"
+            )
+    elif contract.stage == "order":
+        check_pos = lowered.find("check")
+        add_pos = lowered.find("add")
+        if check_pos < 0 or add_pos < 0 or check_pos > add_pos:
+            raise ModelTutoringError("order turn must state/check check-before-add")
+    elif contract.stage == "loop" and contract.required_completion_terms:
+        if "return false" not in lowered:
+            raise ModelTutoringError("final loop turn must explicitly establish `return False`")
 
 
 def validate_generated_response(text: str, contract: GenerationContract) -> None:
@@ -309,11 +320,7 @@ def validate_generated_response(text: str, contract: GenerationContract) -> None
     ]
     if completion_missing:
         raise ModelTutoringError(f"missing required loop completion: {completion_missing}")
-    if contract.required_completion_terms and "return false" not in lowered:
-        raise ModelTutoringError("final loop turn must explicitly establish `return False`")
-    forbidden = [
-        term for term in contract.forbidden_terms if term and term.lower() in lowered
-    ]
+    forbidden = [term for term in contract.forbidden_terms if term and term.lower() in lowered]
     if forbidden:
         raise ModelTutoringError(f"forbidden concept or alias exposed: {forbidden}")
     if contract.visual_required and not _has_visual(text):
@@ -333,6 +340,7 @@ def validate_generated_response(text: str, contract: GenerationContract) -> None
             raise ModelTutoringError(f"forbidden variable alias exposed: {name}")
     if contract.stage != "loop" and ("def " in lowered or "class " in lowered):
         raise ModelTutoringError("full implementation leaked before loop assembly")
+    _validate_semantic_boundary(text, contract)
 
 
 def _json_object(raw: str, *, label: str) -> dict[str, Any]:
@@ -352,21 +360,18 @@ def _json_object(raw: str, *, label: str) -> dict[str, Any]:
     return payload
 
 
-def parse_model_decision(raw: str, *, learner_message: str) -> tuple[ModelDiagnosis, LearnerAssessment]:
+def parse_model_decision(
+    raw: str, *, learner_message: str
+) -> tuple[ModelDiagnosis, LearnerAssessment]:
     payload = _json_object(raw, label="model diagnosis")
-    diagnosis_payload = payload.get("diagnosis", payload)
-    assessment_payload = payload.get("assessment", payload)
-    diagnosis = ModelDiagnosis.from_payload(diagnosis_payload)
+    diagnosis = ModelDiagnosis.from_payload(payload.get("diagnosis", payload))
     assessment = LearnerAssessment.from_payload(
-        assessment_payload,
-        learner_message=learner_message,
+        payload.get("assessment", payload), learner_message=learner_message
     )
     return diagnosis, assessment
 
 
 def parse_model_diagnosis(raw: str) -> ModelDiagnosis:
-    """Backward-compatible diagnosis parser; progression code must use parse_model_decision."""
-
     payload = _json_object(raw, label="model diagnosis")
     return ModelDiagnosis.from_payload(payload.get("diagnosis", payload))
 
@@ -418,7 +423,10 @@ class ModelTutoringController:
             raise ModelTutoringError("turn_index must be non-negative")
         if not isinstance(learner_message, str) or not learner_message.strip():
             raise ModelTutoringError("learner_message is required for progression evidence")
-        if assessment.evidence_quote and assessment.evidence_quote.casefold() not in learner_message.casefold():
+        if (
+            assessment.evidence_quote
+            and assessment.evidence_quote.casefold() not in learner_message.casefold()
+        ):
             raise ModelTutoringError("progression evidence is not present in learner message")
         if assessment.learner_outcome == "demonstrated" and not assessment.evidence_quote:
             raise ModelTutoringError("demonstrated outcome requires learner evidence")
@@ -441,6 +449,7 @@ class ModelTutoringController:
             forbidden_variables=FORBIDDEN_VARIABLES,
             required_anchors=STAGE_ANCHORS[stage],
             forbidden_terms=STAGE_FORBIDDEN[stage],
+            semantic_rule=STAGE_SEMANTIC_RULES[stage],
             required_completion_terms=("return", "false") if final_loop_turn else (),
             advance_allowed=advance,
             prompt_version=self.prompt_version,
@@ -487,7 +496,9 @@ def build_generation_prompt(
         f"include {list(contract.required_anchors)}, avoid {list(contract.forbidden_terms)}, "
         f"ask one tiny question, and stay within {contract.max_nonempty_lines} non-empty lines. "
         f"Current concept: {contract.target_concept}; stage: {contract.stage}; "
-        f"assessed learner outcome: {contract.learner_outcome}; evidence quote: {contract.evidence_quote!r}."
+        f"semantic rule: {contract.semantic_rule}. "
+        f"Assessed learner outcome: {contract.learner_outcome}; "
+        f"evidence quote: {contract.evidence_quote!r}."
         + completion
         + "\n\nLearner message:\n"
         + learner_message
@@ -514,6 +525,7 @@ __all__ = [
     "STAGE_ANCHORS",
     "STAGE_ORDER",
     "STAGE_REQUIRED_VARIABLES",
+    "STAGE_SEMANTIC_RULES",
     "STAGE_TO_CONCEPT",
     "build_generation_prompt",
     "parse_generation_response",
