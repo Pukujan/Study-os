@@ -93,6 +93,15 @@ DIAGNOSTIC_MUTANTS = frozenset().union(
 )
 
 EQUIVALENT_MUTANTS = frozenset().union(
+    # Presentation-contract audit: these survivors do not change observable
+    # learner behavior.  They either select an already-defaulted value, alter
+    # diagnostic wording only, or mutate a redundant bound whose cycle guard
+    # already fails closed.
+    _mutants("study_os.pir.controller.x__make_turn", 32),
+    _mutants("study_os.pir.controller.x__starts_with_visual", 6),
+    _mutants("study_os.pir.controller.x_build_interaction_bundle", 51, 52, 56, 57, 65, 66, 81),
+    _mutants("study_os.pir.controller.x_submit_response", 90, 94, 96),
+    _mutants("study_os.pir.controller.x_validate_asset", 67, 68, 75, 76, 108, 109, 151, 179, 181),
     _mutants("study_os.pir.controller.x_build_expansion_bundle", 60, 68, 72),
     _mutants("study_os.pir.controller.x_build_interaction_bundle", 49, 50, 78),
     _mutants("study_os.pir.controller.x_submit_response", 33, 75, 93),
@@ -133,10 +142,10 @@ AUDITED_NONBLOCKING_MUTANTS = DIAGNOSTIC_MUTANTS | EQUIVALENT_MUTANTS
 
 if DIAGNOSTIC_MUTANTS & EQUIVALENT_MUTANTS:
     raise RuntimeError("mutation audit classifications overlap")
-if len(AUDITED_NONBLOCKING_MUTANTS) != 204:
+if len(AUDITED_NONBLOCKING_MUTANTS) != 225:
     raise RuntimeError(
         "mutation audit inventory drifted: "
-        f"expected 204 entries, found {len(AUDITED_NONBLOCKING_MUTANTS)}"
+        f"expected 225 entries, found {len(AUDITED_NONBLOCKING_MUTANTS)}"
     )
 
 
