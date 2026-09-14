@@ -1,0 +1,47 @@
+{
+  "schema_version": "study-os.model-tutoring-evidence.v0.1",
+  "scenario_id": "contains-duplicate-set",
+  "scope": "bounded Luna/model tutoring pilot",
+  "hand_authored_canonical_lesson": false,
+  "live_pilot": {
+    "transcript_exchanges": 15,
+    "trace_rows": 15,
+    "visible_messages": 30,
+    "model_identifier": "gpt-5.6-luna",
+    "study_os_mcp": "study-os-local-test",
+    "checkpointed_each_turn": true
+  },
+  "acceptance": {
+    "command": "python tools/check_model_tutoring_acceptance.py --transcript artifacts/model-tutoring-contains-duplicate.jsonl --trace artifacts/model-tutoring-contains-duplicate-trace.jsonl --scenario contains-duplicate-set --report artifacts/model-tutoring-contains-duplicate-acceptance.json",
+    "exit_code": 0,
+    "accepted": true,
+    "failure_count": 0
+  },
+  "tests": {
+    "pilot_tdd_differential_metamorphic_stateful": {
+      "command": "python -m unittest discover -s tests -p 'test_model_tutoring*.py'",
+      "tests_run": 25,
+      "failures": 0
+    },
+    "mutation_boundary": {
+      "tests_run": 7,
+      "mutants_killed": [
+        "two_stage_advance",
+        "assistance_above_a2",
+        "model_mastery_claim",
+        "forbidden_variable_alias",
+        "required_visual",
+        "trace_path",
+        "trace_provenance",
+        "clarification_advance"
+      ]
+    },
+    "full_repository": {
+      "command": "python -m unittest discover -s tests",
+      "tests_run": 401,
+      "skipped": 1,
+      "failures": 0
+    }
+  },
+  "manual_review_status": "ready"
+}
