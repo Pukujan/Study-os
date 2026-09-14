@@ -1,8 +1,19 @@
 {
-  "schema_version": "study-os.model-tutoring-acceptance.v0.1",
+  "schema_version": "study-os.model-tutoring-acceptance.v0.2",
   "scenario_id": "contains-duplicate-set",
   "exchange_count": 15,
-  "accepted": true,
-  "failure_count": 0,
-  "failures": []
+  "accepted": false,
+  "failure_count": 2,
+  "failures": [
+    {
+      "code": "STALE_SIGNAL_DRIVEN_PROGRESSION",
+      "turn_index": null,
+      "detail": "v0.1 progression was authorized by scripted corpus learner_signal rather than learner-message evidence; a fresh v0.2 run is required"
+    },
+    {
+      "code": "LOOP_COMPLETION_MISSING",
+      "turn_index": 14,
+      "detail": "v0.1 final learner-visible turn did not explicitly establish return False after a full scan without a duplicate"
+    }
+  ]
 }
