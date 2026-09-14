@@ -252,13 +252,21 @@ def parse_plan_response(
         "source_problem_id": plan_provenance.source_problem_id,
     }
     plan = TeachingPlan.from_payload(normalized)
-    declared = tuple(public["variable_names"])
+    _validate_source_variable_bindings(plan, scenario)
+    return plan
+
+
+def _validate_source_variable_bindings(
+    plan: TeachingPlan, scenario: Mapping[str, Any]
+) -> None:
+    """Keep generated and resumed plans aligned with declared source names."""
+
+    declared = tuple(_public_problem(scenario)["variable_names"])
     if set(plan.variables) != set(declared):
         raise TeachingPlanValidationError(
             "model plan variable bindings must preserve the source problem's "
             "declared variable names exactly"
         )
-    return plan
 
 
 def build_diagnosis_payload(
@@ -608,6 +616,7 @@ def _validate_plan_record(
     plan = TeachingPlan.from_payload(payload)
     if plan.problem.id != public["scenario_id"] or plan.problem.statement != public["problem"]:
         raise ValueError("persisted plan is not source-matched")
+    _validate_source_variable_bindings(plan, scenario)
     prompt_registry.verify(
         version=plan.provenance.prompt_version,
         prompt_hash=plan.provenance.prompt_hash,
