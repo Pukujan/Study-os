@@ -10,254 +10,266 @@ This artifact is intentionally ungraded. It records only the learner/teacher con
 
 **Learner**
 
-Do I just compare each number with the ones after it to see if it repeats?
+How do I keep track of the numbers I’ve already seen?
 
 **Study OS teacher**
 
 ```text
-nums: [2, 5, 2]
-       ↑     ↑
-       duplicate
+nums: [4, 1, 4]
+          4 ↔ 4
+duplicate: 4 occurs twice
 ```
-Relation: A duplicate is the same value appearing in two positions of nums.
-Yes, comparing each number with the numbers after it can find one.
-Can you point to the duplicate in nums = [2, 5, 2]?
+Relation: A duplicate is a value that occurs more than once in nums.
+Focus on the repeated value first; tracking details can come next.
+Which value is the duplicate in nums: [4, 1, 4]?
 
 ### Exchange 2
 
 **Learner**
 
-I think the duplicate might be 5, since it’s in the middle and has numbers around it.
+I think it might be 1 because it’s between the two 4s?
 
 **Study OS teacher**
 
 ```text
-nums: [2, 5, 2]
-       ↑       ↑
-       duplicate
+nums: [4, 1, 4]
+       4   1   4
+       └───────┘
+duplicate: 4 matches 4
 ```
-Relation: A duplicate is one value appearing twice in nums.
-The middle value 5 appears only once.
-Which value is marked twice?
+Relation: A duplicate is defined by equal values, not by position.
+The middle value 1 is different from both 4s.
+Which value appears twice in nums?
 
 ### Exchange 3
 
 **Learner**
 
-The value 2 is marked twice, so that’s the duplicate, right?
+So 4 is the duplicate because it appears twice, right?
 
 **Study OS teacher**
 
 ```text
-nums: [2, 5, 2]
-       ↑       ↑
-       duplicate
+nums: [4, 1, 4]
+       4 ↔ 4
+duplicate: 4 occurs twice
 ```
-Relation: The value 2 appears twice in nums.
-Correct—the matching values, not the middle position, identify the duplicate.
-What makes 2 a duplicate?
+Relation: Equal values appearing twice form a duplicate.
+Yes—your identification matches the rule.
+Can you point to the two positions holding 4 in nums?
 
 ### Exchange 4
 
 **Learner**
 
-Because the same value, 2, appears in two different positions.
+Do I point to the first and last positions?
 
 **Study OS teacher**
 
 ```text
-num: 2
-┌─────┐
-│ box │
-└─────┘
+nums: [4, 1, 4]
+num: 4  →  box: [4]
+num: 1  →  box: [4, 1]
+num: 4  →  match
 ```
-Relation: The box holds one num at a time.
-The box is a small place for the current num to be compared with an earlier value.
-What does the box contain now?
+Relation: box holds earlier values, while num is the current value being checked.
+The first and last positions both contain 4.
+Which num matches a value already in box?
 
 ### Exchange 5
 
 **Learner**
 
-The box contains the whole list, like `[2, 5, 2]`, right?
+I think it’s the last 4, since the box already has the first 4.
 
 **Study OS teacher**
 
 ```text
-nums: [2, 5, 2]
-num: 2
-┌─────┐
-│ box │
-└─────┘
+nums: [4, 1, 4]
+box: [4]     → num: 1
+box: [4, 1]  → num: 4
+                         ↳ match
 ```
-Relation: The box stores one num, while nums is the whole list.
-For this step, box contains 2, not the entire nums.
-What single num belongs in box?
+Relation: The current num is compared with values inside box.
+The last 4 is the current num; it matches 4 inside box.
+That match identifies the duplicate value: 4.
+Which value does box match: 1 or 4?
 
 ### Exchange 6
 
 **Learner**
 
-The box should contain just one number: 2.
+It matches 4, since 4 is already in the box.
 
 **Study OS teacher**
 
 ```text
-num: 2
-┌─────┐
-│ box │
-└─────┘
+nums: [4, 1, 4]
+box: [4, 1]  |  num: 4
+                         ↳ match
 ```
-Relation: The box holds one num at a time.
-Correct—the box contains the single value 2, not all of nums.
-How many values belong in box at once?
+Relation: A matching num in box identifies a duplicate.
+The current num is 4, and box already contains 4.
+What does box contain when num is 4?
 
 ### Exchange 7
 
 **Learner**
 
-Just one value at a time, right?
+So when num is 4, does the box contain [4, 1]?
 
 **Study OS teacher**
 
 ```text
-num: 2
-box: [2]
-   ✓
+box: [4, 1]
+num: 4
+      ↳ match
 ```
-Relation: A num matches when the same value is in box.
-Here, num is 2 and box contains 2, so they match.
-Does num match box here?
+Relation: num belongs to box when an equal value is inside box.
+Yes, when num is 4, box is [4, 1].
+Does num = 4 match an item in box?
 
 ### Exchange 8
 
 **Learner**
 
-I think yes, because both contain 2, even though they’re not in the same position.
+I think yes—the 4 matches the other 4 in the box.
 
 **Study OS teacher**
 
 ```text
-num: 2    box: [2]
-          ✓
+box: [4, 1]
+num: 4
+      ↳ 4 matches 4
 ```
-Relation: Membership depends on value, not position.
-Here, num matches box because both hold 2.
-Would num = 5 match box = [2]?
+Relation: num matches an equal value in box.
+Yes—the current num is 4, and box contains 4.
+Does num = 4 match a value in box?
 
 ### Exchange 9
 
 **Learner**
 
-No, 5 wouldn’t match because box only contains 2.
+Yes, num = 4 matches the 4 in the box, so it’s a duplicate.
 
 **Study OS teacher**
 
 ```text
-num: 5    box: [2]
-          ✗
+box: [2, 5]
+num: 5
+      ↳ 5 matches 5
 ```
-Relation: A num matches box only when their values are equal.
-Here, 5 and 2 differ, so box does not contain num.
-Which num would match box: 2 or 5?
+Relation: num matches an equal value in box.
+Yes—the current num matches a value in box.
+Does num = 5 match a value in box?
 
 ### Exchange 10
 
 **Learner**
 
-2 would match the box because it has the same value.
+Yes, because 5 is already there—do we return true right away?
 
 **Study OS teacher**
 
 ```text
-num: 2
-box: [2]
-check ✓  →  add?
+box: [2, 5]
+num: 5
+check → match
+add → skip
+return → true
 ```
-Relation: First check whether num is in box; add only when it is absent.
-Here, the check finds 2 already in box, so do not add another 2.
-Which comes first: check or add?
+Relation: Check num against box before add.
+Yes—because num matches box, return true right away; no add step follows.
+Which comes first: check num in box, or add num to box?
 
 ### Exchange 11
 
 **Learner**
 
-I think you add it first, then check whether it was already there.
+I’m not sure—would we add the num first and then check it?
 
 **Study OS teacher**
 
 ```text
-num: 2   box: [2]
-1) check ✓
-2) add ✗
+box: [2, 5]
+num: 5
+check → match
+add → skip
 ```
-Relation: Check box before add; a match means add is skipped.
-When num is already in box, do not add it again.
-What happens after the check finds 2?
+Relation: Check num against box before add.
+If num matches box, return true before add.
+If num does not match, add num to box.
+Which happens first: check or add?
 
 ### Exchange 12
 
 **Learner**
 
-After the check finds 2, we skip adding it because it’s already there.
+Check first, then add it only if it isn’t already in the box.
 
 **Study OS teacher**
 
 ```text
-num: 2   box: [2]
-check ✓
-add ✗
+box: [2, 5]
+num: 7
+check → no match
+add → 7
 ```
-Relation: Check box before add; a matching num is not added again.
-Here, 2 matches box, so add is skipped.
-Does add happen here?
+Relation: Check num against box before add.
+Correct—check comes first; when there is no match, add num to box.
+What happens after check finds no match?
 
 ### Exchange 13
 
 **Learner**
 
-No, add doesn’t happen here because 2 is already in the box.
+Then I add that number to the box and keep checking the rest, right?
 
 **Study OS teacher**
 
 ```text
-num: 2 | box: []      | check → box: [2]
-num: 5 | box: [2]     | check → box: [2, 5]
+num: 7
+box: [2, 5]
+check → no match
+box → [2, 5, 7]
+next num → check
 ```
-Relation: Each num follows the same order: check box, then place num in box only if absent.
-The same check-and-place pattern repeats for each num in nums.
-What is the first action for each num?
+Relation: Each num is checked against box, then the loop moves to the next num.
+Yes—after adding num to box, check the next num.
+What do you check next?
 
 ### Exchange 14
 
 **Learner**
 
-I think the first action is to add the num to the box.
+I check the next number in nums—do I check 7 again first?
 
 **Study OS teacher**
 
 ```text
-num: 2   box: []
-          ↓
-        check
+num: 7
+box: [2, 5] → [2, 5, 7]
+next num: 4
+check → 4
 ```
-Relation: For each num, check box before adding num to box.
-The box is empty here, so the check comes before adding 2.
-What happens first?
+Relation: After adding num, move to the next num.
+No—do not check 7 again; check the next num instead.
+Which num is checked next: 7 or 4?
 
 ### Exchange 15
 
 **Learner**
 
-It checks first, then adds 2 because the box is empty.
+4 is checked next.
 
 **Study OS teacher**
 
 ```text
-num: 5   box: [2]
-check ✗
-add → box: [2, 5]
+box: [2, 5, 7]
+num: 4
+check → 4
+7 → stays in box
 ```
-Relation: Each num is checked before it is placed in box.
-For num = 5, check finds no match, so 5 can join box.
-What happens after check finds no match?
+Relation: Each num is checked against the current box.
+Yes—4 is checked next; 7 is not checked again.
+What happens to 7 while num = 4 is checked?

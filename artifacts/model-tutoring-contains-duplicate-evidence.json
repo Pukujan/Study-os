@@ -9,6 +9,7 @@
     "visible_messages": 30,
     "model_identifier": "gpt-5.6-luna",
     "study_os_mcp": "study-os-local-test",
+    "resolve_problem_call_required_on_every_teacher_request": true,
     "checkpointed_each_turn": true
   },
   "acceptance": {

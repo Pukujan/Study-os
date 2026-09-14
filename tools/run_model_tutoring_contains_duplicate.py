@@ -67,6 +67,29 @@ class PilotTeacherActor(local.CodexCliActor):
             "mastery. Never claim mastery or change the current concept."
         )
 
+    def _parse_events(self, stdout: str) -> tuple[str | None, str, bool, list[str]]:
+        thread_id, message, _mcp_completed, errors = super()._parse_events(stdout)
+        resolved = False
+        for line in stdout.splitlines():
+            try:
+                event = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            item = event.get("item") if isinstance(event, dict) else None
+            if not isinstance(item, dict) or item.get("type") != "mcp_tool_call":
+                continue
+            if (
+                item.get("server") == self.mcp_name
+                and item.get("tool") == "resolve_problem"
+                and item.get("status") == "completed"
+            ):
+                resolved = True
+        if not resolved:
+            raise RuntimeError(
+                "teacher did not complete the required Study OS resolve_problem MCP call"
+            )
+        return thread_id, message, True, errors
+
 
 def _load_rows(path: Path) -> list[dict[str, Any]]:
     if not path.exists():
