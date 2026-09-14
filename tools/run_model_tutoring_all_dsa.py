@@ -463,8 +463,15 @@ def _atomic_write_markdown(rows: Sequence[Mapping[str, Any]], path: Path) -> Non
 
 
 def _plan_reference(plan_path: Path, plan: TeachingPlan) -> dict[str, str]:
+    # Persist a repository-relative locator when possible.  Absolute Windows
+    # paths make otherwise valid evidence machine-specific and break review on
+    # another checkout; the artifact itself remains the source of truth.
+    try:
+        artifact = str(plan_path.resolve().relative_to(ROOT.resolve()))
+    except ValueError:
+        artifact = str(plan_path)
     return {
-        "artifact": str(plan_path),
+        "artifact": artifact.replace("\\", "/"),
         "scenario_id": plan.problem.id,
         "source_problem_id": plan.provenance.source_problem_id,
         "run_id": plan.provenance.run_id,

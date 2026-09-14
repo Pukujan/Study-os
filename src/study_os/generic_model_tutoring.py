@@ -472,7 +472,26 @@ def _representation_present(text: str, requirement: RepresentationRequirement) -
         return True
     kind = requirement.kind.casefold()
     operation = requirement.operation.casefold()
-    return kind in lowered and operation in lowered
+    if kind in lowered and operation in lowered:
+        return True
+
+    # A model is allowed to render the requested representation in ordinary
+    # learner language rather than echoing the internal requirement id or both
+    # metadata labels.  Use the generated description as a small deterministic
+    # semantic anchor: require at least two meaningful description terms, plus
+    # the visual boundary checked by the caller.  This keeps the validator from
+    # authoring a chart while avoiding brittle dependence on labels such as
+    # ``predict`` that a learner would never see.
+    stop_words = {
+        "a", "an", "and", "as", "at", "be", "by", "for", "from", "in",
+        "of", "on", "or", "the", "to", "with", "each", "show", "represent",
+    }
+    terms = {
+        term
+        for term in re.findall(r"[a-z][a-z0-9_]*", requirement.description.casefold())
+        if term not in stop_words and len(term) > 2
+    }
+    return len(terms & set(re.findall(r"[a-z][a-z0-9_]*", lowered))) >= min(2, len(terms))
 
 
 def _looks_visual(text: str) -> bool:

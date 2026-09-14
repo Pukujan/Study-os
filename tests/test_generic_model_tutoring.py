@@ -320,6 +320,24 @@ class GenericModelTutoringTests(unittest.TestCase):
                 authorization.contract,
             )
 
+    def test_representation_can_use_generated_description_language(self) -> None:
+        controller = make_controller()
+        authorization = controller.authorize(
+            diagnosis(),
+            LearnerAssessment("not_yet"),
+            learner_message="I am still working it out.",
+        )
+        # The learner-visible chart need not echo the internal requirement id
+        # or the metadata operation.  Its generated description still names
+        # the semantic anchors that make the representation recognizable.
+        response = (
+            "| items: [a, b] |\n"
+            "cursor: 0  1\n"
+            "current state: b at cursor; recognizing pattern\n"
+            "?"
+        )
+        self.assertIsNone(validate_generated_response(response, authorization.contract))
+
 
 if __name__ == "__main__":
     unittest.main()
