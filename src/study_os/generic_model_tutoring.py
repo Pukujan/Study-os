@@ -229,6 +229,7 @@ class GenerationContract:
     prompt_provenance: PromptProvenance
     plan_provenance: TeachingPlanProvenance
     variable_bindings: Mapping[str, VariableSpec] = field(default_factory=dict, repr=False)
+    forbidden_terms: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
         for field_name in ("turn_index", "active_concept_index"):
@@ -279,6 +280,11 @@ class GenerationContract:
         if set(self.allowed_variables) - set(bindings):
             raise ModelTutoringError("variable_bindings must cover allowed variables")
         object.__setattr__(self, "variable_bindings", MappingProxyType(bindings))
+
+        terms = tuple(_require_text(item, "forbidden_terms[]") for item in self.forbidden_terms)
+        if len(terms) != len({item.casefold() for item in terms}):
+            raise ModelTutoringError("forbidden_terms must contain unique values")
+        object.__setattr__(self, "forbidden_terms", terms)
 
         terminal = tuple(_require_text(item, "terminal_behavior[]") for item in self.terminal_behavior)
         if not terminal:
@@ -374,6 +380,7 @@ class GenerationContract:
             "source_problem_id": self.prompt_provenance.source_problem_id,
             "prompt_provenance": self.prompt_provenance.to_payload(),
             "plan_provenance": _plan_provenance_payload(self.plan_provenance),
+            "forbidden_terms": list(self.forbidden_terms),
         }
 
     def to_payload(self) -> dict[str, Any]:
@@ -414,6 +421,7 @@ class GenerationContract:
             "learner_outcome": self.learner_outcome,
             "evidence_quote": self.evidence_quote,
             "advance_allowed": self.advance_allowed,
+            "forbidden_terms": list(self.forbidden_terms),
             "prompt_provenance": self.prompt_provenance.to_payload(),
             "plan_provenance": _plan_provenance_payload(self.plan_provenance),
         }
@@ -486,6 +494,18 @@ def validate_generated_response(text: str, contract: GenerationContract) -> None
             f"required representation requirements are missing: {missing_representations}"
         )
 
+    forbidden_terms = [
+        term
+        for term in contract.forbidden_terms
+        if (
+            _contains_identifier(text, term)
+            if re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", term)
+            else term.casefold() in lowered
+        )
+    ]
+    if forbidden_terms:
+        raise ModelTutoringError(f"forbidden source terms leaked: {forbidden_terms}")
+
     forbidden = [
         name for name in contract.forbidden_variables
         if _contains_identifier(text, name)
@@ -546,6 +566,7 @@ class GenericModelTutoringController:
         prompt_registry: PromptRegistry = DEFAULT_PROMPT_REGISTRY,
         generation_prompt_version: str = GENERATION_PROMPT_VERSION,
         model_identifier: str | None = None,
+        forbidden_terms: Sequence[str] = (),
     ) -> None:
         if not isinstance(plan, TeachingPlan):
             raise ModelTutoringError("controller requires a validated TeachingPlan")
@@ -570,6 +591,10 @@ class GenericModelTutoringController:
         self.prompt_registry = prompt_registry
         self.model_identifier = model_identifier
         self._generation_prompt = generation_prompt
+        normalized_terms = tuple(_require_text(item, "forbidden_terms[]") for item in forbidden_terms)
+        if len(normalized_terms) != len({item.casefold() for item in normalized_terms}):
+            raise ModelTutoringError("forbidden_terms must contain unique values")
+        self.forbidden_terms = normalized_terms
 
     @staticmethod
     def _validate_concept_order(plan: TeachingPlan) -> None:
@@ -636,6 +661,7 @@ class GenericModelTutoringController:
             prompt_provenance=self._prompt_provenance(),
             plan_provenance=self.plan.provenance,
             variable_bindings=self.plan.variables,
+            forbidden_terms=self.forbidden_terms,
         )
 
     def authorize(
@@ -763,6 +789,7 @@ def build_generation_prompt(
         "response boundary.\n"
         f"Active concept: {contract.active_concept_id}\n"
         f"Allowed variables: {list(contract.allowed_variables)}\n"
+        f"Forbidden source terms: {list(contract.forbidden_terms)}\n"
         f"Representation requirements: {json.dumps(requirements, ensure_ascii=False)}\n"
         f"Semantic invariants: {json.dumps(invariants, ensure_ascii=False)}\n"
         f"Completion evidence: {json.dumps(completion, ensure_ascii=False)}\n"

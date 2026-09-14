@@ -302,6 +302,24 @@ class GenericModelTutoringTests(unittest.TestCase):
         with self.assertRaisesRegex(ModelTutoringError, "line"):
             validate_generated_response(too_many_lines, contract)
 
+    def test_source_forbidden_terms_are_enforced_without_scenario_logic(self) -> None:
+        plan = TeachingPlan.from_payload(synthetic_payload())
+        controller = GenericModelTutoringController(
+            plan,
+            forbidden_terms=("seen", "lookup_map"),
+        )
+        authorization = controller.authorize(
+            diagnosis(),
+            LearnerAssessment("not_yet"),
+            learner_message="I am still working it out.",
+        )
+        with self.assertRaisesRegex(ModelTutoringError, "forbidden source terms"):
+            validate_generated_response(
+                "Representation: trace-pattern\nstateful trace: items at cursor\n"
+                "The seen alias is not allowed?",
+                authorization.contract,
+            )
+
 
 if __name__ == "__main__":
     unittest.main()

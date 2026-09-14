@@ -546,10 +546,15 @@ def _replay_prefix(
     trace_rows: Sequence[Mapping[str, Any]],
     *,
     scenario_id: str,
+    forbidden_terms: Sequence[str] = (),
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]], GenericModelTutoringController]:
     """Return only the validated matching prefix and reconstruct controller state."""
 
-    controller = GenericModelTutoringController(plan, model_identifier=plan.provenance.model_identifier)
+    controller = GenericModelTutoringController(
+        plan,
+        model_identifier=plan.provenance.model_identifier,
+        forbidden_terms=forbidden_terms,
+    )
     transcript = _scenario_rows(transcript_rows, scenario_id)
     traces = _scenario_rows(trace_rows, scenario_id)
     by_turn_trace = {
@@ -678,6 +683,7 @@ def _prepare_existing(
             transcript_rows,
             trace_rows,
             scenario_id=scenario_id,
+            forbidden_terms=tuple(scenario.get("forbidden_aliases", ())),
         )
         normalized_transcript.extend(prefix_transcript)
         normalized_trace.extend(prefix_trace)
@@ -970,6 +976,7 @@ def run_all_dsa(
             transcript,
             trace,
             scenario_id=scenario_id,
+            forbidden_terms=tuple(scenario.get("forbidden_aliases", ())),
         )
         transcript = [row for row in transcript if str(row.get("scenario_id")) != scenario_id]
         trace = [row for row in trace if str(row.get("scenario_id")) != scenario_id]
