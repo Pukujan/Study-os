@@ -1,48 +1,33 @@
 {
-  "schema_version": "study-os.model-tutoring-evidence.v0.1",
+  "schema_version": "study-os.model-tutoring-evidence.v0.2",
   "scenario_id": "contains-duplicate-set",
   "scope": "bounded Luna/model tutoring pilot",
   "hand_authored_canonical_lesson": false,
-  "live_pilot": {
+  "historical_v0_1_run": {
     "transcript_exchanges": 15,
     "trace_rows": 15,
     "visible_messages": 30,
     "model_identifier": "gpt-5.6-luna",
     "study_os_mcp": "study-os-local-test",
     "resolve_problem_call_required_on_every_teacher_request": true,
-    "checkpointed_each_turn": true
+    "checkpointed_each_turn": true,
+    "automated_gate_at_time": "passed v0.1",
+    "manual_review_status": "invalidated",
+    "manual_review_findings": [
+      "progression was driven by scripted corpus learner_signal rather than evidence from the actual learner reply",
+      "the loop never explicitly established return False when the scan finishes without a duplicate"
+    ]
   },
-  "acceptance": {
-    "command": "python tools/check_model_tutoring_acceptance.py --transcript artifacts/model-tutoring-contains-duplicate.jsonl --trace artifacts/model-tutoring-contains-duplicate-trace.jsonl --scenario contains-duplicate-set --report artifacts/model-tutoring-contains-duplicate-acceptance.json",
-    "exit_code": 0,
-    "accepted": true,
-    "failure_count": 0
+  "current_acceptance": {
+    "required_trace_schema": "study-os.model-tutoring-trace.v0.2",
+    "required_transcript_schema": "study-os.model-tutoring-exchange.v0.2",
+    "fresh_run_required": true,
+    "accepted": false,
+    "command": "python tools/run_model_tutoring_contains_duplicate.py --fresh && python tools/check_model_tutoring_acceptance.py --transcript artifacts/model-tutoring-contains-duplicate.jsonl --trace artifacts/model-tutoring-contains-duplicate-trace.jsonl --scenario contains-duplicate-set --report artifacts/model-tutoring-contains-duplicate-acceptance.json"
   },
-  "tests": {
-    "pilot_tdd_differential_metamorphic_stateful": {
-      "command": "python -m unittest discover -s tests -p 'test_model_tutoring*.py'",
-      "tests_run": 25,
-      "failures": 0
-    },
-    "mutation_boundary": {
-      "tests_run": 7,
-      "mutants_killed": [
-        "two_stage_advance",
-        "assistance_above_a2",
-        "model_mastery_claim",
-        "forbidden_variable_alias",
-        "required_visual",
-        "trace_path",
-        "trace_provenance",
-        "clarification_advance"
-      ]
-    },
-    "full_repository": {
-      "command": "python -m unittest discover -s tests",
-      "tests_run": 401,
-      "skipped": 1,
-      "failures": 0
-    }
-  },
-  "manual_review_status": "ready"
+  "current_code_validation": {
+    "ci_status": "green before artifact invalidation metadata update",
+    "progression_rule": "advance only when learner_outcome is demonstrated and bound to a verbatim evidence_quote from the actual learner message",
+    "final_loop_requirement": "final learner-visible loop turn must explicitly establish return False"
+  }
 }
