@@ -338,6 +338,14 @@ class GenericModelTutoringTests(unittest.TestCase):
         )
         self.assertIsNone(validate_generated_response(response, authorization.contract))
 
+    def test_visual_first_accepts_variable_assignment_and_table_headers(self) -> None:
+        controller = make_controller()
+        authorization = controller.authorize(
+            diagnosis(), LearnerAssessment("not_yet"), learner_message="Still unsure."
+        )
+        response = "items = [a, b]\ncursor | current item\nstateful trace: recognizing pattern\n?"
+        self.assertIsNone(validate_generated_response(response, authorization.contract))
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -549,7 +549,12 @@ def validate_generated_response(text: str, contract: GenerationContract) -> None
         raise ModelTutoringError("required visual is missing")
     if contract.visual_before_explanation:
         first = next((line.strip() for line in text.splitlines() if line.strip()), "")
-        if not first.startswith(("```", "|", "[", "index:", "nums:", "value:")):
+        variable_header = any(
+            re.match(rf"^{re.escape(name)}\s*[:=]", first, flags=re.IGNORECASE)
+            for name in contract.allowed_variables
+        )
+        table_header = "|" in first
+        if not first.startswith(("```", "|", "[", "index:", "nums:", "value:")) and not variable_header and not table_header:
             raise ModelTutoringError("visual must precede explanation")
 
     forbidden = [

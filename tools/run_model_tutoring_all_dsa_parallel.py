@@ -154,6 +154,15 @@ def main() -> int:
             scenario_id = str(scenarios[next_index]["id"])
             next_index += 1
             paths = _lane_paths(args.lane_root, scenario_id)
+            if (
+                not args.fresh
+                and len(_load_jsonl(paths["transcript"])) == runner.TURNS_PER_SCENARIO
+                and len(_load_jsonl(paths["trace"])) == runner.TURNS_PER_SCENARIO
+                and len(_load_jsonl(paths["plans"])) == 1
+            ):
+                completed[scenario_id] = 0
+                print(f"skipping complete lane {scenario_id}", flush=True)
+                continue
             paths["log"].parent.mkdir(parents=True, exist_ok=True)
             log = paths["log"].open("a", encoding="utf-8")
             process = subprocess.Popen(
