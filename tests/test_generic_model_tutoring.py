@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import sys
 import unittest
 from dataclasses import FrozenInstanceError
@@ -15,6 +16,7 @@ from study_os.generic_model_tutoring import (  # noqa: E402
     ModelDiagnosis,
     ModelTutoringError,
     build_generation_prompt,
+    parse_model_decision,
     validate_generated_response,
 )
 from study_os.prompt_registry import (  # noqa: E402
@@ -222,6 +224,26 @@ class GenericModelTutoringTests(unittest.TestCase):
             make_controller().authorize(
                 diagnosis(), assessment, learner_message=learner_message.upper()
             )
+
+    def test_nested_assessment_shape_is_parsed_without_relaxing_evidence_binding(self) -> None:
+        learner_message = "I can explain the pattern from the input values."
+        diagnosis_value, assessment_value = parse_model_decision(
+            json.dumps({
+                "diagnosis": {
+                    "diagnosis_family": "concept_failure",
+                    "operation": "probe",
+                    "assistance_level": "A0",
+                    "assessment": {
+                        "learner_outcome": "demonstrated",
+                        "evidence_quote": learner_message,
+                        "rationale": "verbatim evidence",
+                    },
+                }
+            }),
+            learner_message=learner_message,
+        )
+        self.assertEqual(diagnosis_value.operation, "probe")
+        self.assertEqual(assessment_value.evidence_quote, learner_message)
 
     def test_assistance_overflow_is_rejected_by_the_plan_ceiling(self) -> None:
         with self.assertRaisesRegex(ModelTutoringError, "assistance"):

@@ -601,9 +601,18 @@ def parse_model_decision(
     raw: str, *, learner_message: str
 ) -> tuple[ModelDiagnosis, LearnerAssessment]:
     payload = _json_object(raw, label="model decision")
-    diagnosis = ModelDiagnosis.from_payload(payload.get("diagnosis", payload))
+    diagnosis_payload = payload.get("diagnosis", payload)
+    diagnosis = ModelDiagnosis.from_payload(diagnosis_payload)
+    # Luna occasionally nests the assessment alongside its diagnosis.  Treat
+    # that as a transport-shape variation, not as learner evidence: the same
+    # deterministic evidence binding still runs below.
+    assessment_payload = payload.get("assessment")
+    if assessment_payload is None and isinstance(diagnosis_payload, Mapping):
+        assessment_payload = diagnosis_payload.get("assessment")
+    if assessment_payload is None:
+        assessment_payload = payload
     assessment = LearnerAssessment.from_payload(
-        payload.get("assessment", payload), learner_message=learner_message
+        assessment_payload, learner_message=learner_message
     )
     return diagnosis, assessment
 
