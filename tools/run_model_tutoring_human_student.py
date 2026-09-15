@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Run one completion-driven Study OS tutoring session with a human learner.
 
-Only the learner actor is replaced.  Luna still owns decomposition, diagnosis,
+Only the learner actor is replaced. Luna still owns decomposition, diagnosis,
 and learner-visible generation through the same local Study OS MCP path and
 GenericModelTutoringController used by the automated qualification harness.
 The accepted transcript, trace, and generated TeachingPlan are checkpointed so
@@ -11,10 +11,9 @@ human review can be compared directly with automated evidence.
 from __future__ import annotations
 
 import argparse
-import json
 import sys
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any, Mapping, Sequence
 
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "src"
@@ -24,7 +23,6 @@ if str(SRC) not in sys.path:
 import run_dual_luna_local_codex as local  # noqa: E402
 import run_dual_luna_transcript as raw  # noqa: E402
 import run_model_tutoring_all_dsa as tutoring  # noqa: E402
-from study_os.generic_model_tutoring import parse_generation_response  # noqa: E402
 
 
 DEFAULT_TRANSCRIPT = ROOT / "artifacts" / "human-student-model-tutoring-transcript.jsonl"
@@ -34,10 +32,36 @@ DEFAULT_PLANS = ROOT / "artifacts" / "human-student-model-tutoring-plans.jsonl"
 
 
 class HumanStudentActor:
-    """Interactive stdin/stdout adapter implementing the tutoring Actor protocol."""
+    """Interactive stdin/stdout adapter implementing the tutoring Actor protocol.
+
+    Teacher text is shown only after it has entered the validated conversation
+    supplied by the core runner on the next learner turn. This prevents rejected
+    generation retries from leaking into the human evaluation surface.
+    """
 
     def __init__(self) -> None:
         self._seen_scenario: str | None = None
+        self._last_teacher_message: str | None = None
+
+    def _show_teacher_from_conversation(self, conversation: object) -> None:
+        if not isinstance(conversation, Sequence) or isinstance(conversation, (str, bytes)):
+            return
+        for item in reversed(conversation):
+            if not isinstance(item, Mapping) or item.get("role") != "teacher":
+                continue
+            content = item.get("content")
+            if isinstance(content, str) and content.strip():
+                self.show_teacher(content)
+            return
+
+    def show_teacher(self, message: str) -> None:
+        message = message.strip()
+        if not message or message == self._last_teacher_message:
+            return
+        self._last_teacher_message = message
+        print("\nStudy OS >")
+        print(message)
+        print()
 
     def ask(self, payload: dict[str, Any]) -> dict[str, Any]:
         scenario_id = str(payload.get("scenario_id", ""))
@@ -47,7 +71,12 @@ class HumanStudentActor:
             print(f"Problem: {payload.get('title', scenario_id)}")
             print(str(payload.get("problem", "")))
             print("=" * 72)
-            print("Type naturally as the learner. Use Ctrl+C to stop; the run checkpoints every accepted exchange.\n")
+            print(
+                "Type naturally as the learner. Use Ctrl+C to stop; "
+                "the run checkpoints every accepted exchange.\n"
+            )
+
+        self._show_teacher_from_conversation(payload.get("conversation", []))
 
         while True:
             try:
@@ -60,27 +89,6 @@ class HumanStudentActor:
 
     def close(self) -> None:
         return None
-
-
-class VisibleTeacherActor:
-    """Delegate to the real local Luna teacher and print only accepted generation text."""
-
-    def __init__(self, delegate: tutoring.AllDSATeacherActor) -> None:
-        self.delegate = delegate
-
-    def ask(self, payload: dict[str, Any]) -> dict[str, Any]:
-        result = self.delegate.ask(payload)
-        if payload.get("phase") == "generation":
-            raw_message = tutoring._extract_actor_message(result, role="teacher")
-            parsed = tutoring._json_object(raw_message, label="model generation")
-            visible = parse_generation_response(json.dumps(parsed, ensure_ascii=False))
-            print("\nStudy OS >")
-            print(visible)
-            print()
-        return result
-
-    def close(self) -> None:
-        self.delegate.close()
 
 
 def _scenario_exists(corpus: Mapping[str, Any], scenario_id: str) -> bool:
@@ -146,14 +154,12 @@ def main() -> int:
     print(f"Study OS MCP ready: {args.mcp_name}")
 
     student = HumanStudentActor()
-    teacher = VisibleTeacherActor(
-        tutoring.AllDSATeacherActor(
-            role="teacher",
-            codex_bin=args.codex_bin,
-            model=args.model,
-            mcp_name=args.mcp_name,
-            timeout_seconds=args.turn_timeout_seconds,
-        )
+    teacher = tutoring.AllDSATeacherActor(
+        role="teacher",
+        codex_bin=args.codex_bin,
+        model=args.model,
+        mcp_name=args.mcp_name,
+        timeout_seconds=args.turn_timeout_seconds,
     )
 
     try:
@@ -180,6 +186,10 @@ def main() -> int:
         teacher.close()
 
     scenario_rows = [row for row in transcript if row.get("scenario_id") == args.scenario]
+    if scenario_rows:
+        final_teacher = scenario_rows[-1].get("teacher_message")
+        if isinstance(final_teacher, str):
+            student.show_teacher(final_teacher)
     completed = bool(scenario_rows and scenario_rows[-1].get("completion_candidate") is True)
     print("\nSession complete." if completed else "\nSession ended without completion.")
     print(f"accepted exchanges: {len(scenario_rows)}")
