@@ -134,6 +134,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--lane-root", type=Path, default=DEFAULT_LANE_ROOT)
     parser.add_argument("--workers", type=int, default=4)
     parser.add_argument("--fresh", action="store_true")
+    parser.add_argument("--allow-short-run", action="store_true", help="compatibility flag; selected lanes are always short runs")
     parser.add_argument("--scenario", action="append", default=[])
     parser.add_argument("--model", default=runner.DEFAULT_MODEL)
     parser.add_argument("--codex-bin", default="codex")
