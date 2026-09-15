@@ -2,6 +2,14 @@
 
 Status: **durable stopping/promotion contract for the Local Luna autonomous model-tutoring loop.**
 
+The bounded state machine is checked in as
+`study_os.decomposition_qualification` plus
+`tools/run_model_tutoring_autonomous_loop.py`. It checkpoints a candidate
+fingerprint and seeded four-problem schedule, resumes incomplete batches, and
+stops at explicit candidate/model-call/runtime bounds. The implementation is
+an orchestration boundary only: it does not author lesson content and it does
+not start an expensive model run during repository validation.
+
 This document answers one specific question that earlier orchestration documents left too implicit:
 
 > When may Local Luna stop iterating and say that strong-inference decomposition is now coming out reliably rather than merely passing one convenient batch?

@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 import time
@@ -121,6 +122,7 @@ def current_candidate(*, model_identifier: str, code_revision: str | None = None
             [
                 TOOLS / "check_model_tutoring_all_dsa.py",
                 ROOT / "docs" / "MODEL_TUTORING_ROTATING_HOLDOUT_EVAL_V1.md",
+                ROOT / "contracts" / "model-tutoring-agent-boundaries.v0.1.json",
             ]
         ),
         model_identifier=model_identifier,
@@ -253,12 +255,39 @@ def _validate_resume_config(ledger: QualificationLedger, args: argparse.Namespac
         raise ValueError("resume public corpus differs from the checkpoint")
 
 
+def validate_agent_boundaries(path: Path) -> None:
+    """Fail closed if a supplied role-boundary contract grants holdout access."""
+
+    value = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(value, Mapping):
+        raise ValueError("agent boundaries must be a JSON object")
+    roles = value.get("roles")
+    if not isinstance(roles, Mapping):
+        raise ValueError("agent boundaries.roles is missing")
+    engineering = roles.get("engineering_orchestrator")
+    if not isinstance(engineering, Mapping):
+        raise ValueError("engineering_orchestrator role is missing")
+    if engineering.get("holdout_directory_read") is not False or engineering.get("hidden_oracle_read") is not False:
+        raise ValueError("engineering role must not read hidden holdout/oracle")
+    for role_name in ("measured_decomposer", "measured_teacher", "measured_student"):
+        role = roles.get(role_name)
+        if not isinstance(role, Mapping) or role.get("repo_write") not in (False, "none"):
+            raise ValueError(f"{role_name} must be read-only during measured runs")
+
+
 def run_qualification(
     args: argparse.Namespace,
     *,
     executor: Executor | None = None,
     now: Callable[[], float] = time.monotonic,
 ) -> QualificationLedger:
+    boundaries_path = getattr(args, "agent_boundaries", None)
+    if boundaries_path is not None:
+        validate_agent_boundaries(boundaries_path)
+    elif (ROOT / "contracts" / "model-tutoring-agent-boundaries.v0.1.json").exists():
+        validate_agent_boundaries(ROOT / "contracts" / "model-tutoring-agent-boundaries.v0.1.json")
+    if os.environ.get("STUDY_OS_HOLDOUT_DIR") and not getattr(args, "allow_holdout_env", False):
+        raise ValueError("engineering qualification process must not receive STUDY_OS_HOLDOUT_DIR")
     corpus = raw.load_corpus(args.corpus)
     public_ids = tuple(str(item["id"]) for item in corpus["scenarios"])
     hidden_ids = tuple(str(item) for item in args.hidden_scenario)
@@ -285,14 +314,19 @@ def run_qualification(
     write_ledger(state_path, ledger)
     if ledger.status == STATUS_QUALIFIED:
         return ledger
-    if args.dry_run:
+    if args.dry_run or getattr(args, "preflight_only", False):
         ledger.status = STATUS_NOT_YET_QUALIFIED
-        ledger._event("dry_run", next_public_batch=ledger.next_public_batch)
+        ledger._event("preflight_only" if getattr(args, "preflight_only", False) else "dry_run", next_public_batch=ledger.next_public_batch)
         write_ledger(state_path, ledger)
         return ledger
     executor = executor or execute_public_batch
     started = now()
+    iterations = 0
     while ledger.next_public_batch < len(ledger.public_batches_plan):
+        if getattr(args, "one_public_iteration", False) and iterations >= 1:
+            break
+        if getattr(args, "public_iterations", None) is not None and iterations >= args.public_iterations:
+            break
         if ledger.max_runtime_seconds is not None and now() - started >= ledger.max_runtime_seconds:
             ledger.status = STATUS_NOT_YET_QUALIFIED
             ledger._event("runtime_bound_reached")
@@ -311,6 +345,7 @@ def run_qualification(
             details=result.details,
         )
         write_ledger(state_path, ledger)
+        iterations += 1
         if result.passed:
             continue
         if args.repair_command and ledger.candidate_count < ledger.max_candidates:
@@ -356,7 +391,8 @@ def run_qualification(
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Run bounded resumable decomposition-reliability qualification")
-    parser.add_argument("--corpus", type=Path, default=raw.DEFAULT_CORPUS)
+    parser.add_argument("--corpus", "--public-dataset", dest="corpus", type=Path, default=raw.DEFAULT_CORPUS)
+    parser.add_argument("--agent-boundaries", type=Path, default=None)
     parser.add_argument("--state", type=Path, default=DEFAULT_STATE)
     parser.add_argument("--artifact-root", type=Path, default=DEFAULT_ARTIFACT_ROOT)
     parser.add_argument("--goal", default="decomposition-reliability-qualified")
@@ -377,6 +413,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--fresh", action="store_true", help="start a new ledger, discarding only this ledger's checkpoint")
     parser.add_argument("--dry-run", action="store_true", help="checkpoint the plan without making model calls")
+    parser.add_argument("--preflight-only", action="store_true", help="validate corpus/role boundaries and checkpoint without model calls")
+    parser.add_argument("--one-public-iteration", action="store_true", help="run at most one public batch in this invocation")
+    parser.add_argument("--public-iterations", type=int, default=None, help="run at most N public batches in this invocation")
+    parser.add_argument("--until-public-epoch-complete", action="store_true", help="document the default behavior explicitly")
+    parser.add_argument("--promotion-holdout", action="store_true", help="request the configured hidden promotion command after public coverage")
     parser.add_argument("--skip-local-setup", action="store_true")
     parser.add_argument("--fresh-batch", action="store_true", help="discard each batch's persisted prefix before running")
     return parser

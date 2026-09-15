@@ -14,6 +14,7 @@ sys.path.insert(0, str(ROOT / "tools"))
 from run_model_tutoring_autonomous_loop import (  # noqa: E402
     BatchExecution,
     run_qualification,
+    validate_agent_boundaries,
 )
 from study_os.decomposition_qualification import (  # noqa: E402
     CandidateFingerprint,
@@ -114,6 +115,22 @@ class QualificationStateTests(unittest.TestCase):
             write_ledger(path, ledger)
             restored = read_ledger(path)
         self.assertEqual(restored.to_payload(), ledger.to_payload())
+
+    def test_role_boundary_validator_rejects_holdout_access(self) -> None:
+        valid = ROOT / "contracts" / "model-tutoring-agent-boundaries.v0.1.json"
+        validate_agent_boundaries(valid)
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "boundaries.json"
+            path.write_text(
+                '{"roles": {"engineering_orchestrator": '
+                '{"holdout_directory_read": true, "hidden_oracle_read": false}, '
+                '"measured_decomposer": {"repo_write": false}, '
+                '"measured_teacher": {"repo_write": false}, '
+                '"measured_student": {"repo_write": false}}}',
+                encoding="utf-8",
+            )
+            with self.assertRaises(ValueError):
+                validate_agent_boundaries(path)
 
 
 def _args(path: Path, *, dry_run: bool = False, hidden: list[str] | None = None) -> argparse.Namespace:
