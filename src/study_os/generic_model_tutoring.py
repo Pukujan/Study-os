@@ -481,7 +481,12 @@ def _contains_identifier(text: str, identifier: str) -> bool:
     ) is not None
 
 
-def _representation_present(text: str, requirement: RepresentationRequirement) -> bool:
+def _representation_present(
+    text: str,
+    requirement: RepresentationRequirement,
+    *,
+    allowed_variables: Sequence[str] = (),
+) -> bool:
     lowered = text.casefold()
     if requirement.id.casefold() in lowered:
         return True
@@ -506,7 +511,25 @@ def _representation_present(text: str, requirement: RepresentationRequirement) -
         for term in re.findall(r"[a-z][a-z0-9_]*", requirement.description.casefold())
         if term not in stop_words and len(term) > 2
     }
-    return len(terms & set(re.findall(r"[a-z][a-z0-9_]*", lowered))) >= min(2, len(terms))
+    tokens = set(re.findall(r"[a-z][a-z0-9_]*", lowered))
+    if len(terms) and len(terms & tokens) >= min(2, len(terms)):
+        return True
+
+    # Diagram/table renderings often use the source variable names as their
+    # labels (``prev``, ``curr``, ``next_node``) without repeating the prose
+    # vocabulary from the requirement description.  When a response visibly
+    # renders at least two of the active concept's declared variables, that is
+    # a deterministic representation anchor rather than an unbounded semantic
+    # guess.  The separate visual gate still requires the chart boundary.
+    variable_tokens = [
+        name.casefold()
+        for name in allowed_variables
+        if isinstance(name, str) and name.strip()
+    ]
+    if variable_tokens and _looks_visual(text):
+        matched = sum(1 for name in variable_tokens if _contains_identifier(text, name))
+        return matched >= min(2, len(variable_tokens))
+    return False
 
 
 def _looks_visual(text: str) -> bool:
@@ -541,7 +564,10 @@ def validate_generated_response(text: str, contract: GenerationContract) -> None
     missing_representations = [
         requirement.id
         for requirement in contract.representation_requirements
-        if requirement.required and not _representation_present(text, requirement)
+        if requirement.required
+        and not _representation_present(
+            text, requirement, allowed_variables=contract.allowed_variables
+        )
     ]
     if missing_representations:
         raise ModelTutoringError(
