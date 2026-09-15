@@ -1,0 +1,22 @@
+captured reverse-linked-list exchange 1; concept=identify-reversal-state; outcome=not_yet
+captured reverse-linked-list exchange 2; concept=identify-reversal-state; outcome=not_yet
+captured reverse-linked-list exchange 3; concept=identify-reversal-state; outcome=not_yet
+captured reverse-linked-list exchange 4; concept=identify-reversal-state; outcome=not_yet
+captured reverse-linked-list exchange 5; concept=identify-reversal-state; outcome=not_yet
+captured reverse-linked-list exchange 6; concept=identify-reversal-state; outcome=demonstrated
+captured reverse-linked-list exchange 7; concept=preserve-next-link; outcome=not_yet
+captured reverse-linked-list exchange 8; concept=preserve-next-link; outcome=not_yet
+captured reverse-linked-list exchange 9; concept=preserve-next-link; outcome=demonstrated
+captured reverse-linked-list exchange 10; concept=rewire-current-link; outcome=not_yet
+captured reverse-linked-list exchange 11; concept=rewire-current-link; outcome=not_yet
+captured reverse-linked-list exchange 12; concept=rewire-current-link; outcome=not_yet
+captured reverse-linked-list exchange 13; concept=rewire-current-link; outcome=not_yet
+captured reverse-linked-list exchange 14; concept=rewire-current-link; outcome=not_yet
+captured reverse-linked-list exchange 15; concept=rewire-current-link; outcome=demonstrated
+captured reverse-linked-list exchange 16; concept=advance-and-return-new-head; outcome=not_yet
+captured reverse-linked-list exchange 17; concept=advance-and-return-new-head; outcome=not_yet
+captured reverse-linked-list exchange 18; concept=advance-and-return-new-head; outcome=demonstrated
+captured generic all-DSA tutoring: 1 plans / 18 exchanges / 36 visible messages
+transcript: artifacts\model-tutoring-qualification\epoch-3\public-batch-000\lanes\reverse-linked-list\transcript.jsonl
+trace: artifacts\model-tutoring-qualification\epoch-3\public-batch-000\lanes\reverse-linked-list\trace.jsonl
+plans: artifacts\model-tutoring-qualification\epoch-3\public-batch-000\lanes\reverse-linked-list\plans.jsonl

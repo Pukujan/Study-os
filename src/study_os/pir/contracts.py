@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from enum import StrEnum
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
@@ -60,6 +61,28 @@ class RepresentationSpec(PirModel):
     representation_id: str = Field(min_length=1)
     learner_visible_markdown: str = Field(min_length=1)
     visible_components: tuple[str, ...] = ()
+    # Optional metadata for assets that opt into the deterministic
+    # learner-facing presentation contract. Legacy assets remain valid.
+    relation_id: str | None = Field(default=None, min_length=1)
+    check_question: str | None = Field(default=None, min_length=1)
+
+
+class VariableBinding(PirModel):
+    name: str = Field(pattern=r"^[A-Za-z_][A-Za-z0-9_]*$")
+    role: str = Field(min_length=1)
+
+
+class PresentationContract(PirModel):
+    """Data contract for deterministic learner-visible teaching turns."""
+
+    required_variable_map: tuple[VariableBinding, ...] = Field(min_length=1)
+    forbidden_variable_names: tuple[str, ...] = ()
+    visual_required: bool = True
+    visual_before_explanation: bool = True
+    max_relations_per_turn: int = Field(default=1, ge=1)
+    max_nonempty_lines: int = Field(default=12, ge=1)
+    tiny_check_required: bool = True
+    render_mode: Literal["verbatim"] = "verbatim"
 
 
 class TransitionSpec(PirModel):
@@ -159,6 +182,7 @@ class CanonicalTeachingAsset(PirModel):
     steps: tuple[TeachingStep, ...] = Field(min_length=1)
     assessments: tuple[AssessmentSpec, ...] = ()
     expansions: tuple[ExpansionSpec, ...] = ()
+    presentation_contract: PresentationContract | None = None
 
 
 class ProblemRunState(PirModel):
@@ -187,6 +211,8 @@ class TeachingTurn(PirModel):
     response_kind: ResponseKind
     allowed_actions: tuple[str, ...] = ()
     run_status: RunStatus
+    relation_id: str | None = Field(default=None, min_length=1)
+    render_mode: Literal["verbatim"] = "verbatim"
 
 
 class TeachingBundle(PirModel):
@@ -195,3 +221,4 @@ class TeachingBundle(PirModel):
     turns: tuple[TeachingTurn, ...] = Field(min_length=1)
     response_turn_id: str | None = Field(default=None, min_length=1)
     run_status: RunStatus
+    presentation_contract: PresentationContract | None = None

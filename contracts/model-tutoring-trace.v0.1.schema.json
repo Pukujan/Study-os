@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://study-os.local/contracts/model-tutoring-trace.v0.1.schema.json",
+  "title": "Study OS model tutoring decision trace v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "scenario_id",
+    "turn_index",
+    "path_kind",
+    "target_concept",
+    "diagnosis_family",
+    "operation",
+    "assistance_level",
+    "advance",
+    "allowed_variables",
+    "forbidden_variables",
+    "visual_required",
+    "prompt_version",
+    "model_identifier"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "study-os.model-tutoring-trace.v0.1"
+    },
+    "scenario_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "turn_index": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "path_kind": {
+      "const": "model_generated"
+    },
+    "target_concept": {
+      "type": "string",
+      "minLength": 1
+    },
+    "diagnosis_family": {
+      "enum": [
+        "none",
+        "missing_prerequisite",
+        "concept_failure",
+        "representation_interference",
+        "identifier_interference",
+        "information_overload",
+        "information_underload",
+        "decomposition_too_coarse",
+        "over_decomposition",
+        "over_help",
+        "uncertain_mixed"
+      ]
+    },
+    "operation": {
+      "enum": [
+        "explain",
+        "clarify",
+        "probe",
+        "smaller_step",
+        "show_trace",
+        "change_representation",
+        "give_hint",
+        "assemble"
+      ]
+    },
+    "assistance_level": {
+      "enum": ["A0", "A1", "A2"]
+    },
+    "advance": {
+      "type": "boolean"
+    },
+    "allowed_variables": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "forbidden_variables": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "visual_required": {
+      "type": "boolean"
+    },
+    "prompt_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "model_identifier": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

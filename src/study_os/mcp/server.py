@@ -76,10 +76,25 @@ class MCPServer:
         for spec in self.contract["tools"]:
             required = list(spec["required_input"])
             properties = {name: {} for name in required}
+            if spec["name"] == "request_problem_expansion":
+                properties["request_kind"] = {
+                    "type": "string",
+                    "enum": [
+                        "why",
+                        "easier_example",
+                        "more_detail",
+                        "repeat_representation",
+                        "clarify_term",
+                    ],
+                    "description": "Choose one supported expansion kind exactly.",
+                }
+            description = spec.get(
+                "description", f"Study OS semantic operation: {spec['name']}"
+            )
             tools.append(
                 {
                     "name": spec["name"],
-                    "description": f"Study OS semantic operation: {spec['name']}",
+                    "description": description,
                     "inputSchema": {
                         "type": "object",
                         "properties": properties,

@@ -1,0 +1,29 @@
+{
+  "contract_version": "dkg.pack.v1",
+  "pack_id": "pack_3b5bd2d571fd2238ff15e10a5502d3d7",
+  "name": "Study OS DSA model tutoring evolution rationale",
+  "kind": "domain",
+  "description": "FOSSIL-compatible Study OS knowledge pack preserving why model tutoring moved from a fixed 14x15 regression run to completion-driven, fine-grained, learner-calibrated teaching and what future agents must not regress.",
+  "schema_version": "dkg.event.v1",
+  "ontology_requirements": [
+    {
+      "ontology_id": "dkg.core",
+      "version_constraint": ">=1.0.0 <2.0.0"
+    }
+  ],
+  "dependencies": [],
+  "read_mounts": [
+    "pack_3b5bd2d571fd2238ff15e10a5502d3d7"
+  ],
+  "write_targets": [
+    "pack_3b5bd2d571fd2238ff15e10a5502d3d7"
+  ],
+  "event_roots": [
+    "events/"
+  ],
+  "artifact_manifests": [],
+  "placement_hint": "shared",
+  "projection_namespace": "study-os-dsa-model-tutoring-evolution",
+  "source_policy_ref": "docs/FOSSIL_INTEGRATION.md",
+  "created_at": "2026-09-15T03:31:00Z"
+}

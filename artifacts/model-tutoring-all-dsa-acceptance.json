@@ -1,0 +1,1159 @@
+{
+  "schema_version": "study-os.model-tutoring-all-dsa-acceptance.v0.1",
+  "status": "passed",
+  "scenario_count": 14,
+  "exchange_count": 210,
+  "visible_message_count": 420,
+  "expected_exchange_count": 210,
+  "expected_visible_message_count": 420,
+  "calibration": {
+    "checks": 420,
+    "hits": 317,
+    "agreement": 0.7547619047619047,
+    "note": "stage wording/order is diagnostic; generated-plan/controller invariants are authoritative"
+  },
+  "scenario_reports": [
+    {
+      "scenario_id": "two-sum-dictionary",
+      "exchange_count": 15,
+      "visible_message_count": 30,
+      "calibration": {
+        "checks": 30,
+        "hits": 22,
+        "agreement": 0.7333333333333333,
+        "misses": [
+          {
+            "turn_index": 0,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "seen",
+              "index_by_num",
+              "lookup_map",
+              "needed",
+              "box",
+              "enumerate"
+            ]
+          },
+          {
+            "turn_index": 1,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "seen",
+              "index_by_num",
+              "lookup_map",
+              "needed",
+              "box",
+              "enumerate"
+            ]
+          },
+          {
+            "turn_index": 2,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "seen",
+              "index_by_num",
+              "lookup_map",
+              "needed",
+              "box",
+              "enumerate"
+            ]
+          },
+          {
+            "turn_index": 3,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "seen",
+              "index_by_num",
+              "lookup_map",
+              "box[needed]",
+              "return"
+            ]
+          },
+          {
+            "turn_index": 4,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "seen",
+              "index_by_num",
+              "lookup_map",
+              "box[needed]",
+              "return"
+            ]
+          },
+          {
+            "turn_index": 5,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "seen",
+              "index_by_num",
+              "lookup_map",
+              "box[needed]",
+              "return"
+            ]
+          },
+          {
+            "turn_index": 7,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "seen",
+              "index_by_num",
+              "lookup_map",
+              "return",
+              "full code"
+            ]
+          },
+          {
+            "turn_index": 8,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "seen",
+              "index_by_num",
+              "lookup_map",
+              "return",
+              "full code"
+            ]
+          }
+        ]
+      },
+      "failure_count": 0
+    },
+    {
+      "scenario_id": "contains-duplicate-set",
+      "exchange_count": 15,
+      "visible_message_count": 30,
+      "calibration": {
+        "checks": 30,
+        "hits": 27,
+        "agreement": 0.9,
+        "misses": [
+          {
+            "turn_index": 6,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "seen",
+              "add",
+              "full code"
+            ]
+          },
+          {
+            "turn_index": 7,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "seen",
+              "add",
+              "full code"
+            ]
+          },
+          {
+            "turn_index": 8,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "seen",
+              "add",
+              "full code"
+            ]
+          }
+        ]
+      },
+      "failure_count": 0
+    },
+    {
+      "scenario_id": "best-time-stock",
+      "exchange_count": 15,
+      "visible_message_count": 30,
+      "calibration": {
+        "checks": 30,
+        "hits": 28,
+        "agreement": 0.9333333333333333,
+        "misses": [
+          {
+            "turn_index": 7,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "left",
+              "right",
+              "best"
+            ]
+          },
+          {
+            "turn_index": 8,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "left",
+              "right",
+              "best"
+            ]
+          }
+        ]
+      },
+      "failure_count": 0
+    },
+    {
+      "scenario_id": "valid-parentheses-stack",
+      "exchange_count": 15,
+      "visible_message_count": 30,
+      "calibration": {
+        "checks": 30,
+        "hits": 27,
+        "agreement": 0.9,
+        "misses": [
+          {
+            "turn_index": 0,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "queue",
+              "stack",
+              "top"
+            ]
+          },
+          {
+            "turn_index": 1,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "queue",
+              "stack",
+              "top"
+            ]
+          },
+          {
+            "turn_index": 2,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "queue",
+              "stack",
+              "top"
+            ]
+          }
+        ]
+      },
+      "failure_count": 0
+    },
+    {
+      "scenario_id": "binary-search",
+      "exchange_count": 15,
+      "visible_message_count": 30,
+      "calibration": {
+        "checks": 30,
+        "hits": 21,
+        "agreement": 0.7,
+        "misses": [
+          {
+            "turn_index": 0,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "lo",
+              "hi",
+              "mid",
+              "left",
+              "right"
+            ]
+          },
+          {
+            "turn_index": 1,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "lo",
+              "hi",
+              "mid",
+              "left",
+              "right"
+            ]
+          },
+          {
+            "turn_index": 3,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "lo",
+              "hi",
+              "mid",
+              "full code"
+            ]
+          },
+          {
+            "turn_index": 5,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "lo",
+              "hi",
+              "mid",
+              "full code"
+            ]
+          },
+          {
+            "turn_index": 10,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "lo",
+              "hi",
+              "full code"
+            ]
+          },
+          {
+            "turn_index": 11,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "lo",
+              "hi",
+              "full code"
+            ]
+          },
+          {
+            "turn_index": 12,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "lo",
+              "hi"
+            ]
+          },
+          {
+            "turn_index": 13,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "lo",
+              "hi"
+            ]
+          },
+          {
+            "turn_index": 14,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "lo",
+              "hi"
+            ]
+          }
+        ]
+      },
+      "failure_count": 0
+    },
+    {
+      "scenario_id": "reverse-linked-list",
+      "exchange_count": 15,
+      "visible_message_count": 30,
+      "calibration": {
+        "checks": 30,
+        "hits": 15,
+        "agreement": 0.5,
+        "misses": [
+          {
+            "turn_index": 0,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "temp",
+              "p",
+              "c",
+              "prev",
+              "next_node"
+            ]
+          },
+          {
+            "turn_index": 1,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "temp",
+              "p",
+              "c",
+              "prev",
+              "next_node"
+            ]
+          },
+          {
+            "turn_index": 2,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "temp",
+              "p",
+              "c",
+              "prev",
+              "next_node"
+            ]
+          },
+          {
+            "turn_index": 3,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "temp",
+              "p",
+              "c",
+              "reverse",
+              "full code"
+            ]
+          },
+          {
+            "turn_index": 4,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "temp",
+              "p",
+              "c",
+              "reverse",
+              "full code"
+            ]
+          },
+          {
+            "turn_index": 5,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "temp",
+              "p",
+              "c",
+              "reverse",
+              "full code"
+            ]
+          },
+          {
+            "turn_index": 6,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "temp",
+              "p",
+              "c",
+              "advance",
+              "full code"
+            ]
+          },
+          {
+            "turn_index": 7,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "temp",
+              "p",
+              "c",
+              "advance",
+              "full code"
+            ]
+          },
+          {
+            "turn_index": 8,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "temp",
+              "p",
+              "c",
+              "advance",
+              "full code"
+            ]
+          },
+          {
+            "turn_index": 9,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "temp",
+              "p",
+              "c",
+              "full code"
+            ]
+          },
+          {
+            "turn_index": 10,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "temp",
+              "p",
+              "c",
+              "full code"
+            ]
+          },
+          {
+            "turn_index": 11,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "temp",
+              "p",
+              "c",
+              "full code"
+            ]
+          },
+          {
+            "turn_index": 12,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "temp",
+              "p",
+              "c"
+            ]
+          },
+          {
+            "turn_index": 13,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "temp",
+              "p",
+              "c"
+            ]
+          },
+          {
+            "turn_index": 14,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "temp",
+              "p",
+              "c"
+            ]
+          }
+        ]
+      },
+      "failure_count": 0
+    },
+    {
+      "scenario_id": "merge-two-sorted-lists",
+      "exchange_count": 15,
+      "visible_message_count": 30,
+      "calibration": {
+        "checks": 30,
+        "hits": 24,
+        "agreement": 0.8,
+        "misses": [
+          {
+            "turn_index": 3,
+            "kind": "must_include_any",
+            "expected": [
+              "a.val",
+              "b.val"
+            ]
+          },
+          {
+            "turn_index": 4,
+            "kind": "must_include_any",
+            "expected": [
+              "a.val",
+              "b.val"
+            ]
+          },
+          {
+            "turn_index": 5,
+            "kind": "must_include_any",
+            "expected": [
+              "a.val",
+              "b.val"
+            ]
+          },
+          {
+            "turn_index": 6,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "dummy",
+              "advance",
+              "full code"
+            ]
+          },
+          {
+            "turn_index": 7,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "dummy",
+              "advance",
+              "full code"
+            ]
+          },
+          {
+            "turn_index": 8,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "dummy",
+              "advance",
+              "full code"
+            ]
+          }
+        ]
+      },
+      "failure_count": 0
+    },
+    {
+      "scenario_id": "max-depth-tree",
+      "exchange_count": 15,
+      "visible_message_count": 30,
+      "calibration": {
+        "checks": 30,
+        "hits": 30,
+        "agreement": 1.0,
+        "misses": []
+      },
+      "failure_count": 0
+    },
+    {
+      "scenario_id": "bfs-shortest-path",
+      "exchange_count": 15,
+      "visible_message_count": 30,
+      "calibration": {
+        "checks": 30,
+        "hits": 24,
+        "agreement": 0.8,
+        "misses": [
+          {
+            "turn_index": 3,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "stack",
+              "dfs",
+              "dist",
+              "neighbors"
+            ]
+          },
+          {
+            "turn_index": 4,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "stack",
+              "dfs",
+              "dist",
+              "neighbors"
+            ]
+          },
+          {
+            "turn_index": 5,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "stack",
+              "dfs",
+              "dist",
+              "neighbors"
+            ]
+          },
+          {
+            "turn_index": 9,
+            "kind": "must_include_any",
+            "expected": [
+              "visited",
+              "neighbors"
+            ]
+          },
+          {
+            "turn_index": 10,
+            "kind": "must_include_any",
+            "expected": [
+              "visited",
+              "neighbors"
+            ]
+          },
+          {
+            "turn_index": 11,
+            "kind": "must_include_any",
+            "expected": [
+              "visited",
+              "neighbors"
+            ]
+          }
+        ]
+      },
+      "failure_count": 0
+    },
+    {
+      "scenario_id": "number-of-islands",
+      "exchange_count": 15,
+      "visible_message_count": 30,
+      "calibration": {
+        "checks": 30,
+        "hits": 24,
+        "agreement": 0.8,
+        "misses": [
+          {
+            "turn_index": 3,
+            "kind": "must_include_any",
+            "expected": [
+              "connected",
+              "4-direction"
+            ]
+          },
+          {
+            "turn_index": 4,
+            "kind": "must_include_any",
+            "expected": [
+              "connected",
+              "4-direction"
+            ]
+          },
+          {
+            "turn_index": 5,
+            "kind": "must_include_any",
+            "expected": [
+              "connected",
+              "4-direction"
+            ]
+          },
+          {
+            "turn_index": 6,
+            "kind": "must_include_any",
+            "expected": [
+              "count",
+              "new island"
+            ]
+          },
+          {
+            "turn_index": 7,
+            "kind": "must_include_any",
+            "expected": [
+              "count",
+              "new island"
+            ]
+          },
+          {
+            "turn_index": 8,
+            "kind": "must_include_any",
+            "expected": [
+              "count",
+              "new island"
+            ]
+          }
+        ]
+      },
+      "failure_count": 0
+    },
+    {
+      "scenario_id": "kth-largest-heap",
+      "exchange_count": 15,
+      "visible_message_count": 30,
+      "calibration": {
+        "checks": 30,
+        "hits": 22,
+        "agreement": 0.7333333333333333,
+        "misses": [
+          {
+            "turn_index": 0,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "max_heap",
+              "heap",
+              "min"
+            ]
+          },
+          {
+            "turn_index": 1,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "max_heap",
+              "heap",
+              "min"
+            ]
+          },
+          {
+            "turn_index": 2,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "max_heap",
+              "heap",
+              "min"
+            ]
+          },
+          {
+            "turn_index": 3,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "max_heap",
+              "min",
+              "full code"
+            ]
+          },
+          {
+            "turn_index": 4,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "max_heap",
+              "min",
+              "full code"
+            ]
+          },
+          {
+            "turn_index": 5,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "max_heap",
+              "min",
+              "full code"
+            ]
+          },
+          {
+            "turn_index": 7,
+            "kind": "must_include_any",
+            "expected": [
+              "heap[0]",
+              "smallest"
+            ]
+          },
+          {
+            "turn_index": 8,
+            "kind": "must_include_any",
+            "expected": [
+              "heap[0]",
+              "smallest"
+            ]
+          }
+        ]
+      },
+      "failure_count": 0
+    },
+    {
+      "scenario_id": "sliding-window-max-sum",
+      "exchange_count": 15,
+      "visible_message_count": 30,
+      "calibration": {
+        "checks": 30,
+        "hits": 18,
+        "agreement": 0.6,
+        "misses": [
+          {
+            "turn_index": 0,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "window_sum",
+              "i",
+              "k",
+              "s"
+            ]
+          },
+          {
+            "turn_index": 1,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "window_sum",
+              "i",
+              "k",
+              "s"
+            ]
+          },
+          {
+            "turn_index": 2,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "window_sum",
+              "i",
+              "k",
+              "s"
+            ]
+          },
+          {
+            "turn_index": 3,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "window_sum",
+              "k",
+              "s"
+            ]
+          },
+          {
+            "turn_index": 4,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "window_sum",
+              "k",
+              "s"
+            ]
+          },
+          {
+            "turn_index": 5,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "window_sum",
+              "k",
+              "s"
+            ]
+          },
+          {
+            "turn_index": 6,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "window_sum",
+              "s",
+              "recurrence"
+            ]
+          },
+          {
+            "turn_index": 7,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "window_sum",
+              "s",
+              "recurrence"
+            ]
+          },
+          {
+            "turn_index": 8,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "window_sum",
+              "s",
+              "recurrence"
+            ]
+          },
+          {
+            "turn_index": 12,
+            "kind": "must_include_any",
+            "expected": [
+              "s[i-1]",
+              "a[i-1]",
+              "a[i+j]"
+            ]
+          },
+          {
+            "turn_index": 13,
+            "kind": "must_include_any",
+            "expected": [
+              "s[i-1]",
+              "a[i-1]",
+              "a[i+j]"
+            ]
+          },
+          {
+            "turn_index": 14,
+            "kind": "must_include_any",
+            "expected": [
+              "s[i-1]",
+              "a[i-1]",
+              "a[i+j]"
+            ]
+          }
+        ]
+      },
+      "failure_count": 0
+    },
+    {
+      "scenario_id": "merge-intervals",
+      "exchange_count": 15,
+      "visible_message_count": 30,
+      "calibration": {
+        "checks": 30,
+        "hits": 20,
+        "agreement": 0.6666666666666666,
+        "misses": [
+          {
+            "turn_index": 0,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "res",
+              "sort",
+              "merged"
+            ]
+          },
+          {
+            "turn_index": 2,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "res",
+              "sort",
+              "merged"
+            ]
+          },
+          {
+            "turn_index": 3,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "res",
+              "merged",
+              "full code"
+            ]
+          },
+          {
+            "turn_index": 6,
+            "kind": "must_include_any",
+            "expected": [
+              "current",
+              "next_interval"
+            ]
+          },
+          {
+            "turn_index": 7,
+            "kind": "must_include_any",
+            "expected": [
+              "current",
+              "next_interval"
+            ]
+          },
+          {
+            "turn_index": 8,
+            "kind": "must_include_any",
+            "expected": [
+              "current",
+              "next_interval"
+            ]
+          },
+          {
+            "turn_index": 9,
+            "kind": "must_include_any",
+            "expected": [
+              "current",
+              "merged"
+            ]
+          },
+          {
+            "turn_index": 10,
+            "kind": "must_include_any",
+            "expected": [
+              "current",
+              "merged"
+            ]
+          },
+          {
+            "turn_index": 11,
+            "kind": "must_include_any",
+            "expected": [
+              "current",
+              "merged"
+            ]
+          },
+          {
+            "turn_index": 13,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "res"
+            ]
+          }
+        ]
+      },
+      "failure_count": 0
+    },
+    {
+      "scenario_id": "two-pointers-palindrome",
+      "exchange_count": 15,
+      "visible_message_count": 30,
+      "calibration": {
+        "checks": 30,
+        "hits": 15,
+        "agreement": 0.5,
+        "misses": [
+          {
+            "turn_index": 0,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "i",
+              "j",
+              "left",
+              "right"
+            ]
+          },
+          {
+            "turn_index": 1,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "i",
+              "j",
+              "left",
+              "right"
+            ]
+          },
+          {
+            "turn_index": 2,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "i",
+              "j",
+              "left",
+              "right"
+            ]
+          },
+          {
+            "turn_index": 3,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "i",
+              "j",
+              "compare",
+              "full code"
+            ]
+          },
+          {
+            "turn_index": 4,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "i",
+              "j",
+              "compare",
+              "full code"
+            ]
+          },
+          {
+            "turn_index": 5,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "i",
+              "j",
+              "compare",
+              "full code"
+            ]
+          },
+          {
+            "turn_index": 6,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "i",
+              "j",
+              "move",
+              "full code"
+            ]
+          },
+          {
+            "turn_index": 7,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "i",
+              "j",
+              "move",
+              "full code"
+            ]
+          },
+          {
+            "turn_index": 8,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "i",
+              "j",
+              "move",
+              "full code"
+            ]
+          },
+          {
+            "turn_index": 9,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "i",
+              "j",
+              "full code"
+            ]
+          },
+          {
+            "turn_index": 10,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "i",
+              "j",
+              "full code"
+            ]
+          },
+          {
+            "turn_index": 11,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "i",
+              "j",
+              "full code"
+            ]
+          },
+          {
+            "turn_index": 12,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "i",
+              "j"
+            ]
+          },
+          {
+            "turn_index": 13,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "i",
+              "j"
+            ]
+          },
+          {
+            "turn_index": 14,
+            "kind": "calibration_forbidden",
+            "expected": [
+              "i",
+              "j"
+            ]
+          }
+        ]
+      },
+      "failure_count": 0
+    }
+  ],
+  "failures": []
+}

@@ -92,6 +92,26 @@ Their semantics differ:
 
 Session-specific claims must not silently become universal lesson/domain claims.
 
+### Current FOSSIL Core-compatible pack
+
+The model-tutoring architecture evolution is now preserved as an actual FOSSIL Core-shaped domain pack at:
+
+`domains/dsa/_knowledge/model-tutoring-evolution/`
+
+Pack identity:
+
+`pack_3b5bd2d571fd2238ff15e10a5502d3d7`
+
+It uses the canonical FOSSIL Core contracts inspected from `Pukujan/fossil-core`:
+
+- `dkg.pack.v1` manifest;
+- `dkg.event.v1` durable events;
+- reviewed-evidence semantics in which synthesis enters as `claim.proposed` and shared/domain acceptance requires explicit promotion.
+
+The pack preserves why Study OS moved from fixed `14 × 15` tutoring acceptance to completion-driven fine-grained teaching, the learner-calibrated grounded symbolic/state-transition preference, correction/retry/verification rules, learner-not-tutor-debugger invariant, prompt/schema/controller boundary, and future regression watch-outs.
+
+This pack is institutional memory / promoted-knowledge staging. It does not replace the raw Study OS transcript/traces or current execution specs.
+
 ## Promotion model
 
 Use explicit promotion rather than automatic copying:

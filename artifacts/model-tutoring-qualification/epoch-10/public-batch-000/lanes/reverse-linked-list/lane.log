@@ -1,0 +1,19 @@
+captured reverse-linked-list exchange 1; concept=identify-traversal-state; outcome=not_yet
+captured reverse-linked-list exchange 2; concept=identify-traversal-state; outcome=not_yet
+captured reverse-linked-list exchange 3; concept=identify-traversal-state; outcome=demonstrated
+captured reverse-linked-list exchange 4; concept=preserve-successor; outcome=not_yet
+captured reverse-linked-list exchange 5; concept=preserve-successor; outcome=not_yet
+captured reverse-linked-list exchange 6; concept=preserve-successor; outcome=demonstrated
+captured reverse-linked-list exchange 7; concept=reverse-pointer; outcome=not_yet
+captured reverse-linked-list exchange 8; concept=reverse-pointer; outcome=not_yet
+captured reverse-linked-list exchange 9; concept=reverse-pointer; outcome=not_yet
+captured reverse-linked-list exchange 10; concept=reverse-pointer; outcome=not_yet
+captured reverse-linked-list exchange 11; concept=reverse-pointer; outcome=not_yet
+captured reverse-linked-list exchange 12; concept=reverse-pointer; outcome=demonstrated
+captured reverse-linked-list exchange 13; concept=advance-and-terminate; outcome=not_yet
+captured reverse-linked-list exchange 14; concept=advance-and-terminate; outcome=not_yet
+captured reverse-linked-list exchange 15; concept=advance-and-terminate; outcome=demonstrated
+captured generic all-DSA tutoring: 1 plans / 15 exchanges / 30 visible messages
+transcript: artifacts\model-tutoring-qualification\epoch-10\public-batch-000\lanes\reverse-linked-list\transcript.jsonl
+trace: artifacts\model-tutoring-qualification\epoch-10\public-batch-000\lanes\reverse-linked-list\trace.jsonl
+plans: artifacts\model-tutoring-qualification\epoch-10\public-batch-000\lanes\reverse-linked-list\plans.jsonl

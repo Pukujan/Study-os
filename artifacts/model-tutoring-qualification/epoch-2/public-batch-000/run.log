@@ -1,0 +1,25 @@
+usage: run_model_tutoring_all_dsa_parallel.py [-h] [--corpus CORPUS]
+                                              [--lane-root LANE_ROOT]
+                                              [--workers WORKERS] [--fresh]
+                                              [--scenario SCENARIO]
+                                              [--model MODEL]
+                                              [--codex-bin CODEX_BIN]
+                                              [--python-bin PYTHON_BIN]
+                                              [--mcp-name MCP_NAME]
+                                              [--turn-timeout-seconds TURN_TIMEOUT_SECONDS]
+                                              [--skip-local-setup]
+                                              [--completion-driven]
+                                              [--max-exchanges-per-problem MAX_EXCHANGES_PER_PROBLEM]
+                                              [--transcript TRANSCRIPT]
+                                              [--markdown MARKDOWN]
+                                              [--trace TRACE] [--plans PLANS]
+run_model_tutoring_all_dsa_parallel.py: error: unrecognized arguments: --allow-short-run
+started lane contains-duplicate-set pid=47504
+started lane reverse-linked-list pid=66572
+started lane number-of-islands pid=66436
+started lane kth-largest-heap pid=46704
+finished lane reverse-linked-list exit=4294967295
+finished lane number-of-islands exit=4294967295
+stopping sibling lane contains-duplicate-set after batch failure
+stopping sibling lane kth-largest-heap after batch failure
+lane failures: contains-duplicate-set, kth-largest-heap, number-of-islands, reverse-linked-list

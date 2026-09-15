@@ -1,0 +1,16 @@
+captured number-of-islands exchange 1; concept=recognize-four-direction-connectivity; outcome=not_yet
+captured number-of-islands exchange 2; concept=recognize-four-direction-connectivity; outcome=demonstrated
+captured number-of-islands exchange 3; concept=detect-new-component; outcome=not_yet
+captured number-of-islands exchange 4; concept=detect-new-component; outcome=not_yet
+captured number-of-islands exchange 5; concept=detect-new-component; outcome=demonstrated
+captured number-of-islands exchange 6; concept=explore-component-with-stack; outcome=not_yet
+captured number-of-islands exchange 7; concept=explore-component-with-stack; outcome=not_yet
+captured number-of-islands exchange 8; concept=explore-component-with-stack; outcome=not_yet
+captured number-of-islands exchange 9; concept=explore-component-with-stack; outcome=demonstrated
+captured number-of-islands exchange 10; concept=return-total-component-count; outcome=not_yet
+captured number-of-islands exchange 11; concept=return-total-component-count; outcome=not_yet
+captured number-of-islands exchange 12; concept=return-total-component-count; outcome=demonstrated
+captured generic all-DSA tutoring: 1 plans / 12 exchanges / 24 visible messages
+transcript: artifacts\model-tutoring-qualification\epoch-10\public-batch-000\lanes\number-of-islands\transcript.jsonl
+trace: artifacts\model-tutoring-qualification\epoch-10\public-batch-000\lanes\number-of-islands\trace.jsonl
+plans: artifacts\model-tutoring-qualification\epoch-10\public-batch-000\lanes\number-of-islands\plans.jsonl

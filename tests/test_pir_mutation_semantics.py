@@ -11,21 +11,26 @@ from study_os.errors import StudyOSError
 from study_os.pir.contracts import (
     AssessmentKind,
     AssessmentSpec,
+    ExpansionKind,
     ProblemRunState,
+    PresentationContract,
     ResponseKind,
     RunStatus,
     StepKind,
     TransitionSpec,
+    VariableBinding,
 )
 from study_os.pir.controller import (
     AssetViolationCode,
+    _starts_with_visual,
+    build_expansion_bundle,
     build_interaction_bundle,
     classify_response,
     start_run,
     submit_response,
     validate_asset,
 )
-from study_os.pir.registry import CANONICAL_PROBLEM_ID, get_asset
+from study_os.pir.registry import CANONICAL_PROBLEM_ID, get_asset, two_sum_asset
 
 
 class PIRControllerSemanticMutationTests(unittest.TestCase):
@@ -682,6 +687,226 @@ class PIRRuntimeSemanticMutationTests(unittest.TestCase):
         self.assertEqual(set(result), {"problem_run_id", "run_status", "turn"})
         self.assertEqual(result["problem_run_id"], run_id)
         self.assertEqual(result["run_status"], RunStatus.ACTIVE.value)
+
+
+class PIRPresentationTrustBoundaryTests(unittest.TestCase):
+    """Prove the learner-visible presentation contract at its deterministic boundary."""
+
+    def setUp(self) -> None:
+        self.asset = two_sum_asset()
+        contract = self.asset.presentation_contract
+        if contract is None:
+            self.fail("Two Sum asset must opt into the presentation contract")
+        self.contract = contract
+
+    def _replace_representation(self, representation_id: str, **updates):
+        representations = tuple(
+            representation.model_copy(update=updates)
+            if representation.representation_id == representation_id
+            else representation
+            for representation in self.asset.representations
+        )
+        return self.asset.model_copy(update={"representations": representations})
+
+    def _with_contract(self, contract: PresentationContract):
+        return self.asset.model_copy(update={"presentation_contract": contract})
+
+    def test_visual_detector_accepts_each_contract_visual_prefix(self) -> None:
+        accepted = (
+            "```text\nchart\n```",
+            "| index | 0 |",
+            "index: 0 1",
+            "nums: 2 7",
+            "value: 2 7",
+            "[2, 7]",
+        )
+        for markdown in accepted:
+            with self.subTest(markdown=markdown):
+                self.assertTrue(_starts_with_visual(markdown))
+
+    def test_visual_detector_rejects_blank_and_case_changed_prefixes(self) -> None:
+        self.assertFalse(_starts_with_visual("\n \t"))
+        for markdown in ("INDEX: 0 1", "NUMS: 2 7", "VALUE: 2 7", "XX|XX"):
+            with self.subTest(markdown=markdown):
+                self.assertFalse(_starts_with_visual(markdown))
+
+    def test_contract_rejects_each_variable_and_relation_invariant(self) -> None:
+        duplicate_bindings = self.contract.required_variable_map[:-1] + (
+            VariableBinding(name="nums", role="duplicate"),
+        )
+        duplicate = self._with_contract(
+            self.contract.model_copy(update={"required_variable_map": duplicate_bindings})
+        )
+        self.assertIn(
+            AssetViolationCode.PRESENTATION_VARIABLE_MAP_INVALID,
+            {item.code for item in validate_asset(duplicate)},
+        )
+
+        mapped_forbidden = self._with_contract(
+            self.contract.model_copy(
+                update={
+                    "required_variable_map": (
+                        VariableBinding(name="seen", role="unapproved map"),
+                        *self.contract.required_variable_map[1:],
+                    ),
+                    "forbidden_variable_names": ("seen",),
+                }
+            )
+        )
+        self.assertIn(
+            AssetViolationCode.PRESENTATION_VARIABLE_MAP_INVALID,
+            {item.code for item in validate_asset(mapped_forbidden)},
+        )
+
+        wrong_relation_count = self._with_contract(
+            self.contract.model_copy(update={"max_relations_per_turn": 2})
+        )
+        self.assertIn(
+            AssetViolationCode.PRESENTATION_VARIABLE_MAP_INVALID,
+            {item.code for item in validate_asset(wrong_relation_count)},
+        )
+
+        missing_relation = self._replace_representation(
+            "r.two_sum.box", relation_id=None
+        )
+        relation_violations = validate_asset(missing_relation)
+        self.assertTrue(
+            any(
+                item.code == AssetViolationCode.PRESENTATION_RELATION_MISSING
+                and "r.two_sum.box" in item.detail
+                for item in relation_violations
+            )
+        )
+
+    def test_contract_rejects_visual_order_budget_check_and_forbidden_terms(self) -> None:
+        no_visual_components = self._replace_representation(
+            "r.two_sum.box", visible_components=()
+        )
+        self.assertTrue(
+            any(
+                item.code == AssetViolationCode.PRESENTATION_VISUAL_MISSING
+                and "r.two_sum.box" in item.detail
+                for item in validate_asset(no_visual_components)
+            )
+        )
+
+        explanation_first = self._replace_representation(
+            "r.two_sum.box",
+            learner_visible_markdown="Explain the map.\n```text\nbox = {2: 0}\n```",
+        )
+        self.assertTrue(
+            any(
+                item.code == AssetViolationCode.PRESENTATION_VISUAL_MISSING
+                and "must start" in item.detail
+                for item in validate_asset(explanation_first)
+            )
+        )
+
+        missing_check = self._replace_representation("r.two_sum.box", check_question=None)
+        self.assertTrue(
+            any(
+                item.code == AssetViolationCode.PRESENTATION_CHECK_MISSING
+                and "r.two_sum.box" in item.detail
+                for item in validate_asset(missing_check)
+            )
+        )
+
+        forbidden_term = self._replace_representation(
+            "r.two_sum.box",
+            learner_visible_markdown="```text\nseen = {}\n```\nDo not rename box.",
+        )
+        self.assertTrue(
+            any(
+                item.code == AssetViolationCode.PRESENTATION_FORBIDDEN_TERM
+                and "seen" in item.detail
+                for item in validate_asset(forbidden_term)
+            )
+        )
+
+    def test_prose_budget_enforces_strictly_more_than_limit(self) -> None:
+        original_counts = tuple(
+            sum(
+                bool(line.strip())
+                for line in representation.learner_visible_markdown.splitlines()
+            )
+            for representation in self.asset.representations
+        )
+        exact_limit = max(original_counts)
+        exact = self._with_contract(
+            self.contract.model_copy(update={"max_nonempty_lines": exact_limit})
+        )
+        self.assertFalse(
+            any(
+                item.code == AssetViolationCode.PRESENTATION_PROSE_BUDGET_EXCEEDED
+                for item in validate_asset(exact)
+            )
+        )
+
+        target = self.asset.representations[original_counts.index(exact_limit)]
+        exceeded = self._replace_representation(
+            target.representation_id,
+            learner_visible_markdown=target.learner_visible_markdown + "\nextra line",
+        ).model_copy(
+            update={
+                "presentation_contract": self.contract.model_copy(
+                    update={"max_nonempty_lines": exact_limit}
+                )
+            }
+        )
+        self.assertTrue(
+            any(
+                item.code == AssetViolationCode.PRESENTATION_PROSE_BUDGET_EXCEEDED
+                and target.representation_id in item.detail
+                for item in validate_asset(exceeded)
+            )
+        )
+
+    def test_presentation_contract_and_relation_survive_every_bundle_path(self) -> None:
+        state, bundle = start_run(
+            self.asset,
+            problem_run_id="presentation-boundary",
+            subject_id="subject-001",
+            session_id="session-001",
+        )
+        self.assertEqual(bundle.presentation_contract, self.contract)
+        self.assertTrue(all(turn.render_mode == "verbatim" for turn in bundle.turns))
+        self.assertTrue(all(turn.relation_id for turn in bundle.turns))
+
+        needed = submit_response(
+            self.asset,
+            state,
+            turn_id=bundle.response_turn_id or "",
+            response="[0, 1]",
+        )
+        box = submit_response(
+            self.asset,
+            needed.state,
+            turn_id=needed.bundle.response_turn_id or "",
+            response="7",
+        )
+        expanded = build_expansion_bundle(
+            self.asset,
+            box.state,
+            turn_id=box.bundle.response_turn_id or "",
+            kind=ExpansionKind.WHY,
+        )
+        self.assertEqual(expanded.presentation_contract, self.contract)
+        self.assertEqual(expanded.response_turn_id, box.bundle.response_turn_id)
+
+        current = state
+        current_bundle = bundle
+        for answer in ("[0, 1]", "7", "0", "check before add", "return [box[needed], i]"):
+            result = submit_response(
+                self.asset,
+                current,
+                turn_id=current_bundle.response_turn_id or "",
+                response=answer,
+            )
+            current = result.state
+            current_bundle = result.bundle
+        self.assertEqual(current.status, RunStatus.ASSEMBLED_MASTERY_UNPROVEN)
+        self.assertEqual(current_bundle.presentation_contract, self.contract)
+        self.assertIsNone(current_bundle.response_turn_id)
 
 
 if __name__ == "__main__":
