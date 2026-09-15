@@ -1,0 +1,19 @@
+captured contains-duplicate-set exchange 1; concept=identify-duplicate-condition; outcome=not_yet
+captured contains-duplicate-set exchange 2; concept=identify-duplicate-condition; outcome=uncertain
+captured contains-duplicate-set exchange 3; concept=identify-duplicate-condition; outcome=demonstrated
+captured contains-duplicate-set exchange 4; concept=maintain-seen-values; outcome=uncertain
+captured contains-duplicate-set exchange 5; concept=maintain-seen-values; outcome=not_yet
+captured contains-duplicate-set exchange 6; concept=maintain-seen-values; outcome=demonstrated
+captured contains-duplicate-set exchange 7; concept=check-membership-before-add; outcome=uncertain
+captured contains-duplicate-set exchange 8; concept=check-membership-before-add; outcome=not_yet
+captured contains-duplicate-set exchange 9; concept=check-membership-before-add; outcome=not_yet
+captured contains-duplicate-set exchange 10; concept=check-membership-before-add; outcome=uncertain
+captured contains-duplicate-set exchange 11; concept=check-membership-before-add; outcome=uncertain
+captured contains-duplicate-set exchange 12; concept=check-membership-before-add; outcome=uncertain
+captured contains-duplicate-set exchange 13; concept=check-membership-before-add; outcome=demonstrated
+captured contains-duplicate-set exchange 14; concept=terminate-on-result; outcome=not_yet
+captured contains-duplicate-set exchange 15; concept=terminate-on-result; outcome=demonstrated
+captured generic all-DSA tutoring: 1 plans / 15 exchanges / 30 visible messages
+transcript: artifacts\model-tutoring-qualification\epoch-4\public-batch-000\lanes\contains-duplicate-set\transcript.jsonl
+trace: artifacts\model-tutoring-qualification\epoch-4\public-batch-000\lanes\contains-duplicate-set\trace.jsonl
+plans: artifacts\model-tutoring-qualification\epoch-4\public-batch-000\lanes\contains-duplicate-set\plans.jsonl

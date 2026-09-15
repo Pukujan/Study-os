@@ -1,0 +1,34 @@
+captured kth-largest-heap exchange 1; concept=identify-rank-target; outcome=not_yet
+captured kth-largest-heap exchange 2; concept=identify-rank-target; outcome=not_yet
+captured kth-largest-heap exchange 3; concept=identify-rank-target; outcome=demonstrated
+captured kth-largest-heap exchange 4; concept=understand-min-heap-root; outcome=not_yet
+captured kth-largest-heap exchange 5; concept=understand-min-heap-root; outcome=not_yet
+captured kth-largest-heap exchange 6; concept=understand-min-heap-root; outcome=not_yet
+captured kth-largest-heap exchange 7; concept=understand-min-heap-root; outcome=not_yet
+captured kth-largest-heap exchange 8; concept=understand-min-heap-root; outcome=not_yet
+captured kth-largest-heap exchange 9; concept=understand-min-heap-root; outcome=not_yet
+captured kth-largest-heap exchange 10; concept=understand-min-heap-root; outcome=demonstrated
+captured kth-largest-heap exchange 11; concept=retain-top-k; outcome=not_yet
+captured kth-largest-heap exchange 12; concept=retain-top-k; outcome=demonstrated
+captured kth-largest-heap exchange 13; concept=scan-and-update; outcome=not_yet
+captured kth-largest-heap exchange 14; concept=scan-and-update; outcome=not_yet
+captured kth-largest-heap exchange 15; concept=scan-and-update; outcome=not_yet
+captured kth-largest-heap exchange 16; concept=scan-and-update; outcome=not_yet
+captured kth-largest-heap exchange 17; concept=scan-and-update; outcome=not_yet
+captured kth-largest-heap exchange 18; concept=scan-and-update; outcome=not_yet
+captured kth-largest-heap exchange 19; concept=scan-and-update; outcome=uncertain
+captured kth-largest-heap exchange 20; concept=scan-and-update; outcome=not_yet
+captured kth-largest-heap exchange 21; concept=scan-and-update; outcome=demonstrated
+captured kth-largest-heap exchange 22; concept=return-kth-largest; outcome=not_yet
+captured kth-largest-heap exchange 23; concept=return-kth-largest; outcome=not_yet
+captured kth-largest-heap exchange 24; concept=return-kth-largest; outcome=not_yet
+captured kth-largest-heap exchange 25; concept=return-kth-largest; outcome=not_yet
+captured kth-largest-heap exchange 26; concept=return-kth-largest; outcome=not_yet
+captured kth-largest-heap exchange 27; concept=return-kth-largest; outcome=not_yet
+captured kth-largest-heap exchange 28; concept=return-kth-largest; outcome=not_yet
+captured kth-largest-heap exchange 29; concept=return-kth-largest; outcome=not_yet
+captured kth-largest-heap exchange 30; concept=return-kth-largest; outcome=demonstrated
+captured generic all-DSA tutoring: 1 plans / 30 exchanges / 60 visible messages
+transcript: artifacts\model-tutoring-qualification\epoch-10\public-batch-000\lanes\kth-largest-heap\transcript.jsonl
+trace: artifacts\model-tutoring-qualification\epoch-10\public-batch-000\lanes\kth-largest-heap\trace.jsonl
+plans: artifacts\model-tutoring-qualification\epoch-10\public-batch-000\lanes\kth-largest-heap\plans.jsonl

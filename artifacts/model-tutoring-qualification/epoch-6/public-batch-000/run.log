@@ -1,0 +1,9 @@
+started lane contains-duplicate-set pid=68012
+started lane reverse-linked-list pid=60424
+started lane number-of-islands pid=3668
+started lane kth-largest-heap pid=49356
+finished lane reverse-linked-list exit=1
+stopping sibling lane contains-duplicate-set after batch failure
+stopping sibling lane number-of-islands after batch failure
+stopping sibling lane kth-largest-heap after batch failure
+lane failures: contains-duplicate-set, kth-largest-heap, number-of-islands, reverse-linked-list
