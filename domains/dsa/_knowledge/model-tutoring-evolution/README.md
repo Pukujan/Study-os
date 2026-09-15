@@ -21,9 +21,11 @@ manifest.json
 sources/
   2026-09-14-fixed-turn-to-completion-driven-rationale.md
   2026-09-15-rotating-holdout-vocabulary-policy.md
+  2026-09-15-decomposer-skill-local-holdout-boundary.md
 events/
   2026-09-15-rationale-proposals.jsonl
   2026-09-15-rotating-holdout-vocabulary-proposals.jsonl
+  2026-09-15-decomposer-skill-local-holdout-proposals.jsonl
 ```
 
 The source notes are reviewed **conversation + repository evidence syntheses**, not byte-exact ChatGPT exports. The original learner-calibration raw evidence remains under:
@@ -46,6 +48,10 @@ The proposal events preserve the rationale for:
 - holdout burn → public regression → replenish lifecycle;
 - grounded vocabulary simplicity and stable terminology;
 - dual algorithm-graph + learning-graph strong inference;
+- a reusable decomposer **skill + checklist/schema gate** rather than checklist-only reasoning;
+- immutable content-addressed prompt versioning alongside skill versioning;
+- an isolated local holdout evaluator rather than giving raw hidden cases to the engineering/prompt-fixing Luna;
+- frozen-candidate, resumable long-running local evaluation;
 - future regression/watch-out classes.
 
 ## Authority and promotion
@@ -56,11 +62,13 @@ This is consistent with FOSSIL Core's reviewed-evidence policy: domain/shared kn
 
 For Study OS execution, the current code/spec authority is:
 
-1. `docs/MODEL_TUTORING_COMPLETION_DRIVEN_VNEXT.md`;
-2. `docs/MODEL_TUTORING_ROTATING_HOLDOUT_EVAL_V1.md`;
-3. the current local execution handoff, when present;
-4. current Issue #63 / PR #77 evidence;
-5. exact code, tests, traces, and acceptance artifacts on the evidence-bearing head.
+1. `docs/MODEL_TUTORING_LOCAL_AUTONOMOUS_LOOP_V1.md`;
+2. `plugins/study-os-dsa-decomposer/skill.md` + `plugins/study-os-dsa-decomposer/checklist.md`;
+3. `contracts/model-tutoring-agent-boundaries.v0.1.json`;
+4. `docs/MODEL_TUTORING_COMPLETION_DRIVEN_VNEXT.md`;
+5. `docs/MODEL_TUTORING_ROTATING_HOLDOUT_EVAL_V1.md`;
+6. current Issue #63 / PR #77 evidence;
+7. exact code, prompt registry, tests, traces, and acceptance artifacts on the evidence-bearing head.
 
 This pack is the durable **rationale / institutional-memory layer** explaining why those rules exist and which regressions to watch for.
 
@@ -79,13 +87,15 @@ Before changing any of these areas, read the pack source and proposal events:
 - model-tutoring turn budgets;
 - teaching-plan granularity;
 - learner-evidence progression;
-- prompt evaluation;
+- decomposer reasoning/skill behavior;
+- prompt evaluation/versioning;
 - representation selection;
 - vocabulary/term grounding;
 - correction/retry/verification;
 - tutor semantic validation;
 - rotating-batch selection;
-- hidden-holdout lifecycle;
+- local long-running candidate orchestration;
+- hidden-holdout access/isolation/burn lifecycle;
 - tree/graph/linked-list tutoring generalization.
 
 The most important remembered rules are:
@@ -94,4 +104,8 @@ The most important remembered rules are:
 
 > A public rotating regression batch is not a hidden holdout. Hidden cases stop being hidden once they influence a fix.
 
+> The agent that edits prompts/code should not see unburned hidden holdout cases. Hidden problem statements are injected only into isolated measured runs; hidden oracles remain evaluator-only.
+
 > Simplify vocabulary only when the simpler expression preserves the concept's semantics; ground meaning before introducing the technical term or symbol.
+
+> Use strong inference to discover algorithm structure and reverse prerequisites; use deterministic validation to decide whether that structured plan is acceptable.
