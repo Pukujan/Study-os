@@ -569,7 +569,16 @@ def validate_generated_response(text: str, contract: GenerationContract) -> None
             for name in contract.allowed_variables
         )
         table_header = "|" in first
-        if not first.startswith(("```", "|", "[", "index:", "nums:", "value:")) and not variable_header and not table_header:
+        # A short ``Visual:``/``Chart:`` label is valid when the following
+        # lines contain the required chart. Models commonly use that label to
+        # separate a learner-visible representation from prose.
+        visual_label = first.casefold().rstrip() in {"visual:", "chart:", "trace:"}
+        if (
+            not first.startswith(("```", "|", "[", "index:", "nums:", "value:"))
+            and not variable_header
+            and not table_header
+            and not visual_label
+        ):
             raise ModelTutoringError("visual must precede explanation")
 
     forbidden = [

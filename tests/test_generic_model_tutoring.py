@@ -377,6 +377,14 @@ class GenericModelTutoringTests(unittest.TestCase):
         response = "items = [a, b]\ncursor | current item\nstateful trace: recognizing pattern\n?"
         self.assertIsNone(validate_generated_response(response, authorization.contract))
 
+    def test_visual_label_may_precede_chart(self) -> None:
+        controller = make_controller()
+        authorization = controller.authorize(
+            diagnosis(), LearnerAssessment("not_yet"), learner_message="Still unsure."
+        )
+        response = "Visual:\n\n```text\nitems: [a, b]\n```\n\nThe state tracks the input values."
+        self.assertIsNone(validate_generated_response(response, authorization.contract))
+
 
 if __name__ == "__main__":
     unittest.main()
