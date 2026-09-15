@@ -158,6 +158,13 @@ class CodexCliActor:
         self.timeout_seconds = timeout_seconds
         self._runner = runner
         self._scenario_id: str | None = None
+        # Diagnosis and generation are separate protocol phases.  Keeping one
+        # long-lived model context across them can cause the model to answer a
+        # diagnosis request with the previous generation shape (or vice versa),
+        # even when the current payload is explicit.  Track the phase so each
+        # transition starts a clean local session; the complete conversation is
+        # always carried in the payload, so no learner-visible state is lost.
+        self._phase: str | None = None
         self._thread_id: str | None = None
 
     def _role_contract(self) -> str:
@@ -286,6 +293,13 @@ class CodexCliActor:
 
         if scenario_id != self._scenario_id:
             self._scenario_id = scenario_id
+            self._phase = None
+            self._thread_id = None
+
+        phase = payload.get("phase")
+        phase_name = str(phase) if isinstance(phase, str) and phase else None
+        if phase_name != self._phase:
+            self._phase = phase_name
             self._thread_id = None
 
         # First try the persistent session. If Codex resume is stale, hangs, or

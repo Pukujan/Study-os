@@ -198,6 +198,26 @@ class DualLunaLocalCodexTests(unittest.TestCase):
         self.assertIn(local.DEFAULT_MCP_NAME, sent_prompt)
         self.assertIn("Do not edit the repository", sent_prompt)
 
+    def test_teacher_phase_transition_starts_isolated_protocol_session(self) -> None:
+        fake = FakeRunner(
+            [
+                events("teacher-diagnosis", "diagnosis", mcp=True),
+                events("teacher-generation", "generation", mcp=True),
+            ]
+        )
+        actor = local.CodexCliActor(role="teacher", runner=fake)
+        diagnosis = payload()
+        diagnosis["phase"] = "diagnosis"
+        diagnosis["type"] = "model_tutoring_teacher_turn"
+        generation = dict(diagnosis)
+        generation["phase"] = "generation"
+
+        actor.ask(diagnosis)
+        actor.ask(generation)
+
+        self.assertNotIn("resume", fake.calls[0]["args"])
+        self.assertNotIn("resume", fake.calls[1]["args"])
+
     def test_sandbox_can_be_kept_when_explicitly_requested(self) -> None:
         fake = FakeRunner([events("thread-one", "hello")])
         actor = local.CodexCliActor(role="student", full_access=False, runner=fake)
