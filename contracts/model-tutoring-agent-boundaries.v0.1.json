@@ -1,0 +1,154 @@
+{
+  "schema_version": "study-os.model-tutoring-agent-boundaries.v0.1",
+  "purpose": "Define local role separation for completion-driven tutoring, prompt iteration, rotating public evaluation, and hidden promotion holdouts.",
+  "principles": [
+    "Frozen candidates are evaluated before any tuning against the selected batch.",
+    "Public rotating problems are regression data, not hidden holdouts.",
+    "Hidden problem statements may be injected only into isolated measured runs that need them.",
+    "Hidden evaluator oracles never enter decomposer, teacher, student, prompt-fixer, or engineering context.",
+    "Any hidden case revealed for diagnosis is burned and must become public regression before it can influence a fix."
+  ],
+  "roles": {
+    "engineering_orchestrator": {
+      "repo_read": "full_public_repo",
+      "repo_write": true,
+      "public_dataset_read": true,
+      "rotation_ledger_read": true,
+      "prompt_registry_read": true,
+      "prompt_registry_write": "new_versions_only",
+      "holdout_directory_read": false,
+      "hidden_problem_read": false,
+      "hidden_oracle_read": false,
+      "may_modify_candidate": true,
+      "may_receive": [
+        "public_run_artifacts",
+        "public_diagnostics",
+        "sanitized_holdout_verdict",
+        "sanitized_holdout_failure_categories"
+      ]
+    },
+    "public_batch_selector": {
+      "repo_read": "public_problem_metadata_and_rotation_ledger",
+      "repo_write": "batch_manifest_and_ledger_only",
+      "hidden_problem_read": false,
+      "hidden_oracle_read": false,
+      "selection_after_candidate_freeze": true,
+      "selection_policy": "deterministic_seeded_shuffle_bag_no_immediate_repeat_family_diverse"
+    },
+    "measured_decomposer": {
+      "candidate_access": "read_only_frozen_prompt_schema_skill_bundle",
+      "repo_write": false,
+      "problem_statement_access": "injected_current_case_only",
+      "hidden_directory_browse": false,
+      "hidden_oracle_read": false,
+      "may_modify_prompts": false,
+      "may_modify_code": false,
+      "required_skill": "plugins/study-os-dsa-decomposer/skill.md",
+      "required_checklist": "plugins/study-os-dsa-decomposer/checklist.md"
+    },
+    "measured_teacher": {
+      "candidate_access": "read_only_frozen_runtime_bundle",
+      "repo_write": false,
+      "problem_statement_access": "current_case_only",
+      "hidden_directory_browse": false,
+      "hidden_oracle_read": false,
+      "may_modify_prompts": false,
+      "may_modify_code": false,
+      "progression_authority": "deterministic_controller_only"
+    },
+    "measured_student": {
+      "candidate_access": "none_except_learner_visible_conversation_and_problem_context",
+      "repo_write": false,
+      "hidden_directory_browse": false,
+      "hidden_oracle_read": false,
+      "may_repair_tutor_contract": false
+    },
+    "holdout_evaluator": {
+      "candidate_access": "read_only_frozen_candidate",
+      "repo_write": false,
+      "holdout_directory_read": true,
+      "hidden_problem_read": true,
+      "hidden_oracle_read": true,
+      "may_modify_prompts": false,
+      "may_modify_code": false,
+      "may_inject_problem_statement_into_measured_run": true,
+      "may_inject_oracle_into_measured_run": false,
+      "allowed_outputs_to_engineering": [
+        "candidate_identity",
+        "batch_identity",
+        "pass_fail",
+        "aggregate_metrics",
+        "sanitized_failure_codes",
+        "sanitized_family_level_diagnostics",
+        "burn_required_case_tokens"
+      ],
+      "forbidden_outputs_to_engineering_before_burn": [
+        "raw_hidden_problem_text",
+        "raw_hidden_solution",
+        "oracle_assertions_that_reconstruct_solution",
+        "raw_hidden_transcript_if_it_reveals_problem_identity_or_solution"
+      ]
+    },
+    "public_diagnostic_agent": {
+      "repo_read": "public_repo_and_public_or_burned_case_artifacts",
+      "repo_write": "diagnostic_artifacts_only_unless_acting_as_engineering_orchestrator",
+      "hidden_problem_read": false,
+      "hidden_oracle_read": false,
+      "may_diagnose": true,
+      "may_be": ["luna", "terra"]
+    }
+  },
+  "holdout_storage": {
+    "recommended_environment_variable": "STUDY_OS_HOLDOUT_DIR",
+    "must_be_outside_public_repo": true,
+    "engineering_process_receives_environment_variable": false,
+    "holdout_evaluator_process_receives_environment_variable": true,
+    "recommended_layout": {
+      "problems": "private problem statements and metadata",
+      "oracles": "private evaluator-only semantic/solution assertions",
+      "ledger": "private holdout case lifecycle and burn state"
+    },
+    "measured_agent_delivery": "Evaluator passes only the current problem statement as model input; measured agents receive no filesystem path to the holdout root."
+  },
+  "candidate_freeze": {
+    "required_before_public_batch_selection": true,
+    "required_before_holdout_selection": true,
+    "identity_fields": [
+      "git_commit_sha",
+      "decomposition_prompt_version",
+      "decomposition_prompt_hash",
+      "diagnosis_prompt_version",
+      "diagnosis_prompt_hash",
+      "generation_prompt_version",
+      "generation_prompt_hash",
+      "teaching_plan_schema_version",
+      "turn_trace_schema_version",
+      "decomposer_skill_version",
+      "evaluation_policy_version"
+    ],
+    "mutation_after_freeze": "creates_new_candidate_identity"
+  },
+  "burn_policy": {
+    "trigger": "raw hidden problem/oracle/transcript detail is exposed to an agent that may tune prompts/code/schema or is used to drive a fix",
+    "actions": [
+      "mark hidden case burned",
+      "remove it from future hidden promotion batches",
+      "promote a reviewed version into the public regression corpus",
+      "record provenance linking hidden token to new public regression case",
+      "replenish the private holdout bank before relying on holdout coverage again"
+    ]
+  },
+  "acceptance_authority": [
+    "deterministic structural_semantic_vocabulary_progression_validation",
+    "per_problem_completion_acceptance",
+    "holdout_evaluator_oracle_for_hidden_promotion_only",
+    "learner_visible_review"
+  ],
+  "non_authorities": [
+    "teacher self-report",
+    "student self-report",
+    "terra diagnosis alone",
+    "aggregate pass rate hiding an individual failure",
+    "turn count"
+  ]
+}
