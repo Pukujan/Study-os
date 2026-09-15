@@ -1,9 +1,10 @@
 # All-DSA generic model tutoring — Product Design Document
 
-Status: focused product/design slice with the generic runner and acceptance
-evidence now complete. The real local Luna run produced 14 plans, 210 exchanges,
-and 420 learner-visible messages; the aggregate gate passed. Manual semantic
-review and live held-out prompt variants remain separate follow-up work.
+Status: generic runner and acceptance evidence are complete. The bounded,
+resumable decomposition-reliability qualification orchestration is now checked
+in, but no candidate is called qualified until a frozen public epoch and an
+explicit hidden-promotion gate pass. See
+`docs/MODEL_TUTORING_DECOMPOSITION_RELIABILITY_QUALIFICATION_V1.md`.
 
 ## Product question
 
@@ -152,3 +153,14 @@ The following is the product exit evidence, not current repository status:
 Until all rows are complete, PR #77 remains draft and the architecture is not
 called proven. A green unit suite or a green Contains Duplicate pilot is useful
 regression evidence, but is not the all-DSA product proof.
+
+## Qualification epoch (v1)
+
+The product proof now has a bounded state machine in
+`tools/run_model_tutoring_autonomous_loop.py`. A seeded, non-overlapping batch
+partition (four scenarios by default) is evaluated under one content-addressed
+candidate fingerprint. Any code, prompt, schema, skill, checklist, evaluator,
+or model change starts a new epoch. The ledger checkpoints every batch and
+records `NOT_YET_QUALIFIED`, `PUBLIC_EPOCH_PASSED`, or the terminal hidden-gate
+status `DECOMPOSITION_RELIABILITY_QUALIFIED`. Public success alone never
+promotes a candidate.

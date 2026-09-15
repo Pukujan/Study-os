@@ -1,7 +1,16 @@
 # Agent Handoff
 
-Last updated: 2026-09-14
+Last updated: 2026-09-15
 Primary tracker: #63
+
+### Qualification execution authority
+
+The generic all-DSA run is regression evidence. The bounded next step is the
+frozen-candidate qualification loop defined in
+`docs/MODEL_TUTORING_DECOMPOSITION_RELIABILITY_QUALIFICATION_V1.md` and
+implemented by `tools/run_model_tutoring_autonomous_loop.py`. Use `--resume` to
+continue a checkpoint; do not mix evidence after a candidate fingerprint
+change. A public epoch passing is not a hidden qualification claim.
 
 ## Immediate execution authority — all-DSA generic model tutoring
 

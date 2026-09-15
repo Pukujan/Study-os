@@ -5,6 +5,13 @@ contracts. Decomposition orchestration, isolated-lane durable execution,
 generic trace replay, and the independent all-DSA acceptance evaluator are now
 checked in and exercised by the 14×15 local run.
 
+The next qualification layer is implemented as a separate orchestration
+boundary in `tools/run_model_tutoring_autonomous_loop.py` and
+`study_os.decomposition_qualification`. It records frozen candidate
+fingerprints, seeded batch schedules, bounded model/runtime budgets, repair
+epoch invalidation, and resumable checkpoints. It does not author teaching
+content and it cannot mark a public-only run as qualified.
+
 ## Design boundary
 
 The system has four distinct jobs:
