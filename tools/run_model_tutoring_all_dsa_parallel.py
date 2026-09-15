@@ -87,6 +87,7 @@ def _lane_command(
 def merge_complete_lanes(
     corpus: dict[str, Any], lane_root: Path, *, transcript_path: Path, markdown_path: Path, trace_path: Path, plans_path: Path,
     scenario_ids: set[str] | None = None,
+    completion_driven: bool = False,
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]]]:
     transcript: list[dict[str, Any]] = []
     trace: list[dict[str, Any]] = []
@@ -99,7 +100,21 @@ def merge_complete_lanes(
         lane_transcript = _load_jsonl(paths["transcript"])
         lane_trace = _load_jsonl(paths["trace"])
         lane_plans = _load_jsonl(paths["plans"])
-        if len(lane_transcript) != runner.TURNS_PER_SCENARIO or len(lane_trace) != runner.TURNS_PER_SCENARIO or len(lane_plans) != 1:
+        complete = bool(
+            lane_transcript
+            and lane_transcript[-1].get("completion_candidate") is True
+        )
+        transcript_shape_ok = (
+            len(lane_transcript) >= 1
+            if completion_driven
+            else len(lane_transcript) == runner.TURNS_PER_SCENARIO
+        )
+        trace_shape_ok = (
+            len(lane_trace) == len(lane_transcript)
+            if completion_driven
+            else len(lane_trace) == runner.TURNS_PER_SCENARIO
+        )
+        if not transcript_shape_ok or not trace_shape_ok or len(lane_plans) != 1 or (completion_driven and not complete):
             incomplete.append(scenario_id)
             continue
         # Lane-local paths are implementation details.  Normalize references
@@ -237,6 +252,7 @@ def main() -> int:
         trace_path=args.trace,
         plans_path=args.plans,
         scenario_ids=scenario_ids,
+        completion_driven=args.completion_driven,
     )
     print(f"merged {len(plans)} plans / {len(transcript)} exchanges / {len(transcript) * 2} visible messages", flush=True)
     return 0
