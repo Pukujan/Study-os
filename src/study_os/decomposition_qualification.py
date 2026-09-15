@@ -68,6 +68,9 @@ class CandidateFingerprint:
     generation_prompt_hash: str
     teaching_plan_schema_version: str
     turn_trace_schema_version: str
+    decomposer_skill_version: str
+    checklist_version: str
+    evaluation_policy_version: str
     decomposer_skill_hash: str
     checklist_hash: str
     evaluation_policy_hash: str

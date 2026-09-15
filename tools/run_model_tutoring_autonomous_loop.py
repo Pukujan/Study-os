@@ -85,16 +85,23 @@ def _file_hash_or_missing(path: Path) -> str:
     return sha256_file(path)
 
 
+def _combined_file_hash(paths: Sequence[Path]) -> str:
+    """Hash the ordered contents of a versioned skill/checklist bundle."""
+
+    payload: list[dict[str, str]] = []
+    for path in paths:
+        payload.append({"path": path.as_posix(), "hash": _file_hash_or_missing(path)})
+    return sha256_text(json.dumps(payload, sort_keys=True, separators=(",", ":")))
+
+
 def current_candidate(*, model_identifier: str, code_revision: str | None = None) -> CandidateFingerprint:
     """Build the frozen identity of the currently checked-out candidate."""
 
     decomposition = DEFAULT_PROMPT_REGISTRY.get(DECOMPOSITION_PROMPT_VERSION)
     diagnosis = DEFAULT_PROMPT_REGISTRY.get(DIAGNOSIS_PROMPT_VERSION)
     generation = DEFAULT_PROMPT_REGISTRY.get(GENERATION_PROMPT_VERSION)
-    # The decomposer skill is currently embedded in the versioned prompt.  Keep
-    # a distinct identity so a future skill file changes the candidate even if
-    # the role prompt text happens to remain unchanged.
-    skill_hash = sha256_text("study-os.generic-decomposer-skill.v1")
+    skill_path = ROOT / "plugins" / "study-os-dsa-decomposer" / "skill.md"
+    checklist_path = ROOT / "plugins" / "study-os-dsa-decomposer" / "checklist.md"
     return CandidateFingerprint(
         code_revision=code_revision or _tracked_revision(),
         decomposition_prompt_version=decomposition.version,
@@ -105,9 +112,17 @@ def current_candidate(*, model_identifier: str, code_revision: str | None = None
         generation_prompt_hash=generation.prompt_hash,
         teaching_plan_schema_version=TEACHING_PLAN_SCHEMA_VERSION,
         turn_trace_schema_version=all_dsa.TRACE_SCHEMA_VERSION,
-        decomposer_skill_hash=skill_hash,
-        checklist_hash=_file_hash_or_missing(ROOT / "docs" / "ALL_DSA_MODEL_TUTORING_TDD.md"),
-        evaluation_policy_hash=_file_hash_or_missing(TOOLS / "check_model_tutoring_all_dsa.py"),
+        decomposer_skill_version="study-os-dsa-decomposer.v1",
+        checklist_version="study-os-dsa-decomposer-checklist.v1",
+        evaluation_policy_version="study-os.model-tutoring-rotating-holdout-eval.v1",
+        decomposer_skill_hash=_file_hash_or_missing(skill_path),
+        checklist_hash=_file_hash_or_missing(checklist_path),
+        evaluation_policy_hash=_combined_file_hash(
+            [
+                TOOLS / "check_model_tutoring_all_dsa.py",
+                ROOT / "docs" / "MODEL_TUTORING_ROTATING_HOLDOUT_EVAL_V1.md",
+            ]
+        ),
         model_identifier=model_identifier,
     )
 
