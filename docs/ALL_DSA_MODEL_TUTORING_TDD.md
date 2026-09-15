@@ -1,8 +1,18 @@
 # All-DSA generic model tutoring — Test Design Document
 
-Status: test plan for the generic 14-problem proof. Existing unit and pilot
-tests cover part of the foundation; the generic full-corpus runner, evaluator,
-metamorphic suite, and real acceptance execution are pending.
+Status: executed test plan for the generic 14-problem proof. Unit, controller,
+runner, acceptance, mutation-style, provenance, and structural metamorphic tests
+pass; the real isolated-lane run produced the complete 210-exchange evidence.
+
+Execution receipt: `tests/test_generic_model_tutoring.py`,
+`tests/test_model_tutoring_all_dsa_runner.py`,
+`tests/test_model_tutoring_all_dsa_acceptance.py`, and
+`tests/test_model_tutoring_prompt_evaluation.py` pass (19 focused tests). The
+real run is recorded in `artifacts/model-tutoring-all-dsa-acceptance.json` and
+the prompt receipt in `artifacts/model-tutoring-prompt-evaluation.json`.
+The “Pending” labels below are the original pre-run design checklist; completed
+items are superseded by these receipts, while live held-out model variants and
+human review remain open.
 
 ## Test principles
 
@@ -179,4 +189,3 @@ The pending generic sequence then adds:
 
 The runner and evaluation steps above are explicitly pending. No artifact or
 acceptance claim is created by this documentation-only change.
-

@@ -1,9 +1,9 @@
 # All-DSA generic model tutoring — Software Design Document
 
-Status: proposed generic architecture grounded in the current Python contracts.
-The current generic kernel is usable with a validated plan, but decomposition
-orchestration, durable full-corpus execution, generic trace schema alignment,
-and independent all-DSA evaluation remain pending.
+Status: implemented generic architecture grounded in the current Python
+contracts. Decomposition orchestration, isolated-lane durable execution,
+generic trace replay, and the independent all-DSA acceptance evaluator are now
+checked in and exercised by the 14×15 local run.
 
 ## Design boundary
 
@@ -59,6 +59,11 @@ The current v0.1 plan surface is:
 - nonempty `terminal_behavior`;
 - `assistance_ceiling` in `A0`, `A1`, `A2`; and
 - `TeachingPlanProvenance`.
+
+The implementation is exercised by the isolated-lane runner in
+`tools/run_model_tutoring_all_dsa_parallel.py`; its merged 14-plan/210-turn
+receipt is under `artifacts/model-tutoring-all-dsa-*.jsonl` and is checked by
+`tools/check_model_tutoring_all_dsa.py`.
 
 Misconception metadata, explicit plan-level progression policies, or any other
 new field requires an explicit schema version change. It must not be smuggled
@@ -238,7 +243,7 @@ The existing Contains Duplicate artifacts and pilot runner remain historical
 calibration evidence; they are not evidence that the generic all-DSA pipeline
 has completed.
 
-## Pending implementation/evaluation work
+## Remaining implementation/evaluation work
 
 - Add the generic decomposition → plan persistence → diagnosis → authorization →
   generation orchestration around the existing interfaces.
@@ -251,4 +256,3 @@ has completed.
   prompt-regression runners.
 - Execute one real 15-turn run for each problem, then the complete 210-turn
   aggregate, and manually review plans/transcripts/traces.
-

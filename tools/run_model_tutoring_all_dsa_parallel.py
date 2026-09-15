@@ -21,6 +21,7 @@ import run_model_tutoring_all_dsa as runner
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_LANE_ROOT = ROOT / "artifacts" / "model-tutoring-lanes"
+AGGREGATE_PLAN_ARTIFACT = "artifacts/model-tutoring-all-dsa-plans.jsonl"
 
 
 def _load_jsonl(path: Path) -> list[dict[str, Any]]:
@@ -97,6 +98,13 @@ def merge_complete_lanes(
         if len(lane_transcript) != runner.TURNS_PER_SCENARIO or len(lane_trace) != runner.TURNS_PER_SCENARIO or len(lane_plans) != 1:
             incomplete.append(scenario_id)
             continue
+        # Lane-local paths are implementation details.  Normalize references
+        # in the merged evidence so reviewers can resolve every record from the
+        # committed aggregate plan artifact without the private lane tree.
+        for row in (*lane_transcript, *lane_trace, *lane_plans):
+            reference = row.get("plan_payload_reference")
+            if isinstance(reference, dict):
+                reference["artifact"] = AGGREGATE_PLAN_ARTIFACT
         transcript.extend(lane_transcript)
         trace.extend(lane_trace)
         plans.extend(lane_plans)

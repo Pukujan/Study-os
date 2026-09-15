@@ -1,8 +1,25 @@
 # All-DSA model tutoring execution handoff
 
-Status: **PRIMARY execution authority for the next model-tutoring phase.**
+Status: **PRIMARY execution authority for the model-tutoring phase.** The
+generic 14-problem run is complete on the current branch; the evidence paths
+below are the durable handoff for review and future prompt variants.
 
 This supersedes the one-problem-only execution scope in `docs/MODEL_TUTORING_PILOT_HANDOFF.md`. The Contains Duplicate work remains useful calibration evidence, but the next proof is the entire 14-problem DSA corpus in one generic model/schema path.
+
+## Completed evidence (2026-09-14)
+
+The isolated local-Luna lane runner produced and merged:
+
+- `artifacts/model-tutoring-all-dsa-plans.jsonl` — 14 model-generated plans;
+- `artifacts/model-tutoring-all-dsa-transcript.jsonl` and `.md` — 210 exchanges / 420 visible messages;
+- `artifacts/model-tutoring-all-dsa-trace.jsonl` — one generic decision trace per exchange;
+- `artifacts/model-tutoring-all-dsa-acceptance.json` — acceptance `passed`, zero structural failures;
+- `artifacts/model-tutoring-prompt-evaluation.json` — immutable prompt/provenance and structural metamorphic receipt.
+
+The aggregate calibration agreement (75.5%) is diagnostic only: generated
+plans may choose a different valid concept order or wording than fixed corpus
+stage labels. The deterministic plan/controller invariants are the acceptance
+authority. Live held-out model variants and human manual review remain open.
 
 ## Product objective
 

@@ -1,9 +1,9 @@
 # All-DSA generic model tutoring — Product Design Document
 
-Status: focused product/design slice for the next proof. The generic plan and
-controller foundation exists; the full runner, full-corpus evaluator, and real
-14×15 acceptance run are pending. This document does not claim that the
-architecture is proven.
+Status: focused product/design slice with the generic runner and acceptance
+evidence now complete. The real local Luna run produced 14 plans, 210 exchanges,
+and 420 learner-visible messages; the aggregate gate passed. Manual semantic
+review and live held-out prompt variants remain separate follow-up work.
 
 ## Product question
 
@@ -140,16 +140,15 @@ The following is the product exit evidence, not current repository status:
 
 | Evidence | Acceptance condition | Status in this slice |
 | --- | --- | --- |
-| Plan contract | Fourteen model-generated plans load through the generic `TeachingPlan` contract and retain immutable, source-matched provenance. | Foundation exists; full corpus generation/persistence pending. |
-| Per-turn control | Each of 210 turns has a generic authorization, evidence-bound outcome, bounded operation, and versioned trace. | Generic controller exists; full runner and durable capture pending. |
-| Visible behavior | Every problem has exactly fifteen exchanges, nonempty learner-visible messages, required representations, no internal leakage, no premature full solution, and correct terminal behavior. | Contains Duplicate pilot checker only; all-DSA evaluator pending. |
-| Generic path | Every scenario uses the same model/schema/controller path; no learner-visible `needs_compilation`; no new per-problem lesson/controller. | Pending full-corpus run and review. |
-| Prompt evaluation | Candidate prompt versions are compared across all fourteen problems plus paraphrase/numeric/equivalent variants, with non-regression by problem. | Pending. |
-| Negative controls | Differential, metamorphic, property/stateful, mutation, and provenance tests fail when authority boundaries are removed. | Partial pilot tests exist; generic full matrix pending. |
-| Real acceptance | A real local Luna student ↔ Study OS Luna teacher run passes all fourteen problems individually: 14×15 = 210 exchanges / 420 visible messages. | Pending. |
-| Manual review | Final transcripts, plans, traces, and acceptance report receive manual review for semantic drift and data-boundary violations. | Pending. |
+| Plan contract | Fourteen model-generated plans load through the generic `TeachingPlan` contract and retain immutable, source-matched provenance. | Passed in `artifacts/model-tutoring-all-dsa-acceptance.json`. |
+| Per-turn control | Each of 210 turns has a generic authorization, evidence-bound outcome, bounded operation, and versioned trace. | Passed: 210 traces replay through the controller. |
+| Visible behavior | Every problem has exactly fifteen exchanges, nonempty learner-visible messages, required representations, no internal leakage, no premature full solution, and correct terminal behavior. | Generic gate passed; calibration agreement is reported diagnostically. |
+| Generic path | Every scenario uses the same model/schema/controller path; no learner-visible `needs_compilation`; no new per-problem lesson/controller. | Passed by plan/trace/transcript provenance and leakage checks. |
+| Prompt evaluation | Candidate prompt versions are compared across all fourteen problems plus paraphrase/numeric/equivalent variants, with non-regression by problem. | Registry/provenance and structural metamorphic receipt passed; live held-out model variants remain pending. |
+| Negative controls | Differential, metamorphic, property/stateful, mutation, and provenance tests fail when authority boundaries are removed. | Generic TDD/mutation/metamorphic tests pass. |
+| Real acceptance | A real local Luna student ↔ Study OS Luna teacher run passes all fourteen problems individually: 14×15 = 210 exchanges / 420 visible messages. | Passed; 14 isolated lanes merged into the aggregate artifacts. |
+| Manual review | Final transcripts, plans, traces, and acceptance report receive manual review for semantic drift and data-boundary violations. | Pending human review; artifacts are ready. |
 
 Until all rows are complete, PR #77 remains draft and the architecture is not
 called proven. A green unit suite or a green Contains Duplicate pilot is useful
 regression evidence, but is not the all-DSA product proof.
-

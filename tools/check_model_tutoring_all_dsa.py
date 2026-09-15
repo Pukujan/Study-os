@@ -230,6 +230,8 @@ def evaluate(
                         teacher = row.get("teacher_message")
                         if not isinstance(learner, str) or not learner.strip() or not isinstance(teacher, str) or not teacher.strip():
                             raise ValueError("learner and teacher messages must be non-empty")
+                        if row.get("title") != scenario.get("title") or row.get("problem") != scenario.get("problem"):
+                            raise ValueError("transcript source title/problem mismatch")
                         diagnosis = ModelDiagnosis.from_payload(row.get("model_diagnosis", {}))
                         assessment = LearnerAssessment.from_payload(
                             row.get("model_assessment", {}), learner_message=learner
@@ -265,7 +267,8 @@ def evaluate(
                             raise ValueError("trace controller_state_after mismatch")
                         if row.get("plan_provenance") != dict(plan.to_payload()["provenance"]):
                             raise ValueError("transcript plan provenance mismatch")
-                        if row.get("plan_payload_reference", {}).get("scenario_id") != scenario_id:
+                        reference = row.get("plan_payload_reference")
+                        if not isinstance(reference, Mapping) or reference.get("scenario_id") != scenario_id:
                             raise ValueError("transcript plan reference mismatch")
                         leaked = [marker for marker in _INTERNAL_MARKERS if marker in teacher.casefold()]
                         if leaked:
@@ -284,8 +287,14 @@ def evaluate(
         })
     expected_scenarios = {str(item["id"]) for item in selected}
     observed_scenarios = {str(row.get("scenario_id")) for row in transcript_rows}
+    observed_trace_scenarios = {str(row.get("scenario_id")) for row in trace_rows}
+    observed_plan_scenarios = {str(row.get("scenario_id")) for row in plan_rows}
     if not allow_short_run and observed_scenarios != expected_scenarios:
         failures.append(_failure("SCENARIO_SET", None, None, f"observed {sorted(observed_scenarios)} != expected {sorted(expected_scenarios)}"))
+    if not allow_short_run and observed_trace_scenarios != expected_scenarios:
+        failures.append(_failure("TRACE_SCENARIO_SET", None, None, f"observed {sorted(observed_trace_scenarios)} != expected {sorted(expected_scenarios)}"))
+    if not allow_short_run and observed_plan_scenarios != expected_scenarios:
+        failures.append(_failure("PLAN_SCENARIO_SET", None, None, f"observed {sorted(observed_plan_scenarios)} != expected {sorted(expected_scenarios)}"))
     expected_exchanges = sum(len(item.get("turns", [])) for item in selected)
     if not allow_short_run and total_visible != expected_exchanges * 2:
         failures.append(_failure("VISIBLE_COUNT", None, None, f"expected {expected_exchanges * 2}, found {total_visible}"))
