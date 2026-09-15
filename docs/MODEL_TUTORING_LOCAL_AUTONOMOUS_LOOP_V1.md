@@ -23,7 +23,11 @@ Historical 14×15 artifacts are regression/calibration evidence, not the current
 
 The architecture/policy is ready to implement locally, but the current PR head is **not yet ready for an expensive measured tutoring run**.
 
-Known preflight work includes the current Pyright errors in generic model-tutoring code plus the vNext completion/vocabulary/rotation/holdout orchestration that still needs implementation.
+The Pyright baseline for `src/study_os` is now green. The bounded candidate
+ledger, seeded public rotation, fingerprint freeze, and resumable orchestration
+are implemented in `tools/run_model_tutoring_autonomous_loop.py`. Remaining
+preflight work before an expensive measured run is the completion-driven
+vNext semantic/vocabulary path and the isolated hidden-holdout evaluator.
 
 Do not spend model inference until the engineering baseline is green.
 
