@@ -1,0 +1,40 @@
+{
+  "schema_version": "study-os.model-tutoring-test-evidence.v0.1",
+  "focused_generic_tests": {
+    "command": "python -m pytest -q tests/test_generic_model_tutoring.py tests/test_model_tutoring_all_dsa_runner.py tests/test_model_tutoring_all_dsa_acceptance.py tests/test_model_tutoring_prompt_evaluation.py",
+    "passed": 19,
+    "failed": 0
+  },
+  "repository_tests_excluding_untracked_mutmut_and_preexisting_timing_flake": {
+    "command": "python -m pytest -q tests --ignore=mutants --ignore=tests/test_engineering_stateful_runtime.py",
+    "passed": 431,
+    "skipped": 1,
+    "failed": 0
+  },
+  "repository_test_note": "A broader pytest tests collection also ran 433 tests and 1 skipped, but the existing Hypothesis test_engineering_stateful_runtime exceeded its 200 ms deadline once. No product code in this pilot was implicated.",
+  "acceptance": {
+    "command": "python tools/check_model_tutoring_all_dsa.py --report artifacts/model-tutoring-all-dsa-acceptance.json",
+    "status": "passed",
+    "scenarios": 14,
+    "exchanges": 210,
+    "visible_messages": 420,
+    "fatal_failures": 0
+  },
+  "prompt_evaluation": {
+    "command": "python tools/evaluate_model_tutoring_prompts.py --report artifacts/model-tutoring-prompt-evaluation.json",
+    "status": "passed",
+    "structural_metamorphic_cases": 14,
+    "live_held_out_variants_executed": false
+  },
+  "differential": {
+    "source": "datasets/dsa-conversation-replay.v0.1.json",
+    "checks": 420,
+    "hits": 317,
+    "agreement": 0.7547619047619047,
+    "interpretation": "Diagnostic agreement with fixed stage wording; generated plan/controller invariants are the acceptance authority."
+  },
+  "negative_controls": {
+    "mutation_style_tests": "passed: fabricated evidence, prose-only/missing-chart response, state advancement drift, forbidden alias, and trace drift are rejected",
+    "full_mutmut_execution": "not run in this Windows lane; existing mutmut workspace is untracked and requires WSL"
+  }
+}
