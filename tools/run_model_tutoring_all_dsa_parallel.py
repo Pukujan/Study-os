@@ -79,17 +79,21 @@ def _lane_command(
     ]
     if args.fresh:
         command.append("--fresh")
+    if getattr(args, "completion_driven", False):
+        command.extend(("--completion-driven", "--max-exchanges-per-problem", str(args.max_exchanges_per_problem)))
     return command
 
 
 def merge_complete_lanes(
-    corpus: dict[str, Any], lane_root: Path, *, transcript_path: Path, markdown_path: Path, trace_path: Path, plans_path: Path
+    corpus: dict[str, Any], lane_root: Path, *, transcript_path: Path, markdown_path: Path, trace_path: Path, plans_path: Path,
+    scenario_ids: set[str] | None = None,
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]]]:
     transcript: list[dict[str, Any]] = []
     trace: list[dict[str, Any]] = []
     plans: list[dict[str, Any]] = []
     incomplete: list[str] = []
-    for scenario in corpus["scenarios"]:
+    selected = raw.select_scenarios(corpus, scenario_ids)
+    for scenario in selected:
         scenario_id = str(scenario["id"])
         paths = _lane_paths(lane_root, scenario_id)
         lane_transcript = _load_jsonl(paths["transcript"])
@@ -110,7 +114,7 @@ def merge_complete_lanes(
         plans.extend(lane_plans)
     if incomplete:
         raise RuntimeError("cannot merge incomplete lanes: " + ", ".join(incomplete))
-    order = {str(item["id"]): index for index, item in enumerate(corpus["scenarios"])}
+    order = {str(item["id"]): index for index, item in enumerate(selected)}
     transcript.sort(key=lambda row: (order[str(row["scenario_id"])], int(row["turn_index"])))
     trace.sort(key=lambda row: (order[str(row["scenario_id"])], int(row["turn_index"])))
     plans.sort(key=lambda row: order[str(row["scenario_id"])])
@@ -130,11 +134,15 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--lane-root", type=Path, default=DEFAULT_LANE_ROOT)
     parser.add_argument("--workers", type=int, default=4)
     parser.add_argument("--fresh", action="store_true")
+    parser.add_argument("--scenario", action="append", default=[])
     parser.add_argument("--model", default=runner.DEFAULT_MODEL)
     parser.add_argument("--codex-bin", default="codex")
     parser.add_argument("--python-bin", default=sys.executable)
     parser.add_argument("--mcp-name", default=runner.DEFAULT_MCP_NAME)
     parser.add_argument("--turn-timeout-seconds", type=int, default=runner.DEFAULT_TURN_TIMEOUT_SECONDS)
+    parser.add_argument("--skip-local-setup", action="store_true")
+    parser.add_argument("--completion-driven", action="store_true")
+    parser.add_argument("--max-exchanges-per-problem", type=int, default=250)
     parser.add_argument("--transcript", type=Path, default=runner.DEFAULT_TRANSCRIPT)
     parser.add_argument("--markdown", type=Path, default=runner.DEFAULT_MARKDOWN)
     parser.add_argument("--trace", type=Path, default=runner.DEFAULT_TRACE)
@@ -149,11 +157,13 @@ def main() -> int:
     corpus = raw.load_corpus(args.corpus)
     # Register the shared local MCP once before creating isolated actors.  The
     # lane processes skip setup so they cannot race while editing Codex config.
-    runner.local.ensure_codex_available(args.codex_bin)
-    runner.local.ensure_local_runtime(args.python_bin)
-    runner.local.configure_local_study_os_mcp(args.codex_bin, args.python_bin, args.mcp_name)
+    if not args.skip_local_setup:
+        runner.local.ensure_codex_available(args.codex_bin)
+        runner.local.ensure_local_runtime(args.python_bin)
+        runner.local.configure_local_study_os_mcp(args.codex_bin, args.python_bin, args.mcp_name)
     args.lane_root.mkdir(parents=True, exist_ok=True)
-    scenarios = list(corpus["scenarios"])
+    scenario_ids = set(args.scenario) or None
+    scenarios = raw.select_scenarios(corpus, scenario_ids)
     pending: list[tuple[str, dict[str, Path], subprocess.Popen[Any]]] = []
     completed: dict[str, int] = {}
     next_index = 0
@@ -207,6 +217,7 @@ def main() -> int:
         markdown_path=args.markdown,
         trace_path=args.trace,
         plans_path=args.plans,
+        scenario_ids=scenario_ids,
     )
     print(f"merged {len(plans)} plans / {len(transcript)} exchanges / {len(transcript) * 2} visible messages", flush=True)
     return 0

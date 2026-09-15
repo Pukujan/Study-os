@@ -34,9 +34,11 @@ from study_os.decomposition_qualification import (  # noqa: E402
     CandidateFingerprint,
     QualificationBatch,
     QualificationLedger,
+    STATUS_NOT_STARTED,
     STATUS_NOT_YET_QUALIFIED,
     STATUS_PUBLIC_EPOCH_PASSED,
     STATUS_QUALIFIED,
+    STATUS_RUNNING,
     read_ledger,
     sha256_file,
     sha256_text,
@@ -175,7 +177,9 @@ def execute_public_batch(
     paths["directory"].mkdir(parents=True, exist_ok=True)
     command = [
         args.python_bin,
-        str(TOOLS / "run_model_tutoring_all_dsa.py"),
+        str(TOOLS / ("run_model_tutoring_all_dsa_parallel.py" if getattr(args, "isolated_lanes", True) else "run_model_tutoring_all_dsa.py")),
+        "--corpus",
+        str(args.corpus),
         "--allow-short-run",
         "--model",
         args.model,
@@ -187,17 +191,17 @@ def execute_public_batch(
         args.mcp_name,
         "--turn-timeout-seconds",
         str(args.turn_timeout_seconds),
-        "--transcript",
-        str(paths["transcript"]),
-        "--markdown",
-        str(paths["markdown"]),
-        "--trace",
-        str(paths["trace"]),
-        "--plans",
-        str(paths["plans"]),
     ]
     for scenario_id in batch.scenario_ids:
         command.extend(("--scenario", scenario_id))
+    if getattr(args, "isolated_lanes", True):
+        command.extend(("--lane-root", str(paths["directory"] / "lanes"), "--workers", str(min(args.workers, len(batch.scenario_ids)))))
+    command.extend((
+        "--transcript", str(paths["transcript"]),
+        "--markdown", str(paths["markdown"]),
+        "--trace", str(paths["trace"]),
+        "--plans", str(paths["plans"]),
+    ))
     if args.skip_local_setup:
         command.append("--skip-local-setup")
     if args.fresh_batch:
@@ -318,6 +322,10 @@ def run_qualification(
     write_ledger(state_path, ledger)
     if ledger.status == STATUS_QUALIFIED:
         return ledger
+    if ledger.status in {STATUS_NOT_STARTED, STATUS_NOT_YET_QUALIFIED}:
+        ledger.status = STATUS_RUNNING
+        ledger._event("started", epoch=ledger.epoch)
+        write_ledger(state_path, ledger)
     if args.dry_run or getattr(args, "preflight_only", False):
         ledger.status = STATUS_NOT_YET_QUALIFIED
         ledger._event("preflight_only" if getattr(args, "preflight_only", False) else "dry_run", next_public_batch=ledger.next_public_batch)
@@ -424,6 +432,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--promotion-holdout", action="store_true", help="request the configured hidden promotion command after public coverage")
     parser.add_argument("--skip-local-setup", action="store_true")
     parser.add_argument("--fresh-batch", action="store_true", help="discard each batch's persisted prefix before running")
+    parser.add_argument("--workers", type=int, default=4, help="parallel isolated lanes per public batch")
+    parser.add_argument("--sequential", dest="isolated_lanes", action="store_false", help="development-only sequential actor path")
+    parser.set_defaults(isolated_lanes=True)
     completion = parser.add_mutually_exclusive_group()
     completion.add_argument(
         "--completion-driven", dest="completion_driven", action="store_true", default=True,
