@@ -169,7 +169,7 @@ class LearnerAssessment:
         if not isinstance(learner_message, str) or not learner_message.strip():
             raise ModelTutoringError("learner_message is required for evidence binding")
         assessment = cls(
-            learner_outcome=payload.get("learner_outcome"),
+            learner_outcome=_require_text(payload.get("learner_outcome"), "learner_outcome"),
             evidence_quote=payload.get("evidence_quote", ""),
             rationale=payload.get("rationale", ""),
         )

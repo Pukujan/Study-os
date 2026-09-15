@@ -276,9 +276,10 @@ class TeachingPlanProvenance:
             "run_id",
             "source_problem_id",
         )
-        values = {name: getattr(provenance, name, None) for name in required}
-        if any(value is None for value in values.values()):
-            raise TeachingPlanValidationError("invalid prompt provenance object")
+        values = {
+            name: _text(getattr(provenance, name, None), f"provenance.{name}")
+            for name in required
+        }
         return cls(**values)
 
 
