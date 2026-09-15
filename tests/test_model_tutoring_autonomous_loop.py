@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -64,6 +65,49 @@ class QualificationStateTests(unittest.TestCase):
         self.assertEqual(ledger.next_public_batch, 0)
         self.assertEqual(ledger.public_batches, [])
         self.assertEqual(ledger.candidate_count, 2)
+
+    def test_candidate_bound_stops_before_executor_calls(self) -> None:
+        ledger = QualificationLedger.new(
+            goal="decomposition-reliability-qualified",
+            public_scenario_ids=("two-sum-dictionary",),
+            hidden_scenario_ids=(),
+            candidate=_candidate("stale"),
+            batch_size=1,
+            max_candidates=1,
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            state = Path(directory) / "ledger.json"
+            corpus = Path(directory) / "corpus.json"
+            corpus.write_text(
+                json.dumps({"scenarios": [{"id": "two-sum-dictionary"}]}),
+                encoding="utf-8",
+            )
+            write_ledger(state, ledger)
+            args = build_parser().parse_args(
+                [
+                    "--public-dataset",
+                    str(corpus),
+                    "--state",
+                    str(state),
+                    "--resume",
+                    "--skip-local-setup",
+                    "--one-public-iteration",
+                    "--batch-size",
+                    "1",
+                    "--max-candidates",
+                    "1",
+                ]
+            )
+            calls: list[object] = []
+
+            def executor(*_args: object) -> BatchExecution:
+                calls.append(object())
+                return BatchExecution(False, "unexpected", 1, {})
+
+            result = run_qualification(args, executor=executor)
+        self.assertEqual(result.status, STATUS_NOT_YET_QUALIFIED)
+        self.assertEqual(result.model_calls, 0)
+        self.assertEqual(calls, [])
 
     def test_batch_order_and_failed_batch_are_fail_closed(self) -> None:
         ledger = QualificationLedger.new(

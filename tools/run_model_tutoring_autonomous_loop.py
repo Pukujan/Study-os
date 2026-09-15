@@ -304,7 +304,13 @@ def run_qualification(
     if state_path.exists() and args.resume and not args.fresh:
         ledger = read_ledger(state_path)
         _validate_resume_config(ledger, args, public_ids)
-        ledger.reconcile_candidate(candidate)
+        changed = ledger.reconcile_candidate(candidate)
+        # ``start_new_candidate`` fails closed when the configured candidate
+        # bound is exhausted. Do not immediately overwrite that terminal
+        # checkpoint with RUNNING and spend calls on the stale candidate.
+        if changed and ledger.candidate.digest != candidate.digest:
+            write_ledger(state_path, ledger)
+            return ledger
     elif state_path.exists() and not args.fresh:
         raise ValueError(f"checkpoint exists at {state_path}; pass --resume or --fresh")
     else:
