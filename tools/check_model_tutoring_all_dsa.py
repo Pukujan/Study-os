@@ -175,6 +175,7 @@ def evaluate(
     corpus: Mapping[str, Any], transcript_rows: Sequence[Mapping[str, Any]],
     trace_rows: Sequence[Mapping[str, Any]], plan_rows: Sequence[Mapping[str, Any]],
     *, scenario_ids: set[str] | None = None, allow_short_run: bool = False,
+    completion_driven: bool = False, max_exchanges_per_problem: int = 250,
 ) -> dict[str, Any]:
     selected = _selected(corpus, scenario_ids)
     failures: list[dict[str, Any]] = []
@@ -193,14 +194,30 @@ def evaluate(
             [dict(row) for row in trace_rows if str(row.get("scenario_id")) == scenario_id],
             key=lambda row: int(row.get("turn_index", -1)),
         )
-        if len(rows) != expected_count:
+        if completion_driven:
+            if not rows:
+                failures.append(_failure("TURN_COUNT", scenario_id, None, "completion-driven scenario has no exchanges"))
+            elif len(rows) > max_exchanges_per_problem:
+                failures.append(_failure("EXCHANGE_BUDGET", scenario_id, None, f"found {len(rows)} > {max_exchanges_per_problem}"))
+        elif len(rows) != expected_count:
             failures.append(_failure("TURN_COUNT", scenario_id, None, f"expected {expected_count}, found {len(rows)}"))
         if len(traces) != len(rows):
             failures.append(_failure("TRACE_COUNT", scenario_id, None, f"expected {len(rows)}, found {len(traces)}"))
         total_visible += len(rows) * 2
-        plan = _plan_for(scenario, plan_rows, failures)
         scenario_failure_start = len(failures)
+        plan = _plan_for(scenario, plan_rows, failures)
         if plan is not None:
+            if completion_driven and rows:
+                observed_concepts = {
+                    int(row.get("controller_state_before", {}).get("concept_index", -1))
+                    for row in rows
+                    if isinstance(row.get("controller_state_before"), Mapping)
+                }
+                required_concepts = set(range(len(plan.concepts)))
+                if not rows[-1].get("completion_candidate"):
+                    failures.append(_failure("INCOMPLETE_PLAN", scenario_id, len(rows) - 1, "final evidence marker is missing"))
+                if observed_concepts != required_concepts:
+                    failures.append(_failure("INCOMPLETE_PLAN", scenario_id, None, f"observed concept indexes {sorted(observed_concepts)} != {sorted(required_concepts)}"))
             try:
                 controller = GenericModelTutoringController(
                     plan,
@@ -296,7 +313,7 @@ def evaluate(
     if not allow_short_run and observed_plan_scenarios != expected_scenarios:
         failures.append(_failure("PLAN_SCENARIO_SET", None, None, f"observed {sorted(observed_plan_scenarios)} != expected {sorted(expected_scenarios)}"))
     expected_exchanges = sum(len(item.get("turns", [])) for item in selected)
-    if not allow_short_run and total_visible != expected_exchanges * 2:
+    if not completion_driven and not allow_short_run and total_visible != expected_exchanges * 2:
         failures.append(_failure("VISIBLE_COUNT", None, None, f"expected {expected_exchanges * 2}, found {total_visible}"))
     aggregate_checks = sum(item["calibration"]["checks"] for item in scenario_reports)
     aggregate_hits = sum(item["calibration"]["hits"] for item in scenario_reports)
@@ -308,6 +325,8 @@ def evaluate(
         "visible_message_count": total_visible,
         "expected_exchange_count": expected_exchanges,
         "expected_visible_message_count": expected_exchanges * 2,
+        "completion_driven": completion_driven,
+        "max_exchanges_per_problem": max_exchanges_per_problem if completion_driven else None,
         "calibration": {
             "checks": aggregate_checks,
             "hits": aggregate_hits,
@@ -328,6 +347,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--report", type=Path, default=DEFAULT_REPORT)
     parser.add_argument("--scenario", action="append", default=[])
     parser.add_argument("--allow-short-run", action="store_true")
+    parser.add_argument("--completion-driven", action="store_true")
+    parser.add_argument("--max-exchanges-per-problem", type=int, default=250)
     return parser
 
 
@@ -341,6 +362,8 @@ def main() -> int:
         load_jsonl(args.plans),
         scenario_ids=set(args.scenario) or None,
         allow_short_run=args.allow_short_run,
+        completion_driven=args.completion_driven,
+        max_exchanges_per_problem=args.max_exchanges_per_problem,
     )
     args.report.parent.mkdir(parents=True, exist_ok=True)
     args.report.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")

@@ -445,6 +445,21 @@ class Authorization:
     trace: dict[str, Any]
     next_state: LearnerState
 
+    @property
+    def completion_candidate(self) -> bool:
+        """Whether this turn demonstrated the plan's final concept.
+
+        The generic controller has no mastery flag and therefore never marks a
+        learner complete.  A completion-driven runner may use this signal only
+        as a candidate terminal event, after independently validating terminal
+        and integration evidence.
+        """
+
+        return (
+            self.assessment.learner_outcome == "demonstrated"
+            and not self.contract.advance_allowed
+        )
+
 
 def _plan_provenance_payload(provenance: TeachingPlanProvenance) -> dict[str, str]:
     return {

@@ -127,6 +127,25 @@ class AllDSAAcceptanceTests(unittest.TestCase):
         numeric["problem"] = "Determine whether input [4, 7, 4] has the required property."
         self.assertEqual(runner.build_decomposer_payload(numeric)["declared_variable_names"], SCENARIO["variables"])
 
+    def test_completion_driven_gate_requires_final_evidence_marker(self) -> None:
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            transcript, trace, plans = make_artifacts(root)
+            report = checker.evaluate(
+                {"scenarios": [SCENARIO]}, transcript, trace, plans,
+                scenario_ids={SCENARIO["id"]}, allow_short_run=True,
+                completion_driven=True, max_exchanges_per_problem=10,
+            )
+            self.assertEqual(report["status"], "passed")
+            transcript[-1]["completion_candidate"] = False
+            report = checker.evaluate(
+                {"scenarios": [SCENARIO]}, transcript, trace, plans,
+                scenario_ids={SCENARIO["id"]}, allow_short_run=True,
+                completion_driven=True, max_exchanges_per_problem=10,
+            )
+            self.assertEqual(report["status"], "failed")
+            self.assertTrue(any(item["category"] == "INCOMPLETE_PLAN" for item in report["failures"]))
+
 
 if __name__ == "__main__":
     unittest.main()

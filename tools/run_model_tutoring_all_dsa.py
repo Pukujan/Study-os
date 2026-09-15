@@ -881,6 +881,7 @@ def _transcript_record(
         "learner_signal": learner_signal,
         "learner_message": learner_message,
         "teacher_message": teacher_message,
+        "completion_candidate": authorization.completion_candidate,
         "model_diagnosis": asdict(authorization.diagnosis),
         "model_assessment": asdict(authorization.assessment),
         "controller_state_before": _state_payload(
@@ -909,6 +910,8 @@ def run_all_dsa(
     plans_path: Path = DEFAULT_PLANS,
     fresh: bool = False,
     allow_short_run: bool = False,
+    completion_driven: bool = False,
+    max_exchanges_per_problem: int = 250,
     run_id: str | None = None,
     prompt_registry: PromptRegistry = DEFAULT_PROMPT_REGISTRY,
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]]]:
@@ -916,6 +919,9 @@ def run_all_dsa(
 
     if turns_per_scenario < 1:
         raise ValueError("turns_per_scenario must be >= 1")
+    if max_exchanges_per_problem < 1:
+        raise ValueError("max_exchanges_per_problem must be >= 1")
+    effective_turns = max_exchanges_per_problem if completion_driven else turns_per_scenario
     selected = raw.select_scenarios(corpus, scenario_ids)
     if not selected:
         raise ValueError("corpus selection is empty")
@@ -925,8 +931,8 @@ def run_all_dsa(
                 "default all-DSA run requires all corpus scenarios; use --allow-short-run "
                 "for a selected development run"
             )
-        if any(len(item.get("turns", [])) != TURNS_PER_SCENARIO for item in selected):
-            raise RuntimeError("default all-DSA run requires 15 learner turns per scenario")
+            if not completion_driven and any(len(item.get("turns", [])) != TURNS_PER_SCENARIO for item in selected):
+                raise RuntimeError("default all-DSA run requires 15 learner turns per scenario")
 
     transcript_path = Path(transcript_path)
     markdown_path = Path(markdown_path)
@@ -999,7 +1005,13 @@ def run_all_dsa(
         trace.extend(previous_trace)
         conversation = raw._conversation_from_records(previous_transcript)
 
-        for turn_index in range(len(previous_transcript), turns_per_scenario):
+        # A completion-driven resume does not spend more model calls after a
+        # persisted terminal evidence marker.  Fixed-turn runs intentionally do
+        # not consult this field so historical evidence remains unchanged.
+        if completion_driven and previous_transcript and previous_transcript[-1].get("completion_candidate") is True:
+            continue
+
+        for turn_index in range(len(previous_transcript), effective_turns):
             student_payload = raw.build_student_payload(
                 scenario,
                 turn_index=turn_index,
@@ -1075,8 +1087,24 @@ def run_all_dsa(
                 f"concept={authorization.contract.active_concept_id}; "
                 f"outcome={authorization.assessment.learner_outcome}"
             )
+            if completion_driven and authorization.completion_candidate:
+                break
 
     if not allow_short_run:
+        if completion_driven:
+            incomplete = [
+                str(item["id"])
+                for item in selected
+                if not any(
+                    row.get("completion_candidate") is True
+                    for row in _scenario_rows(transcript, str(item["id"]))
+                )
+            ]
+            if incomplete:
+                raise RuntimeError(
+                    "completion-driven run did not complete scenarios: " + ", ".join(incomplete)
+                )
+            return transcript, trace, plans
         counts = {
             scenario_id: len(_scenario_rows(transcript, scenario_id))
             for scenario_id in (str(item["id"]) for item in selected)
@@ -1107,6 +1135,17 @@ def build_parser() -> argparse.ArgumentParser:
         "--allow-short-run",
         action="store_true",
         help="development only: allow selected or incomplete corpus runs",
+    )
+    parser.add_argument(
+        "--completion-driven",
+        action="store_true",
+        help="stop each scenario only after final concept evidence; turn count is an anti-loop ceiling",
+    )
+    parser.add_argument(
+        "--max-exchanges-per-problem",
+        type=int,
+        default=250,
+        help="completion-driven anti-loop ceiling per problem",
     )
     parser.add_argument("--transcript", type=Path, default=DEFAULT_TRANSCRIPT)
     parser.add_argument("--markdown", type=Path, default=DEFAULT_MARKDOWN)
@@ -1158,6 +1197,8 @@ def main() -> int:
             plans_path=args.plans,
             fresh=args.fresh,
             allow_short_run=args.allow_short_run,
+            completion_driven=args.completion_driven,
+            max_exchanges_per_problem=args.max_exchanges_per_problem,
         )
     finally:
         student.close()

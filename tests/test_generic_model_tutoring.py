@@ -196,6 +196,15 @@ class GenericModelTutoringTests(unittest.TestCase):
         )
         self.assertEqual(third.contract.active_concept_id, "track-state")
         self.assertEqual(third.next_state.concept_index, 2)
+        controller.commit(third)
+        final_message = "The final state transition completes the scan and handles the terminal case."
+        fourth = controller.authorize(
+            diagnosis("A0"),
+            LearnerAssessment("demonstrated", final_message),
+            learner_message=final_message,
+        )
+        self.assertTrue(fourth.completion_candidate)
+        self.assertFalse(fourth.contract.advance_allowed)
 
     def test_fabricated_or_non_verbatim_evidence_is_rejected(self) -> None:
         learner_message = "I can explain the pattern from the input values."
