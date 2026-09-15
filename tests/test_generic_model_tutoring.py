@@ -382,7 +382,7 @@ class GenericModelTutoringTests(unittest.TestCase):
         authorization = controller.authorize(
             diagnosis(), LearnerAssessment("not_yet"), learner_message="Still unsure."
         )
-        response = "Visual:\n\n```text\nitems: [a, b]\n```\n\nThe state tracks the input values."
+        response = "Visual:\n\n```text\nitems: [a, b]\ncursor: 0\ntrace: recognizing pattern\n```\n\nThe state tracks the input values."
         self.assertIsNone(validate_generated_response(response, authorization.contract))
 
 
