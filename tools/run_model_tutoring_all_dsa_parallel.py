@@ -196,6 +196,7 @@ def main() -> int:
             pending.append((scenario_id, paths, process))
             print(f"started lane {scenario_id} pid={process.pid}", flush=True)
         still_pending: list[tuple[str, dict[str, Path], subprocess.Popen[Any]]] = []
+        failed_now = False
         for scenario_id, paths, process in pending:
             code = process.poll()
             if code is None:
@@ -203,6 +204,23 @@ def main() -> int:
                 continue
             completed[scenario_id] = int(code)
             print(f"finished lane {scenario_id} exit={code}", flush=True)
+            if code != 0:
+                failed_now = True
+        if failed_now and still_pending:
+            # A batch is indivisible evidence: once one lane fails, sibling
+            # lanes cannot make the batch pass. Stop them promptly instead of
+            # spending more Luna calls on an already-invalid candidate.
+            for scenario_id, _paths, process in still_pending:
+                print(f"stopping sibling lane {scenario_id} after batch failure", flush=True)
+                process.terminate()
+            for scenario_id, _paths, process in still_pending:
+                try:
+                    process.wait(timeout=5)
+                except subprocess.TimeoutExpired:
+                    process.kill()
+                    process.wait(timeout=5)
+                completed[scenario_id] = int(process.returncode or -1)
+            still_pending = []
         pending = still_pending
         if pending:
             import time
