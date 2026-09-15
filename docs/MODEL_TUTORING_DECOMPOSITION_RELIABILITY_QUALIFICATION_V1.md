@@ -10,6 +10,11 @@ stops at explicit candidate/model-call/runtime bounds. The implementation is
 an orchestration boundary only: it does not author lesson content and it does
 not start an expensive model run during repository validation.
 
+Qualification batches use completion-driven mode by default, with the
+per-problem exchange ceiling as an anti-loop bound. The historical fixed
+15-turn behavior is available only through the explicitly named
+`--fixed-turn-development` option and is not a qualification result.
+
 This document answers one specific question that earlier orchestration documents left too implicit:
 
 > When may Local Luna stop iterating and say that strong-inference decomposition is now coming out reliably rather than merely passing one convenient batch?

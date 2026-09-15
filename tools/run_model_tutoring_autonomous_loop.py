@@ -202,7 +202,7 @@ def execute_public_batch(
         command.append("--skip-local-setup")
     if args.fresh_batch:
         command.append("--fresh")
-    if getattr(args, "completion_driven", False):
+    if getattr(args, "completion_driven", True):
         command.extend(("--completion-driven", "--max-exchanges-per-problem", str(args.max_exchanges_per_problem)))
     with paths["log"].open("a", encoding="utf-8") as log:
         run = subprocess.run(command, cwd=ROOT, stdout=log, stderr=subprocess.STDOUT)
@@ -224,7 +224,7 @@ def execute_public_batch(
     ]
     for scenario_id in batch.scenario_ids:
         check.extend(("--scenario", scenario_id))
-    if getattr(args, "completion_driven", False):
+    if getattr(args, "completion_driven", True):
         check.extend(("--completion-driven", "--max-exchanges-per-problem", str(args.max_exchanges_per_problem)))
     checked = subprocess.run(check, cwd=ROOT, capture_output=True, text=True)
     report: dict[str, Any] = {}
@@ -424,7 +424,15 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--promotion-holdout", action="store_true", help="request the configured hidden promotion command after public coverage")
     parser.add_argument("--skip-local-setup", action="store_true")
     parser.add_argument("--fresh-batch", action="store_true", help="discard each batch's persisted prefix before running")
-    parser.add_argument("--completion-driven", action="store_true", help="run selected batches until plan completion rather than 15 turns")
+    completion = parser.add_mutually_exclusive_group()
+    completion.add_argument(
+        "--completion-driven", dest="completion_driven", action="store_true", default=True,
+        help="run selected batches until plan completion (default)",
+    )
+    completion.add_argument(
+        "--fixed-turn-development", dest="completion_driven", action="store_false",
+        help="development-only historical 15-turn mode; never use for qualification",
+    )
     parser.add_argument("--max-exchanges-per-problem", type=int, default=250, help="completion-driven anti-loop ceiling")
     return parser
 

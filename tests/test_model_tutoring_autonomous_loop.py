@@ -13,6 +13,7 @@ sys.path.insert(0, str(ROOT / "tools"))
 
 from run_model_tutoring_autonomous_loop import (  # noqa: E402
     BatchExecution,
+    build_parser,
     run_qualification,
     validate_agent_boundaries,
 )
@@ -162,6 +163,12 @@ def _args(path: Path, *, dry_run: bool = False, hidden: list[str] | None = None)
 
 
 class QualificationRunnerTests(unittest.TestCase):
+    def test_qualification_defaults_to_completion_driven_mode(self) -> None:
+        args = build_parser().parse_args([])
+        self.assertTrue(args.completion_driven)
+        fixed = build_parser().parse_args(["--fixed-turn-development"])
+        self.assertFalse(fixed.completion_driven)
+
     def test_dry_run_only_checkpoints_and_makes_no_model_calls(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "ledger.json"
