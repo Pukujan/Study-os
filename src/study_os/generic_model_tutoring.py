@@ -591,7 +591,11 @@ def validate_generated_response(text: str, contract: GenerationContract) -> None
     if contract.visual_before_explanation:
         first = next((line.strip() for line in text.splitlines() if line.strip()), "")
         variable_header = any(
-            re.match(rf"^{re.escape(name)}\s*[:=]", first, flags=re.IGNORECASE)
+            re.match(
+                rf"^{re.escape(name)}(?:\s*\([^)]*\))?\s*[:=]",
+                first,
+                flags=re.IGNORECASE,
+            )
             for name in contract.allowed_variables
         )
         table_header = "|" in first
