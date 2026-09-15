@@ -602,7 +602,10 @@ def validate_generated_response(text: str, contract: GenerationContract) -> None
         # A short ``Visual:``/``Chart:`` label is valid when the following
         # lines contain the required chart. Models commonly use that label to
         # separate a learner-visible representation from prose.
-        visual_label = first.casefold().rstrip() in {"visual:", "chart:", "trace:"}
+        visual_label = re.match(
+            r"^(?:visual|chart|trace)(?:\s+[a-z0-9_-]+)?\s*[:=]$",
+            first.casefold().rstrip(),
+        ) is not None
         if (
             not first.startswith(("```", "|", "[", "index:", "nums:", "value:"))
             and not variable_header

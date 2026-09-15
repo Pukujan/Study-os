@@ -393,6 +393,14 @@ class GenericModelTutoringTests(unittest.TestCase):
         response = "items (input): [a, b]\ncursor: 0\ntrace: recognizing pattern"
         self.assertIsNone(validate_generated_response(response, authorization.contract))
 
+    def test_visual_label_may_include_descriptor(self) -> None:
+        controller = make_controller()
+        authorization = controller.authorize(
+            diagnosis(), LearnerAssessment("not_yet"), learner_message="Still unsure."
+        )
+        response = "Visual trace:\nitems: [a, b]\ncursor: 0\ntrace: recognizing pattern"
+        self.assertIsNone(validate_generated_response(response, authorization.contract))
+
 
 if __name__ == "__main__":
     unittest.main()
