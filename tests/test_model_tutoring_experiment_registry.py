@@ -24,7 +24,7 @@ class ModelTutoringExperimentRegistryTests(unittest.TestCase):
         self.assertIn("experiments/model-tutoring/manifest.json", agents)
         self.assertIn("experiments/model-tutoring/HISTORY.md", agents)
 
-    def test_registry_ids_are_unique_and_active_proposal_resolves(self) -> None:
+    def test_registry_ids_are_unique_and_active_experiment_resolves(self) -> None:
         registry = self._registry()
         self.assertEqual(
             registry.get("schema_version"),
@@ -43,11 +43,15 @@ class ModelTutoringExperimentRegistryTests(unittest.TestCase):
         matching = [item for item in experiments if isinstance(item, dict) and item.get("id") == active_id]
         self.assertEqual(len(matching), 1)
         active = matching[0]
-        self.assertEqual(active.get("status"), "proposed")
-        proposal = active.get("proposal")
-        self.assertIsInstance(proposal, str)
-        assert isinstance(proposal, str)
-        self.assertTrue((ROOT / proposal).is_file(), f"active proposal does not resolve: {proposal}")
+        self.assertEqual(active.get("status"), "implemented_unrun")
+
+        for field in ("proposal", "runner", "calibration_input"):
+            value = active.get(field)
+            self.assertIsInstance(value, str)
+            assert isinstance(value, str)
+            self.assertTrue((ROOT / value).is_file(), f"active {field} does not resolve: {value}")
+
+        self.assertEqual(active.get("default_command"), "python tools/run_sol_calibration_transfer.py")
 
     def test_history_statuses_avoid_false_deterministic_failure_claim(self) -> None:
         registry = self._registry()
