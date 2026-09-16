@@ -1,0 +1,77 @@
+{
+  "schema_version": "study-os.model-tutoring-experiment-registry.v0.1",
+  "active_experiment_id": "MT-E001",
+  "history_path": "experiments/model-tutoring/HISTORY.md",
+  "calibration_registry": "calibration/manifest.json",
+  "tracker_issue": 63,
+  "active_pr": 77,
+  "experiments": [
+    {
+      "id": "MT-H001",
+      "title": "Learner-calibrated Sliding Window trajectory",
+      "status": "supported",
+      "kind": "historical_reference",
+      "summary": "Manual learner-driven calibration produced the strongest known decomposition/control reference and is preserved as raw evidence plus partial reviewed golden fixtures.",
+      "evidence": [
+        "sessions/2026-09-04/sliding-window-pedagogy-calibration/manifest.json",
+        "docs/CALIBRATION_INDEX.md"
+      ]
+    },
+    {
+      "id": "MT-H002",
+      "title": "Deterministic learning control and prerequisite remediation",
+      "status": "supported",
+      "kind": "architecture_foundation",
+      "summary": "Deterministic control remains the authority boundary for progression and evidence. Dogfood showed that deterministic structure alone does not guarantee good learner-facing decomposition or representation, so it is retained rather than classified as a failed tutoring method.",
+      "evidence": [
+        "docs/ADR-0016-deterministic-learning-control.md",
+        "https://github.com/Pukujan/Study-os/pull/75",
+        "https://github.com/Pukujan/Study-os/issues/63"
+      ]
+    },
+    {
+      "id": "MT-H003",
+      "title": "Fixed-turn prompt-led model tutoring",
+      "status": "insufficient",
+      "kind": "historical_attempt",
+      "summary": "Prompt/model-generated tutoring could satisfy structural checks while learner-visible teaching remained semantically wrong, repetitive, or stuck. Fixed 15-turn completion was invalidated as a success criterion.",
+      "evidence": [
+        "docs/ALL_DSA_MODEL_TUTORING_HANDOFF.md",
+        "https://github.com/Pukujan/Study-os/issues/63",
+        "https://github.com/Pukujan/Study-os/pull/77"
+      ]
+    },
+    {
+      "id": "MT-H004",
+      "title": "Generic TeachingPlan plus prompt, schema, and deterministic validation",
+      "status": "insufficient",
+      "kind": "historical_attempt",
+      "summary": "The generic architecture generalized operationally across the public corpus, but manual review exposed coarse generated plans and false-positive acceptance; structural validity did not establish learner-facing quality or completion.",
+      "evidence": [
+        "docs/MODEL_TUTORING_COMPLETION_DRIVEN_VNEXT.md",
+        "https://github.com/Pukujan/Study-os/issues/63",
+        "https://github.com/Pukujan/Study-os/pull/77"
+      ]
+    },
+    {
+      "id": "MT-H005",
+      "title": "Completion-driven decomposer and reliability qualification",
+      "status": "running",
+      "kind": "current_architecture_attempt",
+      "summary": "Current PR #77 direction: fine-grained algorithm/learning graphs, completion-driven tutoring, rotating public evaluation, and hidden promotion. Not yet treated as proven learner-facing calibration.",
+      "evidence": [
+        "docs/MODEL_TUTORING_COMPLETION_DRIVEN_VNEXT.md",
+        "docs/MODEL_TUTORING_DECOMPOSITION_RELIABILITY_QUALIFICATION_V1.md",
+        "https://github.com/Pukujan/Study-os/pull/77"
+      ]
+    },
+    {
+      "id": "MT-E001",
+      "title": "Sol calibration-artifact transfer to Two Sum",
+      "status": "proposed",
+      "kind": "transfer_experiment",
+      "proposal": "experiments/model-tutoring/proposals/MT-E001-sol-calibration-transfer-two-sum.md",
+      "summary": "Distill the successful Sliding Window calibration into a durable artifact, then give only that artifact plus Two Sum to a fresh Sol teacher session and a frozen synthetic student. Review the complete rendered HTML interaction turn by turn before any Luna distillation work."
+    }
+  ]
+}
