@@ -7,6 +7,7 @@ This is the concise human-readable history behind `manifest.json`. It records th
 - **supported**: useful claim/architecture supported under the recorded conditions;
 - **insufficient**: useful partial result, but acceptance/product goal was not met;
 - **running**: active work whose result is not yet established;
+- **implemented_unrun**: the experiment harness exists, but no measured run has been reviewed/accepted yet;
 - **superseded**: replaced as the preferred execution path while historical evidence remains valid;
 - **failed**: use only when the explicit hypothesis/acceptance condition was actually contradicted or could not be met for a documented reason.
 
@@ -112,16 +113,26 @@ References:
 - `docs/MODEL_TUTORING_DECOMPOSITION_RELIABILITY_QUALIFICATION_V1.md`
 - PR #77
 
-## MT-E001 — proposed Sol calibration-artifact transfer to Two Sum
+## MT-E001 — Sol calibration-artifact transfer to Two Sum
 
-**Status: proposed.**
+**Status: implemented, not yet run/reviewed.**
 
-This is a deliberately different experiment from the existing autonomous Luna qualification loop.
+This is deliberately different from the autonomous Luna qualification loop. It tests a much narrower question:
 
-Question:
+> Can a fresh Sol tutoring session, given the frozen pedagogical calibration distilled from the successful Sliding Window session but not the raw transcript, independently teach Two Sum well against a seeded synthetic beginner whose replies vary across correct, wrong, partial, slightly misaligned, uncertain, why, smaller-step, and representation-confusion states?
 
-> Can a fresh Sol tutoring session, given a durable artifact distilled from the successful Sliding Window calibration but not the raw transcript, transfer the decomposition/pedagogical method to Two Sum and teach a frozen synthetic learner through the problem with comparable clarity?
+The purpose is to test whether the durable calibration artifact actually transfers useful teaching behavior before trying to make Luna imitate it cheaply.
 
-The purpose is to test whether we have captured reusable pedagogy before trying to make Luna imitate it cheaply.
+Implementation:
+
+- calibration input: `calibration/cases/sliding-window.subject-001.2026-09-04/transfer-calibration.v0.1.json`
+- runner: `tools/run_sol_calibration_transfer.py`
+- default command: `python tools/run_sol_calibration_transfer.py`
+- outputs: `artifacts/model-tutoring-experiments/MT-E001/run-NNN/`
+- primary review surface: self-contained `review.html`
+
+The runner does not use the production Study OS controller or the historical Two Sum stage script. Sol derives the learning path itself. The actors run from an empty temporary working directory; tool use is forbidden by the role contract and known Codex command/file/MCP/web tool events are rejected. This is not claimed as perfect filesystem isolation.
+
+A run is not evidence of success merely because Sol eventually emits completion. The complete learner-visible interaction still requires owner review in the generated HTML.
 
 See `proposals/MT-E001-sol-calibration-transfer-two-sum.md`.
