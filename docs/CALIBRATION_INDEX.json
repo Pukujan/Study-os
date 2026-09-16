@@ -1,0 +1,5 @@
+{
+  "schema_version": "study-os.calibration-discovery.v0.1",
+  "canonical_registry": "calibration/manifest.json",
+  "human_index": "docs/CALIBRATION_INDEX.md"
+}
