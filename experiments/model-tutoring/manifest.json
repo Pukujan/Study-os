@@ -68,10 +68,14 @@
     {
       "id": "MT-E001",
       "title": "Sol calibration-artifact transfer to Two Sum",
-      "status": "proposed",
+      "status": "implemented_unrun",
       "kind": "transfer_experiment",
       "proposal": "experiments/model-tutoring/proposals/MT-E001-sol-calibration-transfer-two-sum.md",
-      "summary": "Distill the successful Sliding Window calibration into a durable artifact, then give only that artifact plus Two Sum to a fresh Sol teacher session and a frozen synthetic student. Review the complete rendered HTML interaction turn by turn before any Luna distillation work."
+      "runner": "tools/run_sol_calibration_transfer.py",
+      "default_command": "python tools/run_sol_calibration_transfer.py",
+      "calibration_input": "calibration/cases/sliding-window.subject-001.2026-09-04/transfer-calibration.v0.1.json",
+      "output_root": "artifacts/model-tutoring-experiments/MT-E001/",
+      "summary": "Runnable minimal transfer test: a fresh GPT-5.6 Sol teacher receives only the frozen Sliding Window pedagogical calibration plus Two Sum and the current visible conversation; a separately pinned synthetic learner is seeded across correct, wrong, partial, slightly misaligned, uncertain, why, smaller-step, and representation-confusion response states. The run ends on Sol-declared integrated completion or the anti-loop ceiling and emits transcript JSONL plus a self-contained HTML review surface. No measured run has been accepted yet."
     }
   ]
 }
