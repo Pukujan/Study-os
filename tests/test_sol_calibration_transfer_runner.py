@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import random
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -13,6 +14,7 @@ RUNNER = ROOT / "tools" / "run_sol_calibration_transfer.py"
 spec = importlib.util.spec_from_file_location("sol_transfer", RUNNER)
 assert spec is not None and spec.loader is not None
 sol_transfer = importlib.util.module_from_spec(spec)
+sys.modules[spec.name] = sol_transfer
 spec.loader.exec_module(sol_transfer)
 
 
@@ -41,6 +43,14 @@ class SolCalibrationTransferRunnerTests(unittest.TestCase):
         self.assertIn("Do not inspect files, repositories, tools", teacher)
         self.assertIn("Do not inspect files, repositories, tools", student)
 
+    def test_known_codex_tool_events_are_rejected(self) -> None:
+        event = {
+            "type": "item.completed",
+            "item": {"type": "command_execution", "command": "pwd"},
+        }
+        with self.assertRaisesRegex(RuntimeError, "forbidden tool activity"):
+            sol_transfer.CodexSession._parse(__import__("json").dumps(event))
+
     def test_html_escapes_text_but_preserves_preformatted_content(self) -> None:
         rows = [
             {
@@ -51,9 +61,15 @@ class SolCalibrationTransferRunnerTests(unittest.TestCase):
                 "learner_message": "I think 7 is index 7?",
             }
         ]
-        meta = {"run_id": "run-001", "status": "completed", "problem": sol_transfer.PROBLEM}
+        meta = {
+            "run_id": "run-001",
+            "status": "completed",
+            "problem": sol_transfer.PROBLEM,
+        }
         rendered = sol_transfer.render_html(meta, rows, None)
-        self.assertIn("<pre>index:  0  1\nnums:  [2, 7] &lt;check&gt;</pre>", rendered)
+        self.assertIn(
+            "<pre>index:  0  1\nnums:  [2, 7] &lt;check&gt;</pre>", rendered
+        )
         self.assertNotIn("<check>", rendered)
         self.assertIn("Export TSV", rendered)
         self.assertIn("localStorage", rendered)
