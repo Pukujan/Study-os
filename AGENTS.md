@@ -13,6 +13,13 @@ Read these files before making substantive changes:
 7. `docs/HANDOFF.md`
 8. the nearest nested `AGENTS.md`, if present
 
+When a task concerns historical learner calibration, golden fixtures, transcript evidence, decomposition quality, or pedagogical-control behavior, start with:
+
+- `docs/CALIBRATION_INDEX.md` — canonical human-readable calibration discovery index;
+- `calibration/manifest.json` — machine-readable calibration registry.
+
+Do not search session trees by date first or assume a file under `golden/` is the complete source trajectory. Follow the indexed raw-evidence boundary and read order before treating derived artifacts as authoritative.
+
 ## Non-negotiable project invariants
 
 - Canonical raw learning evidence is immutable after capture.
