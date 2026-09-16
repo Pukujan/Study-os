@@ -1,0 +1,389 @@
+{
+  "schema_version": "1",
+  "artifact_type": "transfer_calibration",
+  "identity": {
+    "calibration_id": "sliding-window.subject-001.2026-09-04",
+    "artifact_name": "transfer-calibration",
+    "artifact_version": "v0.1",
+    "source_calibration_id": "sliding-window-pedagogy-calibration",
+    "source_session_date": "2026-09-04",
+    "review_status": "reviewed_against_canonical_raw_and_reviewed_derivatives",
+    "reviewed_on": "2026-09-15",
+    "scope": "Reusable learner-facing decomposition, interaction, and representation behavior.",
+    "authority": "experimental_calibration_evidence_not_runtime_authority"
+  },
+  "provenance": {
+    "source_manifest": "sessions/2026-09-04/sliding-window-pedagogy-calibration/manifest.json",
+    "canonical_raw_sources": [
+      "sessions/2026-09-04/sliding-window-pedagogy-calibration/raw/chat-visible-transcript-part01.md",
+      "sessions/2026-09-04/sliding-window-pedagogy-calibration/raw/chat-visible-transcript-part02.md",
+      "sessions/2026-09-04/sliding-window-pedagogy-calibration/raw/chat-visible-transcript-part03.md",
+      "sessions/2026-09-04/sliding-window-pedagogy-calibration/raw/chat-visible-transcript-part04.md",
+      "sessions/2026-09-04/sliding-window-pedagogy-calibration/raw/chat-visible-transcript-part05.md",
+      "sessions/2026-09-04/sliding-window-pedagogy-calibration/raw/chat-visible-transcript-part06.md",
+      "sessions/2026-09-04/sliding-window-pedagogy-calibration/raw/chat-visible-transcript-part07.md",
+      "sessions/2026-09-04/sliding-window-pedagogy-calibration/raw/chat-visible-transcript-part08.md"
+    ],
+    "corroborating_reviewed_sources": [
+      "sessions/2026-09-04/sliding-window-pedagogy-calibration/derived/pedagogy-findings.md",
+      "domains/dsa/sliding-window/golden/beginner-progressive-box-index-sum.v0.1.md",
+      "domains/dsa/sliding-window/golden/beginner-sum-enumerate-append.v0.1.md"
+    ],
+    "review_order": [
+      "canonical_raw_sources_in_part_order",
+      "derived_pedagogy_findings",
+      "reviewed_golden_cases"
+    ],
+    "measured_teacher_boundary": "Raw source paths are provenance only. A measured teacher may receive this frozen artifact, but must never be given or allowed to load the raw transcript contents."
+  },
+  "modality": {
+    "must": "Hard constraint for a transfer run unless the run is explicitly declared invalid.",
+    "must_not": "Forbidden behavior for a transfer run.",
+    "should": "Adaptive default; depart only when visible learner evidence gives a reason.",
+    "may": "Permitted technique, not a required stage."
+  },
+  "successful_learning_trajectory": {
+    "status": "historical_evidence_only_not_universal_curriculum",
+    "warning": "This preserves the successful Sliding Window dependency sequence as evidence of granularity. Do not copy its vocabulary, constants, or node order into unrelated problems.",
+    "bridges": [
+      {
+        "id": "SW-01",
+        "purpose": "Ground the visual object before asking for algorithmic reasoning.",
+        "historical_bridge": "Read a short list as visible cells containing values.",
+        "transfer_lesson": "Establish what the learner is looking at before introducing relations."
+      },
+      {
+        "id": "SW-02",
+        "purpose": "Separate positions from values.",
+        "historical_bridge": "Pair visible cells with index labels and practice direct lookup.",
+        "transfer_lesson": "Ground labels/coordinates independently before composing them."
+      },
+      {
+        "id": "SW-03",
+        "purpose": "Compose one already-grounded lookup with one concrete operation.",
+        "historical_bridge": "Select fixed positions and add their visible values.",
+        "transfer_lesson": "Use concrete constants before variable notation."
+      },
+      {
+        "id": "SW-04",
+        "purpose": "Make state movement visible without changing every representation at once.",
+        "historical_bridge": "Move a fixed-width box across the same indexed row.",
+        "transfer_lesson": "Keep a stable diagram lineage while changing one relation/action."
+      },
+      {
+        "id": "SW-05",
+        "purpose": "Distinguish the moving object's content from its location.",
+        "historical_bridge": "Name the box/window positions separately from the values inside them.",
+        "transfer_lesson": "Disambiguate object identity, state, and value before formulas."
+      },
+      {
+        "id": "SW-06",
+        "purpose": "Derive a relation from grounded examples rather than announce a formula.",
+        "historical_bridge": "Relate a concrete start position to the positions covered by the box.",
+        "transfer_lesson": "Elicit the pattern from multiple concrete states."
+      },
+      {
+        "id": "SW-07",
+        "purpose": "Generalize only after the constant case is stable.",
+        "historical_bridge": "Replace concrete indices with i, then introduce k for width.",
+        "transfer_lesson": "Introduce one symbol at a time and tie it back to known constants."
+      },
+      {
+        "id": "SW-08",
+        "purpose": "Translate grounded semantics into executable structure.",
+        "historical_bridge": "Map the understood indexed relation to a loop/code expression.",
+        "transfer_lesson": "Code should name operations the learner already understands."
+      },
+      {
+        "id": "SW-09",
+        "purpose": "Integrate without discarding prior scaffolding too early.",
+        "historical_bridge": "Trace a full example, then fade assistance after correct demonstrations.",
+        "transfer_lesson": "Require integration evidence and fade only demonstrated supports."
+      }
+    ]
+  },
+  "decomposition_principles": [
+    {
+      "id": "DP-01",
+      "modality": "must",
+      "instruction": "Derive learner-sized prerequisite bridges for the current problem; do not substitute expert-sized algorithm stages for those bridges.",
+      "evidence": [
+        "raw parts 01, 03, 08",
+        "derived F-01/F-02/F-09"
+      ]
+    },
+    {
+      "id": "DP-02",
+      "modality": "should",
+      "instruction": "Introduce one new semantic relation or action at a time when possible.",
+      "evidence": [
+        "raw parts 01, 03",
+        "derived F-01"
+      ]
+    },
+    {
+      "id": "DP-03",
+      "modality": "must",
+      "instruction": "Ground an object, term, label, or symbol before asking the learner to use it in a new relation.",
+      "evidence": [
+        "raw parts 03, 08",
+        "derived F-02/F-09"
+      ]
+    },
+    {
+      "id": "DP-04",
+      "modality": "should",
+      "instruction": "Prefer concrete visible state and action before abstraction, control flow, formulas, or code.",
+      "evidence": [
+        "raw parts 01, 08",
+        "derived F-02/F-11/F-15"
+      ]
+    },
+    {
+      "id": "DP-05",
+      "modality": "should",
+      "instruction": "When a learner is confused, test for a missing prerequisite or representation bridge before adding more prose.",
+      "evidence": [
+        "raw parts 01, 03",
+        "derived F-09"
+      ]
+    },
+    {
+      "id": "DP-06",
+      "modality": "should",
+      "instruction": "Skip or compress already-demonstrated prerequisites instead of forcing a fixed sequence mechanically.",
+      "evidence": [
+        "raw part 08",
+        "derived F-12/F-13"
+      ]
+    },
+    {
+      "id": "DP-07",
+      "modality": "must",
+      "instruction": "Preserve deterministic progression/authority constraints as a control layer; distinguish them from learner-facing decomposition quality.",
+      "evidence": [
+        "derived F-13",
+        "experiments/model-tutoring/HISTORY.md"
+      ]
+    }
+  ],
+  "interaction_policy": [
+    {
+      "id": "IP-01",
+      "modality": "should",
+      "instruction": "Use a tight cycle: introduce or remind, ask one explicit probe, classify visible evidence, then advance or repair.",
+      "evidence": [
+        "raw parts 03, 05",
+        "derived F-03/F-14"
+      ]
+    },
+    {
+      "id": "IP-02",
+      "modality": "must",
+      "instruction": "Advance only when the current bridge has adequate visible evidence; turn count is never evidence of mastery.",
+      "evidence": [
+        "raw parts 03, 08",
+        "derived F-03/F-12/F-13"
+      ]
+    },
+    {
+      "id": "IP-03",
+      "modality": "must",
+      "instruction": "After a wrong or unstable response, correct the smallest failed relation in a grounded representation and then verify recovery.",
+      "evidence": [
+        "raw parts 03, 05",
+        "derived F-03/F-17"
+      ]
+    },
+    {
+      "id": "IP-04",
+      "modality": "must",
+      "instruction": "A retry must change the example, representation, or operation enough to add information; do not create prompt-only paraphrase loops.",
+      "evidence": [
+        "raw part 05",
+        "derived F-04"
+      ]
+    },
+    {
+      "id": "IP-05",
+      "modality": "should",
+      "instruction": "Isolate partial success: retain demonstrated suboperations and reteach only the missing relation.",
+      "evidence": [
+        "raw parts 05, 08",
+        "derived F-12"
+      ]
+    },
+    {
+      "id": "IP-06",
+      "modality": "should",
+      "instruction": "Keep learner-facing replies concise: acknowledge evidence, give the smallest useful explanation, then ask one next question.",
+      "evidence": [
+        "raw parts 03, 08",
+        "derived F-14"
+      ]
+    },
+    {
+      "id": "IP-07",
+      "modality": "must",
+      "instruction": "Completion must be earned by integrated learner evidence over the required plan bridges, not inferred from a fixed number of exchanges.",
+      "evidence": [
+        "derived F-13",
+        "MT-E001 Phase C"
+      ]
+    }
+  ],
+  "representation_policy": [
+    {
+      "id": "RP-01",
+      "modality": "should",
+      "instruction": "Keep a stable visual/notation grammar across neighboring exchanges so the learner can compare state changes.",
+      "evidence": [
+        "raw parts 03, 05",
+        "derived F-06"
+      ]
+    },
+    {
+      "id": "RP-02",
+      "modality": "must",
+      "instruction": "Preserve whitespace/alignment when diagrams, rows, pointers, or code depend on spatial structure.",
+      "evidence": [
+        "raw parts 03, 05",
+        "derived F-06"
+      ]
+    },
+    {
+      "id": "RP-03",
+      "modality": "must_not",
+      "instruction": "Do not reveal the exact answer, code, pointer, or marked position the learner is currently being asked to produce.",
+      "evidence": [
+        "raw parts 05, 08",
+        "derived F-05/F-07/F-10"
+      ]
+    },
+    {
+      "id": "RP-04",
+      "modality": "should",
+      "instruction": "Use answer-bearing arrows/cursors in worked examples or corrections, hide them for first-attempt practice when they would reveal the answer, then restore them for review.",
+      "evidence": [
+        "raw parts 03, 05",
+        "derived F-05/F-07"
+      ]
+    },
+    {
+      "id": "RP-05",
+      "modality": "must",
+      "instruction": "Avoid accidental value/index/name collisions that make distinct concepts look identical; use examples that visibly disambiguate them.",
+      "evidence": [
+        "raw part 03",
+        "derived F-08/F-09"
+      ]
+    },
+    {
+      "id": "RP-06",
+      "modality": "should",
+      "instruction": "Introduce constants before variables and one variable at a time; every symbol should map back to an already-grounded concrete case.",
+      "evidence": [
+        "raw part 08",
+        "derived F-02/F-15"
+      ]
+    },
+    {
+      "id": "RP-07",
+      "modality": "must",
+      "instruction": "Any code introduced must map line-by-line or operation-by-operation to semantics already grounded in the conversation.",
+      "evidence": [
+        "raw part 08",
+        "derived F-11"
+      ]
+    }
+  ],
+  "anti_overfit_constraints": [
+    {
+      "id": "AO-01",
+      "modality": "must_not",
+      "instruction": "Do not copy Sliding Window vocabulary, constants, diagrams, or content into an unrelated algorithm unless independently warranted by that problem."
+    },
+    {
+      "id": "AO-02",
+      "modality": "must_not",
+      "instruction": "Do not treat box, S[i], range(k), window width, or the historical bridge IDs as universal curriculum stages."
+    },
+    {
+      "id": "AO-03",
+      "modality": "must",
+      "instruction": "Infer the target problem's own objects, state, relations, operations, and integration evidence."
+    },
+    {
+      "id": "AO-04",
+      "modality": "must",
+      "instruction": "Transfer decomposition granularity, interaction control, and representation behavior—not the source problem's solution structure."
+    }
+  ],
+  "known_failure_patterns": [
+    {
+      "id": "KF-01",
+      "pattern": "Large conceptual jumps that require the learner to infer an unstated bridge."
+    },
+    {
+      "id": "KF-02",
+      "pattern": "Repeating the same prompt in different words without changing evidence or representation."
+    },
+    {
+      "id": "KF-03",
+      "pattern": "Structurally valid language or code that is semantically wrong for the shown state."
+    },
+    {
+      "id": "KF-04",
+      "pattern": "Premature formulas, technical terminology, control flow, or code before the underlying objects/relations are grounded."
+    },
+    {
+      "id": "KF-05",
+      "pattern": "Repeated confirmation questions that add no information."
+    },
+    {
+      "id": "KF-06",
+      "pattern": "Declaring plan completion because a turn target was reached."
+    },
+    {
+      "id": "KF-07",
+      "pattern": "Requiring the learner to diagnose or repair a tutor error."
+    },
+    {
+      "id": "KF-08",
+      "pattern": "Leaking the requested answer through diagrams, pointers, examples, or code."
+    },
+    {
+      "id": "KF-09",
+      "pattern": "Discarding a useful representation before its dependent relation is stable."
+    },
+    {
+      "id": "KF-10",
+      "pattern": "Re-teaching already-demonstrated suboperations instead of isolating the failed relation."
+    }
+  ],
+  "transfer_contract": {
+    "teacher_may_receive": [
+      "this frozen artifact",
+      "the target problem statement and declared variables",
+      "the versioned teacher role/runner contract",
+      "the visible conversation from the current run"
+    ],
+    "teacher_must_not_receive": [
+      "raw calibration transcript contents",
+      "historical target-problem expected-stage data or regression assertions",
+      "hidden evaluator answers or grading outputs",
+      "prior run transcripts or reviewer comments unless explicitly declared as the changed input"
+    ],
+    "student_must_not_receive": [
+      "this calibration artifact",
+      "the generated teaching plan",
+      "hidden solutions",
+      "evaluator rubrics"
+    ]
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "hash_scope": "canonical JSON of all top-level fields except integrity; UTF-8; sorted keys; compact separators; ensure_ascii=true",
+    "content_sha256": "4d0014d9baee3dc0c5644ee531ecec8c238a27d7d6b5a5db876b11d38bdd9f53"
+  }
+}
