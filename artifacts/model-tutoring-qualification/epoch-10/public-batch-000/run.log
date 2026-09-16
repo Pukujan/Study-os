@@ -1,0 +1,22 @@
+started lane contains-duplicate-set pid=60032
+started lane reverse-linked-list pid=25088
+started lane number-of-islands pid=59584
+started lane kth-largest-heap pid=61004
+finished lane number-of-islands exit=0
+finished lane reverse-linked-list exit=0
+finished lane contains-duplicate-set exit=0
+finished lane kth-largest-heap exit=0
+Traceback (most recent call last):
+  File "C:\Users\pujan\Documents\Codex\2026-09-10\https-chatgpt-com-share-6aa37358-8cec\work\study-os-pr77\tools\run_model_tutoring_all_dsa_parallel.py", line 246, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "C:\Users\pujan\Documents\Codex\2026-09-10\https-chatgpt-com-share-6aa37358-8cec\work\study-os-pr77\tools\run_model_tutoring_all_dsa_parallel.py", line 232, in main
+    transcript, trace, plans = merge_complete_lanes(
+                               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pujan\Documents\Codex\2026-09-10\https-chatgpt-com-share-6aa37358-8cec\work\study-os-pr77\tools\run_model_tutoring_all_dsa_parallel.py", line 116, in merge_complete_lanes
+    raise RuntimeError("cannot merge incomplete lanes: " + ", ".join(incomplete))
+RuntimeError: cannot merge incomplete lanes: contains-duplicate-set, number-of-islands, kth-largest-heap
+started lane contains-duplicate-set pid=67636
+started lane reverse-linked-list pid=70504
+started lane number-of-islands pid=58624
+started lane kth-largest-heap pid=60144

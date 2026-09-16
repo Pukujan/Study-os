@@ -1,0 +1,184 @@
+{
+  "schema_version": "study-os.model-tutoring-prompt-evaluation.v0.1",
+  "evaluation_kind": "completed-artifact-plus-structural-metamorphic",
+  "registry": {
+    "schema_version": "study-os.model-tutoring-prompt-registry.v0.1",
+    "definitions": [
+      {
+        "version": "study-os.model-tutoring-decompose.v1",
+        "role": "decomposition",
+        "content": "Decompose the supplied technical problem into a versioned TeachingPlan. Externalize concepts, prerequisite edges, variable roles and meanings, representation constraints, semantic invariants, completion evidence, misconception metadata, and assistance boundaries. Do not write a lesson, do not infer learner mastery, and do not include hidden evaluation answers.",
+        "prompt_hash": "34ece396e210461239d8014f79342b752d2715dc0060b641ba34e7a88f8248b1"
+      },
+      {
+        "version": "study-os.model-tutoring-diagnose.v1",
+        "role": "diagnosis",
+        "content": "Assess only the learner's actual message against the controller-supplied concept. Return a diagnosis hypothesis and learner outcome. A demonstrated outcome requires an exact verbatim evidence quote; uncertainty is not mastery.",
+        "prompt_hash": "6248eda2873d2ba458822d3f4856a5678a11038c6392e8d0255f4c5c4ed67b66"
+      },
+      {
+        "version": "study-os.model-tutoring-generate.v1",
+        "role": "generation",
+        "content": "Generate one bounded learner-visible teaching turn from the deterministic generation contract. Preserve variable meanings, representation constraints, semantic invariants, assistance limits, and the current concept. Do not change progression, claim mastery, reveal internal routing, or jump ahead.",
+        "prompt_hash": "154fef4ba35ed91aea303951a667abe89f2130a3a761d1e863afc709429f3042"
+      }
+    ]
+  },
+  "observed_run": {
+    "acceptance_status": "passed",
+    "scenario_count": 14,
+    "exchange_count": 210,
+    "visible_message_count": 420,
+    "calibration_agreement": 0.7547619047619047
+  },
+  "provenance_checks": [
+    {
+      "scenario_id": "two-sum-dictionary",
+      "status": "passed"
+    },
+    {
+      "scenario_id": "contains-duplicate-set",
+      "status": "passed"
+    },
+    {
+      "scenario_id": "best-time-stock",
+      "status": "passed"
+    },
+    {
+      "scenario_id": "valid-parentheses-stack",
+      "status": "passed"
+    },
+    {
+      "scenario_id": "binary-search",
+      "status": "passed"
+    },
+    {
+      "scenario_id": "reverse-linked-list",
+      "status": "passed"
+    },
+    {
+      "scenario_id": "merge-two-sorted-lists",
+      "status": "passed"
+    },
+    {
+      "scenario_id": "max-depth-tree",
+      "status": "passed"
+    },
+    {
+      "scenario_id": "bfs-shortest-path",
+      "status": "passed"
+    },
+    {
+      "scenario_id": "number-of-islands",
+      "status": "passed"
+    },
+    {
+      "scenario_id": "kth-largest-heap",
+      "status": "passed"
+    },
+    {
+      "scenario_id": "sliding-window-max-sum",
+      "status": "passed"
+    },
+    {
+      "scenario_id": "merge-intervals",
+      "status": "passed"
+    },
+    {
+      "scenario_id": "two-pointers-palindrome",
+      "status": "passed"
+    }
+  ],
+  "metamorphic": {
+    "cases": [
+      {
+        "scenario_id": "two-sum-dictionary",
+        "variant_kind": "numeric_or_example_substitution",
+        "source_variables_preserved": true,
+        "hidden_annotations_absent": true
+      },
+      {
+        "scenario_id": "contains-duplicate-set",
+        "variant_kind": "paraphrase",
+        "source_variables_preserved": true,
+        "hidden_annotations_absent": true
+      },
+      {
+        "scenario_id": "best-time-stock",
+        "variant_kind": "numeric_or_example_substitution",
+        "source_variables_preserved": true,
+        "hidden_annotations_absent": true
+      },
+      {
+        "scenario_id": "valid-parentheses-stack",
+        "variant_kind": "paraphrase",
+        "source_variables_preserved": true,
+        "hidden_annotations_absent": true
+      },
+      {
+        "scenario_id": "binary-search",
+        "variant_kind": "numeric_or_example_substitution",
+        "source_variables_preserved": true,
+        "hidden_annotations_absent": true
+      },
+      {
+        "scenario_id": "reverse-linked-list",
+        "variant_kind": "paraphrase",
+        "source_variables_preserved": true,
+        "hidden_annotations_absent": true
+      },
+      {
+        "scenario_id": "merge-two-sorted-lists",
+        "variant_kind": "numeric_or_example_substitution",
+        "source_variables_preserved": true,
+        "hidden_annotations_absent": true
+      },
+      {
+        "scenario_id": "max-depth-tree",
+        "variant_kind": "paraphrase",
+        "source_variables_preserved": true,
+        "hidden_annotations_absent": true
+      },
+      {
+        "scenario_id": "bfs-shortest-path",
+        "variant_kind": "numeric_or_example_substitution",
+        "source_variables_preserved": true,
+        "hidden_annotations_absent": true
+      },
+      {
+        "scenario_id": "number-of-islands",
+        "variant_kind": "paraphrase",
+        "source_variables_preserved": true,
+        "hidden_annotations_absent": true
+      },
+      {
+        "scenario_id": "kth-largest-heap",
+        "variant_kind": "numeric_or_example_substitution",
+        "source_variables_preserved": true,
+        "hidden_annotations_absent": true
+      },
+      {
+        "scenario_id": "sliding-window-max-sum",
+        "variant_kind": "paraphrase",
+        "source_variables_preserved": true,
+        "hidden_annotations_absent": true
+      },
+      {
+        "scenario_id": "merge-intervals",
+        "variant_kind": "numeric_or_example_substitution",
+        "source_variables_preserved": true,
+        "hidden_annotations_absent": true
+      },
+      {
+        "scenario_id": "two-pointers-palindrome",
+        "variant_kind": "paraphrase",
+        "source_variables_preserved": true,
+        "hidden_annotations_absent": true
+      }
+    ],
+    "all_source_variables_preserved": true,
+    "all_hidden_annotations_absent": true,
+    "live_model_variants_executed": false
+  },
+  "status": "passed"
+}

@@ -19,6 +19,7 @@ project:
     concept_families:
       - sliding-window
       - running-extrema
+      - two-sum-dictionary
 
 research:
   primary_question: >-
@@ -287,6 +288,7 @@ open_risks:
   - synthetic_simulation_mistaken_for_human_learning_evidence
 
 next_milestone: >-
-  Validate the known sliding-window canonical PIR through MCP v0.4, schema v2,
-  restart/resume, GPT Actions projection, and live local deployment before
-  enabling arbitrary raw-problem compilation in the learner-facing product.
+  Validate the known sliding-window and Two Sum canonical PIR assets through
+  MCP v0.4, schema v2, restart/resume, GPT Actions projection, and isolated
+  live replay before enabling arbitrary raw-problem compilation in the
+  learner-facing product.

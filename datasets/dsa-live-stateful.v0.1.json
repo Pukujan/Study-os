@@ -1,0 +1,150 @@
+{
+  "schema_version": "study-os.dsa-live-stateful.v0.1",
+  "purpose": "State-driven learner scripts for truthful Study OS + Luna product replay. Hidden move routing and pedagogical expectations are never sent to the actor.",
+  "scenarios": [
+    {
+      "id": "two-sum-dictionary",
+      "title": "Two Sum",
+      "problem": "Given nums and target, return indices of two numbers whose sum is target.",
+      "variables": ["nums", "target", "box", "i", "num", "needed"],
+      "visual_family": "index-value-box",
+      "terminal_steps": ["two_sum_final"],
+      "step_expectations": {
+        "two_sum_goal_probe": {
+          "must_include_any": ["nums", "target", "indexes"],
+          "must_not_include": ["seen", "index_by_num", "lookup_map", "needed", "box", "enumerate"],
+          "visual_required": true,
+          "max_nonempty_lines": 12,
+          "must_ask_question": true
+        },
+        "two_sum_needed_probe": {
+          "must_include_any": ["needed", "target", "num"],
+          "must_not_include": ["seen", "index_by_num", "lookup_map", "box[needed]", "return"],
+          "visual_required": true,
+          "max_nonempty_lines": 12,
+          "must_ask_question": true
+        },
+        "two_sum_box_probe": {
+          "must_include_any": ["box", "needed"],
+          "must_not_include": ["seen", "index_by_num", "lookup_map", "return", "full code"],
+          "visual_required": true,
+          "max_nonempty_lines": 12,
+          "must_ask_question": true
+        },
+        "two_sum_order_probe": {
+          "must_include_any": ["check", "add", "box"],
+          "must_not_include": ["seen", "index_by_num", "lookup_map", "full code"],
+          "visual_required": true,
+          "max_nonempty_lines": 12,
+          "must_ask_question": true
+        },
+        "two_sum_loop_probe": {
+          "must_include_any": ["i", "box", "needed"],
+          "must_not_include": ["seen", "index_by_num", "lookup_map"],
+          "visual_required": true,
+          "max_nonempty_lines": 12,
+          "must_ask_question": true
+        },
+        "two_sum_final": {
+          "must_include_any": ["return", "box", "needed", "i"],
+          "must_not_include": ["seen", "index_by_num", "lookup_map"],
+          "visual_required": true,
+          "max_nonempty_lines": 12,
+          "must_ask_question": true
+        }
+      },
+      "moves": [
+        {
+          "id": "goal-clarify",
+          "when_steps": ["two_sum_goal_probe"],
+          "learner_message": "wait what are we actually trying to find?",
+          "expected_tool_any": ["get_problem_turn"]
+        },
+        {
+          "id": "goal-confusion",
+          "when_steps": ["two_sum_goal_probe"],
+          "learner_message": "so 2 and 7 are the answer right?",
+          "expected_tool_any": ["submit_problem_response", "get_problem_turn"]
+        },
+        {
+          "id": "goal-wrong-values",
+          "when_steps": ["two_sum_goal_probe"],
+          "learner_message": "[2, 7]",
+          "expected_tool_any": ["submit_problem_response"]
+        },
+        {
+          "id": "goal-recover",
+          "when_steps": ["two_sum_goal_probe"],
+          "learner_message": "oh indexes, so [0, 1]",
+          "expected_tool_any": ["submit_problem_response"]
+        },
+        {
+          "id": "needed-why",
+          "when_steps": ["two_sum_needed_probe"],
+          "learner_message": "why is needed target minus num?",
+          "expected_tool_any": ["request_problem_expansion"]
+        },
+        {
+          "id": "needed-wrong",
+          "when_steps": ["two_sum_needed_probe"],
+          "learner_message": "i think needed is num-target so -7",
+          "expected_tool_any": ["submit_problem_response"]
+        },
+        {
+          "id": "needed-recover",
+          "when_steps": ["two_sum_needed_probe"],
+          "learner_message": "then needed is 7",
+          "expected_tool_any": ["submit_problem_response"]
+        },
+        {
+          "id": "box-why",
+          "when_steps": ["two_sum_box_probe"],
+          "learner_message": "why do we need box, dont call it seen that confuses me",
+          "expected_tool_any": ["request_problem_expansion"]
+        },
+        {
+          "id": "box-wrong",
+          "when_steps": ["two_sum_box_probe"],
+          "learner_message": "box[2] gives me 2?",
+          "expected_tool_any": ["submit_problem_response"]
+        },
+        {
+          "id": "box-recover",
+          "when_steps": ["two_sum_box_probe"],
+          "learner_message": "right the value is the old index, so 0",
+          "expected_tool_any": ["submit_problem_response"]
+        },
+        {
+          "id": "order-wrong",
+          "when_steps": ["two_sum_order_probe"],
+          "learner_message": "i would add current num first then check",
+          "expected_tool_any": ["submit_problem_response"]
+        },
+        {
+          "id": "order-recover",
+          "when_steps": ["two_sum_order_probe"],
+          "learner_message": "check before add",
+          "expected_tool_any": ["submit_problem_response"]
+        },
+        {
+          "id": "loop-wrong-role",
+          "when_steps": ["two_sum_loop_probe"],
+          "learner_message": "the old index comes from i right?",
+          "expected_tool_any": ["submit_problem_response", "get_problem_turn"]
+        },
+        {
+          "id": "loop-wrong-order",
+          "when_steps": ["two_sum_loop_probe"],
+          "learner_message": "return [i, box[needed]]",
+          "expected_tool_any": ["submit_problem_response"]
+        },
+        {
+          "id": "loop-recover",
+          "when_steps": ["two_sum_loop_probe"],
+          "learner_message": "ok return [box[needed], i]",
+          "expected_tool_any": ["submit_problem_response"]
+        }
+      ]
+    }
+  ]
+}

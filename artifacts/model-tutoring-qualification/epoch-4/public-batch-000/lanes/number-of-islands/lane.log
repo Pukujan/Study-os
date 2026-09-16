@@ -1,0 +1,21 @@
+captured number-of-islands exchange 1; concept=recognize-4-direction-components; outcome=not_yet
+captured number-of-islands exchange 2; concept=recognize-4-direction-components; outcome=not_yet
+captured number-of-islands exchange 3; concept=recognize-4-direction-components; outcome=not_yet
+captured number-of-islands exchange 4; concept=recognize-4-direction-components; outcome=not_yet
+captured number-of-islands exchange 5; concept=recognize-4-direction-components; outcome=not_yet
+captured number-of-islands exchange 6; concept=recognize-4-direction-components; outcome=not_yet
+captured number-of-islands exchange 7; concept=recognize-4-direction-components; outcome=not_yet
+captured number-of-islands exchange 8; concept=recognize-4-direction-components; outcome=uncertain
+captured number-of-islands exchange 9; concept=recognize-4-direction-components; outcome=demonstrated
+captured number-of-islands exchange 10; concept=scan-grid-for-seeds; outcome=not_yet
+captured number-of-islands exchange 11; concept=scan-grid-for-seeds; outcome=not_yet
+captured number-of-islands exchange 12; concept=scan-grid-for-seeds; outcome=not_yet
+captured number-of-islands exchange 13; concept=scan-grid-for-seeds; outcome=demonstrated
+captured number-of-islands exchange 14; concept=flood-fill-and-mark; outcome=not_yet
+captured number-of-islands exchange 15; concept=flood-fill-and-mark; outcome=demonstrated
+captured number-of-islands exchange 16; concept=complete-component-count; outcome=not_yet
+captured number-of-islands exchange 17; concept=complete-component-count; outcome=demonstrated
+captured generic all-DSA tutoring: 1 plans / 17 exchanges / 34 visible messages
+transcript: artifacts\model-tutoring-qualification\epoch-4\public-batch-000\lanes\number-of-islands\transcript.jsonl
+trace: artifacts\model-tutoring-qualification\epoch-4\public-batch-000\lanes\number-of-islands\trace.jsonl
+plans: artifacts\model-tutoring-qualification\epoch-4\public-batch-000\lanes\number-of-islands\plans.jsonl

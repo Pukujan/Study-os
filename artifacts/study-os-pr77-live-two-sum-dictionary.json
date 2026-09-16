@@ -1,0 +1,229 @@
+{
+  "schema_version": "study-os.dsa-conversation-replay-report.v0.1",
+  "source": "actor",
+  "corpus": {
+    "problems": 14,
+    "learner_turns": 210
+  },
+  "executed_turns": 15,
+  "passed_turns": 3,
+  "failed_turns": 12,
+  "pass_rate": 0.2,
+  "violation_counts": {
+    "FUTURE_OR_RENAMED_CONCEPT": 6,
+    "WRONG_DIRECTION": 9
+  },
+  "scenario_summary": {
+    "two-sum-dictionary": {
+      "turns": 15,
+      "failed_turns": 12
+    }
+  },
+  "first_divergence": {
+    "scenario_id": "two-sum-dictionary",
+    "turn_index": 3,
+    "stage": "needed",
+    "learner_message": "is needed just target-num?",
+    "assistant_message": "```text\nindex | 0 | 1 | 2 | 3\nnums  | 2 | 7 | 11 | 15\ntarget: 9\n```\nReturn indexes, not values.\nWhich answer is correct: `[2, 7]` or `[0, 1]`?",
+    "violations": [
+      {
+        "code": "FUTURE_OR_RENAMED_CONCEPT",
+        "detail": "response introduced forbidden term 'return'"
+      }
+    ]
+  },
+  "records": [
+    {
+      "scenario_id": "two-sum-dictionary",
+      "turn_index": 0,
+      "stage": "anchor",
+      "learner_message": "wait what are we actually trying to find?",
+      "assistant_message": "```text\nindex | 0 | 1 | 2 | 3\nnums  | 2 | 7 | 11 | 15\ntarget: 9\n```\nReturn indexes, not values.\nWhich answer is correct: `[2, 7]` or `[0, 1]`?",
+      "violations": []
+    },
+    {
+      "scenario_id": "two-sum-dictionary",
+      "turn_index": 1,
+      "stage": "anchor",
+      "learner_message": "so target is 9 and nums are the numbers right?",
+      "assistant_message": "```text\nindex | 0 | 1 | 2 | 3\nnums  | 2 | 7 | 11 | 15\ntarget: 9\n```\nReturn indexes, not values.\nWhich answer is correct: `[2, 7]` or `[0, 1]`?",
+      "violations": []
+    },
+    {
+      "scenario_id": "two-sum-dictionary",
+      "turn_index": 2,
+      "stage": "anchor",
+      "learner_message": "ok ask me one thing",
+      "assistant_message": "```text\nindex | 0 | 1 | 2 | 3\nnums  | 2 | 7 | 11 | 15\ntarget: 9\n```\nReturn indexes, not values.\nWhich answer is correct: `[2, 7]` or `[0, 1]`?",
+      "violations": []
+    },
+    {
+      "scenario_id": "two-sum-dictionary",
+      "turn_index": 3,
+      "stage": "needed",
+      "learner_message": "is needed just target-num?",
+      "assistant_message": "```text\nindex | 0 | 1 | 2 | 3\nnums  | 2 | 7 | 11 | 15\ntarget: 9\n```\nReturn indexes, not values.\nWhich answer is correct: `[2, 7]` or `[0, 1]`?",
+      "violations": [
+        {
+          "code": "FUTURE_OR_RENAMED_CONCEPT",
+          "detail": "response introduced forbidden term 'return'"
+        }
+      ]
+    },
+    {
+      "scenario_id": "two-sum-dictionary",
+      "turn_index": 4,
+      "stage": "needed",
+      "learner_message": "i think needed is num-target? 3-9=-6",
+      "assistant_message": "```text\nindex | 0 | 1 | 2 | 3\nnums  | 2 | 7 | 11 | 15\ntarget: 9\n```\nReturn indexes, not values.\nWhich answer is correct: `[2, 7]` or `[0, 1]`?",
+      "violations": [
+        {
+          "code": "FUTURE_OR_RENAMED_CONCEPT",
+          "detail": "response introduced forbidden term 'return'"
+        }
+      ]
+    },
+    {
+      "scenario_id": "two-sum-dictionary",
+      "turn_index": 5,
+      "stage": "needed",
+      "learner_message": "oh so for num 3 needed is 6?",
+      "assistant_message": "```text\nindex | 0 | 1 | 2 | 3\nnums  | 2 | 7 | 11 | 15\ntarget: 9\n```\nReturn indexes, not values.\nWhich answer is correct: `[2, 7]` or `[0, 1]`?",
+      "violations": [
+        {
+          "code": "FUTURE_OR_RENAMED_CONCEPT",
+          "detail": "response introduced forbidden term 'return'"
+        }
+      ]
+    },
+    {
+      "scenario_id": "two-sum-dictionary",
+      "turn_index": 6,
+      "stage": "box",
+      "learner_message": "why do we need box, dont call it seen that confuses me",
+      "assistant_message": "```text\nindex | 0 | 1 | 2 | 3\nnums  | 2 | 7 | 11 | 15\ntarget: 9\n```\nReturn indexes, not values.\nWhich answer is correct: `[2, 7]` or `[0, 1]`?",
+      "violations": [
+        {
+          "code": "WRONG_DIRECTION",
+          "detail": "response contains none of the stage anchors: box, needed"
+        },
+        {
+          "code": "FUTURE_OR_RENAMED_CONCEPT",
+          "detail": "response introduced forbidden term 'return'"
+        }
+      ]
+    },
+    {
+      "scenario_id": "two-sum-dictionary",
+      "turn_index": 7,
+      "stage": "box",
+      "learner_message": "if box has 2:0 and needed is 2 do i use 0?",
+      "assistant_message": "```text\nindex | 0 | 1 | 2 | 3\nnums  | 2 | 7 | 11 | 15\ntarget: 9\n```\nReturn indexes, not values.\nWhich answer is correct: `[2, 7]` or `[0, 1]`?",
+      "violations": [
+        {
+          "code": "WRONG_DIRECTION",
+          "detail": "response contains none of the stage anchors: box, needed"
+        },
+        {
+          "code": "FUTURE_OR_RENAMED_CONCEPT",
+          "detail": "response introduced forbidden term 'return'"
+        }
+      ]
+    },
+    {
+      "scenario_id": "two-sum-dictionary",
+      "turn_index": 8,
+      "stage": "box",
+      "learner_message": "i said 0 but is that the index or the number?",
+      "assistant_message": "```text\nindex | 0 | 1 | 2 | 3\nnums  | 2 | 7 | 11 | 15\ntarget: 9\n```\nReturn indexes, not values.\nWhich answer is correct: `[2, 7]` or `[0, 1]`?",
+      "violations": [
+        {
+          "code": "WRONG_DIRECTION",
+          "detail": "response contains none of the stage anchors: box, needed"
+        },
+        {
+          "code": "FUTURE_OR_RENAMED_CONCEPT",
+          "detail": "response introduced forbidden term 'return'"
+        }
+      ]
+    },
+    {
+      "scenario_id": "two-sum-dictionary",
+      "turn_index": 9,
+      "stage": "order",
+      "learner_message": "do we check box before adding current num?",
+      "assistant_message": "```text\nindex | 0 | 1 | 2 | 3\nnums  | 2 | 7 | 11 | 15\ntarget: 9\n```\nReturn indexes, not values.\nWhich answer is correct: `[2, 7]` or `[0, 1]`?",
+      "violations": [
+        {
+          "code": "WRONG_DIRECTION",
+          "detail": "response contains none of the stage anchors: box, num, i"
+        }
+      ]
+    },
+    {
+      "scenario_id": "two-sum-dictionary",
+      "turn_index": 10,
+      "stage": "order",
+      "learner_message": "i would add it first then check, is that wrong?",
+      "assistant_message": "```text\nindex | 0 | 1 | 2 | 3\nnums  | 2 | 7 | 11 | 15\ntarget: 9\n```\nReturn indexes, not values.\nWhich answer is correct: `[2, 7]` or `[0, 1]`?",
+      "violations": [
+        {
+          "code": "WRONG_DIRECTION",
+          "detail": "response contains none of the stage anchors: box, num, i"
+        }
+      ]
+    },
+    {
+      "scenario_id": "two-sum-dictionary",
+      "turn_index": 11,
+      "stage": "order",
+      "learner_message": "show me with [3,3] target 6",
+      "assistant_message": "```text\nindex | 0 | 1 | 2 | 3\nnums  | 2 | 7 | 11 | 15\ntarget: 9\n```\nReturn indexes, not values.\nWhich answer is correct: `[2, 7]` or `[0, 1]`?",
+      "violations": [
+        {
+          "code": "WRONG_DIRECTION",
+          "detail": "response contains none of the stage anchors: box, num, i"
+        }
+      ]
+    },
+    {
+      "scenario_id": "two-sum-dictionary",
+      "turn_index": 12,
+      "stage": "loop",
+      "learner_message": "for i,num in enumerate(nums) then needed target-num?",
+      "assistant_message": "```text\nindex | 0 | 1 | 2 | 3\nnums  | 2 | 7 | 11 | 15\ntarget: 9\n```\nReturn indexes, not values.\nWhich answer is correct: `[2, 7]` or `[0, 1]`?",
+      "violations": [
+        {
+          "code": "WRONG_DIRECTION",
+          "detail": "response contains none of the stage anchors: i, num, box"
+        }
+      ]
+    },
+    {
+      "scenario_id": "two-sum-dictionary",
+      "turn_index": 13,
+      "stage": "loop",
+      "learner_message": "box[needed] gives old index and i gives current?",
+      "assistant_message": "```text\nindex | 0 | 1 | 2 | 3\nnums  | 2 | 7 | 11 | 15\ntarget: 9\n```\nReturn indexes, not values.\nWhich answer is correct: `[2, 7]` or `[0, 1]`?",
+      "violations": [
+        {
+          "code": "WRONG_DIRECTION",
+          "detail": "response contains none of the stage anchors: i, num, box"
+        }
+      ]
+    },
+    {
+      "scenario_id": "two-sum-dictionary",
+      "turn_index": 14,
+      "stage": "loop",
+      "learner_message": "ok i think return [box[needed], i]",
+      "assistant_message": "```text\nindex | 0 | 1 | 2 | 3\nnums  | 2 | 7 | 11 | 15\ntarget: 9\n```\nReturn indexes, not values.\nWhich answer is correct: `[2, 7]` or `[0, 1]`?",
+      "violations": [
+        {
+          "code": "WRONG_DIRECTION",
+          "detail": "response contains none of the stage anchors: i, num, box"
+        }
+      ]
+    }
+  ]
+}

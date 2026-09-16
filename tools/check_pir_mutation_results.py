@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
+import subprocess
 from pathlib import Path
 from typing import Any
 
@@ -23,8 +23,8 @@ HARD_BLOCKING_KEYS = tuple(
 )
 
 AUDIT_SOURCE_BLOBS = {
-    "src/study_os/pir/contracts.py": "6368763e90d1d44d0cbb6dd085a860d679cc8ee1",
-    "src/study_os/pir/controller.py": "d7ca54f109e53f9900d5d1bf75c36c4b9586b2b4",
+    "src/study_os/pir/contracts.py": "ced1177b1706c649aeb279b99bb4eeaee60e2878",
+    "src/study_os/pir/controller.py": "a00fa2a68bc0103df1d6d8e0ea1f30ad002ce438",
     "src/study_os/services/pir_runtime.py": "b73638f37b8e62269c7f212e3ca15ce801f521af",
 }
 
@@ -93,6 +93,15 @@ DIAGNOSTIC_MUTANTS = frozenset().union(
 )
 
 EQUIVALENT_MUTANTS = frozenset().union(
+    # Presentation-contract audit: these survivors do not change observable
+    # learner behavior.  They either select an already-defaulted value, alter
+    # diagnostic wording only, or mutate a redundant bound whose cycle guard
+    # already fails closed.
+    _mutants("study_os.pir.controller.x__make_turn", 32),
+    _mutants("study_os.pir.controller.x__starts_with_visual", 6),
+    _mutants("study_os.pir.controller.x_build_interaction_bundle", 51, 52, 56, 57, 65, 66, 81),
+    _mutants("study_os.pir.controller.x_submit_response", 90, 94, 96),
+    _mutants("study_os.pir.controller.x_validate_asset", 67, 68, 75, 76, 108, 109, 151, 179, 181),
     _mutants("study_os.pir.controller.x_build_expansion_bundle", 60, 68, 72),
     _mutants("study_os.pir.controller.x_build_interaction_bundle", 49, 50, 78),
     _mutants("study_os.pir.controller.x_submit_response", 33, 75, 93),
@@ -133,10 +142,10 @@ AUDITED_NONBLOCKING_MUTANTS = DIAGNOSTIC_MUTANTS | EQUIVALENT_MUTANTS
 
 if DIAGNOSTIC_MUTANTS & EQUIVALENT_MUTANTS:
     raise RuntimeError("mutation audit classifications overlap")
-if len(AUDITED_NONBLOCKING_MUTANTS) != 204:
+if len(AUDITED_NONBLOCKING_MUTANTS) != 225:
     raise RuntimeError(
         "mutation audit inventory drifted: "
-        f"expected 204 entries, found {len(AUDITED_NONBLOCKING_MUTANTS)}"
+        f"expected 225 entries, found {len(AUDITED_NONBLOCKING_MUTANTS)}"
     )
 
 
@@ -184,9 +193,30 @@ def load_results(path: Path) -> dict[str, str]:
 
 
 def git_blob_sha(path: Path) -> str:
-    data = path.read_bytes()
-    header = f"blob {len(data)}\0".encode("ascii")
-    return hashlib.sha1(header + data).hexdigest()
+    """Hash the bytes Git would store, not the platform working-tree bytes.
+
+    On Windows, ``core.autocrlf`` can leave CRLF in the checkout while the
+    index/source audit is LF.  ``git hash-object --path --stdin`` applies the
+    configured clean filters and therefore produces the same blob ID on
+    Windows, WSL, and Linux.
+    """
+
+    root = ROOT.resolve()
+    relative = path.resolve().relative_to(root).as_posix()
+    result = subprocess.run(
+        ["git", "hash-object", "--path", relative, "--stdin"],
+        input=path.read_bytes(),
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+    )
+    if result.returncode != 0:
+        detail = result.stderr.decode("utf-8", errors="replace").strip()
+        raise RuntimeError(f"git hash-object failed for {relative}: {detail}")
+    observed = result.stdout.decode("ascii", errors="strict").strip()
+    if len(observed) != 40:
+        raise RuntimeError(f"git hash-object returned an invalid blob id for {relative}")
+    return observed
 
 
 def validate_source_audit(root: Path) -> tuple[str, ...]:

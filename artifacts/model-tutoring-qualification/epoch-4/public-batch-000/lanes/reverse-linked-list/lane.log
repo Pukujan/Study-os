@@ -1,0 +1,28 @@
+captured reverse-linked-list exchange 1; concept=recognize-linked-chain; outcome=not_yet
+captured reverse-linked-list exchange 2; concept=recognize-linked-chain; outcome=not_yet
+captured reverse-linked-list exchange 3; concept=recognize-linked-chain; outcome=uncertain
+captured reverse-linked-list exchange 4; concept=recognize-linked-chain; outcome=not_yet
+captured reverse-linked-list exchange 5; concept=recognize-linked-chain; outcome=not_yet
+captured reverse-linked-list exchange 6; concept=recognize-linked-chain; outcome=uncertain
+captured reverse-linked-list exchange 7; concept=recognize-linked-chain; outcome=not_yet
+captured reverse-linked-list exchange 8; concept=recognize-linked-chain; outcome=not_yet
+captured reverse-linked-list exchange 9; concept=recognize-linked-chain; outcome=uncertain
+captured reverse-linked-list exchange 10; concept=recognize-linked-chain; outcome=not_yet
+captured reverse-linked-list exchange 11; concept=recognize-linked-chain; outcome=not_yet
+captured reverse-linked-list exchange 12; concept=recognize-linked-chain; outcome=not_yet
+captured reverse-linked-list exchange 13; concept=recognize-linked-chain; outcome=demonstrated
+captured reverse-linked-list exchange 14; concept=save-successor; outcome=not_yet
+captured reverse-linked-list exchange 15; concept=save-successor; outcome=demonstrated
+captured reverse-linked-list exchange 16; concept=reverse-current-link; outcome=not_yet
+captured reverse-linked-list exchange 17; concept=reverse-current-link; outcome=not_yet
+captured reverse-linked-list exchange 18; concept=reverse-current-link; outcome=demonstrated
+captured reverse-linked-list exchange 19; concept=advance-state; outcome=not_yet
+captured reverse-linked-list exchange 20; concept=advance-state; outcome=not_yet
+captured reverse-linked-list exchange 21; concept=advance-state; outcome=demonstrated
+captured reverse-linked-list exchange 22; concept=finish-return-head; outcome=not_yet
+captured reverse-linked-list exchange 23; concept=finish-return-head; outcome=not_yet
+captured reverse-linked-list exchange 24; concept=finish-return-head; outcome=demonstrated
+captured generic all-DSA tutoring: 1 plans / 24 exchanges / 48 visible messages
+transcript: artifacts\model-tutoring-qualification\epoch-4\public-batch-000\lanes\reverse-linked-list\transcript.jsonl
+trace: artifacts\model-tutoring-qualification\epoch-4\public-batch-000\lanes\reverse-linked-list\trace.jsonl
+plans: artifacts\model-tutoring-qualification\epoch-4\public-batch-000\lanes\reverse-linked-list\plans.jsonl

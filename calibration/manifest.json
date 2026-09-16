@@ -1,0 +1,56 @@
+{
+  "schema_version": "study-os.calibration-index.v0.1",
+  "datasets": [
+    {
+      "calibration_id": "sliding-window.subject-001.2026-09-04",
+      "role": "primary_learner_calibration",
+      "domain": "dsa",
+      "concept": "sliding-window",
+      "session_root": "sessions/2026-09-04/sliding-window-pedagogy-calibration",
+      "session_manifest": "sessions/2026-09-04/sliding-window-pedagogy-calibration/manifest.json",
+      "raw_evidence": {
+        "status": "preserved_from_visible_boundary",
+        "boundary": "verbatim-visible archive begins at the earliest preserved learner answer '6'; preceding turns are continuity summary only",
+        "index": "sessions/2026-09-04/sliding-window-pedagogy-calibration/raw/chat-visible-transcript.md",
+        "parts": [
+          "sessions/2026-09-04/sliding-window-pedagogy-calibration/raw/chat-visible-transcript-part01.md",
+          "sessions/2026-09-04/sliding-window-pedagogy-calibration/raw/chat-visible-transcript-part02.md",
+          "sessions/2026-09-04/sliding-window-pedagogy-calibration/raw/chat-visible-transcript-part03.md",
+          "sessions/2026-09-04/sliding-window-pedagogy-calibration/raw/chat-visible-transcript-part04.md",
+          "sessions/2026-09-04/sliding-window-pedagogy-calibration/raw/chat-visible-transcript-part05.md",
+          "sessions/2026-09-04/sliding-window-pedagogy-calibration/raw/chat-visible-transcript-part06.md",
+          "sessions/2026-09-04/sliding-window-pedagogy-calibration/raw/chat-visible-transcript-part07.md",
+          "sessions/2026-09-04/sliding-window-pedagogy-calibration/raw/chat-visible-transcript-part08.md"
+        ]
+      },
+      "derived": [
+        "sessions/2026-09-04/sliding-window-pedagogy-calibration/derived/pedagogy-findings.md",
+        "sessions/2026-09-04/sliding-window-pedagogy-calibration/derived/resume-handoff.md",
+        "sessions/2026-09-04/sliding-window-pedagogy-calibration/derived/next-session-analysis-handoff.md"
+      ],
+      "goldens": {
+        "status": "partial",
+        "fixtures": [
+          "domains/dsa/sliding-window/golden/beginner-progressive-box-index-sum.v0.1.md",
+          "domains/dsa/sliding-window/golden/beginner-sum-enumerate-append.v0.1.md"
+        ],
+        "unfinished_scope": "later transcript material, especially parts 06-08, still requires reviewed golden extraction"
+      },
+      "transfer_artifacts": [
+        {
+          "artifact": "transfer-calibration",
+          "version": "v0.1",
+          "status": "frozen_reviewed",
+          "json_path": "calibration/cases/sliding-window.subject-001.2026-09-04/transfer-calibration.v0.1.json",
+          "markdown_path": "calibration/cases/sliding-window.subject-001.2026-09-04/transfer-calibration.v0.1.md",
+          "content_sha256": "4d0014d9baee3dc0c5644ee531ecec8c238a27d7d6b5a5db876b11d38bdd9f53",
+          "measured_teacher_boundary": "Load the frozen JSON artifact only; raw evidence paths remain provenance-only and raw transcript contents are forbidden measured-teacher inputs."
+        }
+      ],
+      "pir_compilation_status": "unfinished",
+      "runtime_authoritative": false,
+      "governing_issue": 65,
+      "human_index": "docs/CALIBRATION_INDEX.md"
+    }
+  ]
+}

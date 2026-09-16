@@ -1,0 +1,430 @@
+{
+  "schema_version": "study-os.decomposition-reliability-qualification.v1",
+  "goal": "decomposition-reliability-qualified",
+  "batch_size": 4,
+  "seed": 0,
+  "public_scenario_ids": [
+    "two-sum-dictionary",
+    "contains-duplicate-set",
+    "best-time-stock",
+    "valid-parentheses-stack",
+    "binary-search",
+    "reverse-linked-list",
+    "merge-two-sorted-lists",
+    "max-depth-tree",
+    "bfs-shortest-path",
+    "number-of-islands",
+    "kth-largest-heap",
+    "sliding-window-max-sum",
+    "merge-intervals",
+    "two-pointers-palindrome"
+  ],
+  "hidden_scenario_ids": [],
+  "candidate": {
+    "candidate_id": "candidate-b19cf1cb134dcfee",
+    "digest": "b19cf1cb134dcfee9974046e90935a941dfa3fb072ad607830be2da0c919cebc",
+    "fingerprint": {
+      "code_revision": "cd6b8dc79f951af9720527ccd4b774fb6c1e8958+tracked-e3b0c44298fc1c14",
+      "decomposition_prompt_version": "study-os.model-tutoring-decompose.v1",
+      "decomposition_prompt_hash": "34ece396e210461239d8014f79342b752d2715dc0060b641ba34e7a88f8248b1",
+      "diagnosis_prompt_version": "study-os.model-tutoring-diagnose.v1",
+      "diagnosis_prompt_hash": "6248eda2873d2ba458822d3f4856a5678a11038c6392e8d0255f4c5c4ed67b66",
+      "generation_prompt_version": "study-os.model-tutoring-generate.v1",
+      "generation_prompt_hash": "154fef4ba35ed91aea303951a667abe89f2130a3a761d1e863afc709429f3042",
+      "teaching_plan_schema_version": "study-os.teaching-plan.v0.1",
+      "turn_trace_schema_version": "study-os.model-tutoring-trace.v0.3",
+      "decomposer_skill_version": "study-os-dsa-decomposer.v1",
+      "checklist_version": "study-os-dsa-decomposer-checklist.v1",
+      "evaluation_policy_version": "study-os.model-tutoring-rotating-holdout-eval.v1",
+      "decomposer_skill_hash": "e79eebec9af41f93cd04d1bb9c234608b59aaf87efb1bff5e942da8fdceade98",
+      "checklist_hash": "0d78efa0bde1a25f2d7a84998c13b209fd230e30fd8da44515428f4c4f9de92a",
+      "evaluation_policy_hash": "07f9ca5f89c874b0f7672a5f80088e6f2b277a7f0e59e4e755a7879439e4c083",
+      "model_identifier": "gpt-5.6-luna"
+    }
+  },
+  "bounds": {
+    "max_candidates": 10,
+    "max_model_calls": 5000,
+    "max_runtime_seconds": null
+  },
+  "candidate_count": 10,
+  "epoch": 10,
+  "status": "RUNNING",
+  "next_public_batch": 0,
+  "next_hidden_batch": 0,
+  "model_calls": 1400,
+  "started_at": "2026-09-15T05:18:36.139195+00:00",
+  "updated_at": "2026-09-15T13:37:39.944851+00:00",
+  "public_batches": [
+    {
+      "epoch": 10,
+      "candidate_id": "candidate-b19cf1cb134dcfee",
+      "candidate_digest": "b19cf1cb134dcfee9974046e90935a941dfa3fb072ad607830be2da0c919cebc",
+      "batch": {
+        "index": 0,
+        "scenario_ids": [
+          "contains-duplicate-set",
+          "kth-largest-heap",
+          "number-of-islands",
+          "reverse-linked-list"
+        ],
+        "seed": 0,
+        "kind": "public"
+      },
+      "passed": false,
+      "report": "artifacts\\model-tutoring-qualification\\epoch-10\\public-batch-000\\run.log",
+      "model_calls": 200,
+      "details": {
+        "runner_exit": 1
+      }
+    }
+  ],
+  "hidden_batches": [],
+  "candidate_history": [
+    {
+      "candidate_id": "candidate-862bcde719ec113c",
+      "fingerprint": {
+        "code_revision": "38010492fa03e9d59caa6c44d4249fccb129f511+tracked-e3b0c44298fc1c14",
+        "decomposition_prompt_version": "study-os.model-tutoring-decompose.v1",
+        "decomposition_prompt_hash": "34ece396e210461239d8014f79342b752d2715dc0060b641ba34e7a88f8248b1",
+        "diagnosis_prompt_version": "study-os.model-tutoring-diagnose.v1",
+        "diagnosis_prompt_hash": "6248eda2873d2ba458822d3f4856a5678a11038c6392e8d0255f4c5c4ed67b66",
+        "generation_prompt_version": "study-os.model-tutoring-generate.v1",
+        "generation_prompt_hash": "154fef4ba35ed91aea303951a667abe89f2130a3a761d1e863afc709429f3042",
+        "teaching_plan_schema_version": "study-os.teaching-plan.v0.1",
+        "turn_trace_schema_version": "study-os.model-tutoring-trace.v0.3",
+        "decomposer_skill_version": "study-os-dsa-decomposer.v1",
+        "checklist_version": "study-os-dsa-decomposer-checklist.v1",
+        "evaluation_policy_version": "study-os.model-tutoring-rotating-holdout-eval.v1",
+        "decomposer_skill_hash": "e79eebec9af41f93cd04d1bb9c234608b59aaf87efb1bff5e942da8fdceade98",
+        "checklist_hash": "0d78efa0bde1a25f2d7a84998c13b209fd230e30fd8da44515428f4c4f9de92a",
+        "evaluation_policy_hash": "07f9ca5f89c874b0f7672a5f80088e6f2b277a7f0e59e4e755a7879439e4c083",
+        "model_identifier": "gpt-5.6-luna"
+      },
+      "digest": "862bcde719ec113cd24d195577ad98debfe0c4985579d9778104be66ff1a8346",
+      "epoch": 1,
+      "status": "NOT_STARTED"
+    },
+    {
+      "candidate_id": "candidate-b5db33c280bf5dba",
+      "fingerprint": {
+        "code_revision": "78f319bb37c6f1c4fd8aef19c5d88a872ca327d8+tracked-e3b0c44298fc1c14",
+        "decomposition_prompt_version": "study-os.model-tutoring-decompose.v1",
+        "decomposition_prompt_hash": "34ece396e210461239d8014f79342b752d2715dc0060b641ba34e7a88f8248b1",
+        "diagnosis_prompt_version": "study-os.model-tutoring-diagnose.v1",
+        "diagnosis_prompt_hash": "6248eda2873d2ba458822d3f4856a5678a11038c6392e8d0255f4c5c4ed67b66",
+        "generation_prompt_version": "study-os.model-tutoring-generate.v1",
+        "generation_prompt_hash": "154fef4ba35ed91aea303951a667abe89f2130a3a761d1e863afc709429f3042",
+        "teaching_plan_schema_version": "study-os.teaching-plan.v0.1",
+        "turn_trace_schema_version": "study-os.model-tutoring-trace.v0.3",
+        "decomposer_skill_version": "study-os-dsa-decomposer.v1",
+        "checklist_version": "study-os-dsa-decomposer-checklist.v1",
+        "evaluation_policy_version": "study-os.model-tutoring-rotating-holdout-eval.v1",
+        "decomposer_skill_hash": "e79eebec9af41f93cd04d1bb9c234608b59aaf87efb1bff5e942da8fdceade98",
+        "checklist_hash": "0d78efa0bde1a25f2d7a84998c13b209fd230e30fd8da44515428f4c4f9de92a",
+        "evaluation_policy_hash": "07f9ca5f89c874b0f7672a5f80088e6f2b277a7f0e59e4e755a7879439e4c083",
+        "model_identifier": "gpt-5.6-luna"
+      },
+      "digest": "b5db33c280bf5dba9d907126a2296520db3c21a525354c4e5253925fcc5d814a",
+      "epoch": 2,
+      "status": "NOT_YET_QUALIFIED"
+    },
+    {
+      "candidate_id": "candidate-37fe2ce8c5401797",
+      "fingerprint": {
+        "code_revision": "0c87132035bedd1362364ac188baa76aa326c760+tracked-e3b0c44298fc1c14",
+        "decomposition_prompt_version": "study-os.model-tutoring-decompose.v1",
+        "decomposition_prompt_hash": "34ece396e210461239d8014f79342b752d2715dc0060b641ba34e7a88f8248b1",
+        "diagnosis_prompt_version": "study-os.model-tutoring-diagnose.v1",
+        "diagnosis_prompt_hash": "6248eda2873d2ba458822d3f4856a5678a11038c6392e8d0255f4c5c4ed67b66",
+        "generation_prompt_version": "study-os.model-tutoring-generate.v1",
+        "generation_prompt_hash": "154fef4ba35ed91aea303951a667abe89f2130a3a761d1e863afc709429f3042",
+        "teaching_plan_schema_version": "study-os.teaching-plan.v0.1",
+        "turn_trace_schema_version": "study-os.model-tutoring-trace.v0.3",
+        "decomposer_skill_version": "study-os-dsa-decomposer.v1",
+        "checklist_version": "study-os-dsa-decomposer-checklist.v1",
+        "evaluation_policy_version": "study-os.model-tutoring-rotating-holdout-eval.v1",
+        "decomposer_skill_hash": "e79eebec9af41f93cd04d1bb9c234608b59aaf87efb1bff5e942da8fdceade98",
+        "checklist_hash": "0d78efa0bde1a25f2d7a84998c13b209fd230e30fd8da44515428f4c4f9de92a",
+        "evaluation_policy_hash": "07f9ca5f89c874b0f7672a5f80088e6f2b277a7f0e59e4e755a7879439e4c083",
+        "model_identifier": "gpt-5.6-luna"
+      },
+      "digest": "37fe2ce8c540179731ee00a501bcd307c045daf023aa6d90df44bac07f2ae5aa",
+      "epoch": 3,
+      "status": "NOT_YET_QUALIFIED"
+    },
+    {
+      "candidate_id": "candidate-e7a06fa22f8124b1",
+      "fingerprint": {
+        "code_revision": "fbba7e5856a3236457018ab32116713dcf6cfb3b+tracked-e3b0c44298fc1c14",
+        "decomposition_prompt_version": "study-os.model-tutoring-decompose.v1",
+        "decomposition_prompt_hash": "34ece396e210461239d8014f79342b752d2715dc0060b641ba34e7a88f8248b1",
+        "diagnosis_prompt_version": "study-os.model-tutoring-diagnose.v1",
+        "diagnosis_prompt_hash": "6248eda2873d2ba458822d3f4856a5678a11038c6392e8d0255f4c5c4ed67b66",
+        "generation_prompt_version": "study-os.model-tutoring-generate.v1",
+        "generation_prompt_hash": "154fef4ba35ed91aea303951a667abe89f2130a3a761d1e863afc709429f3042",
+        "teaching_plan_schema_version": "study-os.teaching-plan.v0.1",
+        "turn_trace_schema_version": "study-os.model-tutoring-trace.v0.3",
+        "decomposer_skill_version": "study-os-dsa-decomposer.v1",
+        "checklist_version": "study-os-dsa-decomposer-checklist.v1",
+        "evaluation_policy_version": "study-os.model-tutoring-rotating-holdout-eval.v1",
+        "decomposer_skill_hash": "e79eebec9af41f93cd04d1bb9c234608b59aaf87efb1bff5e942da8fdceade98",
+        "checklist_hash": "0d78efa0bde1a25f2d7a84998c13b209fd230e30fd8da44515428f4c4f9de92a",
+        "evaluation_policy_hash": "07f9ca5f89c874b0f7672a5f80088e6f2b277a7f0e59e4e755a7879439e4c083",
+        "model_identifier": "gpt-5.6-luna"
+      },
+      "digest": "e7a06fa22f8124b1522fa6e62c55b13a730b76e656e03846e5bfa907080e45d9",
+      "epoch": 4,
+      "status": "NOT_YET_QUALIFIED"
+    },
+    {
+      "candidate_id": "candidate-6e9d5bc768997d96",
+      "fingerprint": {
+        "code_revision": "9d1a821d33ba6839759e07ccd77b5ab4dd53d9fb+tracked-e3b0c44298fc1c14",
+        "decomposition_prompt_version": "study-os.model-tutoring-decompose.v1",
+        "decomposition_prompt_hash": "34ece396e210461239d8014f79342b752d2715dc0060b641ba34e7a88f8248b1",
+        "diagnosis_prompt_version": "study-os.model-tutoring-diagnose.v1",
+        "diagnosis_prompt_hash": "6248eda2873d2ba458822d3f4856a5678a11038c6392e8d0255f4c5c4ed67b66",
+        "generation_prompt_version": "study-os.model-tutoring-generate.v1",
+        "generation_prompt_hash": "154fef4ba35ed91aea303951a667abe89f2130a3a761d1e863afc709429f3042",
+        "teaching_plan_schema_version": "study-os.teaching-plan.v0.1",
+        "turn_trace_schema_version": "study-os.model-tutoring-trace.v0.3",
+        "decomposer_skill_version": "study-os-dsa-decomposer.v1",
+        "checklist_version": "study-os-dsa-decomposer-checklist.v1",
+        "evaluation_policy_version": "study-os.model-tutoring-rotating-holdout-eval.v1",
+        "decomposer_skill_hash": "e79eebec9af41f93cd04d1bb9c234608b59aaf87efb1bff5e942da8fdceade98",
+        "checklist_hash": "0d78efa0bde1a25f2d7a84998c13b209fd230e30fd8da44515428f4c4f9de92a",
+        "evaluation_policy_hash": "07f9ca5f89c874b0f7672a5f80088e6f2b277a7f0e59e4e755a7879439e4c083",
+        "model_identifier": "gpt-5.6-luna"
+      },
+      "digest": "6e9d5bc768997d96d048ccd7e914bf16d394bb993fa82c404461b10ddd803f9f",
+      "epoch": 5,
+      "status": "RUNNING"
+    },
+    {
+      "candidate_id": "candidate-21d4f23759640123",
+      "fingerprint": {
+        "code_revision": "ef576ade827977dc297d7139685fda9bd01898ba+tracked-e3b0c44298fc1c14",
+        "decomposition_prompt_version": "study-os.model-tutoring-decompose.v1",
+        "decomposition_prompt_hash": "34ece396e210461239d8014f79342b752d2715dc0060b641ba34e7a88f8248b1",
+        "diagnosis_prompt_version": "study-os.model-tutoring-diagnose.v1",
+        "diagnosis_prompt_hash": "6248eda2873d2ba458822d3f4856a5678a11038c6392e8d0255f4c5c4ed67b66",
+        "generation_prompt_version": "study-os.model-tutoring-generate.v1",
+        "generation_prompt_hash": "154fef4ba35ed91aea303951a667abe89f2130a3a761d1e863afc709429f3042",
+        "teaching_plan_schema_version": "study-os.teaching-plan.v0.1",
+        "turn_trace_schema_version": "study-os.model-tutoring-trace.v0.3",
+        "decomposer_skill_version": "study-os-dsa-decomposer.v1",
+        "checklist_version": "study-os-dsa-decomposer-checklist.v1",
+        "evaluation_policy_version": "study-os.model-tutoring-rotating-holdout-eval.v1",
+        "decomposer_skill_hash": "e79eebec9af41f93cd04d1bb9c234608b59aaf87efb1bff5e942da8fdceade98",
+        "checklist_hash": "0d78efa0bde1a25f2d7a84998c13b209fd230e30fd8da44515428f4c4f9de92a",
+        "evaluation_policy_hash": "07f9ca5f89c874b0f7672a5f80088e6f2b277a7f0e59e4e755a7879439e4c083",
+        "model_identifier": "gpt-5.6-luna"
+      },
+      "digest": "21d4f237596401233776e2d82102f3cba58d87779f87edee0b7482e9f3d12288",
+      "epoch": 6,
+      "status": "NOT_YET_QUALIFIED"
+    },
+    {
+      "candidate_id": "candidate-dd03dccadd783a6c",
+      "fingerprint": {
+        "code_revision": "f6f6fbe97834086db243a9dfebf8597a4f3c0820+tracked-e3b0c44298fc1c14",
+        "decomposition_prompt_version": "study-os.model-tutoring-decompose.v1",
+        "decomposition_prompt_hash": "34ece396e210461239d8014f79342b752d2715dc0060b641ba34e7a88f8248b1",
+        "diagnosis_prompt_version": "study-os.model-tutoring-diagnose.v1",
+        "diagnosis_prompt_hash": "6248eda2873d2ba458822d3f4856a5678a11038c6392e8d0255f4c5c4ed67b66",
+        "generation_prompt_version": "study-os.model-tutoring-generate.v1",
+        "generation_prompt_hash": "154fef4ba35ed91aea303951a667abe89f2130a3a761d1e863afc709429f3042",
+        "teaching_plan_schema_version": "study-os.teaching-plan.v0.1",
+        "turn_trace_schema_version": "study-os.model-tutoring-trace.v0.3",
+        "decomposer_skill_version": "study-os-dsa-decomposer.v1",
+        "checklist_version": "study-os-dsa-decomposer-checklist.v1",
+        "evaluation_policy_version": "study-os.model-tutoring-rotating-holdout-eval.v1",
+        "decomposer_skill_hash": "e79eebec9af41f93cd04d1bb9c234608b59aaf87efb1bff5e942da8fdceade98",
+        "checklist_hash": "0d78efa0bde1a25f2d7a84998c13b209fd230e30fd8da44515428f4c4f9de92a",
+        "evaluation_policy_hash": "07f9ca5f89c874b0f7672a5f80088e6f2b277a7f0e59e4e755a7879439e4c083",
+        "model_identifier": "gpt-5.6-luna"
+      },
+      "digest": "dd03dccadd783a6c7ecb8aeaca317c0bd545b3473e9c14069ef997e93ad9353a",
+      "epoch": 7,
+      "status": "NOT_YET_QUALIFIED"
+    },
+    {
+      "candidate_id": "candidate-1d1f6da2fff5ed06",
+      "fingerprint": {
+        "code_revision": "acfb25e880c621e71ad6f0d496bf6ee048a3e23d+tracked-e3b0c44298fc1c14",
+        "decomposition_prompt_version": "study-os.model-tutoring-decompose.v1",
+        "decomposition_prompt_hash": "34ece396e210461239d8014f79342b752d2715dc0060b641ba34e7a88f8248b1",
+        "diagnosis_prompt_version": "study-os.model-tutoring-diagnose.v1",
+        "diagnosis_prompt_hash": "6248eda2873d2ba458822d3f4856a5678a11038c6392e8d0255f4c5c4ed67b66",
+        "generation_prompt_version": "study-os.model-tutoring-generate.v1",
+        "generation_prompt_hash": "154fef4ba35ed91aea303951a667abe89f2130a3a761d1e863afc709429f3042",
+        "teaching_plan_schema_version": "study-os.teaching-plan.v0.1",
+        "turn_trace_schema_version": "study-os.model-tutoring-trace.v0.3",
+        "decomposer_skill_version": "study-os-dsa-decomposer.v1",
+        "checklist_version": "study-os-dsa-decomposer-checklist.v1",
+        "evaluation_policy_version": "study-os.model-tutoring-rotating-holdout-eval.v1",
+        "decomposer_skill_hash": "e79eebec9af41f93cd04d1bb9c234608b59aaf87efb1bff5e942da8fdceade98",
+        "checklist_hash": "0d78efa0bde1a25f2d7a84998c13b209fd230e30fd8da44515428f4c4f9de92a",
+        "evaluation_policy_hash": "07f9ca5f89c874b0f7672a5f80088e6f2b277a7f0e59e4e755a7879439e4c083",
+        "model_identifier": "gpt-5.6-luna"
+      },
+      "digest": "1d1f6da2fff5ed062259feb1b931b71d802ebddeeea5777ae470e703c0beb21a",
+      "epoch": 8,
+      "status": "NOT_YET_QUALIFIED"
+    },
+    {
+      "candidate_id": "candidate-580aba367f4ca617",
+      "fingerprint": {
+        "code_revision": "b4698378823c25eeeaf62f75150dd4a6192c6619+tracked-e3b0c44298fc1c14",
+        "decomposition_prompt_version": "study-os.model-tutoring-decompose.v1",
+        "decomposition_prompt_hash": "34ece396e210461239d8014f79342b752d2715dc0060b641ba34e7a88f8248b1",
+        "diagnosis_prompt_version": "study-os.model-tutoring-diagnose.v1",
+        "diagnosis_prompt_hash": "6248eda2873d2ba458822d3f4856a5678a11038c6392e8d0255f4c5c4ed67b66",
+        "generation_prompt_version": "study-os.model-tutoring-generate.v1",
+        "generation_prompt_hash": "154fef4ba35ed91aea303951a667abe89f2130a3a761d1e863afc709429f3042",
+        "teaching_plan_schema_version": "study-os.teaching-plan.v0.1",
+        "turn_trace_schema_version": "study-os.model-tutoring-trace.v0.3",
+        "decomposer_skill_version": "study-os-dsa-decomposer.v1",
+        "checklist_version": "study-os-dsa-decomposer-checklist.v1",
+        "evaluation_policy_version": "study-os.model-tutoring-rotating-holdout-eval.v1",
+        "decomposer_skill_hash": "e79eebec9af41f93cd04d1bb9c234608b59aaf87efb1bff5e942da8fdceade98",
+        "checklist_hash": "0d78efa0bde1a25f2d7a84998c13b209fd230e30fd8da44515428f4c4f9de92a",
+        "evaluation_policy_hash": "07f9ca5f89c874b0f7672a5f80088e6f2b277a7f0e59e4e755a7879439e4c083",
+        "model_identifier": "gpt-5.6-luna"
+      },
+      "digest": "580aba367f4ca617b756157563b527bec18d2465494d2321c699695e57387451",
+      "epoch": 9,
+      "status": "RUNNING"
+    }
+  ],
+  "events": [
+    {
+      "at": "2026-09-15T05:18:36.139195+00:00",
+      "event": "created",
+      "candidate_id": "candidate-862bcde719ec113c"
+    },
+    {
+      "at": "2026-09-15T05:52:27.268781+00:00",
+      "event": "new_candidate",
+      "reason": "candidate_fingerprint_changed",
+      "candidate_id": "candidate-b5db33c280bf5dba",
+      "epoch": 2
+    },
+    {
+      "at": "2026-09-15T05:52:28.094972+00:00",
+      "event": "batch_failed",
+      "kind": "public",
+      "batch_index": 0,
+      "report": "artifacts\\model-tutoring-qualification\\epoch-2\\public-batch-000\\run.log"
+    },
+    {
+      "at": "2026-09-15T05:53:15.752647+00:00",
+      "event": "new_candidate",
+      "reason": "candidate_fingerprint_changed",
+      "candidate_id": "candidate-37fe2ce8c5401797",
+      "epoch": 3
+    },
+    {
+      "at": "2026-09-15T06:14:58.962759+00:00",
+      "event": "batch_failed",
+      "kind": "public",
+      "batch_index": 0,
+      "report": "artifacts\\model-tutoring-qualification\\epoch-3\\public-batch-000\\run.log"
+    },
+    {
+      "at": "2026-09-15T06:19:03.612687+00:00",
+      "event": "new_candidate",
+      "reason": "candidate_fingerprint_changed",
+      "candidate_id": "candidate-e7a06fa22f8124b1",
+      "epoch": 4
+    },
+    {
+      "at": "2026-09-15T06:52:34.795771+00:00",
+      "event": "batch_failed",
+      "kind": "public",
+      "batch_index": 0,
+      "report": "artifacts\\model-tutoring-qualification\\epoch-4\\public-batch-000\\run.log"
+    },
+    {
+      "at": "2026-09-15T06:56:25.422609+00:00",
+      "event": "new_candidate",
+      "reason": "candidate_fingerprint_changed",
+      "candidate_id": "candidate-6e9d5bc768997d96",
+      "epoch": 5
+    },
+    {
+      "at": "2026-09-15T07:09:06.568275+00:00",
+      "event": "new_candidate",
+      "reason": "candidate_fingerprint_changed",
+      "candidate_id": "candidate-21d4f23759640123",
+      "epoch": 6
+    },
+    {
+      "at": "2026-09-15T07:13:09.277606+00:00",
+      "event": "batch_failed",
+      "kind": "public",
+      "batch_index": 0,
+      "report": "artifacts\\model-tutoring-qualification\\epoch-6\\public-batch-000\\run.log"
+    },
+    {
+      "at": "2026-09-15T07:15:28.947988+00:00",
+      "event": "new_candidate",
+      "reason": "candidate_fingerprint_changed",
+      "candidate_id": "candidate-dd03dccadd783a6c",
+      "epoch": 7
+    },
+    {
+      "at": "2026-09-15T07:22:07.889647+00:00",
+      "event": "batch_failed",
+      "kind": "public",
+      "batch_index": 0,
+      "report": "artifacts\\model-tutoring-qualification\\epoch-7\\public-batch-000\\run.log"
+    },
+    {
+      "at": "2026-09-15T07:22:30.542313+00:00",
+      "event": "new_candidate",
+      "reason": "candidate_fingerprint_changed",
+      "candidate_id": "candidate-1d1f6da2fff5ed06",
+      "epoch": 8
+    },
+    {
+      "at": "2026-09-15T07:36:39.396406+00:00",
+      "event": "batch_failed",
+      "kind": "public",
+      "batch_index": 0,
+      "report": "artifacts\\model-tutoring-qualification\\epoch-8\\public-batch-000\\run.log"
+    },
+    {
+      "at": "2026-09-15T07:37:48.054317+00:00",
+      "event": "new_candidate",
+      "reason": "candidate_fingerprint_changed",
+      "candidate_id": "candidate-580aba367f4ca617",
+      "epoch": 9
+    },
+    {
+      "at": "2026-09-15T08:35:34.576408+00:00",
+      "event": "new_candidate",
+      "reason": "candidate_fingerprint_changed",
+      "candidate_id": "candidate-b19cf1cb134dcfee",
+      "epoch": 10
+    },
+    {
+      "at": "2026-09-15T09:06:31.694344+00:00",
+      "event": "batch_failed",
+      "kind": "public",
+      "batch_index": 0,
+      "report": "artifacts\\model-tutoring-qualification\\epoch-10\\public-batch-000\\run.log"
+    },
+    {
+      "at": "2026-09-15T13:37:39.942851+00:00",
+      "event": "candidate_bound_reached",
+      "reason": "candidate_fingerprint_changed"
+    },
+    {
+      "at": "2026-09-15T13:37:39.944851+00:00",
+      "event": "started",
+      "epoch": 10
+    }
+  ]
+}

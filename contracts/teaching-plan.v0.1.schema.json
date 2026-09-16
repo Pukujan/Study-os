@@ -1,0 +1,199 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://study-os.local/contracts/teaching-plan.v0.1.schema.json",
+  "title": "Study OS generic teaching plan v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "problem",
+    "concepts",
+    "variables",
+    "representation_requirements",
+    "semantic_invariants",
+    "completion_evidence",
+    "terminal_behavior",
+    "assistance_ceiling",
+    "provenance"
+  ],
+  "properties": {
+    "schema_version": {"const": "study-os.teaching-plan.v0.1"},
+    "problem": {"$ref": "#/$defs/problem"},
+    "concepts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/concept"}
+    },
+    "variables": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {"pattern": "^[A-Za-z_][A-Za-z0-9_]*$"},
+      "additionalProperties": {"$ref": "#/$defs/variable"}
+    },
+    "representation_requirements": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/representation_requirement"}
+    },
+    "semantic_invariants": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/semantic_invariant"}
+    },
+    "completion_evidence": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/completion_evidence"}
+    },
+    "terminal_behavior": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "assistance_ceiling": {"enum": ["A0", "A1", "A2"]},
+    "provenance": {"$ref": "#/$defs/provenance"}
+  },
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+    },
+    "variable_identifier": {
+      "type": "string",
+      "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+    },
+    "non_empty_string": {
+      "type": "string",
+      "minLength": 1
+    },
+    "string_array": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/non_empty_string"}
+    },
+    "identifier_array": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/identifier"}
+    },
+    "variable_identifier_array": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/variable_identifier"}
+    },
+    "problem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "statement"],
+      "properties": {
+        "id": {"$ref": "#/$defs/identifier"},
+        "statement": {"$ref": "#/$defs/non_empty_string"}
+      }
+    },
+    "variable": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role", "meaning"],
+      "properties": {
+        "role": {"$ref": "#/$defs/non_empty_string"},
+        "meaning": {"$ref": "#/$defs/non_empty_string"}
+      }
+    },
+    "representation_requirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "operation", "description", "required"],
+      "properties": {
+        "id": {"$ref": "#/$defs/identifier"},
+        "kind": {"$ref": "#/$defs/non_empty_string"},
+        "operation": {"$ref": "#/$defs/non_empty_string"},
+        "description": {"$ref": "#/$defs/non_empty_string"},
+        "required": {"type": "boolean"}
+      }
+    },
+    "semantic_invariant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "concept_id", "statement"],
+      "properties": {
+        "id": {"$ref": "#/$defs/identifier"},
+        "concept_id": {"$ref": "#/$defs/identifier"},
+        "statement": {"$ref": "#/$defs/non_empty_string"}
+      }
+    },
+    "completion_evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "concept_id", "evidence_type", "description"],
+      "properties": {
+        "id": {"$ref": "#/$defs/identifier"},
+        "concept_id": {"$ref": "#/$defs/identifier"},
+        "evidence_type": {"$ref": "#/$defs/non_empty_string"},
+        "description": {"$ref": "#/$defs/non_empty_string"}
+      }
+    },
+    "concept": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "prerequisites",
+        "allowed_variables",
+        "representation_requirement_ids",
+        "semantic_invariant_ids",
+        "completion_evidence_ids"
+      ],
+      "properties": {
+        "id": {"$ref": "#/$defs/identifier"},
+        "prerequisites": {"$ref": "#/$defs/identifier_array"},
+        "allowed_variables": {
+          "allOf": [
+            {"$ref": "#/$defs/variable_identifier_array"},
+            {"minItems": 1}
+          ]
+        },
+        "representation_requirement_ids": {
+          "allOf": [
+            {"$ref": "#/$defs/identifier_array"},
+            {"minItems": 1}
+          ]
+        },
+        "semantic_invariant_ids": {
+          "allOf": [
+            {"$ref": "#/$defs/identifier_array"},
+            {"minItems": 1}
+          ]
+        },
+        "completion_evidence_ids": {"$ref": "#/$defs/identifier_array"}
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "prompt_version",
+        "prompt_hash",
+        "model_identifier",
+        "teaching_plan_schema_version",
+        "turn_trace_schema_version",
+        "run_id",
+        "source_problem_id"
+      ],
+      "properties": {
+        "prompt_version": {"$ref": "#/$defs/non_empty_string"},
+        "prompt_hash": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "model_identifier": {"$ref": "#/$defs/non_empty_string"},
+        "teaching_plan_schema_version": {
+          "const": "study-os.teaching-plan.v0.1"
+        },
+        "turn_trace_schema_version": {"$ref": "#/$defs/non_empty_string"},
+        "run_id": {"$ref": "#/$defs/non_empty_string"},
+        "source_problem_id": {"$ref": "#/$defs/identifier"}
+      }
+    }
+  }
+}

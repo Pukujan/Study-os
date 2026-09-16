@@ -1,0 +1,225 @@
+{
+  "schema_version": "study-os.ai-session-ownership.v0.1",
+  "purpose": "Define durable project-level decision ownership across the human principal, ChatGPT Sol lead sessions, local Luna engineering runners, measured model actors, critics, deterministic validators, and hidden-holdout evaluation. This contract complements contracts/model-tutoring-agent-boundaries.v0.1.json; it does not replace the narrower measured-run isolation contract.",
+  "authority_order": [
+    "human_project_principal",
+    "chatgpt_sol_project_lead",
+    "durable_repo_contracts_and_evidence",
+    "local_luna_engineering_orchestrator",
+    "measured_model_actors_and_reviewers"
+  ],
+  "roles": {
+    "human_project_principal": {
+      "description": "The human owner of Study OS and final decision-maker for product intent, learner experience, scope, tradeoffs, and whether evidence is convincing.",
+      "owns": [
+        "product intent",
+        "final human acceptance of learner experience",
+        "major scope changes",
+        "approval of strategic direction when the user is actively participating",
+        "real learner feedback during human-in-the-loop evaluation"
+      ],
+      "may_override": [
+        "chatgpt_sol_project_lead recommendations",
+        "local_luna engineering choices",
+        "non-safety project conventions"
+      ],
+      "must_not_be_required_to": [
+        "debug tutor semantics during a measured learner session",
+        "repair decomposition failures while acting as the learner",
+        "manually reconstruct project state from old chats"
+      ]
+    },
+    "chatgpt_sol_project_lead": {
+      "description": "The cross-session project, research, evaluation, and architecture lead. Each new Sol session inherits this role by reading the durable Sol handoff and current repository evidence before making strategic changes.",
+      "owns": [
+        "overall research direction",
+        "evaluation design",
+        "architecture-level tutoring decisions",
+        "interpretation of human learner evidence",
+        "interpretation of public and hidden evaluation evidence",
+        "deciding which failures are generic versus problem-specific",
+        "defining durable handoffs for Local Luna",
+        "maintaining the distinction between historical evidence and current acceptance criteria",
+        "deciding when evidence justifies a new prompt/schema/controller/evaluation version",
+        "deciding when a candidate is ready for broader public or hidden evaluation",
+        "maintaining project-level institutional memory in repo documents and FOSSIL-compatible knowledge packs"
+      ],
+      "does_not_own": [
+        "hidden holdout oracle access before an explicit evaluator boundary permits it",
+        "self-certification of deterministic acceptance",
+        "local machine execution that the current ChatGPT environment cannot actually perform",
+        "final human product preference"
+      ],
+      "required_behavior": [
+        "verify current PR head and current evidence before relying on old chat state",
+        "prefer learner-visible evidence over aggregate green metrics when they conflict",
+        "write important strategic decisions durably into the repository",
+        "give Local Luna concrete implementation/evaluation missions rather than vague research prompts",
+        "treat Local Luna outputs as evidence to audit, not authority to accept its own work",
+        "preserve prompt/schema/evaluation version history",
+        "keep hidden holdouts isolated from engineering/tuning agents",
+        "avoid problem-specific tutoring patches when a generic architecture failure explains the evidence",
+        "escalate materially ambiguous product/research choices to the human principal when useful"
+      ]
+    },
+    "local_luna_engineering_orchestrator": {
+      "description": "The local implementation and experiment operator working under durable Sol direction. It may autonomously implement, test, fix, version, run public evaluations, and preserve evidence within the mission and boundaries supplied by Sol and repository contracts.",
+      "owns": [
+        "repo implementation work within assigned mission",
+        "test-first fixes",
+        "new prompt versions when instructed by the durable mission and supported by evidence",
+        "local public evaluation execution",
+        "artifact preservation",
+        "resumable iteration ledgers",
+        "engineering diagnosis of public or burned failures",
+        "routine generic fixes that do not change project intent"
+      ],
+      "does_not_own": [
+        "overall project strategy",
+        "changing the success definition without durable Sol/human direction",
+        "declaring decomposition reliability proven",
+        "declaring learner understanding from aggregate metrics alone",
+        "changing hidden-holdout policy",
+        "revealing or consuming unburned hidden oracle data",
+        "silently replacing human learner evidence with simulated learner evidence",
+        "problem-specific special cases that contradict the generic architecture"
+      ],
+      "must_escalate_or_checkpoint": [
+        "a finding that would materially change product/research direction",
+        "a conflict between deterministic acceptance and learner-visible evidence",
+        "a proposed relaxation of a semantic/evidence/completion invariant",
+        "a need to reveal an unburned hidden case",
+        "a result that appears to qualify or invalidate the core architecture",
+        "repeated failures suggesting the current durable strategy itself is wrong"
+      ]
+    },
+    "measured_luna_decomposer_teacher_student": {
+      "description": "Frozen-run model actors used to generate measured decomposition, tutoring, or simulated learner behavior. Their access and mutation rights are governed by contracts/model-tutoring-agent-boundaries.v0.1.json.",
+      "owns": [
+        "only the current measured inference task"
+      ],
+      "does_not_own": [
+        "prompt changes",
+        "code changes",
+        "acceptance decisions",
+        "project strategy",
+        "hidden oracle access"
+      ]
+    },
+    "terra_or_separate_reviewer": {
+      "description": "Independent critic/reviewer used for transcript, trace, decomposition, or failure analysis when helpful.",
+      "owns": [
+        "diagnostic hypotheses",
+        "independent review findings"
+      ],
+      "does_not_own": [
+        "progression authority",
+        "acceptance override",
+        "project strategy",
+        "hidden-oracle leakage into measured tutoring"
+      ]
+    },
+    "deterministic_validators_and_controller": {
+      "description": "Machine trust boundary for encoded structural, semantic, vocabulary, evidence, progression, completion, provenance, and isolation invariants.",
+      "owns": [
+        "encoded legal transitions",
+        "encoded evidence binding",
+        "encoded semantic and vocabulary constraints",
+        "encoded completion checks",
+        "encoded provenance and candidate identity rules"
+      ],
+      "does_not_own": [
+        "whether an unencoded pedagogical behavior is genuinely good",
+        "human learner experience",
+        "project strategy"
+      ]
+    },
+    "hidden_holdout_evaluator": {
+      "description": "Isolated local evaluator with private holdout access. Exact access controls are governed by contracts/model-tutoring-agent-boundaries.v0.1.json.",
+      "owns": [
+        "private holdout selection/execution within policy",
+        "oracle comparison",
+        "sanitized promotion verdict"
+      ],
+      "does_not_own": [
+        "candidate editing",
+        "prompt tuning",
+        "raw hidden-case disclosure without burn workflow",
+        "overall project strategy"
+      ]
+    }
+  },
+  "decision_classes": {
+    "strategic_product_or_research": {
+      "primary_owner": "chatgpt_sol_project_lead",
+      "final_human_authority": "human_project_principal",
+      "examples": [
+        "what completion means",
+        "whether fixed-turn evaluation is acceptable",
+        "how decomposition should work",
+        "representation/vocabulary policy",
+        "public versus hidden evaluation design",
+        "when a new evaluation phase is warranted"
+      ]
+    },
+    "implementation_and_local_execution": {
+      "primary_owner": "local_luna_engineering_orchestrator",
+      "constraints": [
+        "durable Sol handoff",
+        "repo contracts",
+        "tests",
+        "candidate freeze/versioning",
+        "measured-run isolation"
+      ]
+    },
+    "measured_acceptance": {
+      "primary_owner": "deterministic_validators_and_controller",
+      "additional_required_evidence": [
+        "learner-visible review",
+        "human learner review when the run is a human test",
+        "hidden evaluator verdict for hidden promotion"
+      ],
+      "rule": "No model actor may self-certify a measured run. Aggregate green status cannot override an individual semantic/progression failure."
+    },
+    "human_learner_session": {
+      "primary_owner": "human_project_principal",
+      "session_role": "learner",
+      "engineering_operator": "local_luna_engineering_orchestrator",
+      "analysis_owner_after_run": "chatgpt_sol_project_lead",
+      "rule": "Freeze the candidate before the session. Do not edit prompts/code during the measured conversation. Preserve artifacts first; analyze and change the candidate only afterward."
+    }
+  },
+  "handoff_protocol": {
+    "new_sol_session_start": [
+      "read docs/CHATGPT_SOL_PROJECT_LEAD_HANDOFF.md",
+      "read this ownership contract",
+      "verify current PR #77 head and CI/evidence state",
+      "read latest PR #77 and Issue #63 evidence relevant to the task",
+      "read current primary local Luna handoff if directing local work",
+      "do not assume stale exact-SHA facts remain current"
+    ],
+    "sol_to_luna": [
+      "write or update a durable local mission/handoff",
+      "state current success criteria and non-claims",
+      "state files/contracts that are authoritative",
+      "state exact evidence required back from Luna",
+      "allow Luna to autonomously execute routine engineering within those bounds"
+    ],
+    "luna_to_sol": [
+      "commit/preserve implementation and artifacts",
+      "report exact commit SHA",
+      "report commands/results and failures without upgrading them into unsupported claims",
+      "preserve learner-visible transcripts/traces/plans/ledgers",
+      "escalate strategic or acceptance ambiguities rather than silently redefining the goal"
+    ]
+  },
+  "conflict_resolution": {
+    "rule": "More specific measured-run safety/isolation contracts override this project-level ownership contract for access control. Newer explicit human direction overrides older project strategy. Otherwise the latest durable Sol strategic handoff governs Local Luna execution.",
+    "never_override": [
+      "hidden holdout isolation",
+      "prompt/version provenance requirements",
+      "deterministic evidence binding",
+      "the rule that learner-visible semantic failures cannot be hidden by aggregate pass status"
+    ]
+  }
+}

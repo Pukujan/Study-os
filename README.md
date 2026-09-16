@@ -96,6 +96,15 @@ Transcript language never silently becomes mastery.
 
 Raw learner evidence is private by default. A specific historical recovery transcript was explicitly authorized for public recovery transport; that exception does not change the default privacy boundary.
 
+## Calibration evidence discovery
+
+For learner-facing calibration datasets, historical tutoring trajectories, and derived golden fixtures, start from:
+
+- [`docs/CALIBRATION_INDEX.md`](docs/CALIBRATION_INDEX.md) — canonical human-readable discovery index;
+- [`calibration/manifest.json`](calibration/manifest.json) — machine-readable calibration registry.
+
+Fresh humans and agents should use those registries instead of guessing session dates or treating a `golden/` filename as complete authority. Each indexed dataset records its raw evidence boundary, read order, golden completeness, and PIR/runtime authority status.
+
 ## Operational learning loop
 
 Normal Study OS use is also the primary product-development data stream.

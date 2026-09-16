@@ -1,13 +1,127 @@
 # Agent Handoff
 
-Last updated: 2026-09-03
+Last updated: 2026-09-15
 Primary tracker: #63
+
+### Qualification execution authority
+
+The generic all-DSA run is regression evidence. The bounded next step is the
+frozen-candidate qualification loop defined in
+`docs/MODEL_TUTORING_DECOMPOSITION_RELIABILITY_QUALIFICATION_V1.md` and
+implemented by `tools/run_model_tutoring_autonomous_loop.py`. Use `--resume` to
+continue a checkpoint; do not mix evidence after a candidate fingerprint
+change. A public epoch passing is not a hidden qualification claim.
+
+## Immediate execution authority — all-DSA generic model tutoring
+
+The one-problem Contains Duplicate pilot is no longer the completion target.
+
+The next product proof is the full 14-problem / 210-exchange DSA corpus through one **generic** Luna + schema + deterministic-guardrail architecture.
+
+Primary execution authority:
+
+1. `docs/ALL_DSA_MODEL_TUTORING_HANDOFF.md`
+2. `datasets/dsa-conversation-replay.v0.1.json`
+3. latest model-tutoring evidence / semantic-gate updates in Issue #63
+4. current model-tutoring schemas, prompt registry/versioning, runners, and acceptance code produced under that handoff
+
+The historical one-problem files remain useful evidence:
+
+- `docs/MODEL_TUTORING_PILOT_HANDOFF.md`
+- `tools/run_model_tutoring_contains_duplicate.py`
+- `tools/check_model_tutoring_acceptance.py`
+- v0.1/v0.2 Contains Duplicate transcripts/traces
+
+They are **not** the final architecture boundary.
+
+### Full-corpus target
+
+```text
+14 DSA problems
+× 15 exchanges
+= 210 learner/teacher exchanges
+= 420 learner-visible messages
+```
+
+All 14 problems must use the same generic model-generated teaching path. Do not add a hand-authored canonical lesson per problem and do not replace assets with scenario-specific controller code.
+
+### Required architecture
+
+```text
+raw problem
+    ↓
+Luna problem decomposer
+    ↓
+versioned structured teaching spec
+    - concepts / prerequisites
+    - variables + semantic roles
+    - representations
+    - semantic invariants
+    - completion/base conditions
+    - assistance boundaries
+    ↓
+generic deterministic schema + semantic validation
+    ↓
+learner state
+    ↓
+actual learner message
+    ↓
+Luna diagnosis + learner-outcome assessment
+    ↓
+verbatim learner evidence
+    ↓
+generic deterministic controller authorizes one operation
+    ↓
+Luna learner-visible generation
+    ↓
+generic structural + semantic validation
+    ↓
+learner
+```
+
+Prompt, schema, and deterministic code have separate jobs:
+
+- **prompt**: directs Luna's decomposition/diagnosis/generation behavior;
+- **schema**: makes Luna externalize concepts, semantics, evidence, variables, and progression claims in machine-checkable form;
+- **deterministic code**: validates generic invariants and owns state transitions; it does not author the lesson;
+- **acceptance/calibration**: judges the generated teaching plan and visible conversation against trusted behavior without leaking hidden benchmark assertions to the teacher.
+
+Prompt versioning and prompt evaluation are mandatory for this phase. Every plan/turn must record prompt/model/schema provenance, and candidate prompt versions must be evaluated across all 14 problems plus metamorphic variants rather than on one scenario.
+
+### Local Luna authority
+
+Local Luna owns the whole implementation/fix/test/rerun loop. It should not stop after one problem passes or ask for ordinary implementation decisions that can be resolved from repo evidence.
+
+It should keep fixing the **general architecture** until all 14 pass individually.
+
+### Terra
+
+There is no Terra-specific repository integration today. If Terra is available locally, use it as an independent diagnostic critic of failed teaching plans/transcripts/traces. Terra is advisory only: it does not interact with measured learners, authorize progression, alter acceptance reports, or feed hidden calibration answers into the teacher.
+
+Persist Terra diagnoses separately when used.
+
+### Existing semantic regression that must remain fixed
+
+Contains Duplicate exposed an important failure mode: structurally valid output silently changed the meaning of `box` from “earlier values already passed” into a boolean result. The current semantic correction must remain a regression test while the architecture is generalized.
+
+### Completion boundary
+
+Do not call the architecture proven until:
+
+- all 14 problems are taught through the generic model/schema path;
+- no problem falls back to learner-visible `needs_compilation`;
+- no new per-problem canonical lessons are added;
+- generated teaching plans and every turn have versioned provenance;
+- prompt evaluation exists across the full corpus + metamorphic variants;
+- TDD, differential, metamorphic, property/stateful, mutation, and prompt-regression gates pass;
+- the 14×15 dual-Luna run passes acceptance for every problem;
+- the final transcript/trace receive manual review.
+
+Keep PR #77 draft until this boundary is met.
 
 ## Current phase
 
-**P4 — deterministic learning controller + versioned representation engine + operational improvement loop.**
-
-The product center is no longer persistence repair or an abstract research gate. Study OS is being used for real learning, and the next architecture should make AI teaching behavior deterministic at the control layer while keeping representation generation flexible and versioned.
+**P4 — deterministic learning control + bounded/versioned model representation engine + operational improvement loop.**
 
 ## Accepted live foundation
 
@@ -25,38 +139,6 @@ Current accepted operational foundation includes:
 
 P3 remains supporting infrastructure. Do not restart a broad infrastructure phase unless a real failure requires it.
 
-## Historical recovery — completed for supplied source
-
-The user-authorized historical transcript source has been fully processed to the limit of what that source can establish.
-
-Receipt: `docs/HISTORICAL_TRANSCRIPT_RECOVERY_RECEIPT.md`
-
-Accepted result:
-
-```text
-source SHA verified: PASS
-reviewed outer turns: 34
-backfilled missing: 34
-nested headings ignored: 50
-second reconciliation added: 0
-existing structured learner state unchanged: PASS
-hash/link integrity: PASS
-backup/restore: PASS
-doctor: PASS
-source exhausted: yes
-conversation complete: NOT_ESTABLISHED
-```
-
-Canonical target session after recovery:
-
-```text
-0446d18d-046b-4b8b-a00f-f2f629787bda
-messages: 4 → 38
-raw_artifacts: 4 → 40
-```
-
-Do not repeat recovery from this same source. Only reopen historical reconciliation if genuinely new/stronger source evidence appears.
-
 ## Product thesis
 
 The core moat is the learner ↔ course representation problem.
@@ -68,7 +150,7 @@ DETERMINISTIC COURSE STATE
       ↓
 DETERMINISTIC LEARNING CONTROLLER
       ↓ authorized pedagogical operation
-VERSIONED REPRESENTATION ENGINE
+VERSIONED MODEL / REPRESENTATION ENGINE
       ↓
 GPT LEARNER SURFACE
       ↓
@@ -84,244 +166,51 @@ Preserve productive target difficulty. Remove unnecessary representation difficu
 
 Study OS code/state controls:
 
-- course node/version and prerequisites;
-- learner-control state;
+- current course/concept state;
 - allowed next operations;
+- evidence requirements for progression;
 - assistance ceiling;
 - progression/blocking;
-- fade/restoration requirements;
-- transfer/retention requirements where applicable;
+- mastery semantics;
 - evidence/provenance semantics;
 - module versions.
 
 AI may:
 
+- propose problem decompositions and structured teaching plans;
 - propose diagnosis hypotheses;
+- assess the current learner reply under an explicit schema;
+- quote learner evidence;
 - generate an authorized explanation/representation operation;
 - transform terminology, examples, traces, pseudocode, or code under explicit constraints.
 
 AI may not silently advance curriculum or mark mastery.
 
-## Planning authority
-
-Read in this order:
-
-1. Issue #63
-2. `docs/P4_DETERMINISTIC_LEARNING_CONTROLLER_PDD.md`
-3. `docs/P4_DETERMINISTIC_LEARNING_CONTROLLER_SDD.md`
-4. `docs/ADR-0016-deterministic-learning-control.md`
-5. `docs/ROADMAP.md`
-6. `docs/CURRENT_STATE.md`
-7. latest accepted `docs/DECISIONS.md`
-8. supporting P3 durability/reconciliation docs as needed
-
-## Early product-discovery evidence
-
-Recovered historical learning around dictionaries/Two Sum exposed:
-
-- `seen` produced semantic interference because of prior set association;
-- `index_by_num` remained confusing;
-- `box` was self-reported as clearer;
-- a later dictionary lookup was answered correctly;
-- the same intervention also reduced task complexity/context.
-
-Evidence boundary:
-
-```text
-observed:
-  confusion before; later lookup correct
-
-self-reported:
-  box clearer
-
-derived/proposed:
-  identifier semantic interference contributed
-
-not proven:
-  renaming alone caused improvement
-```
-
-Therefore representation changes and decomposition/context changes must be recorded independently.
-
-## P4 semantic objects to stabilize
-
-Do not jump directly to implementation without preserving these contracts:
-
-```text
-CourseNodeVersion
-ProgressionPolicy
-LearnerControlState
-DiagnosisHypothesis
-PedagogicalOperationDefinition
-DecisionRecord / OperationInvocation
-RepresentationVersion + mapping/lineage
-ModuleVersionSet
-OutcomeRecord
-ReplayEvaluation
-```
-
-Exact table names are not mandated. Reuse existing runtime structures wherever semantics already fit.
-
-## Immediate Luna task — audit completed
-
-### Phase 1 — architecture/schema audit — complete
-
-1. Pulled latest `main` at `7f39f747d5c2d362d1ba95597e7001fd6ecdafda`.
-2. Read Issue #63 + P4 PDD/SDD + ADR-0016.
-3. Inspected current runtime schema/service/MCP contracts against each P4 semantic object.
-4. Recorded the mapping and live read-only runtime observation in
-   `docs/P4_RUNTIME_SCHEMA_AUDIT.md`.
-
-The audit found that the P3/P2 durable substrate is healthy, but no P4-specific
-course-node, learner-control, authoritative decision, module-set, outcome, or
-replay records exist yet. The first implementation candidate is the existing
-versioned `dsa.extrema.update_order@0.1.0` slice; the live `sliding-window`
-checkpoint must not be relabeled to that node without an explicit pinned
-course definition.
-
-The mapping is:
-
-```text
-P4 semantic object
-→ existing table/type/service support
-→ gap
-→ proposed reuse/additive change
-```
-
-5. Do **not** add schema merely because the design document names an object. Reuse existing durable structures where semantics align.
-6. Identify the smallest real current course node suitable for the first vertical slice.
-
-### Phase 2 — proposed smallest vertical slice — next
-
-Design before implementation:
-
-```text
-real course node/version
-→ learner-control state
-→ one deterministic progression policy
-→ operation registry subset
-→ bounded GPT operation envelope
-→ representation/version provenance
-→ learner response/outcome
-→ deterministic state transition
-```
-
-Initial operation subset:
-
-- `try_unaided`
-- `rename_terms`
-- `smaller_step`
-- `show_trace`
-- `give_hint`
-- `restore_original`
-
-The focused TDD/implementation handoff is recorded at the end of
-`docs/P4_RUNTIME_SCHEMA_AUDIT.md`. New persistent semantics will require an
-additive, reversible migration; do not change the live learner store until
-those tests and the migration plan are reviewed.
-
-## Operational improvement loop
-
-Now that sessions persist across chats, normal learning is product-development data.
-
-For meaningful trajectories preserve:
-
-```text
-course node/version
-learner state before
-source representation
-attempt
-observed/self-reported difficulty
-diagnosis hypothesis/version
-authorized operation(s)/version
-representation version
-assistance level
-next learner behavior
-fade/source-restoration outcome
-transfer/retention when applicable
-module version set
-```
-
-System changes must be explicit module versions, not silent prompt drift.
-
-Development loop:
-
-```text
-real trajectories
-→ identify failure
-→ module version N+1
-→ offline replay
-→ prospective real use
-→ keep/promote/revert
-```
-
-Replay output is counterfactual system evaluation, never historical learner evidence.
-
-## Longitudinal dogfooding objective
-
-Keep using Study OS through increasingly difficult real material:
-
-```text
-Python/DSA
-→ LeetCode
-→ complex DSA
-→ system design
-→ AI-system reasoning/debugging
-```
-
-Harder material should expose failures in diagnosis, decomposition, representation, assistance, restoration, and progression. Extend states/operations only when real evidence warrants them.
-
-## Later beta/user expansion
-
-Do not build production auth/multi-tenancy now.
-
-After repeated stable trajectories exist on harder material, beta/authenticated users can test:
-
-> Which mechanisms generalize, which require personalization, and which fail across learners?
-
-Subject 001 remains subject-level evidence until replicated.
-
-## Long-horizon cost architecture
-
-Do not optimize inference cost now, but preserve replaceable module interfaces.
-
-Future implementations may include:
-
-- parsers/AST/compiler transforms;
-- deterministic traces/static analysis;
-- terminology rewriting;
-- templates;
-- retrieval/cached validated representations;
-- sentence embeddings/transformers;
-- small classifiers/task-specific models;
-- IR/language/notation converters;
-- constrained LLM fallback.
-
-The controller remains authority regardless of which implementation fulfills an operation.
-
 ## Non-negotiable invariants
 
 1. No silent learner-evidence loss.
-2. Course progression is controlled by code/state.
-3. AI behavior is bounded by explicit authorized operations.
-4. Transcript text alone never becomes mastery.
-5. AI diagnosis remains a hypothesis.
-6. Multi-dimensional interventions remain multi-dimensional in data.
-7. Source representation remains restorable where claimed.
+2. Corpus simulation labels never become learner evidence.
+3. Advancement requires evidence from the actual learner message.
+4. Course progression is controlled by code/state.
+5. AI behavior is bounded by explicit authorized operations.
+6. Transcript text alone never becomes mastery.
+7. AI diagnosis remains a hypothesis.
 8. Raw evidence survives module/model changes.
 9. Historical learner outcomes are immutable.
 10. Replay/counterfactual outputs never masquerade as experienced learner evidence.
 11. Module evolution is explicit/versioned.
-12. Same canonical controller inputs + controller version produce the same authorization.
-13. Future non-LLM components must be able to fulfill the same module contracts.
-14. Generic SQL/shell/file MCP access remains prohibited.
+12. Future non-LLM components must be able to fulfill the same module contracts.
+13. Generic SQL/shell/file MCP access remains prohibited.
+14. Generated problem semantics cannot silently mutate within a run.
+15. Prompt changes are explicitly versioned and evaluated before promotion.
 
 ## Deprioritized
 
+- one-problem-only proof loops as the final acceptance target;
 - broad frontend work;
 - video infrastructure;
 - generic multimodal platform work;
 - production multi-user auth;
 - deep FOSSIL integration;
-- premature LLM-cost optimization;
+- premature inference-cost optimization;
 - broad hardening unrelated to control/data/evidence integrity.

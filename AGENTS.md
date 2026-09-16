@@ -13,6 +13,22 @@ Read these files before making substantive changes:
 7. `docs/HANDOFF.md`
 8. the nearest nested `AGENTS.md`, if present
 
+When a task concerns historical learner calibration, golden fixtures, transcript evidence, decomposition quality, or pedagogical-control behavior, start with:
+
+- `docs/CALIBRATION_INDEX.md` — canonical human-readable calibration discovery index;
+- `calibration/manifest.json` — machine-readable calibration registry.
+
+Do not search session trees by date first or assume a file under `golden/` is the complete source trajectory. Follow the indexed raw-evidence boundary and read order before treating derived artifacts as authoritative.
+
+When a task concerns model-tutoring strategy, a new decomposition experiment, prompt/controller changes, or claims about what approaches have already been tried, also read:
+
+- `experiments/model-tutoring/README.md` — human experiment-notebook entrypoint;
+- `experiments/model-tutoring/manifest.json` — machine-readable attempt/status registry;
+- `experiments/model-tutoring/HISTORY.md` — concise evidence-scoped history of prior approaches;
+- the active proposal named by the experiment manifest.
+
+Do not label an earlier method `failed` merely because a later method replaced it. Preserve the registry's distinction between `supported`, `insufficient`, `superseded`, `running`, and `failed`.
+
 ## Non-negotiable project invariants
 
 - Canonical raw learning evidence is immutable after capture.
