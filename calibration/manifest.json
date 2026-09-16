@@ -36,6 +36,17 @@
         ],
         "unfinished_scope": "later transcript material, especially parts 06-08, still requires reviewed golden extraction"
       },
+      "transfer_artifacts": [
+        {
+          "artifact": "transfer-calibration",
+          "version": "v0.1",
+          "status": "frozen_reviewed",
+          "json_path": "calibration/cases/sliding-window.subject-001.2026-09-04/transfer-calibration.v0.1.json",
+          "markdown_path": "calibration/cases/sliding-window.subject-001.2026-09-04/transfer-calibration.v0.1.md",
+          "content_sha256": "4d0014d9baee3dc0c5644ee531ecec8c238a27d7d6b5a5db876b11d38bdd9f53",
+          "measured_teacher_boundary": "Load the frozen JSON artifact only; raw evidence paths remain provenance-only and raw transcript contents are forbidden measured-teacher inputs."
+        }
+      ],
       "pir_compilation_status": "unfinished",
       "runtime_authoritative": false,
       "governing_issue": 65,
