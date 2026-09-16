@@ -16,7 +16,10 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 EXPERIMENT_ID = "MT-E001"
-CALIBRATION = ROOT / "calibration/cases/sliding-window.subject-001.2026-09-04/transfer-calibration.v0.1.json"
+CALIBRATION = (
+    ROOT
+    / "calibration/cases/sliding-window.subject-001.2026-09-04/transfer-calibration.v0.1.json"
+)
 OUTPUT_ROOT = ROOT / "artifacts/model-tutoring-experiments/MT-E001"
 PROBLEM = "Given nums and target, return indices of two numbers whose sum is target."
 TEACHER_MODEL = "gpt-5.6-sol"
@@ -24,6 +27,13 @@ STUDENT_MODEL = "gpt-5.6-luna"
 MAX_EXCHANGES = 150
 SEED = 20260915
 TIMEOUT = 240
+
+BLOCKED_CODEX_ITEM_TYPES = {
+    "command_execution",
+    "file_change",
+    "mcp_tool_call",
+    "web_search",
+}
 
 LEARNER_STATES = (
     ("correct", 30),
@@ -43,8 +53,12 @@ STATE_GUIDANCE = {
     "slightly_misaligned": "Answer a nearby relation or confuse two closely related roles.",
     "uncertain": "Attempt the task with visible uncertainty or a tentative check.",
     "ask_why": "Ask one natural beginner why-question about the latest relation.",
-    "ask_smaller_step": "Say the latest step is too large and ask for one smaller concrete step.",
-    "representation_confusion": "Show plausible confusion about notation, diagram, index/value, or variable role.",
+    "ask_smaller_step": (
+        "Say the latest step is too large and ask for one smaller concrete step."
+    ),
+    "representation_confusion": (
+        "Show plausible confusion about notation, diagram, index/value, or variable role."
+    ),
 }
 
 REVIEW_FLAGS = (
@@ -71,7 +85,18 @@ class TeacherTurn:
 
 
 class CodexSession:
-    def __init__(self, *, label: str, model: str, bootstrap: str, cwd: Path, codex_bin: str, timeout: int) -> None:
+    """One measured local Codex role with resumable visible-conversation recovery."""
+
+    def __init__(
+        self,
+        *,
+        label: str,
+        model: str,
+        bootstrap: str,
+        cwd: Path,
+        codex_bin: str,
+        timeout: int,
+    ) -> None:
         self.label = label
         self.model = model
         self.bootstrap = bootstrap
@@ -81,7 +106,15 @@ class CodexSession:
         self.thread_id: str | None = None
 
     def _command(self, resume: str | None) -> list[str]:
-        cmd = [self.codex_bin, "exec", "--json", "--color", "never", "--model", self.model]
+        cmd = [
+            self.codex_bin,
+            "exec",
+            "--json",
+            "--color",
+            "never",
+            "--model",
+            self.model,
+        ]
         cmd.extend(["resume", resume, "-"] if resume else ["-"])
         return cmd
 
@@ -94,12 +127,21 @@ class CodexSession:
                 event = json.loads(line)
             except json.JSONDecodeError:
                 continue
+            if not isinstance(event, dict):
+                continue
             if event.get("type") == "thread.started":
                 thread_id = event.get("thread_id") or thread_id
-            if event.get("type") == "item.completed":
-                item = event.get("item") or {}
-                if item.get("type") == "agent_message" and str(item.get("text", "")).strip():
-                    messages.append(str(item["text"]).strip())
+                continue
+            if event.get("type") != "item.completed":
+                continue
+            item = event.get("item") or {}
+            item_type = str(item.get("type", ""))
+            if item_type in BLOCKED_CODEX_ITEM_TYPES:
+                raise RuntimeError(
+                    f"measured actor attempted forbidden tool activity: {item_type}"
+                )
+            if item_type == "agent_message" and str(item.get("text", "")).strip():
+                messages.append(str(item["text"]).strip())
         if not messages:
             raise RuntimeError("Codex returned no agent message")
         return thread_id, messages[-1]
@@ -118,15 +160,22 @@ class CodexSession:
                 prompt = "\n\n".join(parts)
             try:
                 result = subprocess.run(
-                    self._command(resume), input=prompt, text=True, encoding="utf-8",
-                    capture_output=True, cwd=self.cwd, check=False, timeout=self.timeout,
+                    self._command(resume),
+                    input=prompt,
+                    text=True,
+                    encoding="utf-8",
+                    capture_output=True,
+                    cwd=self.cwd,
+                    check=False,
+                    timeout=self.timeout,
                 )
-            except subprocess.TimeoutExpired as exc:
+            except subprocess.TimeoutExpired:
                 last_error = RuntimeError(f"{self.label} timed out")
                 self.thread_id = None
                 continue
             if result.returncode != 0:
-                last_error = RuntimeError((result.stderr or result.stdout or "Codex failed").strip())
+                detail = (result.stderr or result.stdout or "Codex failed").strip()
+                last_error = RuntimeError(detail)
                 self.thread_id = None
                 continue
             try:
@@ -156,11 +205,11 @@ def parse_teacher(raw: str) -> TeacherTurn:
         text = "\n".join(lines[1:-1]).strip() if len(lines) >= 3 else text
     decoder = json.JSONDecoder()
     payload = None
-    for i, ch in enumerate(text):
-        if ch != "{":
+    for offset, char in enumerate(text):
+        if char != "{":
             continue
         try:
-            value, _ = decoder.raw_decode(text[i:])
+            value, _ = decoder.raw_decode(text[offset:])
         except json.JSONDecodeError:
             continue
         if isinstance(value, dict):
@@ -180,7 +229,9 @@ def parse_teacher(raw: str) -> TeacherTurn:
     return TeacherTurn(status, bridge.strip(), message.rstrip())
 
 
-def conversation(records: list[dict[str, Any]], pending_teacher: TeacherTurn | None = None) -> str:
+def conversation(
+    records: list[dict[str, Any]], pending_teacher: TeacherTurn | None = None
+) -> str:
     parts: list[str] = []
     for row in records:
         parts.append("TEACHER:\n" + row["teacher_message"])
@@ -197,7 +248,8 @@ TARGET PROBLEM
 {problem}
 
 FROZEN PEDAGOGICAL CALIBRATION MANUAL
-Transfer its teaching granularity, interaction control, and representation behavior. Do not copy Sliding Window solution structure, vocabulary, constants, or stage order.
+Transfer its teaching granularity, interaction control, and representation behavior.
+Do not copy Sliding Window solution structure, vocabulary, constants, or stage order.
 
 {calibration}
 
@@ -237,35 +289,52 @@ TARGET PROBLEM
 
 def next_run_dir(root: Path) -> Path:
     root.mkdir(parents=True, exist_ok=True)
-    used = [int(p.name[4:]) for p in root.iterdir() if p.is_dir() and p.name.startswith("run-") and p.name[4:].isdigit()]
-    path = root / f"run-{max(used, default=0)+1:03d}"
+    used = [
+        int(path.name[4:])
+        for path in root.iterdir()
+        if path.is_dir() and path.name.startswith("run-") and path.name[4:].isdigit()
+    ]
+    path = root / f"run-{max(used, default=0) + 1:03d}"
     path.mkdir()
     return path
 
 
 def write_jsonl(rows: list[dict[str, Any]], path: Path) -> None:
-    tmp = path.with_name(path.name + ".tmp")
-    tmp.write_text("".join(json.dumps(r, ensure_ascii=False) + "\n" for r in rows), encoding="utf-8")
-    tmp.replace(path)
+    temp = path.with_name(path.name + ".tmp")
+    temp.write_text(
+        "".join(json.dumps(row, ensure_ascii=False) + "\n" for row in rows),
+        encoding="utf-8",
+    )
+    temp.replace(path)
 
 
-def render_html(meta: dict[str, Any], rows: list[dict[str, Any]], final_teacher: TeacherTurn | None) -> str:
+def render_html(
+    meta: dict[str, Any],
+    rows: list[dict[str, Any]],
+    final_teacher: TeacherTurn | None,
+) -> str:
     cards = []
     for row in rows:
-        flags = "".join(f'<label><input type="checkbox" data-flag="{html.escape(k)}"> {html.escape(label)}</label>' for k, label in REVIEW_FLAGS)
-        cards.append(f'''<section class="exchange" data-id="{row['exchange_id']}">
+        flags = "".join(
+            f'<label><input type="checkbox" data-flag="{html.escape(key)}"> '
+            f"{html.escape(label)}</label>"
+            for key, label in REVIEW_FLAGS
+        )
+        cards.append(
+            f'''<section class="exchange" data-id="{row['exchange_id']}">
 <h2>Exchange {row['exchange_id']}</h2>
 <p><b>Bridge:</b> {html.escape(row['active_bridge'])} · <b>fuzz state:</b> {html.escape(row['learner_state'])}</p>
 <h3>Teacher</h3><pre>{html.escape(row['teacher_message'])}</pre>
 <h3>Learner</h3><pre>{html.escape(row['learner_message'])}</pre>
 <details open><summary>Review</summary><div class="flags">{flags}</div><textarea data-comment rows="3" placeholder="What could be better?"></textarea></details>
-</section>''')
+</section>'''
+        )
     closure = ""
     if final_teacher:
         closure = f'''<section class="exchange"><h2>Final teacher closure</h2><p><b>{html.escape(final_teacher.status)}</b> · {html.escape(final_teacher.active_bridge)}</p><pre>{html.escape(final_teacher.message)}</pre></section>'''
     meta_json = json.dumps(meta, ensure_ascii=False)
     meta_pre = html.escape(json.dumps(meta, ensure_ascii=False, indent=2))
-    flag_names = json.dumps([k for k, _ in REVIEW_FLAGS])
+    flag_names = json.dumps([key for key, _ in REVIEW_FLAGS])
     return f'''<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{html.escape(meta['run_id'])} review</title>
 <style>body{{font-family:system-ui;max-width:1100px;margin:auto;padding:24px;background:#f6f6f7}}header,.exchange{{background:#fff;border:1px solid #ddd;border-radius:12px;padding:18px;margin-bottom:18px}}pre{{white-space:pre-wrap;font-family:ui-monospace,monospace;background:#fafafa;border:1px solid #ddd;border-radius:8px;padding:14px}}.flags{{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;margin:12px 0}}textarea{{width:100%;box-sizing:border-box}}button{{margin:4px;padding:8px 12px}}</style></head><body>
 <header><h1>MT-E001 — Sol calibration transfer</h1><p><b>{html.escape(meta['status'])}</b> · {len(rows)} exchanges</p><p><b>Problem:</b> {html.escape(meta['problem'])}</p><button id="tsv">Export TSV</button><button id="json">Export JSON</button><button id="clear">Clear review</button><details><summary>Run metadata</summary><pre>{meta_pre}</pre></details></header>
@@ -278,17 +347,17 @@ document.getElementById('json').onclick=()=>dl(META.run_id+'-review.json',JSON.s
 
 
 def main() -> int:
-    p = argparse.ArgumentParser(description="Run MT-E001 Sol calibration transfer")
-    p.add_argument("--calibration", type=Path, default=CALIBRATION)
-    p.add_argument("--problem", default=PROBLEM)
-    p.add_argument("--teacher-model", default=TEACHER_MODEL)
-    p.add_argument("--student-model", default=STUDENT_MODEL)
-    p.add_argument("--seed", type=int, default=SEED)
-    p.add_argument("--max-exchanges", type=int, default=MAX_EXCHANGES)
-    p.add_argument("--output-root", type=Path, default=OUTPUT_ROOT)
-    p.add_argument("--codex-bin", default="codex")
-    p.add_argument("--timeout-seconds", type=int, default=TIMEOUT)
-    args = p.parse_args()
+    parser = argparse.ArgumentParser(description="Run MT-E001 Sol calibration transfer")
+    parser.add_argument("--calibration", type=Path, default=CALIBRATION)
+    parser.add_argument("--problem", default=PROBLEM)
+    parser.add_argument("--teacher-model", default=TEACHER_MODEL)
+    parser.add_argument("--student-model", default=STUDENT_MODEL)
+    parser.add_argument("--seed", type=int, default=SEED)
+    parser.add_argument("--max-exchanges", type=int, default=MAX_EXCHANGES)
+    parser.add_argument("--output-root", type=Path, default=OUTPUT_ROOT)
+    parser.add_argument("--codex-bin", default="codex")
+    parser.add_argument("--timeout-seconds", type=int, default=TIMEOUT)
+    args = parser.parse_args()
     if args.max_exchanges < 1:
         raise SystemExit("--max-exchanges must be >= 1")
 
@@ -304,15 +373,25 @@ def main() -> int:
     (run_dir / "calibration-input.json").write_bytes(calibration_bytes)
 
     meta: dict[str, Any] = {
-        "schema_version": "study-os.mt-e001-run.v0.1", "experiment_id": EXPERIMENT_ID,
-        "run_id": run_id, "status": "running", "problem": args.problem,
-        "teacher_model": args.teacher_model, "student_model": args.student_model,
-        "seed": args.seed, "max_exchanges": args.max_exchanges,
+        "schema_version": "study-os.mt-e001-run.v0.1",
+        "experiment_id": EXPERIMENT_ID,
+        "run_id": run_id,
+        "status": "running",
+        "problem": args.problem,
+        "teacher_model": args.teacher_model,
+        "student_model": args.student_model,
+        "seed": args.seed,
+        "max_exchanges": args.max_exchanges,
         "calibration_file_sha256": calibration_sha,
-        "isolation": {"teacher_repo_access": False, "student_repo_access": False,
-                      "raw_sliding_window_transcript_supplied": False,
-                      "historical_two_sum_regression_script_supplied": False,
-                      "actor_working_directory": "temporary empty directory outside repository"},
+        "isolation": {
+            "actor_cwd_contains_repository": False,
+            "actor_cwd": "temporary empty directory outside repository",
+            "tool_use_forbidden_by_contract": True,
+            "known_codex_tool_events_rejected": sorted(BLOCKED_CODEX_ITEM_TYPES),
+            "filesystem_hard_isolation_claimed": False,
+            "raw_sliding_window_transcript_supplied": False,
+            "historical_two_sum_regression_script_supplied": False,
+        },
     }
     manifest = run_dir / "run-manifest.json"
     manifest.write_text(json.dumps(meta, indent=2) + "\n", encoding="utf-8")
@@ -322,37 +401,89 @@ def main() -> int:
     final_teacher: TeacherTurn | None = None
     reason = "anti_loop_ceiling_exhausted"
 
-    with tempfile.TemporaryDirectory(prefix="study-os-mt-e001-") as tmp:
-        cwd = Path(tmp)
-        teacher = CodexSession(label="Sol teacher", model=args.teacher_model, bootstrap=teacher_bootstrap(calibration_text, args.problem), cwd=cwd, codex_bin=args.codex_bin, timeout=args.timeout_seconds)
-        student = CodexSession(label="synthetic learner", model=args.student_model, bootstrap=student_bootstrap(args.problem), cwd=cwd, codex_bin=args.codex_bin, timeout=args.timeout_seconds)
+    with tempfile.TemporaryDirectory(prefix="study-os-mt-e001-") as temp_dir:
+        cwd = Path(temp_dir)
+        teacher = CodexSession(
+            label="Sol teacher",
+            model=args.teacher_model,
+            bootstrap=teacher_bootstrap(calibration_text, args.problem),
+            cwd=cwd,
+            codex_bin=args.codex_bin,
+            timeout=args.timeout_seconds,
+        )
+        student = CodexSession(
+            label="synthetic learner",
+            model=args.student_model,
+            bootstrap=student_bootstrap(args.problem),
+            cwd=cwd,
+            codex_bin=args.codex_bin,
+            timeout=args.timeout_seconds,
+        )
 
-        teacher_turn = parse_teacher(teacher.ask("Begin at the smallest useful grounded starting point. Do not dump a full plan or solution."))
-        for n in range(1, args.max_exchanges + 1):
+        teacher_turn = parse_teacher(
+            teacher.ask(
+                "Begin at the smallest useful grounded starting point. "
+                "Do not dump a full plan or solution."
+            )
+        )
+        for exchange_number in range(1, args.max_exchanges + 1):
             if teacher_turn.status == "complete":
-                final_teacher, reason = teacher_turn, "teacher_declared_integrated_completion"
+                final_teacher = teacher_turn
+                reason = "teacher_declared_integrated_completion"
                 break
+
             state = choose_state(rng)
-            student_msg = student.ask(
-                f"Teacher message:\n\n{teacher_turn.message}\n\nResponse-quality state: {state}\nGuidance: {STATE_GUIDANCE[state]}\n\nReply with exactly one learner-visible message.",
+            learner_message = student.ask(
+                f"Teacher message:\n\n{teacher_turn.message}\n\n"
+                f"Response-quality state: {state}\n"
+                f"Guidance: {STATE_GUIDANCE[state]}\n\n"
+                "Reply with exactly one learner-visible message.",
                 recovery_context=conversation(rows, teacher_turn),
             ).strip()
-            rows.append({"schema_version":"study-os.mt-e001-exchange.v0.1","exchange_id":n,"active_bridge":teacher_turn.active_bridge,"learner_state":state,"teacher_message":teacher_turn.message,"learner_message":student_msg})
+            rows.append(
+                {
+                    "schema_version": "study-os.mt-e001-exchange.v0.1",
+                    "exchange_id": exchange_number,
+                    "active_bridge": teacher_turn.active_bridge,
+                    "learner_state": state,
+                    "teacher_message": teacher_turn.message,
+                    "learner_message": learner_message,
+                }
+            )
             write_jsonl(rows, run_dir / "transcript.jsonl")
-            teacher_turn = parse_teacher(teacher.ask(
-                f"Learner reply:\n\n{student_msg}\n\nRespond to this evidence. Continue or complete under the calibration contract.",
-                recovery_context=conversation(rows),
-            ))
+
+            teacher_turn = parse_teacher(
+                teacher.ask(
+                    f"Learner reply:\n\n{learner_message}\n\n"
+                    "Respond to this evidence. Continue or complete under the "
+                    "calibration contract.",
+                    recovery_context=conversation(rows),
+                )
+            )
             if teacher_turn.status == "complete":
-                final_teacher, reason = teacher_turn, "teacher_declared_integrated_completion"
+                final_teacher = teacher_turn
+                reason = "teacher_declared_integrated_completion"
                 break
         else:
             final_teacher = teacher_turn
 
-    status = "completed" if final_teacher and final_teacher.status == "complete" else "failed"
-    meta.update({"status":status,"completion_reason":reason,"exchange_count":len(rows),"final_teacher_status":final_teacher.status if final_teacher else None})
+    status = (
+        "completed"
+        if final_teacher is not None and final_teacher.status == "complete"
+        else "failed"
+    )
+    meta.update(
+        {
+            "status": status,
+            "completion_reason": reason,
+            "exchange_count": len(rows),
+            "final_teacher_status": final_teacher.status if final_teacher else None,
+        }
+    )
     manifest.write_text(json.dumps(meta, indent=2) + "\n", encoding="utf-8")
-    (run_dir / "review.html").write_text(render_html(meta, rows, final_teacher), encoding="utf-8")
+    (run_dir / "review.html").write_text(
+        render_html(meta, rows, final_teacher), encoding="utf-8"
+    )
     print(f"MT-E001 {status}: {run_dir}")
     print(f"Review: {run_dir / 'review.html'}")
     return 0 if status == "completed" else 2
