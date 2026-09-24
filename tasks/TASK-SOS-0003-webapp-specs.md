@@ -148,6 +148,30 @@ Blocked/uncertain:
 Next:
 - Re-enable auto-merge on PR #96; after merge, post the merge receipt on #83; no further SOS-0003 work
 
+### 2026-09-24 21:53:31 UTC — Grok Bot executor (for Pukujan)
+
+<!-- continuity:checkpoint {"agent":"Grok Bot executor (for Pukujan)","blocked":["Go-live needs Alex: D017 acceptance, Vercel project, Cloudflare tunnel login, gravebuster deploy access, INFERHUB/OPENROUTER/PostHog keys in gravebuster /srv/study-os/.env"],"changed":["docs/webapp/**"],"completed":["Recorded the owner-chosen tier-2 route: OpenRouter Decisions API, pinned typesafe/jev-1.13 (never ~typesafe/jev-latest in production), OPENROUTER_API_KEY, reference adapter typesafe-ai/system-one-adapter-python","Live Jev probe: 4 calls (one HTTP 400 because score criteria must be an ordered array; fixed) plus a 12-item mini grading set scoring 11/12, with all confidence>=0.9 predictions correct, 0.16-0.26 s per call"],"decisions":["Only the env var name is referenced in specs; the key was loaded in-process from the approved box env file and never printed or committed"],"evidence":["Commit ddc0707f0ae98cb897f4b00939a72faba5081fd6; PCM preflight TARGET_VALID; validate_repo passed"],"next_action":"Re-enable auto-merge on PR #96; after merge, post the merge receipt on #83","protocol_version":"0.1.0-draft","schema":"project-continuity.checkpoint.v1","task_id":"SOS-0003","timestamp":"2026-09-24T21:53:31Z"} -->
+<!-- continuity:checkpoint-operation {"payload_sha256":"b9010d01ba8d032eccadd1592615d7dfdccc74f2e721f524f84e2078e822cc87","request_id":"sos-0003-cp4-20260924","schema":"project-continuity.checkpoint-operation.v1","task_id":"SOS-0003"} -->
+
+Completed:
+- Recorded the owner-chosen tier-2 route: OpenRouter Decisions API, pinned typesafe/jev-1.13 (never ~typesafe/jev-latest in production), OPENROUTER_API_KEY, reference adapter typesafe-ai/system-one-adapter-python
+- Live Jev probe: 4 calls (one HTTP 400 because score criteria must be an ordered array; fixed) plus a 12-item mini grading set scoring 11/12, with all confidence>=0.9 predictions correct, 0.16-0.26 s per call
+
+Evidence:
+- Commit ddc0707f0ae98cb897f4b00939a72faba5081fd6; PCM preflight TARGET_VALID; validate_repo passed
+
+Decisions:
+- Only the env var name is referenced in specs; the key was loaded in-process from the approved box env file and never printed or committed
+
+Changed:
+- docs/webapp/**
+
+Blocked/uncertain:
+- Go-live needs Alex: D017 acceptance, Vercel project, Cloudflare tunnel login, gravebuster deploy access, INFERHUB/OPENROUTER/PostHog keys in gravebuster /srv/study-os/.env
+
+Next:
+- Re-enable auto-merge on PR #96; after merge, post the merge receipt on #83
+
 ## Handoff
 
 Read PROJECT → CURRENT → this task → `docs/webapp/README.md`. Checkpoint before stopping.
