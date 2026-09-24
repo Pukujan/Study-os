@@ -63,7 +63,19 @@ Notation: **P-xxx** = invariant (must always hold; a violation is a bug). **Test
 | P-LLM-5 | Spend guard: when month-to-date cost ≥ the cap, interpreter operations degrade to deterministic fallbacks and learning continues. |
 | P-LLM-6 | A route change is a new `interpreter_route` module version (recorded, never silent). |
 
-### 2.5 Memory (#88)
+### 2.5 Decision layer (#97)
+
+| ID | Property |
+|---|---|
+| P-DEC-1 | **Rules first.** If a tier-1 rule can classify the input, no model is called (the call counter stays at zero for rule-gradable items in the T0 corpus). |
+| P-DEC-2 | **Confidence gating.** A tier-2 decision is acted on only when its confidence ≥ τ(question_type, model_version). Below τ it escalates to tier 3 or becomes `unresolved`. Decisions that feed mastery-bearing states use τ_mastery ≥ τ. |
+| P-DEC-3 | **Every decision is logged** with model id/version, full distribution, confidence, threshold, route, escalation, latency, and cost. About 5% (configurable, seeded) of auto-accepted tier-2 decisions carry `audit_sample=true` and get a tier-3/reviewer label. |
+| P-DEC-4 | **Affect never gates progression.** Frustration/sentiment/wants-answer signals (Laya or rules) may only change pacing, offer a break, or shorten a step. They never change capability states, grades, or `current_step_id` (model-based test). |
+| P-DEC-5 | **Pinned versions.** No alias (`jev-latest`) is used. A version change without re-fitted τ fails startup. |
+| P-DEC-6 | **Swappable interface.** The controller depends only on the `/v1/systemone` contract. Hosted Jev, Laya, and a fine-tuned model pass the same contract tests. |
+| P-DEC-7 | **Next-step selection makes no model call** (rules + pyBKT + FSRS; later bandits log propensity for every choice). |
+
+### 2.6 Memory (#88)
 
 | ID | Property |
 |---|---|
@@ -73,7 +85,7 @@ Notation: **P-xxx** = invariant (must always hold; a violation is a bug). **Test
 | P-MEM-4 | Self-report never produces a capability claim. |
 | P-MEM-5 | Deleting memory never deletes learning events. Memory can be rebuilt from events (projection determinism). |
 
-### 2.6 Frontend (#84)
+### 2.7 Frontend (#84)
 
 | ID | Property |
 |---|---|
@@ -105,7 +117,7 @@ Measured per learner (N=1 each; within-learner product evidence only, not popula
 - Learning signal: ≥60% of KCs that reached `pass_unaided` also reach `pass_delayed` at their first scheduled delayed check. For HESI: the delayed-review correct rate trends up over weeks.
 - Help efficiency: median assistance level at first correct answer falls over repeated KCs.
 - UX: the share of steps with a "frustrated" reaction trends down, and the "helped" share of corrections is ≥50%.
-- Tutor quality: 0 learner-visible invariant violations. Interpreter first-pass validation rate ≥95%. T1 agent-eval pass ≥98% of turns.
+- Tutor quality: 0 learner-visible invariant violations. Interpreter first-pass validation rate ≥95%. T1 agent-eval pass ≥98% of turns. Auto-accepted grades have ≥95% precision on the audit sample. Learner grade-dispute rate <5%.
 - Operations: API availability ≥99% (home host, measured), p95 deterministic-turn latency <300 ms, p95 interpreter turn <10 s, 0 data loss (restore drill passes monthly).
 - Cost: interpreter spend ≤ US$5/month at beta volume (a guard, not a goal; Alex prioritizes quality).
 

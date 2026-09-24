@@ -4,23 +4,30 @@
 
 ```text
 precompiled lesson graph (PIR / subject pack)   ← authored + reviewed + promoted generations
-            │  deterministic, no LLM
+            │  deterministic, no model call
             ▼
-web session controller (pure state machine)  ── owns progression, assistance ceiling, fade, capability states
-            │ needs interpretation?  (free text / unmatched answer / step failed twice)
+web session controller (pure state machine)  ── owns progression, assistance ceiling, fade, capability states;
+            │                                     next step = rules + pyBKT + FSRS (bandit later)
+            │ learner input
             ▼
-LLM interpreter (IRE/InferHub)  ── returns a typed proposal only
-            │
+interpretation cascade (typed; every decision logged)
+   1. rules: MCQ key / exact / regex / integer / trace / unit tests            $0, ms
+   2. hosted Jev /v1/systemone: grading (noul per rubric point), misconception (choice + none_of_these)
+                                                                               ≈$0, 70–500 ms
+      Laya-421M on gravebuster: frustration / wants-answer / sentiment only (after calibration; never gates progression)
+   3. frontier LLM via IRE (cb/glm-5.3 → cb/deepseek-v4.1-flash): only when confidence < τ, or to rewrite a failed step
+            │ typed proposal
             ▼
 controller validation  ── pass → effect applied / shown      fail → repair once → canonical fallback
             │
             ▼
-append-only learning + UX events  → learner memory (derived) → analytics views
+append-only learning + UX + decision events (xAPI-shaped) → learner memory (derived) → analytics (Metabase; PostHog UX mirror)
             │
-            └─► promotion queue: validated generations that helped → reviewed → new graph revision
+            └─► promotion: validated generations that helped → reviewed → new graph revision
+                decisions a rule reproduces ≥98% → new state-machine rule (upgrade path c)
 ```
 
-This is ADR-0016 applied to the web. **The hot path makes no LLM call.** An LLM is called only when the deterministic grader cannot classify an answer, or when the controller authorizes a `rewrite_failed_step` operation. Every accepted generation is a candidate asset. Once reviewed and promoted, it is served deterministically to later learners, which drives the marginal cost per learner toward zero.
+This is ADR-0016 applied to the web, with the decision layer adopted from [DEEP_RESEARCH.md](DEEP_RESEARCH.md) §6.7–6.8 and §7.5. **The hot path makes no model call.** A typed decision model runs only when rules cannot classify an input. A frontier LLM runs only when the decision model is below its confidence threshold, or when the controller authorizes `rewrite_failed_step`. Every accepted generation is a candidate asset. Once reviewed and promoted, it is served deterministically to later learners, which drives the marginal cost per learner toward zero.
 
 ## 2. Components
 
@@ -30,11 +37,12 @@ This is ADR-0016 applied to the web. **The hot path makes no LLM call.** An LLM 
 | API | FastAPI + uvicorn, Pydantic strict models, SSE | Auth, session endpoints, idempotent attempt ingestion, streaming turns | #85 |
 | Session controller | Pure Python (`study_os.web.controller`) wrapping `study_os.pir.controller` | State machine (§3), capability-state transitions, FSRS scheduling | #90 |
 | Graders | Deterministic: integer/sequence/text (existing `classify_response`), MCQ/SATA/order/dosage (new) | Classify attempts. Emit `UNRESOLVED` when unsure, so the case goes to the interpreter | #90, #91 |
-| Interpreter | InferHub OpenAI-compatible client, forced tool/JSON schema | `grade_free_text`, `diagnose_misconception`, `rewrite_failed_step`, `propose_memory` | #89 |
+| Decision layer | Jev-compatible `/v1/systemone` client (hosted Jev; Laya via `laya-serve` on gravebuster; swappable via `jev-compatible-server`/`llm2jev`), per-type temperature and τ config | Typed decisions: grade, misconception, affect/intent; decision log; 5% audit sampling | #97 |
+| LLM interpreter | InferHub OpenAI-compatible client, forced tool/JSON schema | Low-confidence escalation of `grade_free_text`/`diagnose_misconception`, `rewrite_failed_step`, `propose_memory` | #89 |
 | Validator | Deterministic | Schema, answer-leak, mastery-language, one-question, one-relation, chart-preserved, word budget, PII | #89, #90 |
 | Memory | Postgres `memory.*` + `learner.md` renderer | Evaluation-scoped learner model | #88 |
 | Store | Postgres 16 | Append-only `learn.*`, `ux.*`; `auth.*`; `analytics.*` views | #87 |
-| Analytics | Metabase OSS, DuckDB | Dashboards over `analytics.*` | #93 |
+| Analytics | Metabase OSS, DuckDB; PostHog Cloud (non-PII UX mirror) | Learning dashboards over `analytics.*`; UX funnels/flags/experiments | #93 |
 | Evals | pytest harness + persona agents | Agent-vs-agent conformance | #92 |
 | Edge | Vercel (static app), Cloudflare Tunnel (API) | Serving and exposure | #94 |
 
@@ -61,6 +69,7 @@ START ─► REVIEW_DUE ─(none due)─► PRESENT_STEP
           incorrect → correction on the chart + reassurance → RETRY_DIFFERENT (different example)
                         → AWAIT_ATTEMPT → correct → CHECK (one more different example) → ADVANCE
                         → incorrect again → rewrite_failed_step (interpreter, if authorized) or smaller_step
+        wheel-spinning (≥10 opportunities on a KC without 3 correct in a row) → stop drilling → prerequisite probe
         repeated failure beyond the policy limit → BLOCKED (flag for review; never fake progress)
         end of plan → SESSION_DONE (summary: capability states + next review date; never "mastered")
 ```
@@ -69,16 +78,32 @@ Each transition is recorded as a `learn.turn` with `(state_before, event, state_
 
 Capability promotion (per KC) follows the existing states. `pass_supported` means correct at A1–A6. `pass_unaided` means correct at A0. `pass_transfer` means an unaided correct answer on an unseen transfer item. `pass_delayed` means an unaided correct answer on a later day without re-teaching. "Mastery" is only ever a derived label requiring **unaided + transfer + delayed + 2 unseen items**, and the UI still words it as "strong evidence", not a guarantee.
 
-## 4. LLM interpreter operations
+## 4. Interpretation cascade
+
+### 4.1 Tiers
+
+| Decision | Tier 1: rules | Tier 2: decision model (Jev-compatible) | Tier 3: frontier LLM (IRE) | Stakes gate |
+|---|---|---|---|---|
+| Grade an attempt | MCQ/SATA key, integer/sequence, exact/regex text, dosage with units, trace equality, code unit tests | Hosted Jev: `noul` per rubric point + `choice` {pass, partial, fail} | `grade_free_text` when Jev confidence < τ_grade, or a `none` label | Grades that feed `pass_unaided`/`pass_transfer`/`pass_delayed` need rules, **or** Jev ≥ τ_mastery (stricter), **or** LLM + Jev agreement. Otherwise record `unresolved` and ask again |
+| Which misconception | Regex/trace patterns promoted from logs (path c) | Hosted Jev `choice` over the node's misconception list + `none_of_these` | `diagnose_misconception` on low confidence or `none_of_these`; the output feeds new-misconception discovery | Stored as a `derived` hypothesis only |
+| Frustration / wants the answer / sentiment | Behavioral rules (e.g. 3+ fails in a row ∧ latency rising ∧ help ≥ A3; rapid resubmits under 2 s) | **Laya-421M** on gravebuster (`choice`, not `noul`, per Laya issue #156), active only after calibration | none | Low stakes. May shorten a step or offer a break. **Never gates progression** |
+| Rewrite a failed step | — | — | `rewrite_failed_step` (the only true generation duty) | Full validator (PROPERTIES §2.4); stored as a promotion candidate |
+| Next step | Rules/state machine + pyBKT + FSRS | — | never | Deterministic; bandit later among equally valid actions, with propensity logged |
+
+Thresholds τ are fitted per question type on a **Study OS public split** of reviewer-labelled decisions (target ≥95% precision in the auto-accept band). A blind split is kept untouched, following the eval-lab protocol. τ is re-fitted whenever a model version is pinned (e.g. `jev-1.13.0`, a `laya@<commit>`). Until enough labels exist, τ starts conservative (e.g. 0.9) and more decisions escalate to tier 3. That costs a little more, but it is safe.
+
+**Day-one decision logging** (DATA_MODEL `learn.decision`): state hash, full question schema, model id and version, full probability distribution, confidence, threshold, route, escalation outcome, latency, cost, and later the ground truth (reviewer label, next unaided outcome, learner dispute). **About 5% of high-confidence tier-2 decisions are randomly also sent to tier 3 or to review** (`audit_sample=true`), so precision in the auto-accept band can be measured.
+
+### 4.2 LLM operations (tier 3)
 
 | Operation | When the controller calls it | Output (tool schema) | Validation |
 |---|---|---|---|
-| `grade_free_text` | Deterministic grader returns `UNRESOLVED` on a text step | `{outcome: correct/partial/incorrect/unresolved, matched_expectations[], misconception_ids[], confidence}` | outcome ∈ enum; misconception ids ∈ the step's listed set; confidence < 0.7 ⇒ treated as `unresolved` |
-| `diagnose_misconception` | Two or more incorrect answers on a KC | `{hypotheses:[{id, confidence, evidence_turn_ids}]}` | ids ∈ the KC misconception catalog; stored as `derived` |
+| `grade_free_text` | Tier 1 cannot classify and tier 2 is below τ (or unavailable) | `{outcome: correct/partial/incorrect/unresolved, matched_expectations[], misconception_ids[], confidence}` | outcome ∈ enum; misconception ids ∈ the step's listed set; confidence < 0.7 ⇒ `unresolved` |
+| `diagnose_misconception` | Tier 2 is low-confidence or returns `none_of_these` | `{hypotheses:[{id, confidence, evidence_turn_ids}]}` | ids ∈ the KC catalog, or `new_candidate` with a description (goes to review); stored as `derived` |
 | `rewrite_failed_step` | Same step failed twice and the policy authorizes it | `{markdown, chart_spec_ref, question, new_relations:1, operation}` | full validator (PROPERTIES §2.4); the chart spec must equal the step's chart spec or an allowed variant |
 | `propose_memory` | Session end | `{ops:[{op, kind, key, value, evidence_turn_ids}]}` | memory scope rules (DATA_MODEL §4) |
 
-Envelope rules: the prompt contains the step's canonical content, allowed components, forbidden components, and the hidden answer **only as a "must not appear" constraint**. It never contains account ids, handles, or free-text beyond the current attempt (PII-scrubbed). Streaming is on (SSE to the client for rewrites). Tool/JSON output is forced.
+Envelope rules (all tiers that see learner text): send only step context and the PII-scrubbed current answer. Never send account ids, handles, or free-form personal notes. The hidden answer appears only as a "must not appear" constraint for rewrites. Streaming is on for tier 3, and tool/JSON output is forced.
 
 ### Promotion loop (cheap scaling)
 
@@ -104,7 +129,8 @@ gravebuster (Ubuntu 24.04, Docker Compose, no inbound ports)
    ├─ api          (FastAPI, uvicorn, 2 workers)
    ├─ postgres:16  (volume /srv/study-os/pg, nightly pg_dump → /srv/study-os/backups, 14 dailies + 8 weeklies)
    ├─ metabase     (bound to the tailscale interface only: http://gravebuster.tail733a0f.ts.net:3000)
-   └─ secrets      (/srv/study-os/.env, mode 600: DB password, session secret, INFERHUB_API_KEY)
+   ├─ laya         (laya-serve, CPU/ONNX, internal network only, LAYA_API_KEY set; slice 2, after calibration)
+   └─ secrets      (/srv/study-os/.env, mode 600: DB password, session secret, INFERHUB_API_KEY, TYPESAFE_API_KEY, LAYA_API_KEY, POSTHOG_PROJECT_KEY)
 admin: ssh gravebuster over Tailscale (yoav)
 ```
 

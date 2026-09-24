@@ -2,7 +2,19 @@
 
 Scope: what the hosted web app should borrow, and the infrastructure choices (hosting, auth, memory, analytics). This complements the existing [`docs/OSS_TUTORING_DONOR_AUDIT.md`](../OSS_TUTORING_DONOR_AUDIT.md) (Tutor MCP, ScaffoldLM, OATutor, Oppia, catsim, DeepTutor, pyBKT/pyKT, FSRS) and does not repeat it.
 
-> **Companion deep-research report.** A separate report on edtech UX analytics, pedagogy, production architectures, and the LLM-as-interpreter cost model is being prepared (working path `/workspace/research/study-os-deep-research.md` on the shared agent box; it is not in this repo). It did not exist when this PR was opened. When it lands, fold its sources and findings into §1, §4, and §5 through a follow-up under #82. This file is deliberately lighter on those areas.
+> **Companion deep-research report:** [DEEP_RESEARCH.md](DEEP_RESEARCH.md) covers edtech UX analytics, learning science, production architectures, curriculum-to-graph compilation, the cost model, and the decision layer (Jev and Jev-compatible models, measured in the public `Pukujan/eval-lab`). Where this file and that report differ, §0 below is authoritative for the web-app spec.
+
+## 0. Adopted decisions from the deep-research report
+
+| # | Decision | Evidence (DEEP_RESEARCH section) | Where it lands in this spec |
+|---|---|---|---|
+| 1 | **Rules first.** Deterministic checks (MCQ key, exact/regex, integer/sequence, trace equality, unit tests) always run before any model. | §6.7 cascade; §0 | ARCHITECTURE §4, PROPERTIES P-DEC-1 |
+| 2 | **Hosted Jev** (`POST https://api.typesafe.ai/v1/systemone`, version pinned, e.g. `jev-1.13.0`) handles **answer grading** (`noul` per rubric point, `choice` pass/partial/fail) and **misconception choice** (`choice` over the node's precompiled misconception list plus `none_of_these`). eval-lab blind rubric-judging accuracy: **89.87%** (760 records; 50.26% majority baseline). Price about **$0.042 per 1M input tokens**, output free. | §6.1, §6.2, §6.8 | ARCHITECTURE §4, #97 |
+| 3 | **Laya-421M self-hosted on gravebuster** (CPU/ONNX, `laya-serve` with `LAYA_API_KEY` set) handles **low-stakes signals only**: frustration, wants-the-answer, sentiment. It becomes active only **after per-question-type temperature calibration on Study OS data**, and affect never gates progression. It is **not** used for grading: eval-lab measured 48.53% zero-shot on rubric judging. | §6.2, §6.3, §6.8 | ARCHITECTURE §4, P-DEC-4, #97 |
+| 4 | A **frontier LLM runs only on low confidence and for rewriting failed steps.** In this spec that tier is the IRE/InferHub route `cb/glm-5.3`, with fallback `cb/deepseek-v4.1-flash` ([LLM_ROUTE.md](LLM_ROUTE.md)). | §6.7, §6.8 | ARCHITECTURE §4, #89 |
+| 5 | **Next-step selection is deterministic**: rules/state machine, then knowledge tracing (pyBKT per KC), then spaced repetition (FSRS). A contextual bandit (Vowpal Wabbit) comes later, and only among equally valid actions. **Propensities are logged from day one.** | §6.7 | ARCHITECTURE §3, #90 |
+| 6 | **Analytics:** the app's own append-only Postgres log with **xAPI-shaped events** is the source of truth. **Metabase on Postgres** handles learning metrics. **PostHog** gets a mirror of *non-PII UX events* for funnels, retention, flags, and experiments. **Power BI only for aggregates**, never for event-sequence analysis. | §1.4, §7.3 | §5 below, DATA_MODEL §3, #93 |
+| 7 | **Day-one decision logging and switch criteria:** every decision request, model version, full distribution, confidence, threshold, route, escalation, eventual ground truth, latency, and cost is logged. About **5% of high-confidence decisions** go to audit. Per decision type, one of three upgrade paths is chosen by explicit criteria: (a) fine-tune ModernBERT/Laya, (b) fix the harness, (c) convert the decision into a state-machine rule. | §7.5 | DATA_MODEL `learn.decision`, BUILD_PLAN "Decision-layer upgrade path", P-DEC-2/3 |
 
 Evidence labels used below: **[E]** empirical research finding; **[P]** product practice (publicly described, efficacy not established); **[D]** design inference for Study OS.
 
@@ -59,23 +71,23 @@ Constraints: two learners now, possibly a small beta later, **no personal data**
 
 ## 5. Analytics — and the Power BI question
 
-**Plain answer: Power BI can do it, but it is the wrong primary tool here.** Power BI Desktop can connect to Postgres (Npgsql is bundled), and DAX is fine for measures. But:
-
+**Plain answer: use Power BI only for aggregate reporting, if at all. It should not be the analytics backbone.** Power BI Desktop can connect to Postgres (Npgsql is bundled), and DAX is fine for measures over aggregates such as retention tables and capability-state counts by topic. It is weak for event-sequence analysis (wheel-spinning runs, time between attempts, help-level trajectories). There are also practical costs:
 - authoring is Windows-only;
-- scheduled refresh from a home Postgres needs the **on-premises data gateway, which is Windows-only** ([Microsoft Learn](https://learn.microsoft.com/en-us/power-bi/connect-data/refresh-scheduled-refresh)) and would run on Teresa-Pujan, not gravebuster;
-- publishing and sharing needs a **Pro license**, with 8 refreshes/day on Pro;
-- it adds a second metric language (DAX) next to SQL, for two users.
+- scheduled refresh from a home Postgres needs the **on-premises data gateway, which is Windows-only** ([Microsoft Learn](https://learn.microsoft.com/en-us/power-bi/connect-data/refresh-scheduled-refresh)) and would have to run on Teresa-Pujan;
+- sharing needs a **Pro license**, with 8 refreshes/day.
 
-If Alex wants DAX practice for career reasons, Power BI Desktop can read the same read-only `analytics.*` views over Tailscale at no cost. It just should not be on the critical path.
+If Alex wants DAX practice, point Power BI Desktop at the read-only `analytics.agg_*` views over Tailscale.
 
-| Tool | Fit |
-|---|---|
-| **Postgres views (`analytics.*`) + Metabase OSS** ([docs](https://www.metabase.com/docs/latest/)) | **Recommended.** One Docker container (about 1–2 GB RAM), SQL-native, good dashboards and alerts, runs on gravebuster, reached over the tailnet only. |
-| DuckDB ([postgres extension](https://duckdb.org/docs/extensions/postgres)) | Recommended for ad-hoc and notebook analysis and for exports. No server. |
-| Evidence.dev ([evidence.dev](https://evidence.dev)) | Optional: markdown+SQL reports in git, good for a weekly "what worked" report. |
-| Grafana | Optional for ops metrics (latency, errors, LLM spend). Not needed for learning analytics. |
-| Apache Superset | Capable but heavier than Metabase with no benefit at this scale. |
-| PostHog | Not at first. Self-hosted hobby deploy wants 8–16 GB RAM ([docs](https://posthog.com/docs/self-host)), which exceeds gravebuster's free headroom. Cloud would send behavior data to a third party. First-party UX events (DATA_MODEL §3) cover sentiment and frustration. Revisit for session replay only if a beta grows. |
+**Adopted stack (deep research §1.4, §7.3):**
+
+| Layer | Tool | Role |
+|---|---|---|
+| Source of truth | Postgres on gravebuster: append-only `learn.*`/`ux.*`, with xAPI-shaped `learn.event` (actor = pseudonymous `subject_id`, verb, object = step/KC, result, context) | All learning evidence, decisions, and UX signals |
+| Learning metrics | **Metabase OSS** ([docs](https://www.metabase.com/docs/latest/)) on `analytics.*` views, tailnet-only | Capability progress, `pass_delayed` at 3/10/30 days, wheel-spinning, interpreter quality (accuracy vs reviewer labels, ECE/Brier, escalation rate, cost per learner-hour) |
+| UX product analytics and experiments | **PostHog Cloud** (free tier: 1M events/month) receives a **mirror of an allowlisted set of non-PII UX events** (session start/end, step shown, abandonment step, reaction kind, streak) keyed by a rotating per-install hash, with IP capture disabled and no autocapture or session replay | Funnels, D1/D7/D30 retention, feature flags, experiment assignment. The app still logs arm and propensity itself |
+| Ad-hoc | DuckDB ([postgres extension](https://duckdb.org/docs/extensions/postgres)) | Notebook analysis, exports, eval scorecards |
+| Aggregates for DAX (optional) | Power BI Desktop → `analytics.agg_*` | Aggregate reporting only |
+| Not adopted | Self-hosted PostHog (8–16 GB RAM, [docs](https://posthog.com/docs/self-host), exceeds gravebuster's headroom); Superset (heavier than Metabase with no gain); Learning Locker LRS (maintenance mode) | — |
 
 ## 6. Content licensing for HESI
 

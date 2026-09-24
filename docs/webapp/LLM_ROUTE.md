@@ -4,7 +4,7 @@
 
 - The IRE runbook (`docs/INFERHUB-API-SETUP.md` in Pukujan/inference-recommendation-engine, local checkout on Teresa-Pujan at `641a7f9`) says: routes under **0.10 USDC per 1M tokens** count as effectively free; prefer recommendation-eligible Top 20/Top 20+ entries; verify live route, price, and tool/stream support; record snapshot and route.
 - Owner direction on 2026-09-24: cheap calls through IRE routes are pre-approved. **Tutoring quality and reliability matter more than cost.** Cost must never block progress, but route and price must be recorded, and a pricier route is never picked silently.
-- Architecture: the LLM is an **interpreter only** (ARCHITECTURE §4). Volume is therefore low: only unresolved free-text, diagnoses, and rewrites of failed steps.
+- Architecture: the IRE route is **tier 3** of the interpretation cascade (ARCHITECTURE §4). Tier 1 is rules. Tier 2 is hosted Jev for grading and misconception choice, and Laya on gravebuster for low-stakes affect signals. The frontier LLM is called only when tier 2 is below its confidence threshold, for audit samples, and to rewrite failed steps. Volume is therefore low.
 
 ## 2. Snapshot used
 
@@ -62,6 +62,10 @@ This is why the validator (P-LLM-2) must include a cue-strength check at T1/T2, 
 | Avoid for now | `cbcn/*` GLM routes; `ali/qwen3.8-max` for the tutor | — | 503 no-capacity at probe time; hint leakage and tool finish quirk |
 
 Cost expectation: about $0.00001–0.00002 per interpretation. Even 2,000 interpretations/day is under $0.05/day. Spend cap: **US$5/month** (P-LLM-5 degrades to deterministic content; it never blocks learning). Raise it freely if quality needs it.
+
+## 5a. Relation to hosted Jev (tier 2)
+
+Jev is not an IRE/InferHub route. It is TypeSafe's closed API (`POST https://api.typesafe.ai/v1/systemone`, about $0.042 per 1M input tokens, output free; waitlist access, also offered via Vercel AI Gateway as `typesafe-ai/jev`). eval-lab measured it at 89.87% on 760 blind rubric-judging records, versus 97–99% for Qwen Flash routes ([DEEP_RESEARCH.md §6.2](DEEP_RESEARCH.md#62-measured-results-from-eval-lab-primary-evidence)). It was **not** probed live in this task: no key is available to this agent, and access is Alex's decision. Until a Jev key exists, tier 2 grading/misconception decisions fall through to tier 3 (`cb/glm-5.3`) with the same logging, which costs more per decision but still only cents per day. Note that eval-lab also measured `Qwen3.8 Flash` via InferHub at 99.21% on the same blind pool. It is a strong candidate for tier-3 **grading** specifically (not rewriting), to be confirmed with a Study OS grading set (#97).
 
 ## 6. Operating rules
 

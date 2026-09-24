@@ -43,10 +43,29 @@ learn.interpretation(id pk, turn_id fk, operation text, route text, model text, 
 learn.generation(generation_id pk, interpretation_id fk, step_id, content_json jsonb, validated bool,
               next_check_outcome text null, promotion_state in ('none','candidate','approved','rejected','promoted'),
               promoted_revision_id null)
+learn.decision(decision_id pk, turn_id fk null, decision_type in ('grade','misconception','affect','intent','sentiment','next_step'),
+              state_hash text, question_schema jsonb, route in ('rule','decision_model','frontier_llm','human','cache'),
+              model_id text, model_version text, question_type in ('choice','noul','score') null,
+              label text, probabilities jsonb, confidence real, threshold_used real, escalated bool,
+              audit_sample bool, latency_ms int, tokens_in int, tokens_out int, cost_usd numeric(12,8), created_at)  -- append-only
+learn.decision_label(decision_id fk, label text, source in ('reviewer','deterministic_verifier','llm_adjudication','learner_outcome','learner_dispute'),
+              quality in ('gold','silver'), created_at)        -- ground truth arrives later; train on gold+silver, evaluate on gold only
+learn.experiment_assignment(subject_id, experiment_id, arm, assignment_unit, propensity real, created_at)   -- logged from day one
 learn.review_schedule(subject_id, kc_id or item_id, fsrs_state jsonb, due_at, updated_at)   -- projection
 ```
 
-`response_text_scrubbed`: the free-text answer after the PII scrubber (#95). Numeric/choice answers are stored as-is. Raw pre-scrub text is **never** persisted.
+`response_text_scrubbed`: the free-text answer after the PII scrubber (#95). Numeric/choice answers are stored as-is. Raw pre-scrub text is **never** persisted. `learn.*` on gravebuster is the private evidence store. Analytics views and the PostHog mirror carry `answer_hash` (sha256), never answer text.
+
+### 2.1 xAPI-shaped event view
+
+`analytics.v_learning_event` projects turns, attempts, decisions, and UX rows into one xAPI-shaped stream, following the schema in [DEEP_RESEARCH.md §7.3](DEEP_RESEARCH.md#73-analytics-event-schema-no-pii):
+- actor = `learner_key` (a hash of `subject_id`);
+- verb = `event_type`: step_shown, answer_submitted, hint_requested, help_level_changed, step_rewritten, session_start/end, idle, tab_hidden/visible, self_report, probe_scheduled/taken, mastery_changed;
+- object = subject/KC/step/`pir_version`;
+- result = grade, help_level, attempt_no, latency_ms, capability_state_after;
+- context = interpreter/decision fields, misconception hypothesis, affect, experiment arm/propensity.
+
+This keeps Caliper/LRS export possible later without changing the storage tables.
 
 ## 3. UX signals (sentiment, frustration, what works)
 
@@ -59,6 +78,8 @@ learn.review_schedule(subject_id, kc_id or item_id, fsrs_state jsonb, due_at, up
 | Abandon (tab hidden > 10 min mid-step / no resume in 24 h) | client lifecycle + server | observed | `ux.lifecycle` |
 | Frustration index = f(consecutive incorrect, rapid resubmits < 2 s, `frustrated` taps, abandon after correction) | computed | derived (versioned formula) | `analytics.v_friction` |
 | What works = next-check unaided correct rate by `operation × representation × served_from` | computed | derived | `analytics.v_operation_effect` |
+
+**PostHog mirror (UX only, allowlisted, sent server-side by the API so the browser makes no third-party requests).** The mirrored events are session_start, session_end, step_shown, answer_submitted (grade and help level only), reaction, abandon, streak_updated, and flag exposure. `distinct_id` = a hash of `subject_id` with a per-deployment salt. `$ip` capture is disabled, and autocapture and session replay are off. No text, KC names, or answers are mirrored beyond ids.
 
 Not collected: keystrokes, mouse paths, session replay, IP, user agent, geolocation, device fingerprint, and free-text feedback, unless the learner opts in per message and it passes the scrubber.
 

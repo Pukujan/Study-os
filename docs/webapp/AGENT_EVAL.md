@@ -12,7 +12,7 @@ Results are **system evaluation only**. They are never learner evidence and are 
 persona (script + misconception model + optional LLM voice)
         │ attempt text / choice / reactions
         ▼
-in-process API client  ─►  FastAPI app (TestClient) ─► controller ─► graders ─► interpreter (stub | recorded | live)
+in-process API client  ─►  FastAPI app (TestClient) ─► controller ─► rules ─► decision model (stub | recorded | Jev/Laya) ─► LLM (stub | recorded | live)
         ▲                                                                           │
         └──────── turn payloads (markdown, chart spec, allowed actions) ◄────────────┘
                                    │
@@ -57,6 +57,9 @@ Mirrors `Pukujan/study-os-benchmarker` codes (pin a commit; `d438988` observed 2
 | `CUE_TOO_STRONG` | web (T1+) | The hint states the rule or all operands for the asked quantity (lexical rules per step, e.g. listing every window value); tuned from LLM_ROUTE §4 findings |
 | `PII_PERSISTED` | web | A canary PII string is found in the DB or in LLM request bodies |
 | `CONTROLLER_BYPASS` | web | State changed without a controller transition record |
+| `LOW_CONFIDENCE_ACTED` | web | A tier-2 decision below τ changed a grade or state (P-DEC-2) |
+| `AFFECT_GATED_PROGRESSION` | web | An affect/intent signal changed a grade, capability state, or step (P-DEC-4) |
+| `MODEL_CALL_ON_RULE_ITEM` | web | A model was called for a rule-gradable input (P-DEC-1) |
 | `INTERPRETER_FALLBACK_RATE` | web (metric) | The share of interpreter calls ending in fallback (threshold alert, not a failure) |
 
 Each detector ships with a **targeted mutation test**: a mutated asset/turn that the detector must catch. This follows the existing `docs/P4_PIR_MUTATION_GATE.md` practice.
@@ -70,6 +73,10 @@ Each detector ships with a **targeted mutation test**: a mutated asset/turn that
 | **T2** | Before promoting a graph revision or changing the route | Live | Live | T1 + LearnLM-style rubric judge on samples | Cap $2/run | Owner review of the scorecard |
 
 Cassettes are refreshed from T1 runs, but only synthetic transcripts are recorded (never learner data). Changing a cassette is a reviewed diff.
+
+## Relation to the decision-layer evals
+
+Agent-vs-agent runs check **tutor behavior**. Decision accuracy and calibration are measured separately, following the eval-lab protocol ([DEEP_RESEARCH.md §7.4](DEEP_RESEARCH.md#74-experiment-loop)): a frozen Study OS grading/misconception set (a public split for τ fitting, a blind split for decisions) is re-run on every model or threshold change (#97). Persona transcripts can seed candidate items for that set only after reviewer labelling.
 
 ## Output
 
