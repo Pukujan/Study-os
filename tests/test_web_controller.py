@@ -216,6 +216,10 @@ class HesiControllerTests(unittest.TestCase):
         self.assertEqual(_parse_choice("C.", 4), 2)
         self.assertIsNone(_parse_choice("5", 4))
         self.assertIsNone(_parse_choice("maybe", 4))
+        self.assertEqual(_parse_choice("2 (because the cell divides)", 4), 1)
+        self.assertEqual(_parse_choice("option D", 4), 3)
+        self.assertIsNone(_parse_choice("a cell membrane", 4))
+        self.assertIsNone(_parse_choice("12", 4))
 
 
 @requires_web

@@ -138,6 +138,8 @@ def create_app(
             "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; "
             "script-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self' https://accounts.google.com"
         )
+        if settings.cookie_secure:
+            response.headers["Strict-Transport-Security"] = "max-age=31536000"
         if path.startswith("/api/"):
             response.headers["Cache-Control"] = "no-store"
         return response

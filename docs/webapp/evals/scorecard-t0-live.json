@@ -1,0 +1,91 @@
+{
+  "schema_version": "study-os.agent-evals.v1",
+  "mode": "live",
+  "runs": 4,
+  "seeds": 1,
+  "personas": [
+    "struggler",
+    "chatty"
+  ],
+  "violations_by_code": {},
+  "conformance_passed": {
+    "dsa": true,
+    "ap_digestive_urinary": true,
+    "vocab_health_terms": true
+  },
+  "db_stats": {
+    "attempts": 92,
+    "rule_decisions": 92,
+    "jev_decisions": 27,
+    "llm_decisions": 2,
+    "validated_generations": 7,
+    "fallbacks": 2
+  },
+  "end_states": {
+    "AWAIT_ATTEMPT": 1,
+    "SESSION_DONE": 3
+  },
+  "outcomes": {
+    "correct": 45,
+    "incorrect": 47
+  },
+  "runs_detail": [
+    {
+      "persona": "struggler",
+      "track": "dsa",
+      "seed": 0,
+      "topic": null,
+      "steps": 60,
+      "end_state": "AWAIT_ATTEMPT",
+      "outcomes": {
+        "correct": 20,
+        "incorrect": 40
+      },
+      "info": [
+        "step_cap_reached"
+      ],
+      "violations": []
+    },
+    {
+      "persona": "struggler",
+      "track": "hesi",
+      "seed": 0,
+      "topic": "vocab_health_terms",
+      "steps": 11,
+      "end_state": "SESSION_DONE",
+      "outcomes": {
+        "correct": 4,
+        "incorrect": 7
+      },
+      "info": [],
+      "violations": []
+    },
+    {
+      "persona": "chatty",
+      "track": "dsa",
+      "seed": 0,
+      "topic": null,
+      "steps": 19,
+      "end_state": "SESSION_DONE",
+      "outcomes": {
+        "correct": 19
+      },
+      "info": [],
+      "violations": []
+    },
+    {
+      "persona": "chatty",
+      "track": "hesi",
+      "seed": 0,
+      "topic": "ap_digestive_urinary",
+      "steps": 2,
+      "end_state": "SESSION_DONE",
+      "outcomes": {
+        "correct": 2
+      },
+      "info": [],
+      "violations": []
+    }
+  ],
+  "passed": true
+}

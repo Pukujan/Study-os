@@ -20,7 +20,7 @@ Alex and his wife need to study daily on a hosted app; D017 was accepted and ame
 ## Allowed files
 
 - `src/study_os/web/**`, `web/**`, `deploy/**`, `tests/test_web_*.py`, `tools/web_*.py`, `tools/run_agent_evals.py`
-- `pyproject.toml`, `requirements-dev.txt`, `requirements-dev.lock`, `.github/workflows/**`
+- `pyproject.toml`, `requirements-dev.txt`, `requirements-dev.lock`, `.github/workflows/**`, `.gitignore` (build artifacts), `tools/verify_built_package.py` (web package data)
 - `docs/DECISIONS.md` (D017 status, D018), `docs/webapp/**`, `docs/HANDOFF.md`, `PROJECT_MANIFEST.yaml` (web track note), `tasks/TASK-SOS-0004-first-slice.md`
 
 ## Human outcome

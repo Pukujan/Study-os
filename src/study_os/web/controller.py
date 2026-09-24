@@ -9,6 +9,7 @@ No I/O and no model calls happen here (P-DEC-7); grading outcomes arrive as inpu
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -566,10 +567,20 @@ def rule_grade(ctx: ProbeContext, response: str) -> str:
     return result.value
 
 
+_CHOICE_DIGIT = re.compile(r"^\s*(?:option\s*|choice\s*)?([1-9])(?:[\s).:,-]|$)", re.I)
+_CHOICE_LETTER = re.compile(r"^\s*(?:option\s*|choice\s*)?([a-i])(?:[).:]|$)", re.I)
+
+
 def _parse_choice(text: str, n: int) -> int | None:
-    t = text.strip().lower().rstrip(".)")
-    if t.isdigit() and 1 <= int(t) <= n:
-        return int(t) - 1
-    if len(t) == 1 and "a" <= t <= chr(ord("a") + n - 1):
-        return ord(t) - ord("a")
+    """Accept '2', '2) …', 'B', 'b.' or 'option C'; never a bare article like 'a cell'."""
+
+    t = text.strip()
+    m = _CHOICE_DIGIT.match(t)
+    if m and 1 <= int(m.group(1)) <= n:
+        return int(m.group(1)) - 1
+    m = _CHOICE_LETTER.match(t)
+    if m:
+        idx = ord(m.group(1).lower()) - ord("a")
+        if idx < n:
+            return idx
     return None
