@@ -95,6 +95,30 @@ Blocked/uncertain:
 Next:
 - Open the PR with Refs #83, enable auto-merge, post receipts on #83 and #82; then close out SOS-0003
 
+### 2026-09-24 21:47:14 UTC — Grok Bot executor (for Pukujan)
+
+<!-- continuity:checkpoint {"agent":"Grok Bot executor (for Pukujan)","blocked":["Implementation needs Alex: D016 acceptance, Vercel project, Cloudflare tunnel login, gravebuster deploy access, InferHub key on gravebuster"],"changed":["tasks/TASK-SOS-0003-webapp-specs.md","docs/HANDOFF.md"],"completed":["Opened PR #96 (Refs #83) and closed out SOS-0003: task completed, continuity:current cleared"],"decisions":["Close out in-PR like SOS-0001 so the HANDOFF marker diff against main is zero and does not conflict with the concurrent SOS-0002 branch"],"evidence":["Closeout commit 9265155226743f7afc364508f45bfb678ea84a03; PCM preflight TARGET_VALID; validate_repo passed"],"next_action":"Confirm PR #96 merged with required checks and post the merge receipt on #83; no further SOS-0003 work","protocol_version":"0.1.0-draft","schema":"project-continuity.checkpoint.v1","task_id":"SOS-0003","timestamp":"2026-09-24T21:47:14Z"} -->
+<!-- continuity:checkpoint-operation {"payload_sha256":"dd21d780ce0b14897f7263040c8969dba10f7e3e09e0c70d532b1e33bf78f00e","request_id":"sos-0003-cp2-20260924","schema":"project-continuity.checkpoint-operation.v1","task_id":"SOS-0003"} -->
+
+Completed:
+- Opened PR #96 (Refs #83) and closed out SOS-0003: task completed, continuity:current cleared
+
+Evidence:
+- Closeout commit 9265155226743f7afc364508f45bfb678ea84a03; PCM preflight TARGET_VALID; validate_repo passed
+
+Decisions:
+- Close out in-PR like SOS-0001 so the HANDOFF marker diff against main is zero and does not conflict with the concurrent SOS-0002 branch
+
+Changed:
+- tasks/TASK-SOS-0003-webapp-specs.md
+- docs/HANDOFF.md
+
+Blocked/uncertain:
+- Implementation needs Alex: D016 acceptance, Vercel project, Cloudflare tunnel login, gravebuster deploy access, InferHub key on gravebuster
+
+Next:
+- Confirm PR #96 merged with required checks and post the merge receipt on #83; no further SOS-0003 work
+
 ## Handoff
 
 Read PROJECT → CURRENT → this task → `docs/webapp/README.md`. Checkpoint before stopping.
