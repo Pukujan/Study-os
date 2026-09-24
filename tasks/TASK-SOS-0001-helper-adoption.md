@@ -1,8 +1,8 @@
 # TASK-SOS-0001 — Helper adoption: Study OS owns its continuity state
 
-<!-- continuity:task {"acceptance":["continuity preflight --root <Study-os> at the pinned PCM commit prints MODE: TARGET_VALID","schemas/v1/** is byte-identical to PCM schemas/v1 at the pinned commit",".content-system/system-version.json pins the CGM repository, version, and full commit, and the pinned CGM validator result is recorded including any remaining gap","AGENTS.md states Study OS is authoritative and the helpers are pinned tooling only","validate_repo.py, the engineering baseline, and the full unittest suite stay green, plus a new offline adoption test","no private-repository content is copied"],"depends_on":[],"goal":"Make Pukujan/Study-os the validated owner of its continuity and human-facing content state, using PCM (mature-repository overlay) and CGM (pinned target adapter) as pinned helpers only.","id":"SOS-0001","issue_url":"https://github.com/Pukujan/Study-os/issues/78","next_action":"Review the PR for #78; after merge and confirmed checks, mark SOS-0001 completed and clear the continuity:current active task in docs/HANDOFF.md.","owner":"Pukujan (GitHub assignee); primary writer: Grok Bot executor session on task/SOS-0001-helper-adoption","priority":"P2","protocol_version":"0.1.0-draft","schema":"project-continuity.task.v1","status":"active","why":"Existing Study OS documents already own project facts, but nothing machine-checkable declared that ownership or pinned the helper repositories, so agents could treat helper state, chat, or moving helper main branches as authority."} -->
+<!-- continuity:task {"acceptance":["continuity preflight --root <Study-os> at the pinned PCM commit prints MODE: TARGET_VALID","schemas/v1/** is byte-identical to PCM schemas/v1 at the pinned commit",".content-system/system-version.json pins the CGM repository, version, and full commit, and the pinned CGM validator result is recorded including any remaining gap","AGENTS.md states Study OS is authoritative and the helpers are pinned tooling only","validate_repo.py, the engineering baseline, and the full unittest suite stay green, plus a new offline adoption test","no private-repository content is copied"],"depends_on":[],"goal":"Make Pukujan/Study-os the validated owner of its continuity and human-facing content state, using PCM (mature-repository overlay) and CGM (pinned target adapter) as pinned helpers only.","id":"SOS-0001","issue_url":"https://github.com/Pukujan/Study-os/issues/78","next_action":"None for SOS-0001. Verify PR #79 merged with required checks and that #78 is closed with a closing receipt; start the next issue-backed task separately.","owner":"Pukujan (GitHub assignee); primary writer: Grok Bot executor session on task/SOS-0001-helper-adoption","priority":"P2","protocol_version":"0.1.0-draft","schema":"project-continuity.task.v1","status":"completed","why":"Existing Study OS documents already own project facts, but nothing machine-checkable declared that ownership or pinned the helper repositories, so agents could treat helper state, chat, or moving helper main branches as authority."} -->
 
-- Status: active
+- Status: completed
 - Owner: Pukujan (GitHub assignee)
 - Priority: P2
 - Depends on: none
@@ -31,18 +31,18 @@ A fresh agent or collaborator opening Study OS can tell, and mechanically check,
 
 ## Scope and boundaries
 
-- In scope: PCM overlay, CGM adapter pin, ownership rules, offline adoption test. A CI step running the pinned PCM validator is prepared but not committed: the available GitHub token lacks the `workflow` scope needed to push workflow changes.
+- In scope: PCM overlay, CGM adapter pin, ownership rules, offline adoption test, and a CI step that runs the pinned PCM validator (added in `ec2cd66` after the token gained the `workflow` scope).
 - Out of scope: runtime, MCP, domain schema, or migration changes; README rewrite; generated imagery (deferred until R0); repository settings such as branch protection or auto-merge; any content from private repositories.
-- Dependencies/uncertainty: PCM's GitHub progression contract expects required CI plus auto-merge; Study OS `main` currently has neither branch protection nor auto-merge enabled. That is a repository-settings decision for the owner and is not changed here.
+- Dependencies/uncertainty: PCM's GitHub progression contract expects required CI plus auto-merge. On 2026-09-24, with owner authorization, repository auto-merge was enabled and `main` protection was set to require `Validate research harness` and `Python 3.11 compatibility` on up-to-date branches (no required reviews, admins not enforced). These settings live on GitHub, not in this file.
 
 ## Acceptance criteria
 
-- [ ] `continuity preflight --root .` at PCM `0b3be9ca80da816de4621ac4e85612990084216e` prints `MODE: TARGET_VALID`.
-- [ ] `schemas/v1/**` byte-identical to that PCM commit.
-- [ ] `.content-system/system-version.json` pins CGM `0.4.0` at `f85e88bc00362c53061d95ac7811bd9c6ada8e32`; the pinned CGM validator result is recorded, including the remaining gap.
-- [ ] `AGENTS.md` states Study OS is authoritative and helpers are pinned tooling only.
-- [ ] Existing checks stay green, plus `tests/test_helper_adoption.py`.
-- [ ] No private-repository content is copied.
+- [x] `continuity preflight --root .` at PCM `0b3be9ca80da816de4621ac4e85612990084216e` prints `MODE: TARGET_VALID`.
+- [x] `schemas/v1/**` byte-identical to that PCM commit.
+- [x] `.content-system/system-version.json` pins CGM `0.4.0` at `f85e88bc00362c53061d95ac7811bd9c6ada8e32`; the pinned CGM validator result is recorded, including the remaining gap.
+- [x] `AGENTS.md` states Study OS is authoritative and helpers are pinned tooling only.
+- [x] Existing checks stay green, plus `tests/test_helper_adoption.py`.
+- [x] No private-repository content is copied.
 
 ## Evidence and sources
 
@@ -53,7 +53,7 @@ A fresh agent or collaborator opening Study OS can tell, and mechanically check,
 ## Related records
 
 - Leaf issue #78; parent: none; dependencies: none.
-- Primary writer / branch: Grok Bot executor session / `task/SOS-0001-helper-adoption`; source issue revision: #78 as created 2026-09-24; as-of status: implementation pushed, PR review pending.
+- Primary writer / branch: Grok Bot executor session / `task/SOS-0001-helper-adoption`; source issue revision: #78 as created 2026-09-24; as-of status: completed; closeout commit pushed to PR #79, merge pending at this commit (live result on #78).
 - PR/CI evidence and push receipt: posted on #78 after push.
 
 ## Checkpoint log
@@ -100,6 +100,15 @@ Blocked/uncertain:
 
 Next:
 - Review the PR for #78; after merge and confirmed checks, mark SOS-0001 completed and clear the continuity:current active task in docs/HANDOFF.md.
+
+## Closeout (2026-09-24, Grok Bot executor for Pukujan)
+
+Owner-authorized closeout. Not a `continuity checkpoint` run, because that command only records checkpoints for active tasks.
+
+- Added the pinned PCM preflight step to `.github/workflows/ci.yml` (`ec2cd66`). CI run [36059729613](https://github.com/Pukujan/Study-os/actions/runs/36059729613): `Validate research harness` passed (step output `MODE: TARGET_VALID`), and `Python 3.11 compatibility` passed.
+- Repository settings: auto-merge enabled. `main` protection requires `Validate research harness` and `Python 3.11 compatibility` with strict up-to-date branches, no required reviews, and admins not enforced.
+- Status set to completed. The `continuity:current` active task is cleared in `docs/HANDOFF.md`.
+- Still open: the CGM asset gap (owner decision; see PR #79 known gaps). The merge SHA and #78 closure are recorded on #78, not here (receipt-only transitions).
 
 ## Handoff
 
