@@ -45,5 +45,6 @@ pre.chart { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monosp
 .reactions { display: flex; gap: 0.4rem; margin-top: 0.5rem; }
 .chip { border: 1px solid var(--line); background: none; border-radius: 999px; padding: 0.2rem 0.6rem; font-size: 0.8rem; cursor: pointer; }
 .chip.on { background: var(--accent); color: #fff; }
+.transcript { padding-bottom: 0.5rem; }
 .lesson-actions { margin: 1rem 0 2rem; text-align: center; }
 .big { font-size: 1.3rem; font-weight: 600; }

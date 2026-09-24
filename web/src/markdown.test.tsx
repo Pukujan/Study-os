@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
-import { Markdown, parseBlocks } from "./markdown";
+import { Markdown, parseBlocks, stripChoiceList } from "./markdown";
 
 describe("markdown", () => {
   it("keeps chart blocks verbatim and monospace", () => {
@@ -10,7 +10,12 @@ describe("markdown", () => {
     const html = renderToStaticMarkup(<Markdown text={md} />);
     expect(html).toContain('<pre class="chart lang-text"');
     expect(html).toContain("positions(p):  1   2");
-    expect(html).toContain("<strong>What is `p`?</strong>");
+    expect(html).toContain("<strong>What is <code>p</code>?</strong>");
+  });
+
+  it("strips the option list when buttons show the choices", () => {
+    expect(stripChoiceList("Pick one.\n\n1. a\n2. b")).toBe("Pick one.");
+    expect(stripChoiceList("No list here")).toBe("No list here");
   });
 
   it("escapes raw html", () => {

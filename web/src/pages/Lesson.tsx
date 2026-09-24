@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { api, ApiError, newIdempotencyKey, type Turn } from "../api";
-import { Markdown } from "../markdown";
+import { Markdown, stripChoiceList } from "../markdown";
 import { navigate } from "../router";
 import { tracker } from "../tracker";
 
@@ -101,7 +101,7 @@ export default function Lesson({ sessionId }: { sessionId: string }) {
       <div className="transcript" aria-live="polite">
         {turns.map((t) => (
           <article key={t.turn_id} className={`turn kind-${t.kind}${t.outcome ? ` outcome-${t.outcome}` : ""}${t.generated ? " generated" : ""}`}>
-            <Markdown text={t.markdown} />
+            <Markdown text={awaiting && t.turn_id === awaiting.turn_id && t.choices ? stripChoiceList(t.markdown) : t.markdown} />
             {t.generated && <p className="fine">Explained a different way (AI-assisted, checked by rules).</p>}
             {!t.awaiting && t.kind !== "status" && (t.kind === "explain" || t.kind === "correct") && (
               <div className="reactions">
@@ -125,7 +125,7 @@ export default function Lesson({ sessionId }: { sessionId: string }) {
             <div className="choices">
               {awaiting.choices.map((c, i) => (
                 <button key={i} className="btn choice" disabled={busy} onClick={() => submit(String(i + 1))} data-track="lesson.choice">
-                  <span className="letter">{String.fromCharCode(65 + i)}</span> {c}
+                  <span className="letter">{i + 1}.</span> {c}
                 </button>
               ))}
             </div>
@@ -139,7 +139,7 @@ export default function Lesson({ sessionId }: { sessionId: string }) {
             <div className="hints">
               {awaiting.expansions.map((k) => (
                 <button key={k} className="link" disabled={busy} onClick={() => hint(k)} data-track={`lesson.hint.${k}`}>
-                  {HINT_LABEL[k] || k.replace(/_/g, " ")}
+                  {awaiting.choices && k === "repeat_representation" ? "Review the lesson" : HINT_LABEL[k] || k.replace(/_/g, " ")}
                 </button>
               ))}
             </div>

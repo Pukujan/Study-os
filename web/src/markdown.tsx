@@ -60,7 +60,7 @@ export function renderInline(text: string): ReactNode[] {
     const idx = m.index ?? 0;
     if (idx > last) out.push(text.slice(last, idx));
     const tok = m[0];
-    if (tok.startsWith("**")) out.push(<strong key={key++}>{tok.slice(2, -2)}</strong>);
+    if (tok.startsWith("**")) out.push(<strong key={key++}>{renderInline(tok.slice(2, -2))}</strong>);
     else if (tok.startsWith("`")) out.push(<code key={key++}>{tok.slice(1, -1)}</code>);
     else out.push(<em key={key++}>{tok.slice(1, -1)}</em>);
     last = idx + tok.length;
@@ -86,7 +86,7 @@ export function Markdown({ text }: { text: string }) {
               </pre>
             );
           case "heading": {
-            const Tag = (`h${Math.min(b.level + 2, 6)}` as unknown) as "h3";
+            const Tag = (`h${Math.min(b.level + 1, 6)}` as unknown) as "h3";
             return <Tag key={i}>{renderInline(b.text)}</Tag>;
           }
           case "list": {
@@ -99,4 +99,13 @@ export function Markdown({ text }: { text: string }) {
       })}
     </div>
   );
+}
+
+/** Remove a trailing numbered option list (the choices are rendered as buttons instead). */
+export function stripChoiceList(md: string): string {
+  const lines = (md || "").replace(/\s+$/, "").split("\n");
+  let end = lines.length;
+  while (end > 0 && /^\s*\d+[.)]\s+/.test(lines[end - 1])) end--;
+  if (end === lines.length) return md;
+  return lines.slice(0, end).join("\n").replace(/\s+$/, "");
 }

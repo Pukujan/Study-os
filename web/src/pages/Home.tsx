@@ -50,7 +50,7 @@ export default function Home() {
       <section className="card">
         <h2>HESI A2 prep</h2>
         <p className="banner" role="note">
-          Practice questions are an <strong>unreviewed draft</strong>: {data.hesi.content_status}. Please report anything that looks wrong.
+          <strong>Draft content.</strong> These practice questions were written with AI help and have not been reviewed yet. If something looks wrong, tap “I’m confused” on it.
         </p>
         {rec && (
           <button className="btn primary" disabled={busy} onClick={() => start({ track: "hesi", topic_id: rec })} data-track="home.recommended">
