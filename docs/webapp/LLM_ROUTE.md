@@ -63,13 +63,41 @@ This is why the validator (P-LLM-2) must include a cue-strength check at T1/T2, 
 
 Cost expectation: about $0.00001–0.00002 per interpretation. Even 2,000 interpretations/day is under $0.05/day. Spend cap: **US$5/month** (P-LLM-5 degrades to deterministic content; it never blocks learning). Raise it freely if quality needs it.
 
-## 5a. Relation to hosted Jev (tier 2)
+## 5a. Tier 2: hosted Jev via OpenRouter (owner decision 2026-09-24)
 
-Jev is not an IRE/InferHub route. It is TypeSafe's closed API (`POST https://api.typesafe.ai/v1/systemone`, about $0.042 per 1M input tokens, output free; waitlist access, also offered via Vercel AI Gateway as `typesafe-ai/jev`). eval-lab measured it at 89.87% on 760 blind rubric-judging records, versus 97–99% for Qwen Flash routes ([DEEP_RESEARCH.md §6.2](DEEP_RESEARCH.md#62-measured-results-from-eval-lab-primary-evidence)). It was **not** probed live in this task: no key is available to this agent, and access is Alex's decision. Until a Jev key exists, tier 2 grading/misconception decisions fall through to tier 3 (`cb/glm-5.3`) with the same logging, which costs more per decision but still only cents per day. Note that eval-lab also measured `Qwen3.8 Flash` via InferHub at 99.21% on the same blind pool. It is a strong candidate for tier-3 **grading** specifically (not rewriting), to be confirmed with a Study OS grading set (#97).
+Jev is not an IRE/InferHub route. Alex chose to reach it through **his OpenRouter key**, following eval-lab `docs/TASK-0010-OPENROUTER-JEV.md` (public `Pukujan/eval-lab` @ `51256cb`):
+
+| Field | Value |
+|---|---|
+| Endpoint | OpenRouter Decisions API `POST https://openrouter.ai/api/alpha/decisions` |
+| Model | **`typesafe/jev-1.13`** (pinned; resolved to `typesafe/jev-1.13-20260917` in the probe). **Never** the rolling alias `~typesafe/jev-latest` in production; that alias is a canary arm only |
+| Price | $0.042 per 1M input tokens, output free (eval-lab planning observation 2026-09-20; confirmed by the probe's usage `cost`: 432 input tokens → $0.0000181) |
+| Context | 32K |
+| Credential | env var **`OPENROUTER_API_KEY`**. On gravebuster it lives in `/srv/study-os/.env` (mode 600). It is never committed, printed, or sent to the browser |
+| Request shape | `{model, state, questions: {<key>: {type: choice\|noul\|score, instructions, criteria}}}`. For `choice`, `criteria` is an object `{label: description}`. For `score`, `criteria` must be an **ordered array** of level descriptions (an object returns HTTP 400) |
+| Response shape | `answers.<key>` → `{choice \| score, probabilities, confidence}` (plus `legend` for score), and `usage {input_tokens, output_tokens, cost}` |
+| Reference adapter | `typesafe-ai/system-one-adapter-python` (differential reference only; the Study OS question spec stays repository-owned, as in eval-lab) |
+| Benchmark evidence | eval-lab blind rubric judging: 89.87% (EXP-022; 760 records, 50.26% majority baseline) — see [DEEP_RESEARCH.md §6.2](DEEP_RESEARCH.md#62-measured-results-from-eval-lab-primary-evidence) |
+
+**Live probe (2026-09-24 about 17:50 ET, from the agent box, 4 calls, total ≈ $0.00006):**
+
+| Case | Questions | Result | Latency |
+|---|---|---|---|
+| DSA `sum[1]`, correct free-text answer ("its 1+5+1 so 7") | grade `choice` pass/partial/fail | `pass`, p=1.00, conf 1.00 | 0.26 s |
+| DSA `sum[1]`, off-by-one answer ("1+5+1+3 = 10") | grade + misconception `choice` (4 labels incl. `none_of_these`) | grade `fail` p=0.93 (conf 0.89); misconception `window_too_long` p=0.93 (conf 0.91) | 0.25 s |
+| HESI free text "ugh just tell me which one is right" | wants_answer `choice` + frustration `score` 0–3 | first attempt HTTP 400 (score criteria given as an object); retry: wants_answer `yes` p=1.00; frustration 2.37 (p: 2→0.55, 3→0.41), conf 0.55 | 0.24 s |
+
+Reading: the shape fits Study OS grading and misconception choice well, with sub-300 ms latency. Frustration came back at confidence 0.55, which is below any sensible τ, so it would not be acted on. That matches the plan to keep affect low-stakes, with Laya after calibration. Four calls are **not** an accuracy estimate. τ must be fitted on a Study OS labelled split (#97).
+
+**Mini grading set (same day, 12 hand-labelled items, 6 DSA sliding-window + 3 index + 3 HESI rationale, `choice` pass/partial/fail):** 11/12 correct. The miss: an unsummed expression "4+7+2" (gold `pass`) was graded `partial` at confidence 0.67. All 6 predictions with confidence ≥ 0.9 were correct. Every `partial` prediction had confidence ≤ 0.5. Latency was 0.16–0.25 s per call. This supports the cascade design: act at high confidence, and escalate partial or low-confidence grades to tier 3 or treat them as `unresolved`. At 12 items it is an illustration, not an accuracy estimate.
+
+**Budget note:** the key's OpenRouter spending limit was low at the first probe (about $0.08 of $2.40). Alex raised it on 2026-09-24 and cleared Jev for free use. At ≈ $0.00002 per decision, cost is negligible. The spend guard (P-LLM-5) still treats a tier-2 402/limit error as "tier 2 unavailable" and escalates to tier 3 or `unresolved`. It never blocks learning.
+
+Tier 3 grading alternative: eval-lab also measured `Qwen3.8 Flash` via InferHub at 99.21% on the same blind pool. It is a candidate for tier-3 **grading** specifically (not rewriting), to be confirmed on a Study OS grading set (#97).
 
 ## 6. Operating rules
 
-- `INFERHUB_API_KEY` lives only in `/srv/study-os/.env` on gravebuster (mode 600), loaded by the API process. It never goes in the repo, the logs, the prompts, or CI for PR code.
+- `INFERHUB_API_KEY` and `OPENROUTER_API_KEY` live only in `/srv/study-os/.env` on gravebuster (mode 600), loaded by the API process. They never go in the repo, the logs, the prompts, or CI for PR code.
 - Before each route change, re-read the latest IRE snapshot, re-run the probe (the T1 harness includes it), and record a new `interpreter_route` module version with snapshot sha256.
 - Emit prompt-free telemetry per call (route, tokens, cost, latency, validation result) in the IRE `AGENT-TELEMETRY.md` style, so IRE can learn route reliability from Study OS traffic.
 - If the primary returns 503/timeout, fail over to the fallback within the same request and record both attempts. If both fail, serve deterministic content.

@@ -12,7 +12,7 @@ web session controller (pure state machine)  ── owns progression, assistance
             ▼
 interpretation cascade (typed; every decision logged)
    1. rules: MCQ key / exact / regex / integer / trace / unit tests            $0, ms
-   2. hosted Jev /v1/systemone: grading (noul per rubric point), misconception (choice + none_of_these)
+   2. hosted Jev (OpenRouter Decisions API, pinned typesafe/jev-1.13): grading (noul per rubric point / choice), misconception (choice + none_of_these)
                                                                                ≈$0, 70–500 ms
       Laya-421M on gravebuster: frustration / wants-answer / sentiment only (after calibration; never gates progression)
    3. frontier LLM via IRE (cb/glm-5.3 → cb/deepseek-v4.1-flash): only when confidence < τ, or to rewrite a failed step
@@ -37,7 +37,7 @@ This is ADR-0016 applied to the web, with the decision layer adopted from [DEEP_
 | API | FastAPI + uvicorn, Pydantic strict models, SSE | Auth, session endpoints, idempotent attempt ingestion, streaming turns | #85 |
 | Session controller | Pure Python (`study_os.web.controller`) wrapping `study_os.pir.controller` | State machine (§3), capability-state transitions, FSRS scheduling | #90 |
 | Graders | Deterministic: integer/sequence/text (existing `classify_response`), MCQ/SATA/order/dosage (new) | Classify attempts. Emit `UNRESOLVED` when unsure, so the case goes to the interpreter | #90, #91 |
-| Decision layer | Jev-compatible `/v1/systemone` client (hosted Jev; Laya via `laya-serve` on gravebuster; swappable via `jev-compatible-server`/`llm2jev`), per-type temperature and τ config | Typed decisions: grade, misconception, affect/intent; decision log; 5% audit sampling | #97 |
+| Decision layer | Typed decision client with two transports behind one question spec: OpenRouter Decisions API (`https://openrouter.ai/api/alpha/decisions`, pinned `typesafe/jev-1.13`, `OPENROUTER_API_KEY`) and a Jev-compatible `/v1/systemone` (Laya via `laya-serve` on gravebuster; swappable via `jev-compatible-server`/`llm2jev`); per-type temperature and τ config | Typed decisions: grade, misconception, affect/intent; decision log; 5% audit sampling | #97 |
 | LLM interpreter | InferHub OpenAI-compatible client, forced tool/JSON schema | Low-confidence escalation of `grade_free_text`/`diagnose_misconception`, `rewrite_failed_step`, `propose_memory` | #89 |
 | Validator | Deterministic | Schema, answer-leak, mastery-language, one-question, one-relation, chart-preserved, word budget, PII | #89, #90 |
 | Memory | Postgres `memory.*` + `learner.md` renderer | Evaluation-scoped learner model | #88 |
@@ -84,8 +84,8 @@ Capability promotion (per KC) follows the existing states. `pass_supported` mean
 
 | Decision | Tier 1: rules | Tier 2: decision model (Jev-compatible) | Tier 3: frontier LLM (IRE) | Stakes gate |
 |---|---|---|---|---|
-| Grade an attempt | MCQ/SATA key, integer/sequence, exact/regex text, dosage with units, trace equality, code unit tests | Hosted Jev: `noul` per rubric point + `choice` {pass, partial, fail} | `grade_free_text` when Jev confidence < τ_grade, or a `none` label | Grades that feed `pass_unaided`/`pass_transfer`/`pass_delayed` need rules, **or** Jev ≥ τ_mastery (stricter), **or** LLM + Jev agreement. Otherwise record `unresolved` and ask again |
-| Which misconception | Regex/trace patterns promoted from logs (path c) | Hosted Jev `choice` over the node's misconception list + `none_of_these` | `diagnose_misconception` on low confidence or `none_of_these`; the output feeds new-misconception discovery | Stored as a `derived` hypothesis only |
+| Grade an attempt | MCQ/SATA key, integer/sequence, exact/regex text, dosage with units, trace equality, code unit tests | Hosted Jev via OpenRouter (`typesafe/jev-1.13`): `noul` per rubric point + `choice` {pass, partial, fail} | `grade_free_text` when Jev confidence < τ_grade, or a `none` label | Grades that feed `pass_unaided`/`pass_transfer`/`pass_delayed` need rules, **or** Jev ≥ τ_mastery (stricter), **or** LLM + Jev agreement. Otherwise record `unresolved` and ask again |
+| Which misconception | Regex/trace patterns promoted from logs (path c) | Hosted Jev via OpenRouter `choice` over the node's misconception list + `none_of_these` | `diagnose_misconception` on low confidence or `none_of_these`; the output feeds new-misconception discovery | Stored as a `derived` hypothesis only |
 | Frustration / wants the answer / sentiment | Behavioral rules (e.g. 3+ fails in a row ∧ latency rising ∧ help ≥ A3; rapid resubmits under 2 s) | **Laya-421M** on gravebuster (`choice`, not `noul`, per Laya issue #156), active only after calibration | none | Low stakes. May shorten a step or offer a break. **Never gates progression** |
 | Rewrite a failed step | — | — | `rewrite_failed_step` (the only true generation duty) | Full validator (PROPERTIES §2.4); stored as a promotion candidate |
 | Next step | Rules/state machine + pyBKT + FSRS | — | never | Deterministic; bandit later among equally valid actions, with propensity logged |
@@ -130,7 +130,7 @@ gravebuster (Ubuntu 24.04, Docker Compose, no inbound ports)
    ├─ postgres:16  (volume /srv/study-os/pg, nightly pg_dump → /srv/study-os/backups, 14 dailies + 8 weeklies)
    ├─ metabase     (bound to the tailscale interface only: http://gravebuster.tail733a0f.ts.net:3000)
    ├─ laya         (laya-serve, CPU/ONNX, internal network only, LAYA_API_KEY set; slice 2, after calibration)
-   └─ secrets      (/srv/study-os/.env, mode 600: DB password, session secret, INFERHUB_API_KEY, TYPESAFE_API_KEY, LAYA_API_KEY, POSTHOG_PROJECT_KEY)
+   └─ secrets      (/srv/study-os/.env, mode 600: DB password, session secret, INFERHUB_API_KEY, OPENROUTER_API_KEY, LAYA_API_KEY, POSTHOG_PROJECT_KEY)
 admin: ssh gravebuster over Tailscale (yoav)
 ```
 
