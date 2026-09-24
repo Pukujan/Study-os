@@ -58,6 +58,49 @@ A fresh agent or collaborator opening Study OS can tell, and mechanically check,
 
 ## Checkpoint log
 
+### 2026-09-24 20:50:25 UTC — Grok Bot executor (for Pukujan)
+
+<!-- continuity:checkpoint {"agent":"Grok Bot executor (for Pukujan)","blocked":["Pinned PCM preflight is not yet a CI step: adding it to .github/workflows/ci.yml needs a push with the workflow scope (snippet in the PR description).","CGM adapter validation stays incomplete until the owner approves a first reviewed Study OS visual or an asset exemption in CGM.","Required CI and auto-merge are not configured on main."],"changed":[".continuity/config.json","schemas/v1/**","tasks/TASK-SOS-0001-helper-adoption.md",".content-system/**","AGENTS.md","PROJECT_MANIFEST.yaml","docs/PROJECT_CHARTER.md","docs/HANDOFF.md","docs/DECISIONS.md",".gitignore","tests/test_helper_adoption.py"],"completed":["Adopted PCM via the mature-repository overlay: .continuity/config.json (prefix SOS, GitHub issue authority, managed-worktrees), exact schemas/v1 copy, project marker in docs/PROJECT_CHARTER.md, current marker in docs/HANDOFF.md, tasks/ with this issue-backed task.","Pinned CGM 0.4.0 at f85e88bc00362c53061d95ac7811bd9c6ada8e32 as a .content-system adapter with project-brief v2 claims pinned to Study OS 151c819.","Recorded ownership rules in AGENTS.md, helper pins in PROJECT_MANIFEST.yaml (0.2.4), decision D015, and tests/test_helper_adoption.py."],"decisions":["Canonical PROJECT is docs/PROJECT_CHARTER.md and CURRENT is docs/HANDOFF.md because the YAML manifest cannot carry the line marker; PROJECT_MANIFEST.yaml remains the machine-readable status source.","Do not fabricate a visual asset to satisfy the CGM validator; record the gap instead.","Do not change repository settings: PCM expects required CI plus auto-merge, but main has no branch protection and auto-merge is disabled; that is an owner decision."],"evidence":["Product commit 5344eaf9359551efa0f980220d06eb60002840c0 on task/SOS-0001-helper-adoption, based on main 151c819e3457ae41fa1810b5060d0101f91bc12a.","PCM 0b3be9c: continuity preflight --root . -> MODE: TARGET_VALID; diff -r schemas/v1 against the pinned helper -> identical.","CGM f85e88b: validate_content_system.py --adapter .content-system --project-root . -> INVALID with one error: asset-manifest.json must contain at least one asset (no reviewed Study OS visual exists; imagery deferred until R0).","Local CI-equivalent on Python 3.13: dependency lock, contract inventory, curriculum policy, schema render check, compileall, validate_repo.py, engineering baseline, ruff, pyright (0 errors), wheel smoke pass; unittest 350 tests OK (342 before + 8 new); branch coverage 83% (gate 70%).","An earlier unpublished attempt that also edited .github/workflows/ci.yml was rejected by GitHub (token lacks workflow scope); nothing from it was pushed and the workflow edit was removed."],"next_action":"Review the PR for #78; after merge and confirmed checks, mark SOS-0001 completed and clear the continuity:current active task in docs/HANDOFF.md.","protocol_version":"0.1.0-draft","schema":"project-continuity.checkpoint.v1","task_id":"SOS-0001","timestamp":"2026-09-24T20:50:25Z"} -->
+<!-- continuity:checkpoint-operation {"payload_sha256":"eb3a491d4b464896d45c8296b7e45fde4584bdead58f9f26229d3c6aac8eeec1","request_id":"sos-0001-cp2-20260924","schema":"project-continuity.checkpoint-operation.v1","task_id":"SOS-0001"} -->
+
+Completed:
+- Adopted PCM via the mature-repository overlay: .continuity/config.json (prefix SOS, GitHub issue authority, managed-worktrees), exact schemas/v1 copy, project marker in docs/PROJECT_CHARTER.md, current marker in docs/HANDOFF.md, tasks/ with this issue-backed task.
+- Pinned CGM 0.4.0 at f85e88bc00362c53061d95ac7811bd9c6ada8e32 as a .content-system adapter with project-brief v2 claims pinned to Study OS 151c819.
+- Recorded ownership rules in AGENTS.md, helper pins in PROJECT_MANIFEST.yaml (0.2.4), decision D015, and tests/test_helper_adoption.py.
+
+Evidence:
+- Product commit 5344eaf9359551efa0f980220d06eb60002840c0 on task/SOS-0001-helper-adoption, based on main 151c819e3457ae41fa1810b5060d0101f91bc12a.
+- PCM 0b3be9c: continuity preflight --root . -> MODE: TARGET_VALID; diff -r schemas/v1 against the pinned helper -> identical.
+- CGM f85e88b: validate_content_system.py --adapter .content-system --project-root . -> INVALID with one error: asset-manifest.json must contain at least one asset (no reviewed Study OS visual exists; imagery deferred until R0).
+- Local CI-equivalent on Python 3.13: dependency lock, contract inventory, curriculum policy, schema render check, compileall, validate_repo.py, engineering baseline, ruff, pyright (0 errors), wheel smoke pass; unittest 350 tests OK (342 before + 8 new); branch coverage 83% (gate 70%).
+- An earlier unpublished attempt that also edited .github/workflows/ci.yml was rejected by GitHub (token lacks workflow scope); nothing from it was pushed and the workflow edit was removed.
+
+Decisions:
+- Canonical PROJECT is docs/PROJECT_CHARTER.md and CURRENT is docs/HANDOFF.md because the YAML manifest cannot carry the line marker; PROJECT_MANIFEST.yaml remains the machine-readable status source.
+- Do not fabricate a visual asset to satisfy the CGM validator; record the gap instead.
+- Do not change repository settings: PCM expects required CI plus auto-merge, but main has no branch protection and auto-merge is disabled; that is an owner decision.
+
+Changed:
+- .continuity/config.json
+- schemas/v1/**
+- tasks/TASK-SOS-0001-helper-adoption.md
+- .content-system/**
+- AGENTS.md
+- PROJECT_MANIFEST.yaml
+- docs/PROJECT_CHARTER.md
+- docs/HANDOFF.md
+- docs/DECISIONS.md
+- .gitignore
+- tests/test_helper_adoption.py
+
+Blocked/uncertain:
+- Pinned PCM preflight is not yet a CI step: adding it to .github/workflows/ci.yml needs a push with the workflow scope (snippet in the PR description).
+- CGM adapter validation stays incomplete until the owner approves a first reviewed Study OS visual or an asset exemption in CGM.
+- Required CI and auto-merge are not configured on main.
+
+Next:
+- Review the PR for #78; after merge and confirmed checks, mark SOS-0001 completed and clear the continuity:current active task in docs/HANDOFF.md.
+
 ## Handoff
 
 Read `docs/PROJECT_CHARTER.md` → `docs/HANDOFF.md` → this task → `AGENTS.md` "Helper modules and project ownership". Checkpoint before stopping.
