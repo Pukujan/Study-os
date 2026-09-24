@@ -43,3 +43,9 @@ Study OS should separately test:
 - blank implementation.
 
 Representations must be versioned independently and linked to learning events when used.
+
+## Goldens and the shipped lesson
+
+`golden/` holds learner-calibrated teaching sequences from live Study OS use. The shipped PIR lesson for `sliding-window.max-sum-k.sep4.v1` (`src/study_os/pir/sliding_window.py`) is generated from them step by step, and its scope stops where they stop (`enumerate(a)` and `append`).
+
+`golden/conformance-oracle.v0.1.json` records the golden order, representation rules, forbidden future concepts, and mastery policy. It pins the sha256 of each golden and the `Pukujan/study-os-benchmarker` commit whose rules it mirrors. `tests/test_pir_golden_conformance.py` runs `src/study_os/pir/conformance.py` against the shipped asset and against targeted mutations. If you edit a golden, update the lesson and the oracle hash in the same change.

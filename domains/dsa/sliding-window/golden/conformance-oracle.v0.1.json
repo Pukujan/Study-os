@@ -1,0 +1,312 @@
+{
+  "schema_version": "study-os.pir-golden-oracle.v0",
+  "canonical_problem_id": "sliding-window.max-sum-k.sep4.v1",
+  "benchmarker_repository": "Pukujan/study-os-benchmarker",
+  "benchmarker_commit": "d438988fda12e9df902caabbcb6a639834452d5d",
+  "golden_sources": [
+    {
+      "path": "domains/dsa/sliding-window/golden/beginner-progressive-box-index-sum.v0.1.md",
+      "sha256": "87ee609194c8b9baaab96385b3e583d584b2c12e47ea5a4d74935ba8b070e70f"
+    },
+    {
+      "path": "domains/dsa/sliding-window/golden/beginner-sum-enumerate-append.v0.1.md",
+      "sha256": "97ece0d14987a807193e5ee8c7fa8e932aed3c841b7ce94e32344dc1b267f396"
+    }
+  ],
+  "required_bridges": [
+    {
+      "concept_id": "problem",
+      "golden_step": "beginner-progressive-box-index-sum.v0.1 step 0 (problem and a)"
+    },
+    {
+      "concept_id": "position",
+      "golden_step": "beginner-progressive-box-index-sum.v0.1 step 1 (position p)"
+    },
+    {
+      "concept_id": "index",
+      "golden_step": "beginner-progressive-box-index-sum.v0.1 step 2 (index i = p - 1)"
+    },
+    {
+      "concept_id": "box_size_k",
+      "golden_step": "beginner-progressive-box-index-sum.v0.1 step 3 (box size k)"
+    },
+    {
+      "concept_id": "box_start_i",
+      "golden_step": "beginner-progressive-box-index-sum.v0.1 step 4 (i moves the box)"
+    },
+    {
+      "concept_id": "window_sum",
+      "golden_step": "beginner-progressive-box-index-sum.v0.1 step 5 (sum[i])"
+    },
+    {
+      "concept_id": "successive_sums",
+      "golden_step": "beginner-sum-enumerate-append.v0.1 step 1 (consecutive window sums)"
+    },
+    {
+      "concept_id": "recurrence_repetition",
+      "golden_step": "beginner-sum-enumerate-append.v0.1 step 2 (recurrence repeated from S[0] as i changes)"
+    },
+    {
+      "concept_id": "enumerate",
+      "golden_step": "beginner-sum-enumerate-append.v0.1 step 3 (enumerate(a))"
+    },
+    {
+      "concept_id": "append",
+      "golden_step": "beginner-sum-enumerate-append.v0.1 step 4 (indexed assignment to append)"
+    }
+  ],
+  "terminal_concepts": [
+    "frontier"
+  ],
+  "max_new_concepts_per_step": 1,
+  "feedback_required": [
+    "answer_marked"
+  ],
+  "fix_required": [
+    "reassurance"
+  ],
+  "partial_required": [
+    "partial_ack"
+  ],
+  "representation_rules": [
+    {
+      "concept_id": "problem",
+      "all_steps": [
+        "problem_anchor",
+        "numbers_row"
+      ]
+    },
+    {
+      "concept_id": "position",
+      "all_steps": [
+        "numbers_row",
+        "position_row"
+      ],
+      "intro": [
+        "highlight"
+      ],
+      "probe_forbidden": [
+        "highlight",
+        "answer_marked"
+      ]
+    },
+    {
+      "concept_id": "index",
+      "all_steps": [
+        "numbers_row",
+        "position_row",
+        "index_row"
+      ],
+      "intro": [
+        "highlight"
+      ],
+      "probe_forbidden": [
+        "highlight",
+        "answer_marked"
+      ]
+    },
+    {
+      "concept_id": "box_size_k",
+      "all_steps": [
+        "numbers_row",
+        "index_row",
+        "k_label"
+      ],
+      "intro": [
+        "window_box"
+      ],
+      "probe_forbidden": [
+        "highlight",
+        "answer_marked",
+        "window_box"
+      ]
+    },
+    {
+      "concept_id": "box_start_i",
+      "all_steps": [
+        "numbers_row",
+        "index_row",
+        "k_label",
+        "i_label"
+      ],
+      "intro": [
+        "window_box"
+      ],
+      "probe_forbidden": [
+        "highlight",
+        "answer_marked",
+        "window_box"
+      ]
+    },
+    {
+      "concept_id": "window_sum",
+      "all_steps": [
+        "numbers_row",
+        "index_row",
+        "k_label"
+      ],
+      "intro": [
+        "window_box",
+        "sum_label"
+      ],
+      "probe_forbidden": [
+        "highlight",
+        "answer_marked"
+      ]
+    },
+    {
+      "concept_id": "successive_sums",
+      "all_steps": [
+        "numbers_row",
+        "index_row",
+        "window_box",
+        "k_label",
+        "sum_label"
+      ],
+      "probe_required": [
+        "next_box"
+      ],
+      "probe_forbidden": [
+        "highlight",
+        "answer_marked"
+      ]
+    },
+    {
+      "concept_id": "recurrence_repetition",
+      "all_steps": [
+        "numbers_row",
+        "index_row",
+        "window_box",
+        "k_label",
+        "recurrence_equation"
+      ],
+      "intro": [
+        "j_label",
+        "recurrence_instances"
+      ],
+      "probe_forbidden": [
+        "highlight",
+        "answer_marked"
+      ]
+    },
+    {
+      "concept_id": "enumerate",
+      "all_steps": [
+        "numbers_row",
+        "index_row",
+        "number_row",
+        "enumerate_relation"
+      ],
+      "intro": [
+        "pair_row"
+      ],
+      "probe_forbidden": [
+        "highlight",
+        "answer_marked",
+        "pair_row",
+        "current_pair_highlight",
+        "window_box"
+      ]
+    },
+    {
+      "concept_id": "append",
+      "all_steps": [
+        "numbers_row",
+        "index_row",
+        "window_box",
+        "k_label",
+        "algebra_form"
+      ],
+      "intro": [
+        "append_form",
+        "value_bracket"
+      ],
+      "probe_forbidden": [
+        "highlight",
+        "answer_marked",
+        "append_form",
+        "value_bracket"
+      ]
+    },
+    {
+      "concept_id": "frontier",
+      "all_steps": [
+        "numbers_row",
+        "index_row",
+        "window_box",
+        "k_label"
+      ]
+    }
+  ],
+  "forbidden_concepts": [
+    {
+      "concept_id": "loop_assembly",
+      "text_markers": [
+        "    S.append(",
+        "full solution",
+        "complete solution"
+      ]
+    },
+    {
+      "concept_id": "max_sum",
+      "text_markers": [
+        "max_sum",
+        "max("
+      ]
+    },
+    {
+      "concept_id": "else_bridge",
+      "text_markers": [
+        "else:"
+      ]
+    },
+    {
+      "concept_id": "stop_condition",
+      "text_markers": [
+        "break",
+        "len(a) - k",
+        "len(a)-k"
+      ]
+    },
+    {
+      "concept_id": "first_window_base_case",
+      "text_markers": [
+        "if i == 0",
+        "i == 0:"
+      ]
+    },
+    {
+      "concept_id": "range_k",
+      "text_markers": [
+        "range("
+      ]
+    },
+    {
+      "concept_id": "mastery_claim",
+      "text_markers": []
+    }
+  ],
+  "probe_forbidden_glyph_patterns": [
+    "↓",
+    "\\(\\d+\\)",
+    "\\[\\(",
+    "(?<![\\w\\]])\\[\\d+\\]"
+  ],
+  "structural_glyph_lines": [
+    "enumerate(a)"
+  ],
+  "mastery_patterns": [
+    "\\bmaster",
+    "\\byou(?:'ve|’ve| have)? (?:now )?(?:learned|mastered|know)\\b",
+    "\\bfully understand",
+    "completed_validated",
+    "\\bproficien"
+  ],
+  "mastery_allowed_phrases": [
+    "Independent mastery is not established",
+    "Independent mastery remains unproven"
+  ],
+  "allowed_exit_statuses": [
+    "assembled_mastery_unproven"
+  ]
+}
