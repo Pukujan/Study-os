@@ -581,7 +581,7 @@ class StudyService:
                 principal.subject_id if principal else None,
                 _uuid_or_none(e.get("session_id")),
                 _uuid_or_none(e.get("turn_id")),
-                str(e.get("client_session") or "anonymous0")[:64],
+                _clean(e.get("client_session"), r"^[A-Za-z0-9_-]{8,64}$") or "anonymous0",
                 et,
                 _clean(e.get("path"), r"^/[A-Za-z0-9/_-]{0,120}$"),
                 _clean(e.get("control"), r"^[a-z0-9_.-]{1,48}$"),

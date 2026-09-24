@@ -373,13 +373,15 @@ class LearningApiTests(_DbCase):
             {"type": "step_shown", "path": "/lesson", "session_id": view["session_id"], "step_id": "position.e0.n2", "client_session": "abcdefgh12"},
             {"type": "time_on_step", "value_ms": 1234, "client_session": "abcdefgh12"},
             {"type": "keylogger", "client_session": "abcdefgh12"},
+            {"type": "idle", "client_session": "bad session id!", "path": "javascript:alert(1)"},
             {"type": "click", "session_id": str(uuid.uuid4()), "control": "submit", "client_session": "abcdefgh12"},
         ]
         r = c.post("/api/events", {"events": events})
         self.assertEqual(r.status_code, 200)
-        self.assertEqual(r.json()["stored"], 4)
-        rows = self.sql("SELECT event_type, session_id FROM ux.event ORDER BY id")
-        self.assertEqual([r["event_type"] for r in rows][-4:], ["page_view", "step_shown", "time_on_step", "click"])
+        self.assertEqual(r.json()["stored"], 5)
+        rows = self.sql("SELECT event_type, session_id, client_session, path FROM ux.event ORDER BY id")
+        self.assertEqual([r["event_type"] for r in rows][-5:], ["page_view", "step_shown", "time_on_step", "idle", "click"])
+        self.assertEqual((rows[-2]["client_session"], rows[-2]["path"]), ("anonymous0", None))
         self.assertIsNone(rows[-1]["session_id"])  # foreign session id dropped
         anon = self.client()
         self.assertEqual(anon.post("/api/events", {"events": [{"type": "page_view", "path": "/login", "client_session": "zzzzzzzz12"}]}).json()["stored"], 1)
