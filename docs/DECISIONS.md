@@ -261,3 +261,19 @@ Status: proposed in #78 (task `SOS-0001`); accepted when its PR merges.
 This repository is the authoritative owner of Study OS project facts, continuity/task state, and human-facing claims. `Pukujan/project-continuity-modules` is adopted through its mature-repository overlay: `docs/PROJECT_CHARTER.md` is canonical PROJECT, `docs/HANDOFF.md` is canonical CURRENT, `tasks/` holds issue-backed PCM task projections, and `schemas/v1/` is an exact copy of the pinned protocol schemas. `Pukujan/content-generation-modules` is adopted as a pinned `.content-system/` adapter. Neither helper owns Study OS state, and neither is read from a moving branch during work.
 
 No project invariant is relaxed. The existing documents keep their meaning; the `continuity:*` markers only declare roles. Pins, rules, and validation commands are in `AGENTS.md` → "Helper modules and project ownership".
+
+## D016 — Owner promotes a private hosted web app track (proposed)
+
+Status: proposed in #83 (task `SOS-0003`, epic #82). **Implementation merges require Alex's explicit acceptance of this decision.** Merging the SOS-0003 spec PR records the proposal only.
+
+Context: D014 says frontend surfaces start "when the owner promotes them". On 2026-09-24 Alex asked for a hosted web app (React at `design-bakery.com/study-os`, backend and database on his machine `gravebuster`, authenticated accounts for two real learners, LLM tutoring via IRE/InferHub).
+
+Proposed decision:
+
+- Promote a **private, invite-only web beta** for at most two learners, plus later invited beta users only after the invariants in `docs/webapp/PROPERTIES.md` have held for 4+ weeks.
+- This narrowly relaxes the `AGENTS.md` deferral of production UI, CD/deployment, and production auth, **for this beta only**.
+- No evidence invariant is relaxed. ADR-0016 still holds: lessons are precompiled step graphs served deterministically, and the LLM is an interpreter whose outputs pass controller validation. Synthetic agent-vs-agent results remain system evaluation, never learner evidence. No personal data is stored. Subject-level findings stay subject-level.
+- The second learner's non-DSA subject (HESI) is added through subject packs that reuse the same capability, assistance, transfer, and retention semantics.
+
+Spec: `docs/webapp/README.md`.
+
