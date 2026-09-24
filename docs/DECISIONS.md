@@ -268,3 +268,18 @@ Status: proposed in #80 (task `SOS-0002`); accepted when its PR merges.
 
 The canonical sliding-window PIR asset (`sliding-window.max-sum-k.sep4.v1`) is generated from the two goldens in `domains/dsa/sliding-window/golden/`, and its scope stops where they stop (`enumerate(a)` and `append`). It moves to revision `sep4.sliding-window.golden-box-index-enumerate-append.v2`. Runs pinned to v1 fail closed on the existing revision check. `domains/dsa/sliding-window/golden/conformance-oracle.v0.1.json` and `src/study_os/pir/conformance.py` mirror the `Pukujan/study-os-benchmarker` rules at `d438988` and are enforced by `tests/test_pir_golden_conformance.py`. Loop assembly, `max`, the `else` bridge, the stop condition, and `range(k)` need their own reviewed golden before they ship.
 
+## D017 — Owner promotes a private hosted web app track (proposed)
+
+Status: proposed in #83 (task `SOS-0003`, epic #82). **Implementation merges require Alex's explicit acceptance of this decision.** Merging the SOS-0003 spec PR records the proposal only.
+
+Context: D014 says frontend surfaces start "when the owner promotes them". On 2026-09-24 Alex asked for a hosted web app (React at `design-bakery.com/study-os`, backend and database on his machine `gravebuster`, authenticated accounts for two real learners, LLM tutoring via IRE/InferHub).
+
+Proposed decision:
+
+- Promote a **private, invite-only web beta** for at most two learners, plus later invited beta users only after the invariants in `docs/webapp/PROPERTIES.md` have held for 4+ weeks.
+- This narrowly relaxes the `AGENTS.md` deferral of production UI, CD/deployment, and production auth, **for this beta only**.
+- No evidence invariant is relaxed. ADR-0016 still holds: lessons are precompiled step graphs served deterministically, and the LLM is an interpreter whose outputs pass controller validation. Synthetic agent-vs-agent results remain system evaluation, never learner evidence. No personal data is stored. Subject-level findings stay subject-level.
+- The second learner's non-DSA subject (HESI) is added through subject packs that reuse the same capability, assistance, transfer, and retention semantics.
+
+Spec: `docs/webapp/README.md`.
+
