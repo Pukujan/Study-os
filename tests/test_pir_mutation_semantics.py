@@ -27,6 +27,9 @@ from study_os.pir.controller import (
 )
 from study_os.pir.registry import CANONICAL_PROBLEM_ID, get_asset
 
+# Correct answer to the first probe of the golden lesson: position(p) of number 6.
+FIRST_PROBE_CORRECT = "4"
+
 
 class PIRControllerSemanticMutationTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -371,7 +374,7 @@ class PIRControllerSemanticMutationTests(unittest.TestCase):
         self.assertIsNotNone(turn_id)
         assert turn_id is not None
 
-        result = submit_response(direct_asset, state, turn_id=turn_id, response="8")
+        result = submit_response(direct_asset, state, turn_id=turn_id, response=FIRST_PROBE_CORRECT)
         self.assertEqual(result.state.status, RunStatus.ASSEMBLED_MASTERY_UNPROVEN)
         self.assertEqual(len(result.bundle.turns), 1)
         terminal = result.bundle.turns[0]
@@ -585,7 +588,7 @@ class PIRRuntimeSemanticMutationTests(unittest.TestCase):
                             problem_run_id=run_id,
                             subject_id="subject-001",
                             turn_id=turn_id,
-                            response="8",
+                            response=FIRST_PROBE_CORRECT,
                         )
                 self.assertEqual(caught.exception.category, "validation_error")
 
@@ -615,7 +618,7 @@ class PIRRuntimeSemanticMutationTests(unittest.TestCase):
             problem_run_id=run_id,
             subject_id="subject-001",
             turn_id=turn_id,
-            response="8",
+            response=FIRST_PROBE_CORRECT,
         )
         attempt = self.service.db.connection.execute(
             "SELECT * FROM attempts WHERE idempotency_key = ?",

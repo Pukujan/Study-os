@@ -8,6 +8,9 @@ from study_os import RuntimeConfig, StudyOSService
 from study_os.errors import StudyOSError
 from study_os.pir.registry import CANONICAL_PROBLEM_ID
 
+# Correct answer to the first probe of the golden lesson: position(p) of number 6.
+FIRST_PROBE_CORRECT = "4"
+
 
 class PIRMutationContractEdgeTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -99,7 +102,7 @@ class PIRMutationContractEdgeTests(unittest.TestCase):
                     problem_run_id=run_id,
                     subject_id="subject-001",
                     turn_id=turn_id,
-                    response="8",
+                    response=FIRST_PROBE_CORRECT,
                 )
         self.assertEqual(caught.exception.category, "validation_error")
         submit.assert_not_called()

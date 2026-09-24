@@ -11,6 +11,9 @@ from study_os.pir.controller import build_expansion_bundle, start_run, submit_re
 from study_os.pir.registry import CANONICAL_PROBLEM_ID, get_asset
 from study_os.services.runtime_base import request_fingerprint
 
+# Correct answer to the first probe of the golden lesson: position(p) of number 6.
+FIRST_PROBE_CORRECT = "4"
+
 
 class PIRControllerAuthorityMutationTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -47,7 +50,7 @@ class PIRControllerAuthorityMutationTests(unittest.TestCase):
         for label, state in states.items():
             with self.subTest(label=label):
                 with self.assertRaises(ValueError):
-                    submit_response(self.asset, state, turn_id=self.turn_id, response="8")
+                    submit_response(self.asset, state, turn_id=self.turn_id, response=FIRST_PROBE_CORRECT)
 
     def test_expansion_rejects_each_invalid_controller_state_shape(self) -> None:
         states = {
@@ -95,7 +98,7 @@ class PIRControllerAuthorityMutationTests(unittest.TestCase):
             direct_terminal_asset,
             self.state,
             turn_id=self.turn_id,
-            response="8",
+            response=FIRST_PROBE_CORRECT,
         )
         self.assertEqual(result.outcome.value, "correct")
         self.assertEqual(result.state.status, RunStatus.ASSEMBLED_MASTERY_UNPROVEN)
@@ -199,7 +202,7 @@ class PIRRuntimeAuthorityMutationTests(unittest.TestCase):
             problem_run_id=run_id,
             subject_id="subject-001",
             turn_id=turn_id,
-            response="8",
+            response=FIRST_PROBE_CORRECT,
         )
         self.assertEqual(set(result), {"problem_run_id", "outcome", "run_status", "turn", "created"})
         self.assertEqual(result["problem_run_id"], run_id)
@@ -210,7 +213,7 @@ class PIRRuntimeAuthorityMutationTests(unittest.TestCase):
             "problem_run_id": run_id,
             "subject_id": "subject-001",
             "turn_id": turn_id,
-            "response": "8",
+            "response": FIRST_PROBE_CORRECT,
         }
         op = self._operation_row("submit_problem_response", key)
         self.assertEqual(op["request_fingerprint"], request_fingerprint(expected_request))
@@ -238,7 +241,7 @@ class PIRRuntimeAuthorityMutationTests(unittest.TestCase):
         )
         self.assertEqual(context["problem_run_id"], run_id)
         self.assertEqual(context["turn_id"], turn_id)
-        self.assertEqual(json.loads(attempt["response_json"]), "8")
+        self.assertEqual(json.loads(attempt["response_json"]), FIRST_PROBE_CORRECT)
         self.assertEqual(attempt["task_id"], f"pir:{CANONICAL_PROBLEM_ID}:{context['canonical_step_id']}")
 
         event = self.service.db.connection.execute(
@@ -261,7 +264,7 @@ class PIRRuntimeAuthorityMutationTests(unittest.TestCase):
             problem_run_id=run_id,
             subject_id="subject-001",
             turn_id=turn_id,
-            response="8",
+            response=FIRST_PROBE_CORRECT,
         )
         self.assertIs(replay["created"], False)
         self.assertEqual(
@@ -351,7 +354,7 @@ class PIRRuntimeAuthorityMutationTests(unittest.TestCase):
                 problem_run_id=run_id,
                 subject_id="subject-001",
                 turn_id=f"{run_id}:0:missing-step",
-                response="8",
+                response=FIRST_PROBE_CORRECT,
             )
         self.assertEqual(caught.exception.category, "validation_error")
 
