@@ -23,6 +23,10 @@ Alex found the live HESI fractions lesson to be a wall of text plus a 4-option M
 - `domains/hesi/**` (draft golden note), `docs/webapp/**` (prototype notes, conformance check record)
 - `docs/HANDOFF.md` (marker + short note), `tasks/TASK-SOS-0005-lesson-player-redesign.md`
 - `docs/research/**` (evidence review, research gate #107)
+- `.content-system/**`, `web/public/**` (CGM brand/visual spec, sticker/mascot assets with provenance, #103)
+- `tools/run_tutor_golden_evals.py`, `docs/webapp/evals/**` (golden-replay tutor evals)
+
+> 2026-09-24 Alex decisions posted on #107; design in `docs/webapp/SOS-0005_PLAYER_DESIGN.md`. Heavy implementation by InferHub models via Pi coding agent; Grok Bot orchestrates (specs, review, tests, GitHub).
 
 > 2026-09-24 reframe (Alex): every proposal is a hypothesis. Research gate #107 comes first; no build until Alex reviews `docs/research/sos-0005-evidence-review.md`.
 
