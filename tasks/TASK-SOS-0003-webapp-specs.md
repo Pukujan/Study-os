@@ -1,8 +1,8 @@
 # TASK-SOS-0003 — Web app research, specs, and issue log
 
-<!-- continuity:task {"acceptance":["docs/webapp/ covers research with sources, architecture, property-driven specs, session and product success/fail conditions, data model, learner memory scope, auth, hosting, analytics (plain Power BI answer), LLM route with price snapshot and live probe, agent-vs-agent test design, and a phased plan with a thin first slice","every component spec lists invariants that tests can check","epic #82 and children #84-#95 exist and are linked from docs/webapp/BUILD_PLAN.md","validate_repo.py, the unittest suite, and pinned PCM preflight stay green; required CI passes; auto-merge enabled","no private-repository content and no secrets are included"],"depends_on":[],"goal":"Research and specify the hosted Study OS web app (React at design-bakery.com/study-os, backend and DB on gravebuster, LLM interpreter via IRE/InferHub under the deterministic controller) and file its issue log.","id":"SOS-0003","issue_url":"https://github.com/Pukujan/Study-os/issues/83","next_action":"Open the docs-only PR with Refs #83, enable auto-merge, and post the push receipt on #83 with a parent update on #82.","owner":"Pukujan (GitHub assignee); primary writer: Grok Bot executor session on task/SOS-0003-webapp-specs","priority":"P2","protocol_version":"0.1.0-draft","schema":"project-continuity.task.v1","status":"active","why":"Alex promoted a hosted web app for two real learners. Without researched, testable specs, the web surface would drift from ADR-0016 deterministic control and from the no-personal-data rule."} -->
+<!-- continuity:task {"acceptance":["docs/webapp/ covers research with sources, architecture, property-driven specs, session and product success/fail conditions, data model, learner memory scope, auth, hosting, analytics (plain Power BI answer), LLM route with price snapshot and live probe, agent-vs-agent test design, and a phased plan with a thin first slice","every component spec lists invariants that tests can check","epic #82 and children #84-#95 exist and are linked from docs/webapp/BUILD_PLAN.md","validate_repo.py, the unittest suite, and pinned PCM preflight stay green; required CI passes; auto-merge enabled","no private-repository content and no secrets are included"],"depends_on":[],"goal":"Research and specify the hosted Study OS web app (React at design-bakery.com/study-os, backend and DB on gravebuster, LLM interpreter via IRE/InferHub under the deterministic controller) and file its issue log.","id":"SOS-0003","issue_url":"https://github.com/Pukujan/Study-os/issues/83","next_action":"None for SOS-0003. Verify PR #96 merged with required checks and post the merge receipt on #83; implementation starts with separate issue-backed tasks for #82 children after Alex accepts D016.","owner":"Pukujan (GitHub assignee); primary writer: Grok Bot executor session on task/SOS-0003-webapp-specs","priority":"P2","protocol_version":"0.1.0-draft","schema":"project-continuity.task.v1","status":"completed","why":"Alex promoted a hosted web app for two real learners. Without researched, testable specs, the web surface would drift from ADR-0016 deterministic control and from the no-personal-data rule."} -->
 
-- Status: active
+- Status: completed
 - Owner: Pukujan (GitHub assignee)
 - Priority: P2
 - Depends on: none
@@ -40,7 +40,7 @@ Alex can decide in one read: the stack, auth, DB, memory, analytics (including w
 - [x] `docs/webapp/` covers every required section, with sources.
 - [x] Per-component invariants are testable (`docs/webapp/PROPERTIES.md`).
 - [x] Issue log exists and is linked from `docs/webapp/BUILD_PLAN.md`.
-- [ ] Local checks and required CI green; auto-merge enabled (see PR).
+- [x] Local checks green; PR #96 opened with auto-merge enabled. Required CI and the merge result are recorded live on #83.
 - [x] No private-repository content or secrets.
 
 ## Evidence and sources
@@ -55,7 +55,7 @@ Alex can decide in one read: the stack, auth, DB, memory, analytics (including w
 ## Related records
 
 - Leaf #83; parent #82; dependencies none. Sibling children: #84 frontend, #85 API, #86 auth, #87 DB, #88 memory, #89 LLM, #90 controller, #91 subjects/HESI, #92 evals, #93 analytics, #94 hosting, #95 privacy.
-- Primary writer / branch: Grok Bot executor session / `task/SOS-0003-webapp-specs`; as-of status: active.
+- Primary writer / branch: Grok Bot executor session / `task/SOS-0003-webapp-specs`; as-of status: completed at this commit; PR #96 merge pending (live result on #83).
 - PR/CI evidence and push receipt: posted on #83 after push.
 
 ## Checkpoint log

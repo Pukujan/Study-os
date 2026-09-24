@@ -1,6 +1,6 @@
 # Agent Handoff
 
-<!-- continuity:current {"active_task":"SOS-0003","active_task_file":"tasks/TASK-SOS-0003-webapp-specs.md","protocol_version":"0.1.0-draft","schema":"project-continuity.current.v1"} -->
+<!-- continuity:current {"active_task":null,"active_task_file":null,"protocol_version":"0.1.0-draft","schema":"project-continuity.current.v1"} -->
 
 Last updated: 2026-09-03
 Primary tracker: #63
@@ -339,4 +339,4 @@ The controller remains authority regardless of which implementation fulfills an 
 
 ## Web app track (SOS-0003, proposed)
 
-As of 2026-09-24: an owner-requested hosted web app is specified in `docs/webapp/` (leaf #83, epic #82, children #84–#95). Proposed decision D016 would promote a private, invite-only, two-learner web beta. Until Alex accepts D016, the "Explicitly deferred" list in `AGENTS.md` still applies to implementation merges. The web surface must reuse the deterministic controller (ADR-0016), with the LLM as interpreter only. Start with `docs/webapp/BUILD_PLAN.md` → slice 1.
+As of 2026-09-24 (SOS-0003 completed; PR #96 merge pending, live result on #83): an owner-requested hosted web app is specified in `docs/webapp/` (leaf #83, epic #82, children #84–#95). Proposed decision D016 would promote a private, invite-only, two-learner web beta. Until Alex accepts D016, the "Explicitly deferred" list in `AGENTS.md` still applies to implementation merges. The web surface must reuse the deterministic controller (ADR-0016), with the LLM as interpreter only. Start with `docs/webapp/BUILD_PLAN.md` → slice 1.
