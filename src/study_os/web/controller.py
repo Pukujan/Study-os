@@ -474,30 +474,24 @@ class WebController:
         state["pir"] = next_pir.model_dump(mode="json")
         turns: list[TurnSpec] = []
         topic_state = None
-        if bundle is None:
+        if bundle is None or bundle.response_turn_id is None:
             state["web_state"] = "SESSION_DONE"
             state["awaiting_turn_ref"] = None
+            if bundle is not None:
+                # Closing turns (why for the final check, frontier status) come from the asset.
+                turns = self._bundle_turns(state, bundle, state_before="GRADE", event=f"attempt:{outcome}", outcome=outcome)
+            final_status = RunStatus(state["pir"]["status"])
             msg = (
                 "The reviewed lesson frontier is assembled. Independent mastery remains unproven."
-                if next_pir.status == RunStatus.ASSEMBLED_MASTERY_UNPROVEN
-                else f"Run status: {next_pir.status.value}."
+                if final_status == RunStatus.ASSEMBLED_MASTERY_UNPROVEN
+                else f"Run status: {final_status.value}."
             )
-            why_step = route.next_step_id
             if state["track"] == "hesi":
-                # Show the why for the final check, then a topic summary.
-                step = next((s for s in asset.steps if s.step_id == f"{ctx.step_id}.why"), None)
-                if step is not None:
-                    rep = next(r for r in asset.representations if r.representation_id == step.representation_id)
-                    turns.append(TurnSpec("GRADE", f"attempt:{outcome}", "FEEDBACK", "why",
-                                          {"kind": "explain", "markdown": rep.learner_visible_markdown, "response_kind": "none",
-                                           "awaiting": False, "step_id": step.step_id, "concept": prev_concept,
-                                           "track": "hesi", "outcome": outcome}, step_id=step.step_id))
                 msg = "Topic assembled: you answered two in a row after the lesson. We’ll bring it back in review on a later day to check it sticks."
                 topic_state = (state.get("topic_id") or prev_concept, "assembled")
-            _ = why_step
             turns.append(TurnSpec("FEEDBACK" if turns else "GRADE", "session_done" if turns else f"attempt:{outcome}", "SESSION_DONE", "summary",
                                   {"kind": "status", "markdown": msg, "response_kind": "none", "awaiting": False,
-                                   "track": state["track"], "outcome": outcome}, step_id=ctx.step_id))
+                                   "track": state["track"], "outcome": outcome, "run_status": final_status.value}, step_id=ctx.step_id))
             return Transition(state=state, turns=turns, capability=capability, review_updates=review_updates, topic_state=topic_state)
         state["awaiting_turn_ref"] = bundle.response_turn_id
         turns = self._bundle_turns(state, bundle, state_before="GRADE", event=f"attempt:{outcome}", outcome=outcome)

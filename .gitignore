@@ -15,3 +15,12 @@ __pycache__/
 
 # PCM managed task worktrees (pcm/worktree/<TASK-ID>) are local-only.
 pcm/worktree/
+
+# Build/test artifacts
+build/
+dist/
+*.egg-info/
+.coverage
+web/node_modules/
+web/dist/
+!.env.example

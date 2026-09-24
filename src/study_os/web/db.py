@@ -33,7 +33,8 @@ def migrate(conn: psycopg.Connection[Any]) -> list[str]:
             "name text PRIMARY KEY, applied_at timestamptz NOT NULL DEFAULT now())"
         )
         done = {
-            row[0] for row in conn.execute("SELECT name FROM public.schema_migrations").fetchall()
+            (row["name"] if isinstance(row, dict) else row[0])
+            for row in conn.execute("SELECT name FROM public.schema_migrations").fetchall()
         }
         for name, sql in migration_files():
             if name in done:

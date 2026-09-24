@@ -21,6 +21,11 @@ def main() -> int:
     if not migration.is_file():
         raise RuntimeError("installed wheel is missing db/migrations/0001_initial.sql")
 
+    web = files("study_os").joinpath("web")
+    for rel in ("migrations/0001_webapp.sql", "content/hesi_blueprint.v0.json", "content/hesi_a2_pack.v0.json"):
+        if not web.joinpath(*rel.split("/")).is_file():
+            raise RuntimeError(f"installed wheel is missing web/{rel}")
+
     print("Installed Study OS wheel import/package-data smoke passed.")
     return 0
 
