@@ -90,6 +90,29 @@ Blocked/uncertain:
 Next:
 - study goldens/PIR/specs/research; draft PR
 
+### 2026-09-24 23:18:13 UTC — Grok Bot executor
+
+<!-- continuity:checkpoint {"agent":"Grok Bot executor","blocked":[],"changed":["none"],"completed":["Research gate #107: evidence review docs/research/sos-0005-evidence-review.md, 13 hypotheses with verdicts, 77 verified sources"],"decisions":["no new decisions"],"evidence":["no external evidence recorded"],"next_action":"Await Alex review of evidence review before any design/build","protocol_version":"0.1.0-draft","schema":"project-continuity.checkpoint.v1","task_id":"SOS-0005","timestamp":"2026-09-24T23:18:13Z"} -->
+<!-- continuity:checkpoint-operation {"payload_sha256":"2eb6391477b51389d25fb8c000c44339f3d6d4285cd1865a78e117fd9aa79589","request_id":"ca19a153e8454135890d5e15e4091699","schema":"project-continuity.checkpoint-operation.v1","task_id":"SOS-0005"} -->
+
+Completed:
+- Research gate #107: evidence review docs/research/sos-0005-evidence-review.md, 13 hypotheses with verdicts, 77 verified sources
+
+Evidence:
+- no external evidence recorded
+
+Decisions:
+- no new decisions
+
+Changed:
+- none
+
+Blocked/uncertain:
+- none
+
+Next:
+- Await Alex review of evidence review before any design/build
+
 ## Handoff
 
 Read PROJECT → CURRENT → this task → minimum relevant spec. Checkpoint before stopping.
