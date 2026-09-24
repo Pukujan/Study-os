@@ -1,0 +1,72 @@
+# Study OS on gravebuster (D018). Lives at /srv/study-os/docker-compose.yml with the repo
+# checked out at /srv/study-os/app and secrets in /srv/study-os/.env (chmod 600).
+#   cd /srv/study-os && docker compose up -d --build
+name: study-os
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: study
+      POSTGRES_DB: study_os
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set in .env}
+    volumes:
+      - ./pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U study -d study_os"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    networks: [internal]
+
+  api:
+    build:
+      context: ./app
+      dockerfile: deploy/Dockerfile
+    image: study-os-api:local
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://study:${POSTGRES_PASSWORD}@postgres:5432/study_os
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:${API_HOST_PORT:-18400}:8000"
+    networks: [internal, edge]
+
+  cloudflared:
+    image: cloudflare/cloudflared:${CLOUDFLARED_TAG:-2026.9.3}
+    restart: unless-stopped
+    command: ["tunnel", "--no-autoupdate", "run"]
+    environment:
+      TUNNEL_TOKEN: ${TUNNEL_TOKEN:?set in .env}
+    depends_on: [api]
+    networks: [edge]
+
+  backup:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./backups:/backups
+    entrypoint:
+      - sh
+      - -c
+      - |
+        while true; do
+          pg_dump -h postgres -U study -d study_os -Fc -f /backups/study_os-$$(date +%F).dump && \
+          find /backups -name 'study_os-*.dump' -mtime +14 -delete
+          sleep 86400
+        done
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks: [internal]
+
+networks:
+  internal:
+    internal: true
+  edge: {}

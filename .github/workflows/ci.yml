@@ -16,7 +16,23 @@ jobs:
   validate:
     name: Validate research harness
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: sos
+          POSTGRES_PASSWORD: sos
+          POSTGRES_DB: sos_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U sos -d sos_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      TEST_DATABASE_URL: postgresql://sos:sos@localhost:5432/sos_test
 
     steps:
       - name: Check out repository
@@ -87,7 +103,23 @@ jobs:
   python311:
     name: Python 3.11 compatibility
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: sos
+          POSTGRES_PASSWORD: sos
+          POSTGRES_DB: sos_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U sos -d sos_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      TEST_DATABASE_URL: postgresql://sos:sos@localhost:5432/sos_test
 
     steps:
       - name: Check out repository
@@ -129,3 +161,31 @@ jobs:
 
       - name: Run full unittest and Hypothesis suite
         run: python -m unittest discover -s tests -v
+
+  web:
+    name: Web frontend
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: web
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Type check, test and build
+        run: |
+          npm run typecheck
+          npm test
+          npx vite build

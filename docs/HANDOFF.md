@@ -2,8 +2,14 @@
 
 <!-- continuity:current {"active_task":null,"active_task_file":null,"protocol_version":"0.1.0-draft","schema":"project-continuity.current.v1"} -->
 
-Last updated: 2026-09-03
-Primary tracker: #63
+Last updated: 2026-09-24
+Primary tracker: #63 (runtime) · #82 (web app epic)
+
+## Web app track (D017 accepted, D018 amendment) — slice 1 live
+
+- Live at **https://study.design-bakery.com** (frontend `/`, API `/api`, same origin) on gravebuster: `/srv/study-os` Docker Compose (`api` on `127.0.0.1:18400`, `postgres:16` internal, `cloudflared` tunnel `study-os-gravebuster`, nightly `pg_dump`). See `deploy/README.md`.
+- Code: `src/study_os/web/` (FastAPI, auth, controller over PIR, decision layer, HESI packs), `web/` (React), `tools/run_agent_evals.py` (agent-vs-agent T0 evals). Task: `tasks/TASK-SOS-0004-first-slice.md`, issue #99.
+- Open for Alex: Google OAuth client keys (Google button stays hidden until set), human review of the HESI draft items, Metabase (optional), rrweb replay (#98), learner memory (#88).
 
 ## Current phase
 

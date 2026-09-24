@@ -268,9 +268,9 @@ Status: proposed in #80 (task `SOS-0002`); accepted when its PR merges.
 
 The canonical sliding-window PIR asset (`sliding-window.max-sum-k.sep4.v1`) is generated from the two goldens in `domains/dsa/sliding-window/golden/`, and its scope stops where they stop (`enumerate(a)` and `append`). It moves to revision `sep4.sliding-window.golden-box-index-enumerate-append.v2`. Runs pinned to v1 fail closed on the existing revision check. `domains/dsa/sliding-window/golden/conformance-oracle.v0.1.json` and `src/study_os/pir/conformance.py` mirror the `Pukujan/study-os-benchmarker` rules at `d438988` and are enforced by `tests/test_pir_golden_conformance.py`. Loop assembly, `max`, the `else` bridge, the stop condition, and `range(k)` need their own reviewed golden before they ship.
 
-## D017 — Owner promotes a private hosted web app track (proposed)
+## D017 — Owner promotes a private hosted web app track (accepted, amended by D018)
 
-Status: proposed in #83 (task `SOS-0003`, epic #82). **Implementation merges require Alex's explicit acceptance of this decision.** Merging the SOS-0003 spec PR records the proposal only.
+Status: **accepted** on 2026-09-24 by Alex's assistant acting on his behalf (recorded in SOS-0004, #99), and amended the same day by D018. Proposed in #83 (task `SOS-0003`, epic #82).
 
 Context: D014 says frontend surfaces start "when the owner promotes them". On 2026-09-24 Alex asked for a hosted web app (React at `design-bakery.com/study-os`, backend and database on his machine `gravebuster`, authenticated accounts for two real learners, LLM tutoring via IRE/InferHub).
 
@@ -283,3 +283,18 @@ Proposed decision:
 
 Spec: `docs/webapp/README.md`.
 
+
+## D018 — Owner amendment to D017: self-hosted on gravebuster, open signup with Google, first-party analytics
+
+Status: **accepted** by Alex (owner) on 2026-09-24, relayed by his assistant; recorded in SOS-0004 (#99). Detail: `docs/webapp/D018_AMENDMENT.md`.
+
+Decision:
+
+- **No Vercel.** Everything runs on `gravebuster`: the built React frontend is served by the API stack at `https://study.design-bakery.com/` and the API at `/api` on the same origin (first-party cookies), with Postgres 16, exposed through a Cloudflare named tunnel. The tunnel, ingress, and DNS are created through the Cloudflare API with Alex's tokens (no interactive login). R2 is optional (Postgres dump backups).
+- **No PostHog.** All UX and learning events go to Postgres only, through a first-party tracker (`POST /api/events`) and Metabase-ready SQL views. Session replay (rrweb) is a separate later issue (#98).
+- **Auth: open signup.** Google sign-in is primary (OIDC code flow with state + PKCE + nonce); a local email/passphrase fallback (argon2id) serves dev and use before Google keys exist. Minimal profile data is stored in `auth.*` only: Google subject, email, display name, learner handle. This **narrows P-SYS-1** for `auth.*` only: learning tables (`learn.*`, `ux.*`) still reference only the pseudonymous `subject_id`, free text is scrubbed, and no IP or user agent is stored (throttling uses an HMAC of the IP, purged after a day).
+- Security baseline: server-side sessions in Postgres, HttpOnly Secure SameSite=Lax cookie, 30-day absolute and 7-day idle expiry, CSRF token on mutations, login throttling (5 failures / 15 min per account, 20 per IP, exponential backoff), per-IP and per-user rate limits, per-user daily model-call caps and a global daily spend cap.
+- Caching: compiled lesson graphs in process memory; decision-model and LLM responses cached in Postgres by a hash of (model, prompt template, input); hashed static assets immutable behind the Cloudflare cache.
+- **HESI:** the second learner (Alex's wife) consents and is the target learner. The HESI track becomes a checkpointed, topic-based program: a topic graph with prerequisites and section checkpoints mapped from the public HESI A2 sections (math, reading, vocabulary, grammar, anatomy and physiology, biology, chemistry) with HESI Exit content areas scaffolded. Topics are compiled into PIR teaching assets and served by the same deterministic controller as the sliding-window lesson. Content is original and cites openly licensed sources (OpenStax, Open RN, CDC); no commercial prep questions are copied. Every item carries an LLM review pass and stays `unreviewed` until Alex reviews it.
+
+Unchanged: ADR-0016 deterministic control, the evidence invariants, and "synthetic evaluation is never learner evidence".
