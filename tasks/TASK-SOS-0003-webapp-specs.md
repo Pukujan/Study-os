@@ -62,6 +62,39 @@ Alex can decide in one read: the stack, auth, DB, memory, analytics (including w
 
 No checkpoints yet.
 
+### 2026-09-24 21:46:57 UTC — Grok Bot executor (for Pukujan)
+
+<!-- continuity:checkpoint {"agent":"Grok Bot executor (for Pukujan)","blocked":["Companion deep-research report not yet present; placeholder in docs/webapp/RESEARCH.md","Go-live needs Alex: D016 acceptance, Vercel project, Cloudflare tunnel login, gravebuster deploy access, InferHub key on gravebuster"],"changed":["docs/webapp/**","docs/DECISIONS.md","docs/HANDOFF.md","tasks/TASK-SOS-0003-webapp-specs.md"],"completed":["Created epic #82 and children #84-#95 (linked as sub-issues) plus leaf #83","Wrote docs/webapp/ (README, RESEARCH, ARCHITECTURE, PROPERTIES, DATA_MODEL, LLM_ROUTE, AGENT_EVAL, BUILD_PLAN), proposed D016, HANDOFF web-app note","Ran 12 small live IRE/InferHub probe calls (owner pre-approved): cb/glm-5.3 6/6 and cb/deepseek-v4.1-flash 4/4 clean streamed forced tool calls; cbcn GLM routes 503"],"decisions":["Task id SOS-0003 set manually because SOS-0002 (#80) lives on an unmerged concurrent branch","LLM is an interpreter only; primary route cb/glm-5.3 (priced, above the 0.10 threshold, owner-approved quality over cost), fallback cb/deepseek-v4.1-flash","Implementation merges gated on Alex accepting D016; docs-only PR changes no guardrail"],"evidence":["Product commit 7d0da9835f27a36a3fcac993d19f4d6190c33e46 on task/SOS-0003-webapp-specs from main b227f51","Local: validate_repo.py passed; unittest 350 tests OK; pinned PCM preflight MODE: TARGET_VALID","IRE Top-20 snapshot sha256 8e2b1b323cf9438b1274f321c309729d60f133ef14915895265ca76758570e7c (2026-09-22T17:10:44Z)"],"next_action":"Open the PR with Refs #83, enable auto-merge, post receipts on #83 and #82; then close out SOS-0003","protocol_version":"0.1.0-draft","schema":"project-continuity.checkpoint.v1","task_id":"SOS-0003","timestamp":"2026-09-24T21:46:57Z"} -->
+<!-- continuity:checkpoint-operation {"payload_sha256":"33bbfb7eedef1a28844c5d5cfa8779f0a74671e8b4ea3b7249ed1997441ed068","request_id":"sos-0003-cp1-20260924","schema":"project-continuity.checkpoint-operation.v1","task_id":"SOS-0003"} -->
+
+Completed:
+- Created epic #82 and children #84-#95 (linked as sub-issues) plus leaf #83
+- Wrote docs/webapp/ (README, RESEARCH, ARCHITECTURE, PROPERTIES, DATA_MODEL, LLM_ROUTE, AGENT_EVAL, BUILD_PLAN), proposed D016, HANDOFF web-app note
+- Ran 12 small live IRE/InferHub probe calls (owner pre-approved): cb/glm-5.3 6/6 and cb/deepseek-v4.1-flash 4/4 clean streamed forced tool calls; cbcn GLM routes 503
+
+Evidence:
+- Product commit 7d0da9835f27a36a3fcac993d19f4d6190c33e46 on task/SOS-0003-webapp-specs from main b227f51
+- Local: validate_repo.py passed; unittest 350 tests OK; pinned PCM preflight MODE: TARGET_VALID
+- IRE Top-20 snapshot sha256 8e2b1b323cf9438b1274f321c309729d60f133ef14915895265ca76758570e7c (2026-09-22T17:10:44Z)
+
+Decisions:
+- Task id SOS-0003 set manually because SOS-0002 (#80) lives on an unmerged concurrent branch
+- LLM is an interpreter only; primary route cb/glm-5.3 (priced, above the 0.10 threshold, owner-approved quality over cost), fallback cb/deepseek-v4.1-flash
+- Implementation merges gated on Alex accepting D016; docs-only PR changes no guardrail
+
+Changed:
+- docs/webapp/**
+- docs/DECISIONS.md
+- docs/HANDOFF.md
+- tasks/TASK-SOS-0003-webapp-specs.md
+
+Blocked/uncertain:
+- Companion deep-research report not yet present; placeholder in docs/webapp/RESEARCH.md
+- Go-live needs Alex: D016 acceptance, Vercel project, Cloudflare tunnel login, gravebuster deploy access, InferHub key on gravebuster
+
+Next:
+- Open the PR with Refs #83, enable auto-merge, post receipts on #83 and #82; then close out SOS-0003
+
 ## Handoff
 
 Read PROJECT → CURRENT → this task → `docs/webapp/README.md`. Checkpoint before stopping.
