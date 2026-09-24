@@ -1,0 +1,84 @@
+{
+  "schema_version": "study-os.subject-blueprint.v0",
+  "subject": "hesi",
+  "blueprint_revision": "hesi-blueprint.v0.1",
+  "note": "Topic map built from the publicly described HESI A2 academic sections and HESI Exit nursing content areas. Topic names are descriptive; no commercial prep content is used. All items are original and unreviewed until the owner reviews them.",
+  "sources": {
+    "openstax-prealgebra": {"title": "OpenStax, Prealgebra 2e", "license": "CC BY 4.0", "url": "https://openstax.org/details/books/prealgebra-2e"},
+    "openstax-elem-algebra": {"title": "OpenStax, Elementary Algebra 2e", "license": "CC BY 4.0", "url": "https://openstax.org/details/books/elementary-algebra-2e"},
+    "openstax-writing": {"title": "OpenStax, Writing Guide with Handbook", "license": "CC BY 4.0", "url": "https://openstax.org/details/books/writing-guide"},
+    "openstax-ap": {"title": "OpenStax, Anatomy and Physiology 2e", "license": "CC BY 4.0", "url": "https://openstax.org/details/books/anatomy-and-physiology-2e"},
+    "openstax-biology": {"title": "OpenStax, Biology 2e", "license": "CC BY 4.0", "url": "https://openstax.org/details/books/biology-2e"},
+    "openstax-chemistry": {"title": "OpenStax, Chemistry 2e", "license": "CC BY 4.0", "url": "https://openstax.org/details/books/chemistry-2e"},
+    "openrn-fundamentals": {"title": "Open RN, Nursing Fundamentals 2e", "license": "CC BY 4.0", "url": "https://wtcs.pressbooks.pub/nursingfundamentals/"},
+    "openrn-pharmacology": {"title": "Open RN, Nursing Pharmacology 2e", "license": "CC BY 4.0", "url": "https://wtcs.pressbooks.pub/pharmacology/"},
+    "openrn-mpc": {"title": "Open RN, Nursing Management and Professional Concepts 2e", "license": "CC BY 4.0", "url": "https://wtcs.pressbooks.pub/nursingmpc/"},
+    "cdc-isolation": {"title": "CDC, Guideline for Isolation Precautions", "license": "Public domain (US government work)", "url": "https://www.cdc.gov/infection-control/hcp/isolation-precautions/index.html"},
+    "original": {"title": "Original passage written for Study OS", "license": "CC BY 4.0 (Study OS)", "url": ""}
+  },
+  "exams": [
+    {"exam_id": "a2", "title": "HESI A2 (admission assessment)", "status": "active"},
+    {"exam_id": "exit", "title": "HESI Exit (RN)", "status": "scaffold"}
+  ],
+  "sections": [
+    {"section_id": "math", "exam_id": "a2", "title": "Mathematics", "topics": [
+      {"topic_id": "math_fractions", "title": "Fractions: simplify, add, subtract, multiply, divide", "prerequisites": [], "sources": ["openstax-prealgebra"]},
+      {"topic_id": "math_decimals_percents", "title": "Decimals and percents, converting between forms", "prerequisites": ["math_fractions"], "sources": ["openstax-prealgebra"]},
+      {"topic_id": "math_ratios_proportions", "title": "Ratios and proportions, solving for x", "prerequisites": ["math_decimals_percents"], "sources": ["openstax-prealgebra"]},
+      {"topic_id": "math_conversions", "title": "Metric and household measurement conversions used in health care", "prerequisites": ["math_ratios_proportions"], "sources": ["openstax-prealgebra", "openrn-pharmacology"]},
+      {"topic_id": "math_algebra", "title": "One-variable equations and order of operations", "prerequisites": ["math_fractions"], "sources": ["openstax-elem-algebra"]},
+      {"topic_id": "math_time_roman", "title": "Military (24-hour) time and Roman numerals", "prerequisites": [], "sources": ["openstax-prealgebra"]}
+    ]},
+    {"section_id": "reading", "exam_id": "a2", "title": "Reading comprehension", "topics": [
+      {"topic_id": "reading_main_idea", "title": "Main idea and supporting details", "prerequisites": [], "sources": ["original", "openstax-writing"]},
+      {"topic_id": "reading_inference", "title": "Inferences and conclusions from a passage", "prerequisites": ["reading_main_idea"], "sources": ["original", "openstax-writing"]},
+      {"topic_id": "reading_fact_opinion_purpose", "title": "Fact vs opinion, author's purpose and tone", "prerequisites": ["reading_main_idea"], "sources": ["original", "openstax-writing"]},
+      {"topic_id": "reading_context_meaning", "title": "Word meaning from context in a passage", "prerequisites": [], "sources": ["original"]}
+    ]},
+    {"section_id": "vocab", "exam_id": "a2", "title": "Vocabulary and general knowledge", "topics": [
+      {"topic_id": "vocab_word_parts", "title": "Medical prefixes, roots, and suffixes", "prerequisites": [], "sources": ["openstax-ap"]},
+      {"topic_id": "vocab_health_terms", "title": "Common health-care vocabulary in sentences", "prerequisites": ["vocab_word_parts"], "sources": ["openrn-fundamentals"]},
+      {"topic_id": "vocab_general_words", "title": "General academic vocabulary (synonyms and precise meaning)", "prerequisites": [], "sources": ["original"]}
+    ]},
+    {"section_id": "grammar", "exam_id": "a2", "title": "Grammar", "topics": [
+      {"topic_id": "grammar_parts_of_speech", "title": "Parts of speech", "prerequisites": [], "sources": ["openstax-writing"]},
+      {"topic_id": "grammar_agreement", "title": "Subject-verb and pronoun-antecedent agreement", "prerequisites": ["grammar_parts_of_speech"], "sources": ["openstax-writing"]},
+      {"topic_id": "grammar_confused_words", "title": "Commonly confused words (affect/effect, their/there, lie/lay)", "prerequisites": [], "sources": ["openstax-writing"]},
+      {"topic_id": "grammar_punctuation", "title": "Punctuation and sentence structure", "prerequisites": ["grammar_parts_of_speech"], "sources": ["openstax-writing"]}
+    ]},
+    {"section_id": "ap", "exam_id": "a2", "title": "Anatomy and physiology", "topics": [
+      {"topic_id": "ap_terminology", "title": "Anatomical position, planes, directional terms, body cavities", "prerequisites": [], "sources": ["openstax-ap"]},
+      {"topic_id": "ap_cells_tissues", "title": "Cells, tissues, and homeostasis", "prerequisites": ["ap_terminology"], "sources": ["openstax-ap"]},
+      {"topic_id": "ap_cardiovascular", "title": "Heart, blood flow, and blood vessels", "prerequisites": ["ap_cells_tissues"], "sources": ["openstax-ap"]},
+      {"topic_id": "ap_respiratory", "title": "Respiratory system and gas exchange", "prerequisites": ["ap_cells_tissues"], "sources": ["openstax-ap"]},
+      {"topic_id": "ap_nervous_endocrine", "title": "Nervous and endocrine systems", "prerequisites": ["ap_cells_tissues"], "sources": ["openstax-ap"]},
+      {"topic_id": "ap_digestive_urinary", "title": "Digestive and urinary systems", "prerequisites": ["ap_cells_tissues"], "sources": ["openstax-ap"]},
+      {"topic_id": "ap_musculoskeletal", "title": "Skeletal and muscular systems", "prerequisites": ["ap_terminology"], "sources": ["openstax-ap"]}
+    ]},
+    {"section_id": "bio", "exam_id": "a2", "title": "Biology", "topics": [
+      {"topic_id": "bio_molecules", "title": "Biological molecules (carbohydrates, lipids, proteins, nucleic acids)", "prerequisites": [], "sources": ["openstax-biology"]},
+      {"topic_id": "bio_cell_structure", "title": "Cell structure and organelles", "prerequisites": ["bio_molecules"], "sources": ["openstax-biology"]},
+      {"topic_id": "bio_metabolism", "title": "Cellular respiration and photosynthesis", "prerequisites": ["bio_cell_structure"], "sources": ["openstax-biology"]},
+      {"topic_id": "bio_cell_division", "title": "Mitosis and meiosis", "prerequisites": ["bio_cell_structure"], "sources": ["openstax-biology"]},
+      {"topic_id": "bio_genetics", "title": "DNA, Mendelian genetics, and Punnett squares", "prerequisites": ["bio_cell_division"], "sources": ["openstax-biology"]},
+      {"topic_id": "bio_scientific_method", "title": "Scientific method and experimental design", "prerequisites": [], "sources": ["openstax-biology"]}
+    ]},
+    {"section_id": "chem", "exam_id": "a2", "title": "Chemistry", "topics": [
+      {"topic_id": "chem_atoms", "title": "Atomic structure, isotopes, and ions", "prerequisites": [], "sources": ["openstax-chemistry"]},
+      {"topic_id": "chem_periodic_table", "title": "Periodic table trends and groups", "prerequisites": ["chem_atoms"], "sources": ["openstax-chemistry"]},
+      {"topic_id": "chem_bonding", "title": "Ionic, covalent, and hydrogen bonds", "prerequisites": ["chem_periodic_table"], "sources": ["openstax-chemistry"]},
+      {"topic_id": "chem_reactions", "title": "Balancing equations and reaction types", "prerequisites": ["chem_bonding"], "sources": ["openstax-chemistry"]},
+      {"topic_id": "chem_moles_solutions", "title": "Moles, molarity, and solutions", "prerequisites": ["chem_reactions"], "sources": ["openstax-chemistry"]},
+      {"topic_id": "chem_acids_bases", "title": "Acids, bases, and pH", "prerequisites": ["chem_bonding"], "sources": ["openstax-chemistry"]}
+    ]},
+    {"section_id": "exit_fundamentals", "exam_id": "exit", "title": "Exit: fundamentals and safety (scaffold)", "topics": [
+      {"topic_id": "exit_priority_abc", "title": "Prioritization with airway, breathing, circulation", "prerequisites": [], "sources": ["openrn-mpc"]},
+      {"topic_id": "exit_infection_control", "title": "Standard and transmission-based precautions", "prerequisites": [], "sources": ["cdc-isolation", "openrn-fundamentals"]}
+    ]},
+    {"section_id": "exit_medsurg", "exam_id": "exit", "title": "Exit: medical-surgical (scaffold)", "topics": []},
+    {"section_id": "exit_pharm", "exam_id": "exit", "title": "Exit: pharmacology (scaffold)", "topics": []},
+    {"section_id": "exit_maternal_peds", "exam_id": "exit", "title": "Exit: maternity and pediatrics (scaffold)", "topics": []},
+    {"section_id": "exit_psych_mgmt", "exam_id": "exit", "title": "Exit: mental health and management (scaffold)", "topics": []}
+  ],
+  "checkpoint_policy": {"items_per_checkpoint": 8, "pass_fraction": 0.75, "role": "check"}
+}

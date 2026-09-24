@@ -1,6 +1,6 @@
 # Agent Handoff
 
-<!-- continuity:current {"active_task":null,"active_task_file":null,"protocol_version":"0.1.0-draft","schema":"project-continuity.current.v1"} -->
+<!-- continuity:current {"active_task":"SOS-0004","active_task_file":"tasks/TASK-SOS-0004-first-slice.md","protocol_version":"0.1.0-draft","schema":"project-continuity.current.v1"} -->
 
 Last updated: 2026-09-03
 Primary tracker: #63
