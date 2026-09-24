@@ -60,6 +60,33 @@ For every substantive task:
 8. Run repository validation/CI-equivalent checks before declaring completion.
 9. Report exactly what remains unresolved.
 
+## Helper modules and project ownership
+
+**This repository is the authoritative owner of Study OS.** Its project facts, scope, gates, evidence semantics, task state, and human-facing claims live here (`AGENTS.md`, `PROJECT_MANIFEST.yaml`, `docs/`, `tasks/`, `.continuity/`, `.content-system/`) and in this repository's GitHub issues, PRs, and merged history. Two helper repositories supply reusable method only, at pinned revisions:
+
+| Helper | Role here | Pin (never read moving `main` during work) | Adoption shape |
+| --- | --- | --- | --- |
+| [`Pukujan/project-continuity-modules`](https://github.com/Pukujan/project-continuity-modules) (PCM) | continuity protocol, validator, checkpoints | CLI `0.4.0`, protocol `0.1.0-draft`, commit `0b3be9ca80da816de4621ac4e85612990084216e` | mature-repository overlay ([`docs/TARGET_ADOPTION.md`](https://github.com/Pukujan/project-continuity-modules/blob/0b3be9ca80da816de4621ac4e85612990084216e/docs/TARGET_ADOPTION.md)) |
+| [`Pukujan/content-generation-modules`](https://github.com/Pukujan/content-generation-modules) (CGM) | README/brand/visual/image method and adapter validator | `0.4.0`, commit `f85e88bc00362c53061d95ac7811bd9c6ada8e32` (see `.content-system/system-version.json`) | target adapter in `.content-system/` |
+
+Rules:
+
+- Helpers never own Study OS state. Do not write Study OS PROJECT/CURRENT/TASK state, learner data, or product claims into a helper repository, and do not use a helper's own `CURRENT`/`TASK` files as Study OS state.
+- PCM canonical paths (declared in `.continuity/config.json`): PROJECT = `docs/PROJECT_CHARTER.md`, CURRENT = `docs/HANDOFF.md`, TASKS = `tasks/`. The `continuity:*` marker lines only declare those roles; they do not change the documents' existing meaning. `PROJECT_MANIFEST.yaml` stays the machine-readable status/guardrail source.
+- `schemas/v1/**` is an exact copy of PCM's protocol schemas at the pinned commit. Study OS domain schemas stay in `schemas/*.schema.json`. Do not edit `schemas/v1/` except when deliberately moving the PCM pin.
+- Before relying on continuity state, run the pinned PCM validator against this root and require `MODE: TARGET_VALID`:
+
+  ```bash
+  git clone https://github.com/Pukujan/project-continuity-modules /tmp/pcm && git -C /tmp/pcm checkout 0b3be9ca80da816de4621ac4e85612990084216e
+  PYTHONPATH=/tmp/pcm/src python -m continuity preflight --root .
+  ```
+
+- GitHub issues own task scope, acceptance, priority, owner, dependencies, and lifecycle; merged `main` owns accepted code/docs; PR/check records own delivery facts. `tasks/TASK-SOS-*.md` and the `continuity:current` marker are versioned projections of that state (PCM [SPEC section 8](https://github.com/Pukujan/project-continuity-modules/blob/0b3be9ca80da816de4621ac4e85612990084216e/SPEC.md#8-authority)). Every PCM task needs an owning issue (`issue_url`); every progress update names the leaf issue, parent (or "none"), and dependencies (or "none").
+- Work one task per branch (`task/SOS-XXXX-slug`), one primary writer per task. Commit product changes first, then `continuity checkpoint` (it commits and pushes the task branch), then open/update the PR and post a receipt on the leaf issue with the pushed SHA. Never push to `main` or force-push.
+- Human-facing deliverables (README, product docs, image briefs, demos) follow the pinned CGM contract and `.content-system/` adapter. Claims in `.content-system/project-brief.json` must cite exact Study OS revisions and state what each source supports and leaves unproven. Generated imagery remains deferred until Research Gate R0 (see "Explicitly deferred").
+- Private repositories (for example `Pukujan/private-study-log`) are never copied, quoted, or summarized into this public repository, its issues/PRs, or helper repositories.
+- Moving a helper pin is its own issue-backed change: update the pin here, in `.continuity/config.json`/`schemas/v1/` or `.content-system/system-version.json`, run both validators, and record the result.
+
 ## Handoff protocol
 
 `docs/HANDOFF.md` is a living operational snapshot for the next agent. Keep it concise and current. It must include:
@@ -150,6 +177,8 @@ python -m compileall tools tests
 python tools/validate_repo.py
 python -m unittest discover -s tests -v
 ```
+
+`tests/test_helper_adoption.py` (part of the unittest suite) checks the helper pins, PCM canonical markers, and CGM adapter shape offline. The full PCM/CGM validators require the pinned helper checkouts; see "Helper modules and project ownership".
 
 If dependencies are later added, update this file and CI together.
 

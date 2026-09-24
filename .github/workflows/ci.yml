@@ -50,6 +50,17 @@ jobs:
       - name: Validate schemas, manifest, privacy boundary, and session data
         run: python tools/validate_repo.py
 
+      - name: Validate PCM continuity overlay at pinned helper commit
+        env:
+          PCM_COMMIT: 0b3be9ca80da816de4621ac4e85612990084216e
+        run: |
+          git init -q /tmp/pcm
+          git -C /tmp/pcm fetch -q --depth 1 https://github.com/Pukujan/project-continuity-modules "$PCM_COMMIT"
+          git -C /tmp/pcm checkout -q FETCH_HEAD
+          test "$(git -C /tmp/pcm rev-parse HEAD)" = "$PCM_COMMIT"
+          diff -r schemas/v1 /tmp/pcm/schemas/v1
+          PYTHONPATH=/tmp/pcm/src python -m continuity preflight --root .
+
       - name: Validate version and architecture boundaries
         run: python tools/check_engineering_baseline.py
 

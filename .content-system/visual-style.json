@@ -1,0 +1,54 @@
+{
+  "schema_version": "content-generation.visual-style.v1",
+  "reference_asset": "none yet: no reviewed Study OS visual exists; image generation is deferred until Research Gate R0 (AGENTS.md 'Explicitly deferred')",
+  "generation_workflow": "built-in image_gen",
+  "narrative_roles": [
+    "hero",
+    "problem",
+    "supporting",
+    "evidence",
+    "story",
+    "social"
+  ],
+  "palette": {
+    "background": "to be chosen at first reviewed visual",
+    "primary": "to be chosen",
+    "accent": "to be chosen",
+    "warm_accent": "to be chosen",
+    "text": "to be chosen"
+  },
+  "subjects": [
+    "a learner and deterministic trace/state diagrams; never a human-like AI tutor presented as authority"
+  ],
+  "composition": [
+    "one dominant idea",
+    "main subjects remain visible",
+    "deterministic DSA state shown as diagrams, not generated imagery"
+  ],
+  "text_policy": "narrative raster assets carry one short title plus one short subtitle; icons, SVGs, logos, and algorithm-state diagrams remain generated deterministically and text-minimal",
+  "roles": {
+    "hero": {
+      "orientation": "wide",
+      "dimensions": "1600x900"
+    },
+    "problem": {
+      "orientation": "wide",
+      "dimensions": "1600x900"
+    },
+    "system": {
+      "orientation": "square",
+      "dimensions": "1200x1200"
+    },
+    "evidence": {
+      "orientation": "portrait",
+      "dimensions": "1080x1350"
+    }
+  },
+  "reject_when": [
+    "implies mastery or efficacy not supported by evidence",
+    "depicts private learner data or transcript text",
+    "uses generated media as authoritative algorithm state",
+    "adopts CGM's default characters or scene instead of a Study OS direction"
+  ],
+  "status_note": "Provisional placeholder so the adapter is complete; the palette and reference asset are an owner decision for the first reviewed visual."
+}

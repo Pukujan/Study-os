@@ -1,0 +1,27 @@
+{
+  "schema_version": "content-generation.adapter.v1",
+  "system": "content-generation-modules",
+  "helper_repository": "https://github.com/Pukujan/content-generation-modules",
+  "helper_version": "0.4.0",
+  "helper_commit": "f85e88bc00362c53061d95ac7811bd9c6ada8e32",
+  "helper_pin_note": "0.4.0 is declared by system-version.json at this commit; no v0.4.0 tag exists on the helper as of 2026-09-24, so the full commit is the authoritative pin.",
+  "modules": [
+    "brand-foundation",
+    "content-context",
+    "writing-direction",
+    "visual-direction",
+    "image-generation",
+    "html-demo"
+  ],
+  "authoritative_project_files": [
+    "AGENTS.md",
+    "PROJECT_MANIFEST.yaml",
+    "README.md",
+    "docs/PROJECT_CHARTER.md",
+    "docs/PROJECT_BOUNDARY.md",
+    "docs/HANDOFF.md",
+    "docs/DATA_POLICY.md"
+  ],
+  "review_outputs": [],
+  "adoption_status": "adapter pinned; no reviewed human-facing output or visual asset yet (README rewrite and image generation are follow-ups; imagery is deferred until Research Gate R0 by AGENTS.md)"
+}

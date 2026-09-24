@@ -1,4 +1,4 @@
-manifest_version: "0.2.3"
+manifest_version: "0.2.4"
 project:
   name: Study OS
   repository: Pukujan/Study-os
@@ -68,6 +68,35 @@ canonical_paths:
   validation_strategy: docs/VALIDATION_STRATEGY.md
   handoff: docs/HANDOFF.md
   decisions: docs/DECISIONS.md
+  continuity_config: .continuity/config.json
+  continuity_project: docs/PROJECT_CHARTER.md
+  continuity_current: docs/HANDOFF.md
+  continuity_tasks: tasks/
+  continuity_protocol_schemas: schemas/v1/
+  content_system_adapter: .content-system/
+
+helpers:
+  ownership: >-
+    Pukujan/Study-os is the authoritative owner of Study OS project facts,
+    continuity/task state, and human-facing claims. Helper repositories supply
+    reusable method only, at pinned revisions, and never own Study OS state.
+  project_continuity_modules:
+    repository: Pukujan/project-continuity-modules
+    role: continuity_protocol_and_validator
+    adoption: mature_repository_overlay
+    cli_version: "0.4.0"
+    protocol_version: "0.1.0-draft"
+    commit: 0b3be9ca80da816de4621ac4e85612990084216e
+    task_prefix: SOS
+    github_issue_authority: true
+  content_generation_modules:
+    repository: Pukujan/content-generation-modules
+    role: human_facing_content_method_and_adapter_validator
+    adoption: target_adapter
+    helper_version: "0.4.0"
+    commit: f85e88bc00362c53061d95ac7811bd9c6ada8e32
+    adapter_validation: incomplete_no_reviewed_asset
+  private_repositories_copied_into_public_outputs: false
 
 runtime:
   package_version: "0.1.0"
@@ -224,7 +253,9 @@ engineering:
     - python_311_compatibility
     - branch_coverage_minimum_70
     - unit_contract_property_stateful_and_reference_model_tests
+    - helper_adoption_offline_invariants
   planned_pr_checks:
+    - pinned_pcm_target_validation
     - ruff_format_check
     - project_state_doc_convergence
     - application_schema_generation_freshness
@@ -264,6 +295,10 @@ engineering:
     - PROJECT_MANIFEST.yaml
     - docs/HANDOFF.md
     - docs/DECISIONS.md
+    - docs/PROJECT_CHARTER.md
+    - .continuity/config.json
+    - tasks/
+    - .content-system/system-version.json
 
 open_risks:
   - self_report_fluency_confused_with_learning
