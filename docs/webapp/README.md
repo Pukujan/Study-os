@@ -1,7 +1,9 @@
 # Study OS web app — spec index (SOS-0003)
 
-Status: **proposed spec**. Owner-requested on 2026-09-24. Implementation is gated on decision [D017](../DECISIONS.md#d017--owner-promotes-a-private-hosted-web-app-track-proposed).
-Leaf issue: #83. Parent epic: #82. Children: #84–#95, #97.
+Status: **accepted (D017), amended by [D018](D018_AMENDMENT.md)**. Slice 1 is built and live at **https://study.design-bakery.com** (SOS-0004, #99; deploy notes in [`deploy/README.md`](../../deploy/README.md)).
+Leaf issues: #83 (spec, merged in PR #96), #99 (slice 1). Parent epic: #82. Children: #84–#95, #97, #98.
+
+> **D018 supersedes parts of the tables below:** no Vercel — frontend (`/`) and API (`/api`) are served same-origin from gravebuster at `study.design-bakery.com` through a Cloudflare named tunnel created via the API; auth is Google sign-in with open signup plus a local email/passphrase fallback; analytics is a first-party tracker into Postgres (no PostHog). Where this index and D018 disagree, D018 wins.
 
 ## What this is
 

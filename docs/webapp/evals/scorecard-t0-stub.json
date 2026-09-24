@@ -1,8 +1,8 @@
 {
   "schema_version": "study-os.agent-evals.v1",
   "mode": "stub",
-  "runs": 60,
-  "seeds": 3,
+  "runs": 40,
+  "seeds": 2,
   "personas": [
     "diligent",
     "struggler",
@@ -19,39 +19,37 @@
   "conformance_passed": {
     "dsa": true,
     "ap_cardiovascular": true,
-    "ap_cells_tissues": true,
     "ap_digestive_urinary": true,
-    "ap_nervous_endocrine": true,
-    "ap_respiratory": true,
-    "ap_terminology": true,
+    "bio_genetics": true,
+    "bio_metabolism": true,
+    "bio_scientific_method": true,
+    "chem_atoms": true,
+    "chem_bonding": true,
+    "chem_reactions": true,
+    "exit_infection_control": true,
+    "exit_priority_abc": true,
     "grammar_agreement": true,
     "grammar_confused_words": true,
-    "grammar_parts_of_speech": true,
-    "math_conversions": true,
-    "math_decimals_percents": true,
-    "math_fractions": true,
-    "math_time_roman": true,
     "reading_fact_opinion_purpose": true,
-    "vocab_health_terms": true,
-    "vocab_word_parts": true
+    "vocab_health_terms": true
   },
   "db_stats": {
-    "attempts": 1005,
-    "rule_decisions": 1101,
-    "jev_decisions": 84,
+    "attempts": 679,
+    "rule_decisions": 743,
+    "jev_decisions": 81,
     "llm_decisions": 0,
-    "validated_generations": 28,
-    "fallbacks": 23
+    "validated_generations": 25,
+    "fallbacks": 14
   },
   "end_states": {
-    "SESSION_DONE": 53,
-    "AWAIT_ATTEMPT": 3,
-    "PAUSED": 4
+    "SESSION_DONE": 35,
+    "AWAIT_ATTEMPT": 2,
+    "PAUSED": 3
   },
   "outcomes": {
-    "correct": 634,
-    "incorrect": 275,
-    "unresolved": 96
+    "correct": 424,
+    "incorrect": 191,
+    "unresolved": 64
   },
   "runs_detail": [
     {
@@ -71,7 +69,7 @@
       "persona": "diligent",
       "track": "hesi",
       "seed": 0,
-      "topic": "ap_cells_tissues",
+      "topic": "exit_priority_abc",
       "steps": 2,
       "end_state": "SESSION_DONE",
       "outcomes": {
@@ -100,7 +98,7 @@
       "persona": "struggler",
       "track": "hesi",
       "seed": 0,
-      "topic": "vocab_health_terms",
+      "topic": "ap_digestive_urinary",
       "steps": 11,
       "end_state": "SESSION_DONE",
       "outcomes": {
@@ -128,7 +126,7 @@
       "persona": "guesser",
       "track": "hesi",
       "seed": 0,
-      "topic": "ap_respiratory",
+      "topic": "bio_genetics",
       "steps": 2,
       "end_state": "SESSION_DONE",
       "outcomes": {
@@ -155,7 +153,7 @@
       "persona": "mostly_right",
       "track": "hesi",
       "seed": 0,
-      "topic": "vocab_word_parts",
+      "topic": "ap_cardiovascular",
       "steps": 6,
       "end_state": "SESSION_DONE",
       "outcomes": {
@@ -183,7 +181,7 @@
       "persona": "hint_seeker",
       "track": "hesi",
       "seed": 0,
-      "topic": "ap_respiratory",
+      "topic": "chem_bonding",
       "steps": 2,
       "end_state": "SESSION_DONE",
       "outcomes": {
@@ -210,7 +208,7 @@
       "persona": "answer_demander",
       "track": "hesi",
       "seed": 0,
-      "topic": "ap_digestive_urinary",
+      "topic": "exit_priority_abc",
       "steps": 4,
       "end_state": "SESSION_DONE",
       "outcomes": {
@@ -238,7 +236,7 @@
       "persona": "injector",
       "track": "hesi",
       "seed": 0,
-      "topic": "ap_cardiovascular",
+      "topic": "reading_fact_opinion_purpose",
       "steps": 3,
       "end_state": "SESSION_DONE",
       "outcomes": {
@@ -265,7 +263,7 @@
       "persona": "oversharer",
       "track": "hesi",
       "seed": 0,
-      "topic": "grammar_confused_words",
+      "topic": "bio_scientific_method",
       "steps": 2,
       "end_state": "SESSION_DONE",
       "outcomes": {
@@ -291,7 +289,7 @@
       "persona": "chatty",
       "track": "hesi",
       "seed": 0,
-      "topic": "ap_digestive_urinary",
+      "topic": "grammar_agreement",
       "steps": 2,
       "end_state": "SESSION_DONE",
       "outcomes": {
@@ -318,7 +316,7 @@
       "persona": "quitter",
       "track": "hesi",
       "seed": 0,
-      "topic": "ap_cardiovascular",
+      "topic": "bio_metabolism",
       "steps": 4,
       "end_state": "SESSION_DONE",
       "outcomes": {
@@ -345,7 +343,7 @@
       "persona": "diligent",
       "track": "hesi",
       "seed": 1,
-      "topic": "ap_terminology",
+      "topic": "chem_reactions",
       "steps": 2,
       "end_state": "SESSION_DONE",
       "outcomes": {
@@ -374,7 +372,7 @@
       "persona": "struggler",
       "track": "hesi",
       "seed": 1,
-      "topic": "grammar_agreement",
+      "topic": "bio_genetics",
       "steps": 11,
       "end_state": "SESSION_DONE",
       "outcomes": {
@@ -402,7 +400,7 @@
       "persona": "guesser",
       "track": "hesi",
       "seed": 1,
-      "topic": "math_time_roman",
+      "topic": "vocab_health_terms",
       "steps": 3,
       "end_state": "SESSION_DONE",
       "outcomes": {
@@ -430,7 +428,7 @@
       "persona": "mostly_right",
       "track": "hesi",
       "seed": 1,
-      "topic": "math_conversions",
+      "topic": "reading_fact_opinion_purpose",
       "steps": 5,
       "end_state": "SESSION_DONE",
       "outcomes": {
@@ -458,7 +456,7 @@
       "persona": "hint_seeker",
       "track": "hesi",
       "seed": 1,
-      "topic": "ap_cells_tissues",
+      "topic": "exit_priority_abc",
       "steps": 2,
       "end_state": "SESSION_DONE",
       "outcomes": {
@@ -485,7 +483,7 @@
       "persona": "answer_demander",
       "track": "hesi",
       "seed": 1,
-      "topic": "grammar_confused_words",
+      "topic": "chem_atoms",
       "steps": 4,
       "end_state": "SESSION_DONE",
       "outcomes": {
@@ -513,7 +511,7 @@
       "persona": "injector",
       "track": "hesi",
       "seed": 1,
-      "topic": "ap_respiratory",
+      "topic": "bio_metabolism",
       "steps": 3,
       "end_state": "SESSION_DONE",
       "outcomes": {
@@ -540,7 +538,7 @@
       "persona": "oversharer",
       "track": "hesi",
       "seed": 1,
-      "topic": "ap_cardiovascular",
+      "topic": "exit_infection_control",
       "steps": 2,
       "end_state": "SESSION_DONE",
       "outcomes": {
@@ -566,7 +564,7 @@
       "persona": "chatty",
       "track": "hesi",
       "seed": 1,
-      "topic": "grammar_agreement",
+      "topic": "bio_genetics",
       "steps": 2,
       "end_state": "SESSION_DONE",
       "outcomes": {
@@ -593,286 +591,12 @@
       "persona": "quitter",
       "track": "hesi",
       "seed": 1,
-      "topic": "reading_fact_opinion_purpose",
+      "topic": "grammar_confused_words",
       "steps": 4,
       "end_state": "PAUSED",
       "outcomes": {
         "correct": 2,
         "incorrect": 2
-      },
-      "info": [],
-      "violations": []
-    },
-    {
-      "persona": "diligent",
-      "track": "dsa",
-      "seed": 2,
-      "topic": null,
-      "steps": 19,
-      "end_state": "SESSION_DONE",
-      "outcomes": {
-        "correct": 19
-      },
-      "info": [],
-      "violations": []
-    },
-    {
-      "persona": "diligent",
-      "track": "hesi",
-      "seed": 2,
-      "topic": "ap_terminology",
-      "steps": 2,
-      "end_state": "SESSION_DONE",
-      "outcomes": {
-        "correct": 2
-      },
-      "info": [],
-      "violations": []
-    },
-    {
-      "persona": "struggler",
-      "track": "dsa",
-      "seed": 2,
-      "topic": null,
-      "steps": 60,
-      "end_state": "AWAIT_ATTEMPT",
-      "outcomes": {
-        "correct": 20,
-        "incorrect": 40
-      },
-      "info": [
-        "step_cap_reached"
-      ],
-      "violations": []
-    },
-    {
-      "persona": "struggler",
-      "track": "hesi",
-      "seed": 2,
-      "topic": "math_fractions",
-      "steps": 11,
-      "end_state": "SESSION_DONE",
-      "outcomes": {
-        "correct": 4,
-        "incorrect": 7
-      },
-      "info": [],
-      "violations": []
-    },
-    {
-      "persona": "guesser",
-      "track": "dsa",
-      "seed": 2,
-      "topic": null,
-      "steps": 49,
-      "end_state": "SESSION_DONE",
-      "outcomes": {
-        "correct": 28,
-        "incorrect": 21
-      },
-      "info": [],
-      "violations": []
-    },
-    {
-      "persona": "guesser",
-      "track": "hesi",
-      "seed": 2,
-      "topic": "reading_fact_opinion_purpose",
-      "steps": 3,
-      "end_state": "SESSION_DONE",
-      "outcomes": {
-        "incorrect": 1,
-        "correct": 2
-      },
-      "info": [],
-      "violations": []
-    },
-    {
-      "persona": "mostly_right",
-      "track": "dsa",
-      "seed": 2,
-      "topic": null,
-      "steps": 26,
-      "end_state": "SESSION_DONE",
-      "outcomes": {
-        "incorrect": 5,
-        "correct": 21
-      },
-      "info": [],
-      "violations": []
-    },
-    {
-      "persona": "mostly_right",
-      "track": "hesi",
-      "seed": 2,
-      "topic": "ap_nervous_endocrine",
-      "steps": 2,
-      "end_state": "SESSION_DONE",
-      "outcomes": {
-        "correct": 2
-      },
-      "info": [],
-      "violations": []
-    },
-    {
-      "persona": "hint_seeker",
-      "track": "dsa",
-      "seed": 2,
-      "topic": null,
-      "steps": 29,
-      "end_state": "SESSION_DONE",
-      "outcomes": {
-        "correct": 21,
-        "incorrect": 8
-      },
-      "info": [],
-      "violations": []
-    },
-    {
-      "persona": "hint_seeker",
-      "track": "hesi",
-      "seed": 2,
-      "topic": "ap_respiratory",
-      "steps": 3,
-      "end_state": "SESSION_DONE",
-      "outcomes": {
-        "incorrect": 1,
-        "correct": 2
-      },
-      "info": [],
-      "violations": []
-    },
-    {
-      "persona": "answer_demander",
-      "track": "dsa",
-      "seed": 2,
-      "topic": null,
-      "steps": 38,
-      "end_state": "SESSION_DONE",
-      "outcomes": {
-        "unresolved": 19,
-        "correct": 19
-      },
-      "info": [],
-      "violations": []
-    },
-    {
-      "persona": "answer_demander",
-      "track": "hesi",
-      "seed": 2,
-      "topic": "math_decimals_percents",
-      "steps": 4,
-      "end_state": "SESSION_DONE",
-      "outcomes": {
-        "unresolved": 2,
-        "correct": 2
-      },
-      "info": [],
-      "violations": []
-    },
-    {
-      "persona": "injector",
-      "track": "dsa",
-      "seed": 2,
-      "topic": null,
-      "steps": 29,
-      "end_state": "SESSION_DONE",
-      "outcomes": {
-        "unresolved": 10,
-        "correct": 19
-      },
-      "info": [],
-      "violations": []
-    },
-    {
-      "persona": "injector",
-      "track": "hesi",
-      "seed": 2,
-      "topic": "ap_nervous_endocrine",
-      "steps": 3,
-      "end_state": "SESSION_DONE",
-      "outcomes": {
-        "unresolved": 1,
-        "correct": 2
-      },
-      "info": [],
-      "violations": []
-    },
-    {
-      "persona": "oversharer",
-      "track": "dsa",
-      "seed": 2,
-      "topic": null,
-      "steps": 19,
-      "end_state": "SESSION_DONE",
-      "outcomes": {
-        "correct": 19
-      },
-      "info": [],
-      "violations": []
-    },
-    {
-      "persona": "oversharer",
-      "track": "hesi",
-      "seed": 2,
-      "topic": "ap_cells_tissues",
-      "steps": 2,
-      "end_state": "SESSION_DONE",
-      "outcomes": {
-        "correct": 2
-      },
-      "info": [],
-      "violations": []
-    },
-    {
-      "persona": "chatty",
-      "track": "dsa",
-      "seed": 2,
-      "topic": null,
-      "steps": 19,
-      "end_state": "SESSION_DONE",
-      "outcomes": {
-        "correct": 19
-      },
-      "info": [],
-      "violations": []
-    },
-    {
-      "persona": "chatty",
-      "track": "hesi",
-      "seed": 2,
-      "topic": "grammar_parts_of_speech",
-      "steps": 2,
-      "end_state": "SESSION_DONE",
-      "outcomes": {
-        "correct": 2
-      },
-      "info": [],
-      "violations": []
-    },
-    {
-      "persona": "quitter",
-      "track": "dsa",
-      "seed": 2,
-      "topic": null,
-      "steps": 4,
-      "end_state": "PAUSED",
-      "outcomes": {
-        "correct": 3,
-        "incorrect": 1
-      },
-      "info": [],
-      "violations": []
-    },
-    {
-      "persona": "quitter",
-      "track": "hesi",
-      "seed": 2,
-      "topic": "math_time_roman",
-      "steps": 2,
-      "end_state": "SESSION_DONE",
-      "outcomes": {
-        "correct": 2
       },
       "info": [],
       "violations": []
