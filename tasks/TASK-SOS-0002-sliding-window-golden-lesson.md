@@ -1,8 +1,8 @@
 # TASK-SOS-0002 — Sliding-window PIR lesson follows the two goldens
 
-<!-- continuity:task {"acceptance":["The main path of the shipped asset introduces exactly the golden relations in golden order, one per step (problem, position, index, box_size_k, box_start_i, window_sum, successive_sums, recurrence_repetition, enumerate, append)","Every probe routes correct -> why on the same chart, wrong -> correction with reassurance -> retry on a different example -> one more check, and partial -> keep the correct part and ask only for the missing step","The box chart (numbers, index row, box, k) is present in every recurrence and append step, and exercise charts omit answer-revealing components (arrows, highlights, the enumerate pair row, the append form)","No learner-visible text claims mastery, and the only exit is assembled_mastery_unproven","tests/test_pir_golden_conformance.py kills each benchmarker-style violation class with a targeted mutation","Full local CI equivalent is green, the PIR mutation gate tests pass, and the required checks pass on the PR"],"depends_on":[],"goal":"Rebuild the shipped sliding-window PIR lesson so it follows the two goldens under domains/dsa/sliding-window/golden/ step by step, scoped to what they cover (through enumerate and append), with deterministic conformance tests mirrored from study-os-benchmarker.","id":"SOS-0002","issue_url":"https://github.com/Pukujan/Study-os/issues/80","next_action":"Review the PR for #80. After it merges with required checks, record the closing receipt on #80, set this task to completed, and clear the continuity:current active task.","owner":"Pukujan (GitHub assignee); primary writer: Grok Bot executor session on task/SOS-0002-sliding-window-golden-lesson","priority":"P1","protocol_version":"0.1.0-draft","schema":"project-continuity.task.v1","status":"active","why":"The shipped lesson (about 20 steps) started at sum[i]. It skipped position, zero-based index, k, the box, and moving i, then jumped to the recurrence without concrete successive sums, and it dropped the array, index, and box in the code steps. That contradicts learner-calibrated goldens Study OS already owns, and nothing mechanical detected the drift."} -->
+<!-- continuity:task {"acceptance":["The main path of the shipped asset introduces exactly the golden relations in golden order, one per step (problem, position, index, box_size_k, box_start_i, window_sum, successive_sums, recurrence_repetition, enumerate, append)","Every probe routes correct -> why on the same chart, wrong -> correction with reassurance -> retry on a different example -> one more check, and partial -> keep the correct part and ask only for the missing step","The box chart (numbers, index row, box, k) is present in every recurrence and append step, and exercise charts omit answer-revealing components (arrows, highlights, the enumerate pair row, the append form)","No learner-visible text claims mastery, and the only exit is assembled_mastery_unproven","tests/test_pir_golden_conformance.py kills each benchmarker-style violation class with a targeted mutation","Full local CI equivalent is green, the PIR mutation gate tests pass, and the required checks pass on the PR"],"depends_on":[],"goal":"Rebuild the shipped sliding-window PIR lesson so it follows the two goldens under domains/dsa/sliding-window/golden/ step by step, scoped to what they cover (through enumerate and append), with deterministic conformance tests mirrored from study-os-benchmarker.","id":"SOS-0002","issue_url":"https://github.com/Pukujan/Study-os/issues/80","next_action":"None for SOS-0002. Verify PR #81 merged with required checks and that #80 has a closing receipt; start the parts 06-08 loop-assembly work from a new issue with its own reviewed golden.","owner":"Pukujan (GitHub assignee); primary writer: Grok Bot executor session on task/SOS-0002-sliding-window-golden-lesson","priority":"P1","protocol_version":"0.1.0-draft","schema":"project-continuity.task.v1","status":"completed","why":"The shipped lesson (about 20 steps) started at sum[i]. It skipped position, zero-based index, k, the box, and moving i, then jumped to the recurrence without concrete successive sums, and it dropped the array, index, and box in the code steps. That contradicts learner-calibrated goldens Study OS already owns, and nothing mechanical detected the drift."} -->
 
-- Status: active
+- Status: completed
 - Owner: Pukujan (GitHub assignee)
 - Priority: P1
 - Depends on: none (SOS-0001 / #78 merged)
@@ -61,12 +61,12 @@ After (v2): 326 steps generated from 10 golden concepts. Step ids are `<concept>
 
 ## Acceptance criteria
 
-- [ ] Main path introduces exactly the golden relations in golden order, one per step.
-- [ ] Every probe follows the golden correct / wrong / partial feedback rules.
-- [ ] The box chart is present in recurrence and append steps, and exercise charts omit answer-revealing components.
-- [ ] No mastery claim, and the only exit is `assembled_mastery_unproven`.
-- [ ] Conformance tests kill each violation class with a targeted mutation.
-- [ ] Local CI equivalent green; required checks green on the PR.
+- [x] Main path introduces exactly the golden relations in golden order, one per step.
+- [x] Every probe follows the golden correct / wrong / partial feedback rules.
+- [x] The box chart is present in recurrence and append steps, and exercise charts omit answer-revealing components.
+- [x] No mastery claim, and the only exit is `assembled_mastery_unproven`.
+- [x] Conformance tests kill each violation class with a targeted mutation.
+- [x] Local CI equivalent green; required checks green on the PR.
 
 ## Follow-up (not implemented here; parts 06-08 of the public 2026-09-04 session)
 
@@ -135,6 +135,14 @@ Blocked/uncertain:
 
 Next:
 - Open the PR for #80 with auto-merge; after required checks pass and it merges, post the closing receipt, mark SOS-0002 completed, and clear the continuity:current active task.
+
+## Closeout (2026-09-24, Grok Bot executor for Pukujan)
+
+Owner-authorized closeout. This is not a `continuity checkpoint` run, because that command only records checkpoints for active tasks.
+
+- CI on the checkpoint head `429b84c`: [run 36062662414](https://github.com/Pukujan/Study-os/actions/runs/36062662414). `Validate research harness` passed, including the pinned PCM preflight, and `Python 3.11 compatibility` passed. The PIR mutation gate, [run 36062662431](https://github.com/Pukujan/Study-os/actions/runs/36062662431) (`Kill critical PIR mutants`), also passed.
+- Status set to completed. The `continuity:current` active task is cleared in `docs/HANDOFF.md`.
+- Still open: the follow-up list above (parts 06-08, the append shorthand, the readiness probe, and the example bank). The merge SHA and the state of #80 are recorded on #80, not here (receipt-only transitions).
 
 ## Handoff
 
