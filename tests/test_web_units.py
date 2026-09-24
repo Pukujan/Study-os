@@ -74,6 +74,12 @@ class ConfigTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             make_settings(jev_model="typesafe/jev-latest")
 
+    def test_production_requires_server_secret(self) -> None:
+        from study_os.web.api import create_app
+
+        with self.assertRaises(RuntimeError):
+            create_app(make_settings(cookie_secure=True, server_secret="study-os-dev-secret-change-me"), use_env_models=False)
+
     def test_google_enabled_requires_both_keys(self) -> None:
         self.assertFalse(make_settings().google_enabled)
         self.assertFalse(make_settings(google_client_id="x").google_enabled)

@@ -84,6 +84,8 @@ def create_app(
     use_env_models: bool = True,
 ) -> FastAPI:
     settings = settings or load_settings()
+    if settings.cookie_secure and settings.server_secret == "study-os-dev-secret-change-me":
+        raise RuntimeError("SERVER_SECRET must be set in production (COOKIE_SECURE=1)")
     if use_env_models:
         if jev is None and settings.openrouter_api_key:
             jev = OpenRouterJev(settings.openrouter_api_key, settings.openrouter_decisions_url, settings.jev_model)
