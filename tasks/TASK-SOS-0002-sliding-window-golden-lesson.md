@@ -99,6 +99,43 @@ Other follow-ups:
 
 ## Checkpoint log
 
+### 2026-09-24 21:37:15 UTC — Grok Bot executor (for Pukujan)
+
+<!-- continuity:checkpoint {"agent":"Grok Bot executor (for Pukujan)","blocked":["PR CI (required checks) and the PIR mutation gate workflow have not run yet."],"changed":["src/study_os/pir/registry.py","src/study_os/pir/sliding_window.py","src/study_os/pir/conformance.py","domains/dsa/sliding-window/golden/conformance-oracle.v0.1.json","domains/dsa/sliding-window/README.md","tests/test_pir_golden_conformance.py","tests/test_p4_pir_runtime_integration.py, tests/test_pir_critical_mutations.py, tests/test_pir_mutation_authority.py, tests/test_pir_mutation_semantics.py, tests/test_pir_mutation_contract_edges.py","tasks/TASK-SOS-0002-sliding-window-golden-lesson.md","docs/HANDOFF.md","docs/DECISIONS.md"],"completed":["Rebuilt the canonical sliding-window asset from the two goldens (src/study_os/pir/sliding_window.py): 10 golden concepts, 326 generated steps, 19 probes on the all-correct path, exit assembled_mastery_unproven.","Added src/study_os/pir/conformance.py and domains/dsa/sliding-window/golden/conformance-oracle.v0.1.json mirroring study-os-benchmarker d438988, plus tests/test_pir_golden_conformance.py (31 tests).","Updated PIR tests that encoded the v1 step path (first-probe answer and all-correct walks) without changing controller, contracts, runtime, or mutmut targets."],"decisions":["Scope stops at enumerate and append as in the goldens; loop assembly, max, else bridge, stop condition, and range(k) are recorded as follow-up in the task file.","Enumerate charts follow the golden and the benchmarker enumerate fixtures (no window box, no pair row in exercises); every recurrence and append step keeps the box chart.","canonical_pir_revision moves to sep4.sliding-window.golden-box-index-enumerate-append.v2 so v1-pinned runs fail closed instead of being routed through new step ids."],"evidence":["Product commit ae4227a on task/SOS-0002-sliding-window-golden-lesson, based on main b227f51.","Local CI equivalent on Python 3.13: dependency lock, contract inventory, curriculum policy, schema render check, compileall, validate_repo, PCM 0b3be9c preflight TARGET_VALID, engineering baseline, ruff, pyright 0 errors, wheel smoke pass; unittest 381 OK (350 before + 31 new); branch coverage 85% (gate 70%). Python 3.11.16: unittest 381 OK."],"next_action":"Open the PR for #80 with auto-merge; after required checks pass and it merges, post the closing receipt, mark SOS-0002 completed, and clear the continuity:current active task.","protocol_version":"0.1.0-draft","schema":"project-continuity.checkpoint.v1","task_id":"SOS-0002","timestamp":"2026-09-24T21:37:15Z"} -->
+<!-- continuity:checkpoint-operation {"payload_sha256":"3a1e4f8b15cb88284760f9c6c4eb5603c1561c5d7c1b6aafc1c081651d0e8b30","request_id":"sos-0002-cp1-20260924","schema":"project-continuity.checkpoint-operation.v1","task_id":"SOS-0002"} -->
+
+Completed:
+- Rebuilt the canonical sliding-window asset from the two goldens (src/study_os/pir/sliding_window.py): 10 golden concepts, 326 generated steps, 19 probes on the all-correct path, exit assembled_mastery_unproven.
+- Added src/study_os/pir/conformance.py and domains/dsa/sliding-window/golden/conformance-oracle.v0.1.json mirroring study-os-benchmarker d438988, plus tests/test_pir_golden_conformance.py (31 tests).
+- Updated PIR tests that encoded the v1 step path (first-probe answer and all-correct walks) without changing controller, contracts, runtime, or mutmut targets.
+
+Evidence:
+- Product commit ae4227a on task/SOS-0002-sliding-window-golden-lesson, based on main b227f51.
+- Local CI equivalent on Python 3.13: dependency lock, contract inventory, curriculum policy, schema render check, compileall, validate_repo, PCM 0b3be9c preflight TARGET_VALID, engineering baseline, ruff, pyright 0 errors, wheel smoke pass; unittest 381 OK (350 before + 31 new); branch coverage 85% (gate 70%). Python 3.11.16: unittest 381 OK.
+
+Decisions:
+- Scope stops at enumerate and append as in the goldens; loop assembly, max, else bridge, stop condition, and range(k) are recorded as follow-up in the task file.
+- Enumerate charts follow the golden and the benchmarker enumerate fixtures (no window box, no pair row in exercises); every recurrence and append step keeps the box chart.
+- canonical_pir_revision moves to sep4.sliding-window.golden-box-index-enumerate-append.v2 so v1-pinned runs fail closed instead of being routed through new step ids.
+
+Changed:
+- src/study_os/pir/registry.py
+- src/study_os/pir/sliding_window.py
+- src/study_os/pir/conformance.py
+- domains/dsa/sliding-window/golden/conformance-oracle.v0.1.json
+- domains/dsa/sliding-window/README.md
+- tests/test_pir_golden_conformance.py
+- tests/test_p4_pir_runtime_integration.py, tests/test_pir_critical_mutations.py, tests/test_pir_mutation_authority.py, tests/test_pir_mutation_semantics.py, tests/test_pir_mutation_contract_edges.py
+- tasks/TASK-SOS-0002-sliding-window-golden-lesson.md
+- docs/HANDOFF.md
+- docs/DECISIONS.md
+
+Blocked/uncertain:
+- PR CI (required checks) and the PIR mutation gate workflow have not run yet.
+
+Next:
+- Open the PR for #80 with auto-merge; after required checks pass and it merges, post the closing receipt, mark SOS-0002 completed, and clear the continuity:current active task.
+
 ## Handoff
 
 Read `docs/PROJECT_CHARTER.md` → `docs/HANDOFF.md` → this task → the two goldens → `src/study_os/pir/sliding_window.py`. Run `python -m unittest tests.test_pir_golden_conformance` after any lesson change.
