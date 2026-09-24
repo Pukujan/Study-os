@@ -121,6 +121,33 @@ Blocked/uncertain:
 Next:
 - Confirm PR #96 merged with required checks and post the merge receipt on #83; no further SOS-0003 work
 
+### 2026-09-24 21:51:38 UTC — Grok Bot executor (for Pukujan)
+
+<!-- continuity:checkpoint {"agent":"Grok Bot executor (for Pukujan)","blocked":["Implementation needs Alex: D017 acceptance, Vercel project, Cloudflare tunnel login, gravebuster deploy access, InferHub/TypeSafe/PostHog keys on gravebuster"],"changed":["docs/webapp/**","tasks/TASK-SOS-0003-webapp-specs.md","docs/HANDOFF.md"],"completed":["Imported the companion deep-research report as docs/webapp/DEEP_RESEARCH.md (learner-identifying phrase and local paths removed)","Adopted: rules first; hosted Jev for grading and misconception choice; Laya-421M on gravebuster only for calibrated low-stakes affect signals; frontier LLM (IRE cb/glm-5.3) only on low confidence and for rewrites; deterministic next step (rules + pyBKT + FSRS, bandit later); xAPI-shaped events + Metabase + PostHog UX mirror, Power BI for aggregates only; day-one decision logging, 5% audit sampling, and section 7.5 switch criteria","Created decision-layer child issue #97 and linked it under epic #82"],"decisions":["Jev not probed live: no key available to this agent; tier 3 covers tier-2 duties until Alex provides TYPESAFE_API_KEY"],"evidence":["Commit de63020868bbaa016e957d712531f44eb6705f45; PCM preflight TARGET_VALID; validate_repo passed"],"next_action":"Re-enable auto-merge on PR #96; after merge, post the merge receipt on #83; no further SOS-0003 work","protocol_version":"0.1.0-draft","schema":"project-continuity.checkpoint.v1","task_id":"SOS-0003","timestamp":"2026-09-24T21:51:38Z"} -->
+<!-- continuity:checkpoint-operation {"payload_sha256":"5600f4fd110f421639176b9bce0480858c23c61ba28d0c1149a42bc2c7e99e0a","request_id":"sos-0003-cp3-20260924","schema":"project-continuity.checkpoint-operation.v1","task_id":"SOS-0003"} -->
+
+Completed:
+- Imported the companion deep-research report as docs/webapp/DEEP_RESEARCH.md (learner-identifying phrase and local paths removed)
+- Adopted: rules first; hosted Jev for grading and misconception choice; Laya-421M on gravebuster only for calibrated low-stakes affect signals; frontier LLM (IRE cb/glm-5.3) only on low confidence and for rewrites; deterministic next step (rules + pyBKT + FSRS, bandit later); xAPI-shaped events + Metabase + PostHog UX mirror, Power BI for aggregates only; day-one decision logging, 5% audit sampling, and section 7.5 switch criteria
+- Created decision-layer child issue #97 and linked it under epic #82
+
+Evidence:
+- Commit de63020868bbaa016e957d712531f44eb6705f45; PCM preflight TARGET_VALID; validate_repo passed
+
+Decisions:
+- Jev not probed live: no key available to this agent; tier 3 covers tier-2 duties until Alex provides TYPESAFE_API_KEY
+
+Changed:
+- docs/webapp/**
+- tasks/TASK-SOS-0003-webapp-specs.md
+- docs/HANDOFF.md
+
+Blocked/uncertain:
+- Implementation needs Alex: D017 acceptance, Vercel project, Cloudflare tunnel login, gravebuster deploy access, InferHub/TypeSafe/PostHog keys on gravebuster
+
+Next:
+- Re-enable auto-merge on PR #96; after merge, post the merge receipt on #83; no further SOS-0003 work
+
 ## Handoff
 
 Read PROJECT → CURRENT → this task → `docs/webapp/README.md`. Checkpoint before stopping.
