@@ -64,6 +64,29 @@ Starting revision, material inputs/configuration, runtime, exact command or prom
 
 No checkpoints yet.
 
+### 2026-09-24 23:02:39 UTC — Grok Bot executor
+
+<!-- continuity:checkpoint {"agent":"Grok Bot executor","blocked":[],"changed":["none"],"completed":["issue #101 opened as sub-issue of #82; task file; branch; HANDOFF marker"],"decisions":["no new decisions"],"evidence":["no external evidence recorded"],"next_action":"study goldens/PIR/specs/research; draft PR","protocol_version":"0.1.0-draft","schema":"project-continuity.checkpoint.v1","task_id":"SOS-0005","timestamp":"2026-09-24T23:02:39Z"} -->
+<!-- continuity:checkpoint-operation {"payload_sha256":"a3ad02f3743d8b6edce82a5969b590c6f522e563879441cbfbf34bd908aed0f6","request_id":"9169688110f54545b3d3fd42ea25e4c9","schema":"project-continuity.checkpoint-operation.v1","task_id":"SOS-0005"} -->
+
+Completed:
+- issue #101 opened as sub-issue of #82; task file; branch; HANDOFF marker
+
+Evidence:
+- no external evidence recorded
+
+Decisions:
+- no new decisions
+
+Changed:
+- none
+
+Blocked/uncertain:
+- none
+
+Next:
+- study goldens/PIR/specs/research; draft PR
+
 ## Handoff
 
 Read PROJECT → CURRENT → this task → minimum relevant spec. Checkpoint before stopping.
