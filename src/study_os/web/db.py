@@ -3,12 +3,15 @@ from __future__ import annotations
 from collections.abc import Iterator
 from contextlib import contextmanager
 from importlib.resources import files
+from typing import Any, cast
 
 import psycopg
 from psycopg.rows import dict_row
 from psycopg_pool import ConnectionPool
 
 MIGRATION_LOCK_KEY = 804_217_001
+
+Conn = psycopg.Connection[dict[str, Any]]
 
 
 def migration_files() -> list[tuple[str, str]]:
@@ -19,7 +22,7 @@ def migration_files() -> list[tuple[str, str]]:
     return [(name, root.joinpath(name).read_text(encoding="utf-8")) for name in names]
 
 
-def migrate(conn: psycopg.Connection) -> list[str]:
+def migrate(conn: psycopg.Connection[Any]) -> list[str]:
     """Apply pending migrations in order under an advisory lock. Returns applied names."""
 
     applied: list[str] = []
@@ -53,10 +56,10 @@ class Database:
         )
 
     @contextmanager
-    def tx(self) -> Iterator[psycopg.Connection]:
+    def tx(self) -> Iterator[Conn]:
         with self.pool.connection() as conn:
             with conn.transaction():
-                yield conn
+                yield cast(Conn, conn)
 
     def migrate(self) -> list[str]:
         with self.pool.connection() as conn:

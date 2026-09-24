@@ -12,11 +12,21 @@ dependencies = [
     "pydantic>=2.13.4,<3",
 ]
 
+[project.optional-dependencies]
+web = [
+    "fastapi>=0.141,<1",
+    "uvicorn>=0.53,<1",
+    "psycopg[binary]>=3.3,<4",
+    "psycopg-pool>=3.3,<4",
+    "argon2-cffi>=25.1,<26",
+    "httpx>=0.28,<1",
+]
+
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.setuptools.package-data]
-study_os = ["db/migrations/*.sql"]
+study_os = ["db/migrations/*.sql", "web/migrations/*.sql", "web/content/*.json"]
 
 [tool.ruff]
 target-version = "py311"

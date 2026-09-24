@@ -47,12 +47,23 @@ class Settings:
     tau_mastery: float = 0.95
     tau_misconception: float = 0.8
     audit_rate: float = 0.05
-    posthog_project_key: str | None = None
-    posthog_host: str = "https://us.i.posthog.com"
-    analytics_salt: str = "study-os-dev-salt"
+    server_secret: str = "study-os-dev-secret-change-me"
+    public_base_url: str = "http://localhost:8000"
+    google_client_id: str | None = None
+    google_client_secret: str | None = None
+    local_signup_enabled: bool = True
+    static_dir: str | None = None
+    user_daily_model_calls: int = 400
+    global_daily_spend_usd: float = 3.0
+    rate_per_ip_per_min: int = 240
+    rate_per_user_per_min: int = 120
     decision_model_enabled: bool = True
     llm_enabled: bool = True
     extra: dict[str, str] = field(default_factory=dict)
+
+    @property
+    def google_enabled(self) -> bool:
+        return bool(self.google_client_id and self.google_client_secret)
 
     def __post_init__(self) -> None:
         # P-DEC-5: never run on a rolling alias.
@@ -67,7 +78,7 @@ def load_settings() -> Settings:
         ),
         allowed_origins=_csv(
             "ALLOWED_ORIGINS",
-            "https://www.design-bakery.com,https://design-bakery.com,http://localhost:5173",
+            "https://study.design-bakery.com,http://localhost:5173,http://localhost:8000",
         ),
         cookie_secure=_flag("COOKIE_SECURE", True),
         openrouter_api_key=os.environ.get("OPENROUTER_API_KEY") or None,
@@ -79,9 +90,16 @@ def load_settings() -> Settings:
         tau_mastery=_float("TAU_MASTERY", 0.95),
         tau_misconception=_float("TAU_MISCONCEPTION", 0.8),
         audit_rate=_float("DECISION_AUDIT_RATE", 0.05),
-        posthog_project_key=os.environ.get("POSTHOG_PROJECT_KEY") or None,
-        posthog_host=os.environ.get("POSTHOG_HOST", "https://us.i.posthog.com"),
-        analytics_salt=os.environ.get("ANALYTICS_SALT", "study-os-dev-salt"),
+        server_secret=os.environ.get("SERVER_SECRET", "study-os-dev-secret-change-me"),
+        public_base_url=os.environ.get("PUBLIC_BASE_URL", "http://localhost:8000").rstrip("/"),
+        google_client_id=os.environ.get("GOOGLE_CLIENT_ID") or None,
+        google_client_secret=os.environ.get("GOOGLE_CLIENT_SECRET") or None,
+        local_signup_enabled=_flag("LOCAL_SIGNUP_ENABLED", True),
+        static_dir=os.environ.get("STATIC_DIR") or None,
+        user_daily_model_calls=int(_float("USER_DAILY_MODEL_CALLS", 400)),
+        global_daily_spend_usd=_float("GLOBAL_DAILY_SPEND_USD", 3.0),
+        rate_per_ip_per_min=int(_float("RATE_PER_IP_PER_MIN", 240)),
+        rate_per_user_per_min=int(_float("RATE_PER_USER_PER_MIN", 120)),
         decision_model_enabled=_flag("DECISION_MODEL_ENABLED", True),
         llm_enabled=_flag("LLM_ENABLED", True),
     )
