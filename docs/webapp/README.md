@@ -1,6 +1,6 @@
 # Study OS web app — spec index (SOS-0003)
 
-Status: **proposed spec**. Owner-requested on 2026-09-24. Implementation is gated on decision [D016](../DECISIONS.md#d016--owner-promotes-a-private-hosted-web-app-track-proposed).
+Status: **proposed spec**. Owner-requested on 2026-09-24. Implementation is gated on decision [D017](../DECISIONS.md#d017--owner-promotes-a-private-hosted-web-app-track-proposed).
 Leaf issue: #83. Parent epic: #82. Children: #84–#95.
 
 ## What this is
@@ -40,4 +40,4 @@ The design keeps the Study OS architecture. Lessons are precompiled into determi
 
 ## Governance boundary
 
-`AGENTS.md` → "Explicitly deferred" lists production UI, CD/deployment, and production auth until R0. D014 already says frontend surfaces start when the owner promotes them. D016 records that promotion as **proposed**. It narrowly covers an invite-only private beta for two learners and relaxes no evidence invariant. This PR is docs-only and changes no guardrail.
+`AGENTS.md` → "Explicitly deferred" lists production UI, CD/deployment, and production auth until R0. D014 already says frontend surfaces start when the owner promotes them. D017 records that promotion as **proposed**. It narrowly covers an invite-only private beta for two learners and relaxes no evidence invariant. This PR is docs-only and changes no guardrail.

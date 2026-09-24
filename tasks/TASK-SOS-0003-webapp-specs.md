@@ -1,6 +1,6 @@
 # TASK-SOS-0003 — Web app research, specs, and issue log
 
-<!-- continuity:task {"acceptance":["docs/webapp/ covers research with sources, architecture, property-driven specs, session and product success/fail conditions, data model, learner memory scope, auth, hosting, analytics (plain Power BI answer), LLM route with price snapshot and live probe, agent-vs-agent test design, and a phased plan with a thin first slice","every component spec lists invariants that tests can check","epic #82 and children #84-#95 exist and are linked from docs/webapp/BUILD_PLAN.md","validate_repo.py, the unittest suite, and pinned PCM preflight stay green; required CI passes; auto-merge enabled","no private-repository content and no secrets are included"],"depends_on":[],"goal":"Research and specify the hosted Study OS web app (React at design-bakery.com/study-os, backend and DB on gravebuster, LLM interpreter via IRE/InferHub under the deterministic controller) and file its issue log.","id":"SOS-0003","issue_url":"https://github.com/Pukujan/Study-os/issues/83","next_action":"None for SOS-0003. Verify PR #96 merged with required checks and post the merge receipt on #83; implementation starts with separate issue-backed tasks for #82 children after Alex accepts D016.","owner":"Pukujan (GitHub assignee); primary writer: Grok Bot executor session on task/SOS-0003-webapp-specs","priority":"P2","protocol_version":"0.1.0-draft","schema":"project-continuity.task.v1","status":"completed","why":"Alex promoted a hosted web app for two real learners. Without researched, testable specs, the web surface would drift from ADR-0016 deterministic control and from the no-personal-data rule."} -->
+<!-- continuity:task {"acceptance":["docs/webapp/ covers research with sources, architecture, property-driven specs, session and product success/fail conditions, data model, learner memory scope, auth, hosting, analytics (plain Power BI answer), LLM route with price snapshot and live probe, agent-vs-agent test design, and a phased plan with a thin first slice","every component spec lists invariants that tests can check","epic #82 and children #84-#95 exist and are linked from docs/webapp/BUILD_PLAN.md","validate_repo.py, the unittest suite, and pinned PCM preflight stay green; required CI passes; auto-merge enabled","no private-repository content and no secrets are included"],"depends_on":[],"goal":"Research and specify the hosted Study OS web app (React at design-bakery.com/study-os, backend and DB on gravebuster, LLM interpreter via IRE/InferHub under the deterministic controller) and file its issue log.","id":"SOS-0003","issue_url":"https://github.com/Pukujan/Study-os/issues/83","next_action":"None for SOS-0003. Verify PR #96 merged with required checks and post the merge receipt on #83; implementation starts with separate issue-backed tasks for #82 children after Alex accepts D017.","owner":"Pukujan (GitHub assignee); primary writer: Grok Bot executor session on task/SOS-0003-webapp-specs","priority":"P2","protocol_version":"0.1.0-draft","schema":"project-continuity.task.v1","status":"completed","why":"Alex promoted a hosted web app for two real learners. Without researched, testable specs, the web surface would drift from ADR-0016 deterministic control and from the no-personal-data rule."} -->
 
 - Status: completed
 - Owner: Pukujan (GitHub assignee)
@@ -24,15 +24,15 @@ Alex can decide in one read: the stack, auth, DB, memory, analytics (including w
 ## Allowed files
 
 - `docs/webapp/**` (new)
-- `docs/DECISIONS.md` (D016 only)
+- `docs/DECISIONS.md` (D017 only)
 - `docs/HANDOFF.md` (the `continuity:current` marker and one short web-app section)
 - `tasks/TASK-SOS-0003-webapp-specs.md`
 
 ## Scope and boundaries
 
-- In scope: research, specs, the issue log (#82 epic; #84–#95 children, linked as GitHub sub-issues), a proposed decision D016, and small live probe calls to IRE/InferHub routes (owner pre-approved on 2026-09-24).
+- In scope: research, specs, the issue log (#82 epic; #84–#95 children, linked as GitHub sub-issues), a proposed decision D017, and small live probe calls to IRE/InferHub routes (owner pre-approved on 2026-09-24).
 - Out of scope: app code, deploys, infrastructure changes on gravebuster/Vercel/Cloudflare, branch `task/SOS-0002-*` (concurrent task, #80), and any private-repository content.
-- Dependencies/uncertainty: D016 needs Alex's explicit acceptance before implementation PRs merge. The companion deep-research report did not exist when this PR was opened; a placeholder is in `docs/webapp/RESEARCH.md`.
+- Dependencies/uncertainty: D017 needs Alex's explicit acceptance before implementation PRs merge. The companion deep-research report did not exist when this PR was opened; a placeholder is in `docs/webapp/RESEARCH.md`.
 - Task id note: `continuity task new` would compute SOS-0002 on this branch because SOS-0002's task file lives on its unmerged branch. This file uses SOS-0003 to avoid colliding with #80.
 
 ## Acceptance criteria
@@ -51,6 +51,8 @@ Alex can decide in one read: the stack, auth, DB, memory, analytics (including w
 - IRE: `docs/INFERHUB-API-SETUP.md` (local `641a7f9`), Top-20 snapshot sha256 `8e2b1b32…570e7c` (generated 2026-09-22T17:10:44Z); live probe results in `docs/webapp/LLM_ROUTE.md`.
 - study-os-benchmarker @ `d438988fda12e9df902caabbcb6a639834452d5d` (violation codes).
 - External sources are cited inline in `docs/webapp/RESEARCH.md`.
+
+- Decision number: proposed as D016 in the first checkpoints; renumbered to **D017** after SOS-0002 (#81) merged its own D016 into `main`.
 
 ## Related records
 

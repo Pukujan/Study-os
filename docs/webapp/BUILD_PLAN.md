@@ -6,7 +6,7 @@ Principle: ship a **thin, private, useful** slice fast, then add intelligence. E
 
 Docs only.
 
-## Slice 1 — "private beta, one DSA lesson + a HESI deck" (target: live within about 1–2 weeks of D016 acceptance)
+## Slice 1 — "private beta, one DSA lesson + a HESI deck" (target: live within about 1–2 weeks of D017 acceptance)
 
 Goal: both learners can log in at `design-bakery.com/study-os` and study every day. All learning and UX events are captured, and the tutor never leaks answers or claims mastery.
 
@@ -16,7 +16,7 @@ Goal: both learners can log in at `design-bakery.com/study-os` and study every d
 | Auth | #86 | Admin CLI creates invite codes; handle + passphrase; cookie sessions (no passkeys yet) |
 | DB | #87 | `auth`, `learn`, `ux` schemas; append-only triggers; schema allowlist test |
 | Privacy | #95 | Scrubber on free text; no IP/UA; PII canary test |
-| Controller | #90 | Web session states `START → PRESENT_STEP → AWAIT_ATTEMPT → GRADE → FEEDBACK → RETRY_DIFFERENT/CHECK → ADVANCE → SESSION_DONE` over the existing PIR sliding-window asset (the SOS-0002 rebuild once merged); a simple `REVIEW_DUE` using FSRS for HESI items |
+| Controller | #90 | Web session states `START → PRESENT_STEP → AWAIT_ATTEMPT → GRADE → FEEDBACK → RETRY_DIFFERENT/CHECK → ADVANCE → SESSION_DONE` over the golden-conformant PIR sliding-window asset (SOS-0002, merged in PR #81); a simple `REVIEW_DUE` using FSRS for HESI items |
 | API | #85 | Sessions, attempts (idempotent), reactions, progress; SSE turns |
 | Frontend | #84 | Login, home (two tiles: DSA lesson, HESI practice), lesson player with the persistent SVG box chart, MCQ player, reaction buttons, summary |
 | HESI deck | #91 | 30–50 original/Open RN-derived MCQ + prioritization items on 3–4 KCs, rationales after the attempt, deterministic grading |
@@ -49,7 +49,7 @@ Explicitly **not** in slice 1: learner memory, Metabase, passkeys, the game laye
 
 | # | Item | Why | Blocking |
 |---|---|---|---|
-| 1 | **Accept D016** (promote a private web-app track; narrowly relaxes the deferral of production UI/auth/deploy for an invite-only 2-learner beta) | `AGENTS.md` defers these until R0 | All implementation merges |
+| 1 | **Accept D017** (promote a private web-app track; narrowly relaxes the deferral of production UI/auth/deploy for an invite-only 2-learner beta) | `AGENTS.md` defers these until R0 | All implementation merges |
 | 2 | **Vercel access**: create a `study-os-web` project from `Pukujan/Study-os` (root `web/`), or grant an agent a scoped token; approve the design-bakery `vercel.json` rewrite PR | Frontend hosting | Slice 1 frontend go-live |
 | 3 | **Cloudflare**: run `cloudflared tunnel login` on gravebuster (browser auth to the design-bakery.com zone), or create the tunnel in the dashboard and give gravebuster the token; pick the hostname (proposed `study-api.design-bakery.com`) | Public API | Slice 1 go-live |
 | 4 | **gravebuster access for agents**: this agent box has no Tailscale/SSH route to gravebuster (inventory was read through `ssh gravebuster` on Teresa-Pujan). Either allow deploys through Teresa-Pujan's SSH or add a deploy user/key for a pull-based deployer | Deploys | Slice 1 go-live |
@@ -60,5 +60,5 @@ Explicitly **not** in slice 1: learner memory, Metabase, passkeys, the game laye
 
 ## Dependencies
 
-- #80 (SOS-0002 sliding-window lesson rebuild) supplies the golden-conformant DSA lesson and the conformance evaluator that slice 1 reuses. Slice 1 can start on hosting/auth/DB/HESI in parallel.
+- #80 (SOS-0002 sliding-window lesson rebuild, merged in PR #81) supplies the golden-conformant DSA lesson (`sep4.sliding-window.golden-box-index-enumerate-append.v2`) and `src/study_os/pir/conformance.py`, which slice 1 reuses for detector parity.
 - `study-os-benchmarker` pinned commit for detector parity (#92).

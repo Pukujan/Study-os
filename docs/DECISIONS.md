@@ -262,7 +262,13 @@ This repository is the authoritative owner of Study OS project facts, continuity
 
 No project invariant is relaxed. The existing documents keep their meaning; the `continuity:*` markers only declare roles. Pins, rules, and validation commands are in `AGENTS.md` → "Helper modules and project ownership".
 
-## D016 — Owner promotes a private hosted web app track (proposed)
+## D016 — The shipped sliding-window lesson follows the two goldens step by step
+
+Status: proposed in #80 (task `SOS-0002`); accepted when its PR merges.
+
+The canonical sliding-window PIR asset (`sliding-window.max-sum-k.sep4.v1`) is generated from the two goldens in `domains/dsa/sliding-window/golden/`, and its scope stops where they stop (`enumerate(a)` and `append`). It moves to revision `sep4.sliding-window.golden-box-index-enumerate-append.v2`. Runs pinned to v1 fail closed on the existing revision check. `domains/dsa/sliding-window/golden/conformance-oracle.v0.1.json` and `src/study_os/pir/conformance.py` mirror the `Pukujan/study-os-benchmarker` rules at `d438988` and are enforced by `tests/test_pir_golden_conformance.py`. Loop assembly, `max`, the `else` bridge, the stop condition, and `range(k)` need their own reviewed golden before they ship.
+
+## D017 — Owner promotes a private hosted web app track (proposed)
 
 Status: proposed in #83 (task `SOS-0003`, epic #82). **Implementation merges require Alex's explicit acceptance of this decision.** Merging the SOS-0003 spec PR records the proposal only.
 

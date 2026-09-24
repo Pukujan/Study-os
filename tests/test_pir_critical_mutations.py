@@ -5,7 +5,7 @@ import unittest
 
 from study_os import RuntimeConfig, StudyOSService
 from study_os.errors import StudyOSError
-from study_os.pir.contracts import ExpansionKind, RunStatus, TransitionSpec
+from study_os.pir.contracts import AssessmentKind, ExpansionKind, RunStatus, TransitionSpec
 from study_os.pir.controller import (
     _apply_transition,
     _require_matching_state,
@@ -15,6 +15,21 @@ from study_os.pir.controller import (
 )
 from study_os.pir.registry import CANONICAL_PROBLEM_ID, get_asset
 from study_os.services.pir_runtime import PIRRuntimeMixin
+
+# Correct answer to the first probe of the golden lesson: position(p) of number 6.
+FIRST_PROBE_CORRECT = "4"
+
+
+def correct_response(step_id: str) -> str:
+    """Canonical correct response for a probe of the shipped golden lesson."""
+
+    asset = get_asset(CANONICAL_PROBLEM_ID)
+    assert asset is not None
+    step = next(item for item in asset.steps if item.step_id == step_id)
+    spec = next(item for item in asset.assessments if item.assessment_id == step.assessment_id)
+    if spec.kind == AssessmentKind.TEXT:
+        return spec.expected_text[0]
+    return " ".join(str(value) for value in spec.expected_values)
 
 
 class PIRControllerCriticalMutationTests(unittest.TestCase):
@@ -103,7 +118,7 @@ class PIRControllerCriticalMutationTests(unittest.TestCase):
         for turn_id in stale_turns:
             with self.subTest(turn_id=turn_id):
                 with self.assertRaisesRegex(ValueError, "stale"):
-                    submit_response(self.asset, state, turn_id=turn_id, response="8")
+                    submit_response(self.asset, state, turn_id=turn_id, response=FIRST_PROBE_CORRECT)
 
     def test_expansion_is_renderer_only_and_preserves_exact_state(self) -> None:
         state, bundle = start_run(
@@ -264,7 +279,7 @@ class PIRRuntimeCriticalMutationTests(unittest.TestCase):
                 problem_run_id=run_id,
                 subject_id="subject-001",
                 turn_id=f"{run_id}:999:wrong-step",
-                response="8",
+                response=FIRST_PROBE_CORRECT,
             )
         self.assertEqual(stale.exception.category, "conflict")
 
@@ -315,20 +330,17 @@ class PIRRuntimeCriticalMutationTests(unittest.TestCase):
     def test_terminal_bundle_is_exact_and_never_claims_mastery(self) -> None:
         current = self.start_problem()
         run_id = str(current["problem_run_id"])
-        answers = (
-            "8",
-            "S[i]=S[i-1]-a[i-1]+a[i+j]",
-            "for i,num in enumerate(a):",
-            "S.append(S[i-1]-a[i-1]+a[i+j])",
-            "if S[i] > max_sum:\n    max_sum = S[i]",
-        )
-        for index, answer in enumerate(answers):
+        for index in range(100):
+            bundle = current["turn"]
+            assert isinstance(bundle, dict)
+            if bundle["response_turn_id"] is None:
+                break
             current = self.service.submit_problem_response(
                 idempotency_key=f"critical-complete-{index}",
                 problem_run_id=run_id,
                 subject_id="subject-001",
                 turn_id=self.response_turn_id(current),
-                response=answer,
+                response=correct_response(str(bundle["turns"][-1]["canonical_step_id"])),
             )
 
         self.assertEqual(current["run_status"], RunStatus.ASSEMBLED_MASTERY_UNPROVEN.value)

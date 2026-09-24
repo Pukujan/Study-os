@@ -9,7 +9,23 @@ from study_os import RuntimeConfig, StudyOSService
 from study_os.db.connection import LATEST_SCHEMA_VERSION
 from study_os.errors import StudyOSError
 from study_os.mcp.server import MCPServer
-from study_os.pir.registry import CANONICAL_PROBLEM_ID
+from study_os.pir.contracts import AssessmentKind
+from study_os.pir.registry import CANONICAL_PROBLEM_ID, get_asset
+
+# Correct answer to the first probe of the golden lesson: position(p) of number 6.
+FIRST_PROBE_CORRECT = "4"
+
+
+def correct_response(step_id: str) -> str:
+    """Canonical correct response for a probe of the shipped golden lesson."""
+
+    asset = get_asset(CANONICAL_PROBLEM_ID)
+    assert asset is not None
+    step = next(item for item in asset.steps if item.step_id == step_id)
+    spec = next(item for item in asset.assessments if item.assessment_id == step.assessment_id)
+    if spec.kind == AssessmentKind.TEXT:
+        return spec.expected_text[0]
+    return " ".join(str(value) for value in spec.expected_values)
 
 
 class PIRRuntimeIntegrationTests(unittest.TestCase):
@@ -79,8 +95,30 @@ class PIRRuntimeIntegrationTests(unittest.TestCase):
         ).fetchone()[0]
         self.assertEqual(count, 1)
 
+    @staticmethod
+    def current_step_id(result: dict[str, object]) -> str:
+        bundle = result["turn"]
+        if not isinstance(bundle, dict):
+            raise AssertionError("expected teaching bundle")
+        return str(bundle["turns"][-1]["canonical_step_id"])
+
+    def answer_correctly_until(self, current: dict[str, object], step_id: str) -> dict[str, object]:
+        run_id = str(current["problem_run_id"])
+        for index in range(100):
+            if self.current_step_id(current) == step_id:
+                return current
+            current = self.service.submit_problem_response(
+                idempotency_key=f"pir-walk-{index}",
+                problem_run_id=run_id,
+                subject_id="subject-001",
+                turn_id=self.response_turn_id(current),
+                response=correct_response(self.current_step_id(current)),
+            )
+        raise AssertionError(f"step {step_id} not reached on the correct path")
+
     def test_historical_box_values_are_partial_not_incorrect(self) -> None:
-        started = self.start_problem()
+        # Golden 1 step 5: for sum[i=2] with k = 2, the box contents "2 6" are partial.
+        started = self.answer_correctly_until(self.start_problem(), "window_sum.e1.n1")
         result = self.service.submit_problem_response(
             idempotency_key="pir-partial",
             problem_run_id=str(started["problem_run_id"]),
@@ -92,9 +130,10 @@ class PIRRuntimeIntegrationTests(unittest.TestCase):
         bundle = result["turn"]
         self.assertIsInstance(bundle, dict)
         turns = bundle["turns"]
-        self.assertEqual(turns[0]["canonical_step_id"], "sum_partial")
-        self.assertEqual(turns[-1]["canonical_step_id"], "arithmetic_probe")
-        self.assertIn("right values", turns[0]["learner_visible_markdown"])
+        self.assertEqual(turns[0]["canonical_step_id"], "window_sum.e1.n1.partial")
+        self.assertEqual(turns[-1]["canonical_step_id"], "window_sum.e1.n1.finish")
+        self.assertIn("right numbers", turns[0]["learner_visible_markdown"])
+        self.assertIn("2 + 6 = ?", turns[-1]["learner_visible_markdown"])
 
     def test_expansion_is_durable_and_does_not_advance(self) -> None:
         started = self.start_problem()
@@ -133,7 +172,7 @@ class PIRRuntimeIntegrationTests(unittest.TestCase):
             problem_run_id=str(started["problem_run_id"]),
             subject_id="subject-001",
             turn_id=self.response_turn_id(started),
-            response="8",
+            response=FIRST_PROBE_CORRECT,
         )
         first = self.service.submit_problem_response(**request)
         second = self.service.submit_problem_response(**request)
@@ -162,7 +201,7 @@ class PIRRuntimeIntegrationTests(unittest.TestCase):
             problem_run_id=run_id,
             subject_id="subject-001",
             turn_id=old_turn,
-            response="8",
+            response=FIRST_PROBE_CORRECT,
         )
 
         with self.assertRaises(StudyOSError) as conflict_error:
@@ -181,7 +220,7 @@ class PIRRuntimeIntegrationTests(unittest.TestCase):
                 problem_run_id=run_id,
                 subject_id="subject-001",
                 turn_id=old_turn,
-                response="8",
+                response=FIRST_PROBE_CORRECT,
             )
         self.assertEqual(stale_error.exception.category, "conflict")
 
@@ -193,7 +232,7 @@ class PIRRuntimeIntegrationTests(unittest.TestCase):
             problem_run_id=run_id,
             subject_id="subject-001",
             turn_id=self.response_turn_id(started),
-            response="8",
+            response=FIRST_PROBE_CORRECT,
         )
         expected = self.service.get_problem_turn(
             problem_run_id=run_id,
@@ -230,22 +269,21 @@ class PIRRuntimeIntegrationTests(unittest.TestCase):
     def test_all_correct_path_ends_assembled_without_mastery(self) -> None:
         current = self.start_problem()
         run_id = str(current["problem_run_id"])
-        answers = (
-            "8",
-            "S[i]=S[i-1]-a[i-1]+a[i+j]",
-            "for i,num in enumerate(a):",
-            "S.append(S[i-1]-a[i-1]+a[i+j])",
-            "if S[i] > max_sum:\n    max_sum = S[i]",
-        )
-        for index, answer in enumerate(answers):
+        probes: list[str] = []
+        for index in range(100):
+            if current["turn"]["response_turn_id"] is None:
+                break
+            step_id = self.current_step_id(current)
+            probes.append(step_id)
             current = self.service.submit_problem_response(
                 idempotency_key=f"pir-complete-{index}",
                 problem_run_id=run_id,
                 subject_id="subject-001",
                 turn_id=self.response_turn_id(current),
-                response=answer,
+                response=correct_response(step_id),
             )
 
+        self.assertEqual(len(probes), 19)
         self.assertEqual(current["run_status"], "assembled_mastery_unproven")
         self.assertIsNone(current["turn"]["response_turn_id"])
         rendered = "\n".join(
