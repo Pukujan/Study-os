@@ -1,5 +1,7 @@
 # Agent Handoff
 
+<!-- continuity:current {"active_task":"SOS-0001","active_task_file":"tasks/TASK-SOS-0001-helper-adoption.md","protocol_version":"0.1.0-draft","schema":"project-continuity.current.v1"} -->
+
 Last updated: 2026-09-03
 Primary tracker: #63
 
@@ -101,6 +103,14 @@ AI may:
 - transform terminology, examples, traces, pseudocode, or code under explicit constraints.
 
 AI may not silently advance curriculum or mark mastery.
+
+## Continuity ownership and active PCM task
+
+As of 2026-09-24 (pending PR review for #78): this repository is the validated owner of its own continuity state through the PCM mature-repository overlay. `docs/PROJECT_CHARTER.md` is canonical PROJECT, this file is canonical CURRENT, and `tasks/` holds PCM task projections. GitHub issues own task scope and lifecycle; this file is a versioned projection, not a parallel authority.
+
+- Active PCM task: `SOS-0001` — `tasks/TASK-SOS-0001-helper-adoption.md`, leaf issue #78, parent none. Product planning authority below is unchanged (#63).
+- After #78's PR merges and checks are confirmed, mark `SOS-0001` completed and set the `continuity:current` marker's `active_task`/`active_task_file` to `null` (or the next issue-backed task).
+- Helper pins and adoption rules: `AGENTS.md` → "Helper modules and project ownership".
 
 ## Planning authority
 

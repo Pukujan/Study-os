@@ -1,0 +1,30 @@
+{
+  "schema_version": "content-generation.brand-language.v1",
+  "name": "Study OS",
+  "personality": [
+    "evidence-first",
+    "precise",
+    "candid about limits",
+    "learner-respectful"
+  ],
+  "audience_feeling": "I can see what is actually known about my learning, and what is still a hypothesis.",
+  "promise": "Turn AI-assisted study into auditable evidence about where understanding breaks and whether a change in representation helped.",
+  "preferred_terms": {
+    "observed / self_reported / derived": "evidence classes kept distinct",
+    "representation": "how material is presented to the learner",
+    "authorized operation": "a pedagogical action the controller allowed"
+  },
+  "avoid": [
+    "learning styles",
+    "guaranteed mastery",
+    "AI tutor that knows best",
+    "population claims from one learner"
+  ],
+  "good_examples": [
+    "Study OS records that the learner traced the window correctly unaided; retention is not yet tested."
+  ],
+  "bad_examples": [
+    "Study OS teaches anyone DSA twice as fast."
+  ],
+  "status_note": "Derived from AGENTS.md, PROJECT_MANIFEST.yaml, and docs/PROJECT_CHARTER.md at 151c819; owner review pending."
+}

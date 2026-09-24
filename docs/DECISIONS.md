@@ -253,3 +253,11 @@ This decision partially supersedes the sequencing assumptions in D008 and D013:
 Frontend, Mermaid/diagram rendering, audio tutoring, imagery, and later video remain valuable future representation surfaces. They should consume the same backend learning semantics and be activated when the owner promotes them in priority. They are not the present critical path while GPT dogfooding is coherent and productive.
 
 **Roadmap:** see `docs/ROADMAP.md`.
+
+## D015 — Study OS owns its continuity state; PCM and CGM are pinned helpers
+
+Status: proposed in #78 (task `SOS-0001`); accepted when its PR merges.
+
+This repository is the authoritative owner of Study OS project facts, continuity/task state, and human-facing claims. `Pukujan/project-continuity-modules` is adopted through its mature-repository overlay: `docs/PROJECT_CHARTER.md` is canonical PROJECT, `docs/HANDOFF.md` is canonical CURRENT, `tasks/` holds issue-backed PCM task projections, and `schemas/v1/` is an exact copy of the pinned protocol schemas. `Pukujan/content-generation-modules` is adopted as a pinned `.content-system/` adapter. Neither helper owns Study OS state, and neither is read from a moving branch during work.
+
+No project invariant is relaxed. The existing documents keep their meaning; the `continuity:*` markers only declare roles. Pins, rules, and validation commands are in `AGENTS.md` → "Helper modules and project ownership".

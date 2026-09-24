@@ -1,5 +1,7 @@
 # Project Charter
 
+<!-- continuity:project {"id":"study-os","protocol_version":"0.1.0-draft","schema":"project-continuity.project.v1","title":"Study OS"} -->
+
 ## Problem statement
 
 AI can make a novice/intermediate programmer productive before the programmer has internalized every syntax rule, algorithmic pattern, or debugging procedure. That productivity is valuable, but it creates a learning gap: working code can exist before the learner can independently explain, trace, modify, test, or reconstruct it.

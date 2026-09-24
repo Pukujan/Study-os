@@ -12,3 +12,6 @@ __pycache__/
 .venv/
 .env
 .env.*
+
+# PCM managed task worktrees (pcm/worktree/<TASK-ID>) are local-only.
+pcm/worktree/
