@@ -5,6 +5,10 @@ from __future__ import annotations
 from typing import Any
 
 
+def _cell_widths(array: list[int]) -> list[int]:
+    return [max(len(str(v)), 1) for v in array]
+
+
 def _render_box_index(frame: dict[str, Any]) -> str:
     """Render a ``box_index`` frame as compact ASCII.
 
@@ -22,61 +26,61 @@ def _render_box_index(frame: dict[str, Any]) -> str:
     show_positions = frame.get("show_positions", False)
     show_indices = frame.get("show_indices", False)
     arrows = frame.get("arrows", [])
+    circles = frame.get("circles", [])
     sum_label = frame.get("sum_label")
     caption = frame.get("caption")
 
     if caption:
         lines.append(caption)
 
-    # Render positions row if requested.
-    if show_positions:
-        positions = [str(i + 1) for i in range(len(array))]
-        lines.append("positions(p):  " + "  ".join(positions))
-
     # Render indices row if requested.
     if show_indices:
-        indices = [str(i) for i in range(len(array))]
-        lines.append("index(i):      " + "  ".join(indices))
+        parts = [str(i) for i in range(len(array))]
+        lines.append("index(i):      " + "  ".join(parts))
 
-    # Numbers row, possibly enclosed in a box.
+    # Render positions row if requested.
+    if show_positions:
+        parts = [str(i + 1) for i in range(len(array))]
+        lines.append("positions(p):  " + "  ".join(parts))
+
+    # Numbers row.
     nums = [str(v) for v in array]
-    if box is not None:
-        start = box.get("start", 0)
-        k = box.get("k", 1)
-        # Simple bracket placement: put brackets around the sub-slice.
-        left = "[" + ", ".join(nums[:start]) if start > 0 else ""
-        if start > 0:
-            left = left + ", "
-        middle = ", ".join(nums[start : start + k])
-        right_parts = nums[start + k :]
-        right = (", ".join(right_parts) + "]") if right_parts else "]"
-        if start == 0:
-            numbers_line = "[" + middle + right
-        else:
-            numbers_line = left + middle + ", " + right if right_parts else left + middle + "]"
-        lines.append(f"numbers(a):   {numbers_line}")
-        # Underline bracket row.
-        box_label = f"k = {k}"
-        underline = " " * 14 + "" * len(nums) + box_label
-        # Approximate underline using └─ ... ─┘ under the boxed slice.
-        pre = 14 + sum(len(n) + 2 for n in nums[:start])
-        span = sum(len(n) + 2 for n in nums[start : start + k]) - 2
-        if start == 0:
-            pre -= 1
-        underline = " " * pre + "└" + "─" * span + "┘" + f"  {box_label}"
-        lines.append(underline)
-    else:
-        lines.append("numbers(a):   [" + ", ".join(nums) + "]")
+    box_start = box.get("start", 0) if box else 0
+    box_k = box.get("k", 1) if box else 0
+    numbers_line = "[" + ", ".join(nums) + "]"
+    lines.append(f"numbers(a):   {numbers_line}")
+
+    # Circles represented by parentheses around the value.
+    if circles:
+        line = " " * 14
+        pos = 14
+        for i in sorted(circles):
+            if 0 <= i < len(array):
+                # crude alignment; enough for tutor grounding
+                line += f"  ({array[i]})"
+        if line.strip():
+            lines.append(line.rstrip())
+
+    # Brace line.
+    if box:
+        brace_label = box.get("brace_label") or f"k = {box_k}"
+        pre = 14 + sum(len(nums[i]) + 2 for i in range(box_start))
+        span = sum(len(nums[i]) + 2 for i in range(box_start, box_start + box_k)) - 2
+        line = " " * pre + "└" + "─" * max(2, span) + "┘" + f"  {brace_label}"
+        lines.append(line)
 
     # Arrows / labels.
     if arrows:
         for arrow in arrows:
             at = arrow.get("at", 0)
             label = arrow.get("label", "")
-            lines.append(f"{label:>14} (at {at + 1})")
+            row = arrow.get("row", "numbers")
+            dir_ = arrow.get("dir", "down")
+            symbol = "↓" if dir_ == "down" else "↑"
+            lines.append(f"{symbol} {label} (at {row} {at + 1})")
 
     if sum_label:
-        lines.append(f"{sum_label}")
+        lines.append(str(sum_label))
 
     return "\n".join(lines)
 
@@ -116,6 +120,61 @@ def _render_fraction_bar(frame: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
+def _render_mermaid_flow(frame: dict[str, Any]) -> str:
+    """Render a ``mermaid_flow`` frame as a compact note."""
+
+    lines: list[str] = []
+    caption = frame.get("caption")
+    source = frame.get("source", "")
+    revealed = frame.get("revealed_nodes", [])
+    direction = frame.get("direction", "TD")
+    if caption:
+        lines.append(caption)
+    lines.append(f"[mermaid flowchart {direction}]")
+    if revealed:
+        lines.append(f"revealed nodes: {', '.join(str(n) for n in revealed)}")
+    # Include the source lines for grounding context.
+    for line in source.splitlines()[:8]:
+        lines.append(line)
+    return "\n".join(lines)
+
+
+def _render_code_tree(frame: dict[str, Any]) -> str:
+    """Render a ``code_tree`` frame as compact text."""
+
+    lines: list[str] = []
+    caption = frame.get("caption")
+    code_lines = frame.get("lines", [])
+    highlight = set(frame.get("highlight", []))
+    underlines = frame.get("underlines", [])
+    tree = frame.get("tree")
+
+    if caption:
+        lines.append(caption)
+
+    if code_lines:
+        lines.append("```" + (frame.get("language") or ""))
+        for i, line in enumerate(code_lines):
+            prefix = ">>> " if i in highlight else "    "
+            lines.append(prefix + line)
+            for u in underlines:
+                if u.get("line") == i:
+                    span = u.get("span", [0, 0])
+                    label = u.get("label", "")
+                    underline = " " * (span[0] + 4) + "^" * max(1, span[1] - span[0])
+                    if label:
+                        underline += f"  {label}"
+                    lines.append(underline)
+        lines.append("```")
+
+    if tree:
+        lines.append("tree: " + tree.get("label", ""))
+        for child in tree.get("children", []):
+            lines.append("  - " + child.get("label", ""))
+
+    return "\n".join(lines)
+
+
 def frame_to_text(frame: dict[str, Any]) -> str:
     """Return a compact ASCII rendering of a single frame.
 
@@ -129,6 +188,10 @@ def frame_to_text(frame: dict[str, Any]) -> str:
         return _render_box_index(frame)
     if frame_type == "fraction_bar":
         return _render_fraction_bar(frame)
+    if frame_type == "mermaid_flow":
+        return _render_mermaid_flow(frame)
+    if frame_type == "code_tree":
+        return _render_code_tree(frame)
 
     # Fallback for unknown frames.
     items = [f"{k}={v!r}" for k, v in frame.items()]

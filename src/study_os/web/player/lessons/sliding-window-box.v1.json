@@ -18,7 +18,14 @@
         "frames": [
           {
             "type": "box_index",
-            "array": [4, 7, 2, 6, 1, 9],
+            "array": [
+              4,
+              7,
+              2,
+              6,
+              1,
+              9
+            ],
             "show_positions": false,
             "show_indices": false,
             "box": null,
@@ -40,11 +47,25 @@
         "frames": [
           {
             "type": "box_index",
-            "array": [4, 7, 2, 6, 1, 9],
+            "array": [
+              4,
+              7,
+              2,
+              6,
+              1,
+              9
+            ],
             "show_positions": true,
             "show_indices": false,
             "box": null,
-            "arrows": [{"at": 2, "label": "p = 3", "row": "positions"}],
+            "arrows": [
+              {
+                "at": 2,
+                "label": "p = 3",
+                "row": "positions",
+                "dir": "down"
+              }
+            ],
             "sum_label": null
           }
         ]
@@ -54,7 +75,14 @@
         "frames": [
           {
             "type": "box_index",
-            "array": [4, 7, 2, 6, 1, 9],
+            "array": [
+              4,
+              7,
+              2,
+              6,
+              1,
+              9
+            ],
             "show_positions": true,
             "show_indices": false,
             "box": null,
@@ -63,26 +91,47 @@
           }
         ],
         "answer_kind": "integer",
-        "accept": ["4"],
+        "accept": [
+          "4"
+        ],
         "partial": [],
         "misconceptions": [
           {
             "id": "position-index-off-by-one",
-            "match": ["3"],
+            "match": [
+              "3"
+            ],
             "note_md": "That is the index, which starts at 0. Position starts at 1."
           }
         ],
-        "correct_md": "Correct — **4**.",
+        "correct_md": "Correct \u2014 **4**.",
         "explain_md": "Number 6 sits in the 4th slot from the left, so its position p is 4.",
         "explain_frames": [
           {
             "type": "box_index",
-            "array": [4, 7, 2, 6, 1, 9],
+            "array": [
+              4,
+              7,
+              2,
+              6,
+              1,
+              9
+            ],
             "show_positions": true,
             "show_indices": false,
             "box": null,
-            "arrows": [{"at": 3, "label": "p = 4", "row": "positions"}],
-            "sum_label": null
+            "arrows": [
+              {
+                "at": 3,
+                "label": "p = 4",
+                "row": "positions",
+                "dir": "down"
+              }
+            ],
+            "sum_label": null,
+            "circles": [
+              3
+            ]
           }
         ],
         "solution_md": "positions: 1 2 3 4 5 6; numbers: 4 7 2 6 1 9; 6 is at position 4.",
@@ -96,7 +145,14 @@
             "frames": [
               {
                 "type": "box_index",
-                "array": [4, 7, 2, 6, 1, 9],
+                "array": [
+                  4,
+                  7,
+                  2,
+                  6,
+                  1,
+                  9
+                ],
                 "show_positions": true,
                 "show_indices": false,
                 "box": null,
@@ -105,25 +161,42 @@
               }
             ],
             "answer_kind": "integer",
-            "accept": ["6"],
+            "accept": [
+              "6"
+            ],
             "partial": [],
             "misconceptions": [
               {
                 "id": "position-index-off-by-one",
-                "match": ["5"],
+                "match": [
+                  "5"
+                ],
                 "note_md": "That is the index, which starts at 0. Position starts at 1."
               }
             ],
-            "correct_md": "Correct — **6**.",
+            "correct_md": "Correct \u2014 **6**.",
             "explain_md": "Number 9 is the 6th item from the left, so its position p is 6.",
             "explain_frames": [
               {
                 "type": "box_index",
-                "array": [4, 7, 2, 6, 1, 9],
+                "array": [
+                  4,
+                  7,
+                  2,
+                  6,
+                  1,
+                  9
+                ],
                 "show_positions": true,
                 "show_indices": false,
                 "box": null,
-                "arrows": [{"at": 5, "label": "p = 6", "row": "positions"}],
+                "arrows": [
+                  {
+                    "at": 5,
+                    "label": "p = 6",
+                    "row": "positions"
+                  }
+                ],
                 "sum_label": null
               }
             ],
@@ -138,7 +211,14 @@
             "frames": [
               {
                 "type": "box_index",
-                "array": [4, 7, 2, 6, 1, 9],
+                "array": [
+                  4,
+                  7,
+                  2,
+                  6,
+                  1,
+                  9
+                ],
                 "show_positions": true,
                 "show_indices": false,
                 "box": null,
@@ -147,25 +227,42 @@
               }
             ],
             "answer_kind": "integer",
-            "accept": ["2"],
+            "accept": [
+              "2"
+            ],
             "partial": [],
             "misconceptions": [
               {
                 "id": "position-index-off-by-one",
-                "match": ["1"],
+                "match": [
+                  "1"
+                ],
                 "note_md": "That is the index, which starts at 0. Position starts at 1."
               }
             ],
-            "correct_md": "Correct — **2**.",
+            "correct_md": "Correct \u2014 **2**.",
             "explain_md": "Number 7 is the 2nd item from the left, so its position p is 2.",
             "explain_frames": [
               {
                 "type": "box_index",
-                "array": [4, 7, 2, 6, 1, 9],
+                "array": [
+                  4,
+                  7,
+                  2,
+                  6,
+                  1,
+                  9
+                ],
                 "show_positions": true,
                 "show_indices": false,
                 "box": null,
-                "arrows": [{"at": 1, "label": "p = 2", "row": "positions"}],
+                "arrows": [
+                  {
+                    "at": 1,
+                    "label": "p = 2",
+                    "row": "positions"
+                  }
+                ],
                 "sum_label": null
               }
             ],
@@ -185,12 +282,41 @@
         "frames": [
           {
             "type": "box_index",
-            "array": [4, 7, 2, 6, 1, 9],
+            "array": [
+              4,
+              7,
+              2,
+              6,
+              1,
+              9
+            ],
             "show_positions": true,
             "show_indices": true,
             "box": null,
-            "arrows": [{"at": 2, "label": "i = 2, p = 3", "row": "numbers"}],
-            "sum_label": null
+            "arrows": [
+              {
+                "at": 2,
+                "label": "i = 2",
+                "row": "indices",
+                "dir": "down"
+              },
+              {
+                "at": 2,
+                "label": "p = 3",
+                "row": "numbers",
+                "dir": "up"
+              },
+              {
+                "at": 2,
+                "label": "a = 2",
+                "row": "numbers",
+                "dir": "up"
+              }
+            ],
+            "sum_label": null,
+            "circles": [
+              2
+            ]
           }
         ]
       },
@@ -199,7 +325,14 @@
         "frames": [
           {
             "type": "box_index",
-            "array": [4, 7, 2, 6, 1, 9],
+            "array": [
+              4,
+              7,
+              2,
+              6,
+              1,
+              9
+            ],
             "show_positions": false,
             "show_indices": true,
             "box": null,
@@ -208,26 +341,59 @@
           }
         ],
         "answer_kind": "integer",
-        "accept": ["3"],
+        "accept": [
+          "3"
+        ],
         "partial": [],
         "misconceptions": [
           {
             "id": "index-position-off-by-one",
-            "match": ["4"],
+            "match": [
+              "4"
+            ],
             "note_md": "That is the position. The index is one less than the position."
           }
         ],
-        "correct_md": "Correct — **3**.",
+        "correct_md": "Correct \u2014 **3**.",
         "explain_md": "Number 6 is at position 4, so its index is 4 - 1 = 3.",
         "explain_frames": [
           {
             "type": "box_index",
-            "array": [4, 7, 2, 6, 1, 9],
+            "array": [
+              4,
+              7,
+              2,
+              6,
+              1,
+              9
+            ],
             "show_positions": true,
             "show_indices": true,
             "box": null,
-            "arrows": [{"at": 3, "label": "i = 3, p = 4", "row": "numbers"}],
-            "sum_label": null
+            "arrows": [
+              {
+                "at": 3,
+                "label": "i = 3",
+                "row": "indices",
+                "dir": "down"
+              },
+              {
+                "at": 3,
+                "label": "p = 4",
+                "row": "numbers",
+                "dir": "up"
+              },
+              {
+                "at": 3,
+                "label": "a = 6",
+                "row": "numbers",
+                "dir": "up"
+              }
+            ],
+            "sum_label": null,
+            "circles": [
+              3
+            ]
           }
         ],
         "solution_md": "position of 6 is 4; index i = p - 1 = 4 - 1 = 3.",
@@ -241,7 +407,14 @@
             "frames": [
               {
                 "type": "box_index",
-                "array": [4, 7, 2, 6, 1, 9],
+                "array": [
+                  4,
+                  7,
+                  2,
+                  6,
+                  1,
+                  9
+                ],
                 "show_positions": false,
                 "show_indices": true,
                 "box": null,
@@ -250,25 +423,42 @@
               }
             ],
             "answer_kind": "integer",
-            "accept": ["5"],
+            "accept": [
+              "5"
+            ],
             "partial": [],
             "misconceptions": [
               {
                 "id": "index-position-off-by-one",
-                "match": ["6"],
+                "match": [
+                  "6"
+                ],
                 "note_md": "That is the position. The index is one less than the position."
               }
             ],
-            "correct_md": "Correct — **5**.",
+            "correct_md": "Correct \u2014 **5**.",
             "explain_md": "Number 9 is at position 6, so its index is 6 - 1 = 5.",
             "explain_frames": [
               {
                 "type": "box_index",
-                "array": [4, 7, 2, 6, 1, 9],
+                "array": [
+                  4,
+                  7,
+                  2,
+                  6,
+                  1,
+                  9
+                ],
                 "show_positions": true,
                 "show_indices": true,
                 "box": null,
-                "arrows": [{"at": 5, "label": "i = 5, p = 6", "row": "numbers"}],
+                "arrows": [
+                  {
+                    "at": 5,
+                    "label": "i = 5, p = 6",
+                    "row": "numbers"
+                  }
+                ],
                 "sum_label": null
               }
             ],
@@ -283,7 +473,14 @@
             "frames": [
               {
                 "type": "box_index",
-                "array": [4, 7, 2, 6, 1, 9],
+                "array": [
+                  4,
+                  7,
+                  2,
+                  6,
+                  1,
+                  9
+                ],
                 "show_positions": false,
                 "show_indices": true,
                 "box": null,
@@ -292,25 +489,42 @@
               }
             ],
             "answer_kind": "integer",
-            "accept": ["1"],
+            "accept": [
+              "1"
+            ],
             "partial": [],
             "misconceptions": [
               {
                 "id": "index-position-off-by-one",
-                "match": ["2"],
+                "match": [
+                  "2"
+                ],
                 "note_md": "That is the position. The index is one less than the position."
               }
             ],
-            "correct_md": "Correct — **1**.",
+            "correct_md": "Correct \u2014 **1**.",
             "explain_md": "Number 7 is at position 2, so its index is 2 - 1 = 1.",
             "explain_frames": [
               {
                 "type": "box_index",
-                "array": [4, 7, 2, 6, 1, 9],
+                "array": [
+                  4,
+                  7,
+                  2,
+                  6,
+                  1,
+                  9
+                ],
                 "show_positions": true,
                 "show_indices": true,
                 "box": null,
-                "arrows": [{"at": 1, "label": "i = 1, p = 2", "row": "numbers"}],
+                "arrows": [
+                  {
+                    "at": 1,
+                    "label": "i = 1, p = 2",
+                    "row": "numbers"
+                  }
+                ],
                 "sum_label": null
               }
             ],
@@ -330,11 +544,41 @@
         "frames": [
           {
             "type": "box_index",
-            "array": [4, 7, 2, 6, 1, 9],
+            "array": [
+              4,
+              7,
+              2,
+              6,
+              1,
+              9
+            ],
             "show_positions": false,
             "show_indices": true,
-            "box": {"start": 0, "k": 3},
-            "arrows": [],
+            "box": {
+              "start": 0,
+              "k": 3,
+              "brace_label": "k = 3"
+            },
+            "arrows": [
+              {
+                "at": 0,
+                "label": "k = 3",
+                "row": "numbers",
+                "dir": "up"
+              },
+              {
+                "at": 1,
+                "label": " ",
+                "row": "numbers",
+                "dir": "up"
+              },
+              {
+                "at": 2,
+                "label": " ",
+                "row": "numbers",
+                "dir": "up"
+              }
+            ],
             "sum_label": null
           }
         ]
@@ -344,39 +588,89 @@
         "frames": [
           {
             "type": "box_index",
-            "array": [4, 7, 2, 6, 1, 9],
+            "array": [
+              4,
+              7,
+              2,
+              6,
+              1,
+              9
+            ],
             "show_positions": false,
             "show_indices": true,
-            "box": {"start": 0, "k": 3},
+            "box": {
+              "start": 0,
+              "k": 3
+            },
             "arrows": [],
             "sum_label": null
           }
         ],
         "answer_kind": "text",
-        "accept": ["4 7 2", "4,7,2", "[4,7,2]", "4, 7, 2", "4  7  2"],
+        "accept": [
+          "4 7 2",
+          "4,7,2",
+          "[4,7,2]",
+          "4, 7, 2",
+          "4  7  2"
+        ],
         "partial": [
           {
-            "match": ["4"],
+            "match": [
+              "4"
+            ],
             "note_md": "4 is the first number. What comes after it?"
           }
         ],
         "misconceptions": [
           {
             "id": "box-count-instead-of-values",
-            "match": ["3"],
+            "match": [
+              "3"
+            ],
             "note_md": "That is the size k, not the numbers inside."
           }
         ],
-        "correct_md": "Correct — **4, 7, 2**.",
+        "correct_md": "Correct \u2014 **4, 7, 2**.",
         "explain_md": "The box starts at index 0 and holds 3 numbers: 4, 7, and 2.",
         "explain_frames": [
           {
             "type": "box_index",
-            "array": [4, 7, 2, 6, 1, 9],
+            "array": [
+              4,
+              7,
+              2,
+              6,
+              1,
+              9
+            ],
             "show_positions": false,
             "show_indices": true,
-            "box": {"start": 0, "k": 3},
-            "arrows": [{"at": 0, "label": "4, 7, 2", "row": "numbers"}],
+            "box": {
+              "start": 0,
+              "k": 3,
+              "brace_label": "k = 3"
+            },
+            "arrows": [
+              {
+                "at": 0,
+                "label": "k = 3",
+                "row": "numbers",
+                "dir": "up"
+              },
+              {
+                "at": 1,
+                "label": " ",
+                "row": "numbers",
+                "dir": "up"
+              },
+              {
+                "at": 2,
+                "label": " ",
+                "row": "numbers",
+                "dir": "up"
+              }
+            ],
             "sum_label": null
           }
         ],
@@ -391,39 +685,82 @@
             "frames": [
               {
                 "type": "box_index",
-                "array": [4, 7, 2, 6, 1, 9],
+                "array": [
+                  4,
+                  7,
+                  2,
+                  6,
+                  1,
+                  9
+                ],
                 "show_positions": false,
                 "show_indices": true,
-                "box": {"start": 1, "k": 2},
+                "box": {
+                  "start": 1,
+                  "k": 2
+                },
                 "arrows": [],
                 "sum_label": null
               }
             ],
             "answer_kind": "text",
-            "accept": ["7 2", "7,2", "[7,2]", "7, 2"],
+            "accept": [
+              "7 2",
+              "7,2",
+              "[7,2]",
+              "7, 2"
+            ],
             "partial": [
               {
-                "match": ["7"],
+                "match": [
+                  "7"
+                ],
                 "note_md": "7 is the first number. What comes after it?"
               }
             ],
             "misconceptions": [
               {
                 "id": "box-count-instead-of-values",
-                "match": ["2"],
+                "match": [
+                  "2"
+                ],
                 "note_md": "That is the size k, not the numbers inside."
               }
             ],
-            "correct_md": "Correct — **7, 2**.",
+            "correct_md": "Correct \u2014 **7, 2**.",
             "explain_md": "The box starts at index 1 and holds 2 numbers: 7 and 2.",
             "explain_frames": [
               {
                 "type": "box_index",
-                "array": [4, 7, 2, 6, 1, 9],
+                "array": [
+                  4,
+                  7,
+                  2,
+                  6,
+                  1,
+                  9
+                ],
                 "show_positions": false,
                 "show_indices": true,
-                "box": {"start": 1, "k": 2},
-                "arrows": [{"at": 1, "label": "7, 2", "row": "numbers"}],
+                "box": {
+                  "start": 1,
+                  "k": 2,
+                  "brace_label": "k = 2"
+                },
+                "arrows": [
+                  {
+                    "at": 1,
+                    "label": "k = 2",
+                    "row": "numbers",
+                    "dir": "up"
+                  },
+                  {
+                    "at": 2,
+                    "label": " ",
+                    "row": "numbers",
+                    "dir": "up"
+                  }
+                ],
                 "sum_label": null
               }
             ],
@@ -438,39 +775,94 @@
             "frames": [
               {
                 "type": "box_index",
-                "array": [4, 7, 2, 6, 1, 9],
+                "array": [
+                  4,
+                  7,
+                  2,
+                  6,
+                  1,
+                  9
+                ],
                 "show_positions": false,
                 "show_indices": true,
-                "box": {"start": 2, "k": 4},
+                "box": {
+                  "start": 2,
+                  "k": 4
+                },
                 "arrows": [],
                 "sum_label": null
               }
             ],
             "answer_kind": "text",
-            "accept": ["2 6 1 9", "2,6,1,9", "[2,6,1,9]", "2, 6, 1, 9"],
+            "accept": [
+              "2 6 1 9",
+              "2,6,1,9",
+              "[2,6,1,9]",
+              "2, 6, 1, 9"
+            ],
             "partial": [
               {
-                "match": ["2"],
+                "match": [
+                  "2"
+                ],
                 "note_md": "2 is the first number. What comes after it?"
               }
             ],
             "misconceptions": [
               {
                 "id": "box-count-instead-of-values",
-                "match": ["4"],
+                "match": [
+                  "4"
+                ],
                 "note_md": "That is the size k, not the numbers inside."
               }
             ],
-            "correct_md": "Correct — **2, 6, 1, 9**.",
+            "correct_md": "Correct \u2014 **2, 6, 1, 9**.",
             "explain_md": "The box starts at index 2 and holds 4 numbers: 2, 6, 1, and 9.",
             "explain_frames": [
               {
                 "type": "box_index",
-                "array": [4, 7, 2, 6, 1, 9],
+                "array": [
+                  4,
+                  7,
+                  2,
+                  6,
+                  1,
+                  9
+                ],
                 "show_positions": false,
                 "show_indices": true,
-                "box": {"start": 2, "k": 4},
-                "arrows": [{"at": 2, "label": "2, 6, 1, 9", "row": "numbers"}],
+                "box": {
+                  "start": 2,
+                  "k": 4,
+                  "brace_label": "k = 4"
+                },
+                "arrows": [
+                  {
+                    "at": 2,
+                    "label": "k = 4",
+                    "row": "numbers",
+                    "dir": "up"
+                  },
+                  {
+                    "at": 3,
+                    "label": " ",
+                    "row": "numbers",
+                    "dir": "up"
+                  },
+                  {
+                    "at": 4,
+                    "label": " ",
+                    "row": "numbers",
+                    "dir": "up"
+                  },
+                  {
+                    "at": 5,
+                    "label": " ",
+                    "row": "numbers",
+                    "dir": "up"
+                  }
+                ],
                 "sum_label": null
               }
             ],
@@ -490,11 +882,29 @@
         "frames": [
           {
             "type": "box_index",
-            "array": [4, 7, 2, 6, 1, 9],
+            "array": [
+              4,
+              7,
+              2,
+              6,
+              1,
+              9
+            ],
             "show_positions": false,
             "show_indices": true,
-            "box": {"start": 0, "k": 3},
-            "arrows": [{"at": 0, "label": "i = 0", "row": "numbers"}],
+            "box": {
+              "start": 0,
+              "k": 3,
+              "brace_label": "k = 3"
+            },
+            "arrows": [
+              {
+                "at": 0,
+                "label": "i = 0",
+                "row": "numbers",
+                "dir": "up"
+              }
+            ],
             "sum_label": null
           }
         ]
@@ -504,39 +914,76 @@
         "frames": [
           {
             "type": "box_index",
-            "array": [4, 7, 2, 6, 1, 9],
+            "array": [
+              4,
+              7,
+              2,
+              6,
+              1,
+              9
+            ],
             "show_positions": false,
             "show_indices": true,
-            "box": {"start": 1, "k": 3},
+            "box": {
+              "start": 1,
+              "k": 3
+            },
             "arrows": [],
             "sum_label": null
           }
         ],
         "answer_kind": "text",
-        "accept": ["7 2 6", "7,2,6", "[7,2,6]", "7, 2, 6"],
+        "accept": [
+          "7 2 6",
+          "7,2,6",
+          "[7,2,6]",
+          "7, 2, 6"
+        ],
         "partial": [
           {
-            "match": ["7"],
+            "match": [
+              "7"
+            ],
             "note_md": "7 is the first number. What comes after it?"
           }
         ],
         "misconceptions": [
           {
             "id": "starts-at-position-not-index",
-            "match": ["2 6 1"],
+            "match": [
+              "2 6 1"
+            ],
             "note_md": "You started at position 2. Start at index i instead."
           }
         ],
-        "correct_md": "Correct — **7, 2, 6**.",
+        "correct_md": "Correct \u2014 **7, 2, 6**.",
         "explain_md": "Starting at i = 1 with k = 3 gives a[1], a[2], a[3] = 7, 2, 6.",
         "explain_frames": [
           {
             "type": "box_index",
-            "array": [4, 7, 2, 6, 1, 9],
+            "array": [
+              4,
+              7,
+              2,
+              6,
+              1,
+              9
+            ],
             "show_positions": false,
             "show_indices": true,
-            "box": {"start": 1, "k": 3},
-            "arrows": [{"at": 1, "label": "7, 2, 6", "row": "numbers"}],
+            "box": {
+              "start": 1,
+              "k": 3,
+              "brace_label": "k = 3"
+            },
+            "arrows": [
+              {
+                "at": 1,
+                "label": "i = 1",
+                "row": "numbers",
+                "dir": "up"
+              }
+            ],
             "sum_label": null
           }
         ],
@@ -551,39 +998,76 @@
             "frames": [
               {
                 "type": "box_index",
-                "array": [4, 7, 2, 6, 1, 9],
+                "array": [
+                  4,
+                  7,
+                  2,
+                  6,
+                  1,
+                  9
+                ],
                 "show_positions": false,
                 "show_indices": true,
-                "box": {"start": 3, "k": 2},
+                "box": {
+                  "start": 3,
+                  "k": 2
+                },
                 "arrows": [],
                 "sum_label": null
               }
             ],
             "answer_kind": "text",
-            "accept": ["6 1", "6,1", "[6,1]", "6, 1"],
+            "accept": [
+              "6 1",
+              "6,1",
+              "[6,1]",
+              "6, 1"
+            ],
             "partial": [
               {
-                "match": ["6"],
+                "match": [
+                  "6"
+                ],
                 "note_md": "6 is the first number. What comes after it?"
               }
             ],
             "misconceptions": [
               {
                 "id": "starts-at-position-not-index",
-                "match": ["1 9"],
+                "match": [
+                  "1 9"
+                ],
                 "note_md": "You started at position 4. Start at index i instead."
               }
             ],
-            "correct_md": "Correct — **6, 1**.",
+            "correct_md": "Correct \u2014 **6, 1**.",
             "explain_md": "Starting at i = 3 with k = 2 gives a[3], a[4] = 6, 1.",
             "explain_frames": [
               {
                 "type": "box_index",
-                "array": [4, 7, 2, 6, 1, 9],
+                "array": [
+                  4,
+                  7,
+                  2,
+                  6,
+                  1,
+                  9
+                ],
                 "show_positions": false,
                 "show_indices": true,
-                "box": {"start": 3, "k": 2},
-                "arrows": [{"at": 3, "label": "6, 1", "row": "numbers"}],
+                "box": {
+                  "start": 3,
+                  "k": 2,
+                  "brace_label": "k = 2"
+                },
+                "arrows": [
+                  {
+                    "at": 3,
+                    "label": "i = 3",
+                    "row": "numbers",
+                    "dir": "up"
+                  }
+                ],
                 "sum_label": null
               }
             ],
@@ -598,39 +1082,76 @@
             "frames": [
               {
                 "type": "box_index",
-                "array": [4, 7, 2, 6, 1, 9],
+                "array": [
+                  4,
+                  7,
+                  2,
+                  6,
+                  1,
+                  9
+                ],
                 "show_positions": false,
                 "show_indices": true,
-                "box": {"start": 0, "k": 2},
+                "box": {
+                  "start": 0,
+                  "k": 2
+                },
                 "arrows": [],
                 "sum_label": null
               }
             ],
             "answer_kind": "text",
-            "accept": ["4 7", "4,7", "[4,7]", "4, 7"],
+            "accept": [
+              "4 7",
+              "4,7",
+              "[4,7]",
+              "4, 7"
+            ],
             "partial": [
               {
-                "match": ["4"],
+                "match": [
+                  "4"
+                ],
                 "note_md": "4 is the first number. What comes after it?"
               }
             ],
             "misconceptions": [
               {
                 "id": "starts-at-position-not-index",
-                "match": ["7 2"],
+                "match": [
+                  "7 2"
+                ],
                 "note_md": "You started at position 2. Start at index i instead."
               }
             ],
-            "correct_md": "Correct — **4, 7**.",
+            "correct_md": "Correct \u2014 **4, 7**.",
             "explain_md": "Starting at i = 0 with k = 2 gives a[0], a[1] = 4, 7.",
             "explain_frames": [
               {
                 "type": "box_index",
-                "array": [4, 7, 2, 6, 1, 9],
+                "array": [
+                  4,
+                  7,
+                  2,
+                  6,
+                  1,
+                  9
+                ],
                 "show_positions": false,
                 "show_indices": true,
-                "box": {"start": 0, "k": 2},
-                "arrows": [{"at": 0, "label": "4, 7", "row": "numbers"}],
+                "box": {
+                  "start": 0,
+                  "k": 2,
+                  "brace_label": "k = 2"
+                },
+                "arrows": [
+                  {
+                    "at": 0,
+                    "label": "i = 0",
+                    "row": "numbers",
+                    "dir": "up"
+                  }
+                ],
                 "sum_label": null
               }
             ],
@@ -650,12 +1171,50 @@
         "frames": [
           {
             "type": "box_index",
-            "array": [4, 7, 2, 6, 1, 9],
+            "array": [
+              4,
+              7,
+              2,
+              6,
+              1,
+              9
+            ],
             "show_positions": false,
             "show_indices": true,
-            "box": {"start": 2, "k": 3},
+            "box": {
+              "start": 2,
+              "k": 3,
+              "brace_label": "k = 3"
+            },
             "arrows": [],
             "sum_label": "sum[i=2]"
+          },
+          {
+            "type": "box_index",
+            "array": [
+              4,
+              7,
+              2,
+              6,
+              1,
+              9
+            ],
+            "show_positions": false,
+            "show_indices": true,
+            "box": {
+              "start": 0,
+              "k": 3,
+              "brace_label": "k = 3"
+            },
+            "arrows": [
+              {
+                "at": 0,
+                "label": "4 + 7 + 2 = 13",
+                "row": "numbers",
+                "dir": "up"
+              }
+            ],
+            "sum_label": "sum[i=0] = 13"
           }
         ]
       },
@@ -664,39 +1223,74 @@
         "frames": [
           {
             "type": "box_index",
-            "array": [4, 7, 2, 6, 1, 9],
+            "array": [
+              4,
+              7,
+              2,
+              6,
+              1,
+              9
+            ],
             "show_positions": false,
             "show_indices": true,
-            "box": {"start": 2, "k": 3},
+            "box": {
+              "start": 2,
+              "k": 3
+            },
             "arrows": [],
             "sum_label": null
           }
         ],
         "answer_kind": "integer",
-        "accept": ["9"],
+        "accept": [
+          "9"
+        ],
         "partial": [
           {
-            "match": ["2 6 1", "2,6,1"],
+            "match": [
+              "2 6 1",
+              "2,6,1"
+            ],
             "note_md": "Those are the right numbers. Now add them: 2 + 6 + 1 = ?"
           }
         ],
         "misconceptions": [
           {
             "id": "sum-returns-count",
-            "match": ["3"],
+            "match": [
+              "3"
+            ],
             "note_md": "That is how many numbers are in the box. We need their sum."
           }
         ],
-        "correct_md": "Correct — **9**.",
+        "correct_md": "Correct \u2014 **9**.",
         "explain_md": "sum[i=2] = 2 + 6 + 1 = 9.",
         "explain_frames": [
           {
             "type": "box_index",
-            "array": [4, 7, 2, 6, 1, 9],
+            "array": [
+              4,
+              7,
+              2,
+              6,
+              1,
+              9
+            ],
             "show_positions": false,
             "show_indices": true,
-            "box": {"start": 2, "k": 3},
-            "arrows": [{"at": 2, "label": "2 + 6 + 1 = 9", "row": "numbers"}],
+            "box": {
+              "start": 2,
+              "k": 3,
+              "brace_label": "k = 3"
+            },
+            "arrows": [
+              {
+                "at": 2,
+                "label": "2 + 6 + 1 = 9",
+                "row": "numbers",
+                "dir": "up"
+              }
+            ],
             "sum_label": "sum[i=2] = 9"
           }
         ],
@@ -711,39 +1305,74 @@
             "frames": [
               {
                 "type": "box_index",
-                "array": [4, 7, 2, 6, 1, 9],
+                "array": [
+                  4,
+                  7,
+                  2,
+                  6,
+                  1,
+                  9
+                ],
                 "show_positions": false,
                 "show_indices": true,
-                "box": {"start": 0, "k": 3},
+                "box": {
+                  "start": 0,
+                  "k": 3
+                },
                 "arrows": [],
                 "sum_label": null
               }
             ],
             "answer_kind": "integer",
-            "accept": ["13"],
+            "accept": [
+              "13"
+            ],
             "partial": [
               {
-                "match": ["4 7 2", "4,7,2"],
+                "match": [
+                  "4 7 2",
+                  "4,7,2"
+                ],
                 "note_md": "Those are the right numbers. Now add them: 4 + 7 + 2 = ?"
               }
             ],
             "misconceptions": [
               {
                 "id": "sum-returns-count",
-                "match": ["3"],
+                "match": [
+                  "3"
+                ],
                 "note_md": "That is how many numbers are in the box. We need their sum."
               }
             ],
-            "correct_md": "Correct — **13**.",
+            "correct_md": "Correct \u2014 **13**.",
             "explain_md": "sum[i=0] = 4 + 7 + 2 = 13.",
             "explain_frames": [
               {
                 "type": "box_index",
-                "array": [4, 7, 2, 6, 1, 9],
+                "array": [
+                  4,
+                  7,
+                  2,
+                  6,
+                  1,
+                  9
+                ],
                 "show_positions": false,
                 "show_indices": true,
-                "box": {"start": 0, "k": 3},
-                "arrows": [{"at": 0, "label": "4 + 7 + 2 = 13", "row": "numbers"}],
+                "box": {
+                  "start": 0,
+                  "k": 3,
+                  "brace_label": "k = 3"
+                },
+                "arrows": [
+                  {
+                    "at": 0,
+                    "label": "4 + 7 + 2 = 13",
+                    "row": "numbers",
+                    "dir": "up"
+                  }
+                ],
                 "sum_label": "sum[i=0] = 13"
               }
             ],
@@ -758,39 +1387,74 @@
             "frames": [
               {
                 "type": "box_index",
-                "array": [4, 7, 2, 6, 1, 9],
+                "array": [
+                  4,
+                  7,
+                  2,
+                  6,
+                  1,
+                  9
+                ],
                 "show_positions": false,
                 "show_indices": true,
-                "box": {"start": 1, "k": 2},
+                "box": {
+                  "start": 1,
+                  "k": 2
+                },
                 "arrows": [],
                 "sum_label": null
               }
             ],
             "answer_kind": "integer",
-            "accept": ["9"],
+            "accept": [
+              "9"
+            ],
             "partial": [
               {
-                "match": ["7 2", "7,2"],
+                "match": [
+                  "7 2",
+                  "7,2"
+                ],
                 "note_md": "Those are the right numbers. Now add them: 7 + 2 = ?"
               }
             ],
             "misconceptions": [
               {
                 "id": "sum-returns-count",
-                "match": ["2"],
+                "match": [
+                  "2"
+                ],
                 "note_md": "That is how many numbers are in the box. We need their sum."
               }
             ],
-            "correct_md": "Correct — **9**.",
+            "correct_md": "Correct \u2014 **9**.",
             "explain_md": "sum[i=1] = 7 + 2 = 9.",
             "explain_frames": [
               {
                 "type": "box_index",
-                "array": [4, 7, 2, 6, 1, 9],
+                "array": [
+                  4,
+                  7,
+                  2,
+                  6,
+                  1,
+                  9
+                ],
                 "show_positions": false,
                 "show_indices": true,
-                "box": {"start": 1, "k": 2},
-                "arrows": [{"at": 1, "label": "7 + 2 = 9", "row": "numbers"}],
+                "box": {
+                  "start": 1,
+                  "k": 2,
+                  "brace_label": "k = 2"
+                },
+                "arrows": [
+                  {
+                    "at": 1,
+                    "label": "7 + 2 = 9",
+                    "row": "numbers",
+                    "dir": "up"
+                  }
+                ],
                 "sum_label": "sum[i=1] = 9"
               }
             ],

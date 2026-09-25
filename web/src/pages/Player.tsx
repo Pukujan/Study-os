@@ -4,6 +4,7 @@ import { Markdown } from "../markdown";
 import { navigate } from "../router";
 import FrameStepper from "../visuals/FrameStepper";
 import Frame from "../visuals/Frame";
+import LessonMap, { getLessonSteps } from "../visuals/LessonMap";
 import VoiceControls from "../player/VoiceControls";
 import CompanionPanel from "../player/CompanionPanel";
 import FeedbackBar from "../player/FeedbackBar";
@@ -134,6 +135,13 @@ export default function Player({ sessionId }: { sessionId: string }) {
       <div className="player-layout">
         <div className="player-main">
           <h1>{view.lesson.title}</h1>
+          <LessonMap
+            steps={getLessonSteps(view.lesson.lesson_id, view.lesson.total_steps)}
+            currentIndex={view.step.index}
+            completedIds={getLessonSteps(view.lesson.lesson_id, view.lesson.total_steps)
+              .slice(0, view.step.index)
+              .map((s) => s.id)}
+          />
           <div className="progress" aria-label={`Progress ${view.progress.done} of ${view.progress.total}`}>
             <div className="progress-bar" style={{ width: `${progressPct}%` }} />
             <span className="progress-label">{view.progress.done}/{view.progress.total}</span>
@@ -180,6 +188,7 @@ export default function Player({ sessionId }: { sessionId: string }) {
                     {view.step.probe.frames.map((frame, i) => (
                       <Frame key={i} frame={frame} />
                     ))}
+
                     <AnswerInput
                       probe={view.step.probe}
                       answer={answer}

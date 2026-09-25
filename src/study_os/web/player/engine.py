@@ -615,7 +615,7 @@ def check_lesson(lesson: dict[str, Any]) -> list[str]:
             if len(explain_md.split()) > 50:
                 errors.append(f"step {step_id} {name}: explain_md exceeds 50 words")
 
-            # Probe frames must not contain arrows or highlights.
+            # Probe frames must not contain arrows, highlights, or circles.
             for frame in p.get("frames", []):
                 if not isinstance(frame, dict):
                     continue
@@ -623,6 +623,8 @@ def check_lesson(lesson: dict[str, Any]) -> list[str]:
                     errors.append(f"step {step_id} {name}: probe frame contains arrows")
                 if frame.get("highlight"):
                     errors.append(f"step {step_id} {name}: probe frame contains highlight")
+                if frame.get("circles"):
+                    errors.append(f"step {step_id} {name}: probe frame contains circles")
 
             # Required server-only fields.
             for field in ("accept", "solution_md", "hint_md"):

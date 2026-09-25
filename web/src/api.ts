@@ -63,18 +63,51 @@ export type FractionBarFrame = {
   number_line?: { max: number; ticks: number; marks: { at: string; label: string }[] } | null;
 };
 
+export type BoxIndexArrow = {
+  at: number;
+  label: string;
+  row: "positions" | "numbers" | "indices";
+  dir?: "up" | "down";
+};
+
 export type BoxIndexFrame = {
   type: "box_index";
   caption?: string;
   array: number[];
   show_positions: boolean;
   show_indices: boolean;
-  box?: { start: number; k: number } | null;
-  arrows?: { at: number; label: string; row: "positions" | "numbers" }[] | null;
+  box?: { start: number; k: number; brace_label?: string | null } | null;
+  arrows?: BoxIndexArrow[] | null;
+  circles?: number[];
   sum_label?: string | null;
+  interactive?: boolean;
 };
 
-export type Frame = FractionBarFrame | BoxIndexFrame;
+export type MermaidFlowFrame = {
+  type: "mermaid_flow";
+  caption?: string;
+  direction?: "TD" | "LR";
+  source: string;
+  revealed_nodes?: string[];
+  zoom_pan?: boolean;
+};
+
+export type CodeTreeNode = {
+  label: string;
+  children?: CodeTreeNode[];
+};
+
+export type CodeTreeFrame = {
+  type: "code_tree";
+  caption?: string;
+  language?: string;
+  lines: string[];
+  highlight?: number[];
+  underlines?: { line: number; span: [number, number]; label?: string }[];
+  tree?: { label: string; children: CodeTreeNode[] } | null;
+};
+
+export type Frame = FractionBarFrame | BoxIndexFrame | MermaidFlowFrame | CodeTreeFrame;
 
 export type Probe = {
   prompt_md: string;
