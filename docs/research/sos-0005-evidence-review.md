@@ -1,7 +1,7 @@
 # SOS-0005 research gate: evidence review before building
 
 - Issue log: umbrella #107 (sub-issue of #82); related #101, #103, #104, #105, #106.
-- Status: **durable research on `main`.** Hypotheses and verdicts below. Alex reviewed 2026-09-24; product decisions are recorded in [`decisions-2026-09-24.md`](./decisions-2026-09-24.md). Design/build remains on draft PR #102 (not merged here).
+- Status: **durable research on `main`.** Hypotheses and verdicts below. Alex reviewed 2026-09-24; product decisions are recorded in [`decisions-2026-09-24.md`](./decisions-2026-09-24.md). Player/UI build continues on PR #102 (Alex-approved for merge).
 - Author: Grok Bot executor, 2026-09-24 (ET). Landed to main 2026-09-24 (docs-only).
 - Method: web search plus direct fetches. Every DOI below was resolved against the Crossref API (title and authors matched). Every non-DOI URL was checked with an HTTP request from the box on 2026-09-24 and returned 200; the one exception is marked. Effect sizes come from the paper abstracts or publisher pages as found in search. **Full texts were not read for every paper**, so treat any number as "as reported in the abstract". No IRE/InferHub model was used to summarise in this pass (InferHub spend for the research phase: $0.00).
 - Evidence grading: **[E-peer]** peer-reviewed study or meta-analysis · **[E-co]** company research or engineering data (not peer-reviewed) · **[E-ux]** UX research firm study (NN/g, Baymard) · **[O]** opinion, teardown or design essay · **[Std]** standard or spec.

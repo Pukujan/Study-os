@@ -1,11 +1,13 @@
 # Agent Handoff
 
-<!-- continuity:current {"active_task":null,"active_task_file":null,"protocol_version":"0.1.0-draft","schema":"project-continuity.current.v1"} -->
+<!-- continuity:current {"active_task":"SOS-0005","active_task_file":"tasks/TASK-SOS-0005-lesson-player-redesign.md","protocol_version":"0.1.0-draft","schema":"project-continuity.current.v1"} -->
 
 Last updated: 2026-09-24
 Primary tracker: #63 (runtime) · #82 (web app epic)
 
 ## Web app track (D017 accepted, D018 amendment) — slice 1 live
+
+- Active: SOS-0005 (#101) lesson player redesign prototype on `task/SOS-0005-lesson-player-redesign`; not merged/deployed until Alex approves.
 
 - Live at **https://study.design-bakery.com** (frontend `/`, API `/api`, same origin) on gravebuster: `/srv/study-os` Docker Compose (`api` on `127.0.0.1:18400`, `postgres:16` internal, `cloudflared` tunnel `study-os-gravebuster`, nightly `pg_dump`). See `deploy/README.md`.
 - Code: `src/study_os/web/` (FastAPI, auth, controller over PIR, decision layer, HESI packs), `web/` (React), `tools/run_agent_evals.py` (agent-vs-agent T0 evals). Task: `tasks/TASK-SOS-0004-first-slice.md`, issue #99.
@@ -346,3 +348,7 @@ The controller remains authority regardless of which implementation fulfills an 
 ## Web app track (SOS-0003, proposed)
 
 As of 2026-09-24 (SOS-0003 completed; PR #96 merge pending, live result on #83): an owner-requested hosted web app is specified in `docs/webapp/` (leaf #83, epic #82, children #84–#95 and #97). Proposed decision D017 would promote a private, invite-only, two-learner web beta. Until Alex accepts D017, the "Explicitly deferred" list in `AGENTS.md` still applies to implementation merges. The web surface must reuse the deterministic controller (ADR-0016), with interpretation as a cascade: rules, then hosted Jev / Laya (calibrated, low-stakes only), then a frontier LLM on low confidence (see `docs/webapp/DEEP_RESEARCH.md`). Start with `docs/webapp/BUILD_PLAN.md` → slice 1.
+
+## SOS-0005 visuals slice (in progress on `sos5-visuals`)
+
+Added `box_index` enhancements (brace, arrows with direction, circles, interactive cells) and two new player frame types: `mermaid_flow` (progressive reveal, responsive TD/LR, zoom/pan) and `code_tree` (line highlights, underlines, expandable tree). Wired the sliding-window lesson to a `LessonMap` in `Player.tsx`. Engine `check_lesson` now forbids `circles` on probe frames alongside arrows/highlight. Next: Alex/orchestrator review, then screenshots/dogfooding.

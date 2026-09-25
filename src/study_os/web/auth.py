@@ -53,6 +53,7 @@ class Principal:
     role: str
     display_name: str | None = None
     csrf_hash: bytes = b""
+    is_guest: bool = False
 
 
 @dataclass(frozen=True)
@@ -132,6 +133,7 @@ def _create_account(
     email: str | None,
     display_name: str | None,
     role: str = "learner",
+    is_guest: bool = False,
 ) -> Principal:
     account_id = str(uuid.uuid4())
     subject_id = str(uuid.uuid4())
@@ -140,9 +142,9 @@ def _create_account(
     if email and conn.execute("SELECT 1 FROM auth.account WHERE email = %s", (email,)).fetchone():
         raise AuthError("email_taken", 409)
     conn.execute(
-        "INSERT INTO auth.account (account_id, handle, email, display_name, role) "
-        "VALUES (%s, %s, %s, %s, %s)",
-        (account_id, handle, email, (display_name or None) and display_name[:80], role),
+        "INSERT INTO auth.account (account_id, handle, email, display_name, role, is_guest) "
+        "VALUES (%s, %s, %s, %s, %s, %s)",
+        (account_id, handle, email, (display_name or None) and display_name[:80], role, is_guest),
     )
     conn.execute(
         "INSERT INTO learn.subject (subject_id, pseudonym) VALUES (%s, %s)",
@@ -152,7 +154,7 @@ def _create_account(
         "INSERT INTO auth.account_subject (account_id, subject_id) VALUES (%s, %s)",
         (account_id, subject_id),
     )
-    return Principal(account_id, subject_id, handle, role, display_name)
+    return Principal(account_id, subject_id, handle, role, display_name, is_guest=is_guest)
 
 
 def signup_local(
@@ -168,7 +170,7 @@ def signup_local(
     validate_passphrase(passphrase)
     handle_norm = normalize_handle(handle) if handle else _unique_handle(conn, email_norm.split("@")[0])
     principal = _create_account(
-        conn, handle=handle_norm, email=email_norm, display_name=display_name, role=role
+        conn, handle=handle_norm, email=email_norm, display_name=display_name, role=role, is_guest=False
     )
     conn.execute(
         "INSERT INTO auth.local_credential (account_id, passphrase_hash) VALUES (%s, %s)",
@@ -179,6 +181,49 @@ def signup_local(
         (email_norm, principal.account_id),
     )
     return principal
+
+
+def create_guest_account(conn: Conn) -> Principal:
+    """Create a pseudonymous guest account and subject."""
+
+    for _ in range(20):
+        handle = f"guest-{secrets.token_hex(4)}"
+        if conn.execute("SELECT 1 FROM auth.account WHERE handle = %s", (handle,)).fetchone() is None:
+            return _create_account(
+                conn, handle=handle, email=None, display_name=None, role="learner", is_guest=True
+            )
+    raise AuthError("handle_unavailable", 409)
+
+
+def claim_local(conn: Conn, *, principal: Principal, email: str, passphrase: str) -> Principal:
+    """Attach a local identity/credential to a guest account, keeping subject and progress."""
+
+    email_norm = normalize_email(email)
+    validate_passphrase(passphrase)
+    if not principal.is_guest:
+        raise AuthError("not_guest", 403)
+    existing = conn.execute(
+        "SELECT account_id FROM auth.account WHERE email = %s AND account_id <> %s",
+        (email_norm, principal.account_id),
+    ).fetchone()
+    if existing is not None:
+        raise AuthError("email_taken", 409)
+    conn.execute(
+        "UPDATE auth.account SET email = %s, is_guest = false WHERE account_id = %s",
+        (email_norm, principal.account_id),
+    )
+    conn.execute(
+        "INSERT INTO auth.local_credential (account_id, passphrase_hash) VALUES (%s, %s)",
+        (principal.account_id, hash_passphrase(passphrase)),
+    )
+    conn.execute(
+        "INSERT INTO auth.identity (provider, provider_subject, account_id) VALUES ('local', %s, %s)",
+        (email_norm, principal.account_id),
+    )
+    return Principal(
+        principal.account_id, principal.subject_id, principal.handle, principal.role,
+        principal.display_name, principal.csrf_hash, is_guest=False,
+    )
 
 
 def _throttle(conn: Conn, account_key: bytes, ip_key: bytes) -> None:
@@ -217,7 +262,7 @@ def login_local(
     _throttle(conn, account_key, ip_key)
     row = conn.execute(
         "SELECT a.account_id::text AS account_id, a.handle::text AS handle, a.role, a.display_name, "
-        "a.disabled_at, c.passphrase_hash, m.subject_id::text AS subject_id "
+        "a.is_guest, a.disabled_at, c.passphrase_hash, m.subject_id::text AS subject_id "
         "FROM auth.identity i JOIN auth.account a USING (account_id) "
         "JOIN auth.local_credential c USING (account_id) JOIN auth.account_subject m USING (account_id) "
         "WHERE i.provider = 'local' AND i.provider_subject = %s",
@@ -233,7 +278,7 @@ def login_local(
     conn.execute("DELETE FROM auth.login_attempt WHERE created_at < now() - interval '1 day'")
     if not ok or row is None:
         raise AuthError("invalid_credentials", 401)
-    return Principal(row["account_id"], row["subject_id"], row["handle"], row["role"], row["display_name"])
+    return Principal(row["account_id"], row["subject_id"], row["handle"], row["role"], row["display_name"], is_guest=row["is_guest"])
 
 
 def upsert_google_account(
@@ -243,7 +288,7 @@ def upsert_google_account(
         raise AuthError("invalid_identity")
     row = conn.execute(
         "SELECT a.account_id::text AS account_id, a.handle::text AS handle, a.role, a.display_name, "
-        "a.disabled_at, m.subject_id::text AS subject_id FROM auth.identity i "
+        "a.is_guest, a.disabled_at, m.subject_id::text AS subject_id FROM auth.identity i "
         "JOIN auth.account a USING (account_id) JOIN auth.account_subject m USING (account_id) "
         "WHERE i.provider = 'google' AND i.provider_subject = %s",
         (google_sub,),
@@ -251,7 +296,7 @@ def upsert_google_account(
     if row is not None:
         if row["disabled_at"] is not None:
             raise AuthError("account_disabled", 403)
-        return Principal(row["account_id"], row["subject_id"], row["handle"], row["role"], row["display_name"])
+        return Principal(row["account_id"], row["subject_id"], row["handle"], row["role"], row["display_name"], is_guest=row["is_guest"])
     email_norm = None
     if email:
         try:
@@ -273,10 +318,10 @@ def upsert_google_account(
             )
             return Principal(
                 existing["account_id"], existing["subject_id"], existing["handle"], existing["role"],
-                existing["display_name"],
+                existing["display_name"], is_guest=existing["is_guest"],
             )
     handle = _unique_handle(conn, (email_norm or "learner").split("@")[0])
-    principal = _create_account(conn, handle=handle, email=email_norm, display_name=display_name)
+    principal = _create_account(conn, handle=handle, email=email_norm, display_name=display_name, is_guest=False)
     conn.execute(
         "INSERT INTO auth.identity (provider, provider_subject, account_id) VALUES ('google', %s, %s)",
         (google_sub, principal.account_id),
@@ -301,7 +346,7 @@ def resolve_session(conn: Conn, token: str | None) -> Principal | None:
         return None
     row = conn.execute(
         "SELECT a.account_id::text AS account_id, a.handle::text AS handle, a.role, a.display_name, "
-        "m.subject_id::text AS subject_id, s.csrf_token_hash, s.last_seen_at "
+        "a.is_guest, m.subject_id::text AS subject_id, s.csrf_token_hash, s.last_seen_at "
         "FROM auth.session s JOIN auth.account a USING (account_id) "
         "JOIN auth.account_subject m USING (account_id) "
         "WHERE s.session_id_hash = %s AND s.revoked_at IS NULL AND s.absolute_expires_at > now() "
@@ -319,7 +364,7 @@ def resolve_session(conn: Conn, token: str | None) -> Principal | None:
         )
     return Principal(
         row["account_id"], row["subject_id"], row["handle"], row["role"], row["display_name"],
-        bytes(row["csrf_token_hash"]),
+        bytes(row["csrf_token_hash"]), is_guest=row["is_guest"],
     )
 
 
