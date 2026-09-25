@@ -22,6 +22,54 @@ Evidence mapping (see `docs/research/sos-0005-evidence-review.md`): each rule be
 11. **Style** (H7 → Alex GO, revised 2026-09-24): canonical characters in `.content-system/characters/` (adult anime **Learner** + robot **Helper**, CGM palette). General art (onboarding, lane cards, empty states, hero, lesson illustrations) = mature anime from the canonical refs. In-app mascot = **chibi Learner as the pet** (see §9); chibi Helper is an idle-only visitor. Real generated images with provenance, never hand-authored SVG substitutes. The pet is never animated during an open assessment probe except for a static idle frame.
 12. **Voice** (Alex decision 1, phase 1.5, optional): 🔊 reads teach + prompt via `speechSynthesis`; 🎤 uses `SpeechRecognition`/`webkitSpeechRecognition` when available (note: sends audio to the browser vendor; hidden when unsupported, e.g. Brave). Transcript goes into the answer box; attempt sent with `modality: "voice"`. Server grading cascade: normalised rules (number words, "three quarters" → 3/4) → `semantic_match` hook (MiniLM/bge-small, **disabled stub in this slice**) → Jev when unsure (existing decision layer, later). Open-source STT fallback (transformers.js Whisper/Moonshine, faster-whisper on gravebuster) is documented, not built.
 
+## 1a. Product moat (Alex 2026-09-24)
+
+Study OS's main advantage is not a prettier chat UI. It is:
+
+1. **Multiple forms of information representation for the same idea** — golden-faithful ASCII/box charts rendered as live SVG steppers, Mermaid flow/trees (progressive reveal), code trees, worked examples, and voice/companion — so the learner can switch representation when stuck without leaving the step.
+2. **Breaking hard problems into small stepwise pedagogical goals** — one micro-goal per step, produce/predict before being told, fade help, re-explain with a new example on the same representation first, then a different representation if still stuck.
+
+Every design and build choice in this slice must serve that moat: never collapse back into a text-wall + MCQ; never dump a whole concept graph at once; never replace a golden representational diagram with a decorative stand-in. Issue receipts: #101, #107.
+
+## 1b. Binding visual rules (Alex 2026-09-24 — golden + pedagogy transcript; Mermaid-in-lessons refinement)
+
+Issue receipts: #101 (decision + refinement), #107 cross-link. Draft PR #102 — do not merge.
+
+### Concept / stateful diagrams = LIVE steppable golden-faithful SVG (NOT PNG, NOT mermaid for sliding-window)
+
+Goldens (`domains/dsa/sliding-window/golden/beginner-progressive-box-index-sum.v0.1.md`, `beginner-sum-enumerate-append.v0.1.md`) are the source of truth for the box/index representation:
+
+1. Monospace-faithful layout rendered as React SVG in `web/src/visuals/` (`BoxIndex`, `FractionBar`, `NumberLine`, `FrameStepper`): index row, positions row, numbers row, ↑/↓ arrows with labels (`i`/`p`/`a`/`k`/`sum`), and a **box brace** `└── box ──┘` under the window (not only a rounded rect overlay).
+2. **Arrow / circle visibility (golden rules 4–5):** arrows and circled cells appear ONLY when introducing a concept or explaining/correcting an answer. Exercise / probe diagrams MUST omit arrows and answer-revealing marks. Engine `check_lesson` already asserts no arrows/highlights on probe frames — keep that.
+3. **Same chart throughout a concept.** Do not swap representations mid-concept.
+4. Make diagrams **interactive** where the golden asks the learner to identify box contents or move the window (tap cells / drag window start; still graded server-side).
+5. PNGs are reserved for character art / pet sprites / lane banners only.
+
+Alex tried mermaid for *teaching* the sliding-window concept and rejected it; the ASCII box diagram won. **Do not reintroduce concept-teaching mermaid in place of `BoxIndex`.**
+
+### Mermaid = additional live visual type (progress map + in-lesson flowchart/tree)
+
+Mermaid is easy and cheap to render. Use it for:
+
+1. **Lesson "where am I" progress map** — tiny control-flow / if-then steps; reveal **one node (and its inbound edge) at a time** as the learner completes steps. Never dump the whole concept graph up front (transcript rejection of overloaded mermaid flowcharts).
+2. **In-lesson flowchart / tree frames** where a structural diagram helps: relations between concepts, recursion trees, if-then control flow (see `docs/PROJECT_BOUNDARY.md` Structural + Stateful families). Frame type: `mermaid_flow` (see §2). Still reveal progressively via `revealed_nodes` / step progression — not a static wall of nodes.
+3. **Responsive layout:** on narrow / mobile viewports use stacked top-down (`TD`/`TB`) graphs; switch to side-by-side / `LR` only when there is horizontal room (desktop). Readable node labels (no tiny text). Tap-to-zoom and pan (reuse the design-bakery `MermaidDiagram` zoom/pan pattern, simplified).
+
+Mermaid never replaces the golden box/array for sliding-window teaching.
+
+### Code blocks = highlightable / expandable trees
+
+DSA code from the enumerate / append / algebra-underlines golden uses a `code_tree` frame: expandable tree or line-highlightable code with underline ranges for the algebraic relation being taught. Not a plain fenced block when the golden shows structure.
+
+### Frame type summary
+
+| `type` | Use | Not for |
+|---|---|---|
+| `box_index` | Sliding-window / array+window goldens (LIVE SVG) | Replacing with mermaid or PNG |
+| `fraction_bar` (+ optional `number_line`) | HESI fractions | Decorative only |
+| `mermaid_flow` | Progress map; in-lesson flowchart/tree with progressive reveal | Teaching the sliding-window box itself |
+| `code_tree` | Enumerate / append / algebra underlines | Dumping whole files |
+
 ## 2. Lesson content schema (`study-os.player-lesson.v1`)
 
 Files: `src/study_os/web/player/lessons/<lesson_id>.v1.json`.
@@ -69,19 +117,34 @@ Files: `src/study_os/web/player/lessons/<lesson_id>.v1.json`.
 }
 ```
 
-`Frame` (rendered by the client as SVG; the text form is also rendered server-side for tutor grounding):
+`Frame` (rendered by the client; text form also rendered server-side for tutor grounding). Types serve the moat (§1a): switch representation, never a text wall.
 
 ```jsonc
 // fraction_bar
 { "type": "fraction_bar", "caption": "optional ≤ 12 words",
   "bars": [{ "parts": 4, "shaded": 3, "label": "3/4 | null", "highlight": [0,1,2] }],   // highlight = explain/intro only
   "number_line": { "max": 1, "ticks": 12, "marks": [{ "at": "3/4", "label": "3/4" }] } | null }
-// box_index (mirrors PIR sliding-window diagrams)
+// box_index — golden ASCII box/array as LIVE SVG (NOT mermaid, NOT PNG). Brace + arrow rules in §1b.
 { "type": "box_index", "caption": "...",
   "array": [4, 7, 2, 6, 1, 9], "show_positions": true, "show_indices": false,
-  "box": { "start": 1, "k": 3 } | null,       // start is an index i (0-based)
-  "arrows": [{ "at": 2, "label": "p = 3", "row": "positions|numbers" }],   // intro/explain only
-  "sum_label": "sum[1] = 15 | null" }
+  "box": { "start": 1, "k": 3, "brace_label": "box | k = 3 | null" } | null,  // start = index i (0-based); brace under numbers
+  "arrows": [{ "at": 2, "label": "p = 3", "row": "positions|numbers|indices", "dir": "down|up" }],  // intro/explain only
+  "circles": [2, 3],                         // circled cells; intro/explain only
+  "sum_label": "sum[i=2] = 9 | null",
+  "interactive": false }                     // true when learner may tap cells / move window
+// mermaid_flow — progress map OR in-lesson flowchart/tree (PROJECT_BOUNDARY Structural). Progressive reveal.
+{ "type": "mermaid_flow", "caption": "...",
+  "direction": "TD",                         // TD default; client may flip TD↔LR by viewport width
+  "source": "flowchart TD\n  A[Ready?] --> B[Position p]",
+  "revealed_nodes": ["A", "B"],              // only these nodes (+ inbound edges) render; rest hidden
+  "zoom_pan": true }
+// code_tree — enumerate / append / algebra underlines from DSA goldens
+{ "type": "code_tree", "caption": "...",
+  "language": "python",
+  "lines": ["S = []", "for i, num in enumerate(a):", "    S.append(num)"],
+  "highlight": [1, 2],                       // 0-based line indexes
+  "underlines": [{ "line": 2, "span": [4, 16], "label": "same expression" }],
+  "tree": { "label": "enumerate(a)", "children": [{ "label": "(i, num)", "children": [] }] } | null }
 ```
 
 Answer normalisation (grading.py): trim, lowercase, strip trailing `.`, unicode minus, `½ ¼ ¾` → `1/2 1/4 3/4`; fractions compared by value only when `answer_kind == "fraction"` **and** the accept list is value-based (e.g. `6/8` counts as correct for `3/4` with note "same amount — 3/4 is the simplest name"); integer words zero–twenty → digits; voice phrases: "three quarters/fourths" → 3/4, "two thirds" → 2/3, "one half" → 1/2, "x over y" / "x out of y" → x/y.
@@ -126,7 +189,7 @@ HESI-only bug (#105): root cause is that `home()` and `Home.tsx` hard-code HESI 
 
 ## 6. Client (`web/src`)
 
-Routes: `/` (signed-in Home lanes; signed-out Try picker), `/try` alias, `/play/:session_id` (Player), `/admin/feedback`, existing `/login`, `/lesson/:id`, `/summary/:id` kept. Components: `visuals/FractionBar.tsx`, `visuals/NumberLine.tsx`, `visuals/BoxIndex.tsx`, `visuals/FrameStepper.tsx` (Back/Next, "Step 2 of 3"), `player/CompanionPanel.tsx` (replaces the drawer TutorPanel: half-height bottom sheet on mobile, non-dimming side panel ≥ 1024 px; see §9), `mascot/Pet.tsx` + `mascot/RobotVisit.tsx`, `player/FeedbackBar.tsx` (👍/👎 + reasons popover), `player/VoiceControls.tsx` Layout: single column ≤ 720 px content width; one primary button per screen; 16 px base font; WCAG AA contrast.
+Routes: `/` (signed-in Home lanes; signed-out Try picker), `/try` alias, `/play/:session_id` (Player), `/admin/feedback`, existing `/login`, `/lesson/:id`, `/summary/:id` kept. Components: `visuals/FractionBar.tsx`, `visuals/NumberLine.tsx`, `visuals/BoxIndex.tsx` (golden brace/arrows/circles), `visuals/MermaidDiagram.tsx` (zoom/pan, TD↔LR by viewport, progressive `revealed_nodes`), `visuals/LessonMap.tsx` (tiny where-am-I mermaid), `visuals/CodeTree.tsx`, `visuals/FrameStepper.tsx` (Back/Next, "Step 2 of 3"), `player/CompanionPanel.tsx` (replaces the drawer TutorPanel: half-height bottom sheet on mobile, non-dimming side panel ≥ 1024 px; see §9), `mascot/Pet.tsx` + `mascot/RobotVisit.tsx`, `player/FeedbackBar.tsx` (👍/👎 + reasons popover), `player/VoiceControls.tsx` Layout: single column ≤ 720 px content width; one primary button per screen; 16 px base font; WCAG AA contrast.
 
 ## 7. Evals (`tools/run_tutor_golden_evals.py`)
 
