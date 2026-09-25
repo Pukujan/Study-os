@@ -1,8 +1,8 @@
 # SOS-0005 research gate: evidence review before building
 
-- Issue log: umbrella #107 (sub-issue of #82); related #101, #103, #104, #105, #106. Draft PR #102 (do not merge).
-- Status: **research only. Nothing here is a design decision.** Building waits for Alex's review.
-- Author: Grok Bot executor, 2026-09-24 (ET).
+- Issue log: umbrella #107 (sub-issue of #82); related #101, #103, #104, #105, #106.
+- Status: **durable research on `main`.** Hypotheses and verdicts below. Alex reviewed 2026-09-24; product decisions are recorded in [`decisions-2026-09-24.md`](./decisions-2026-09-24.md). Player/UI build continues on PR #102 (Alex-approved for merge).
+- Author: Grok Bot executor, 2026-09-24 (ET). Landed to main 2026-09-24 (docs-only).
 - Method: web search plus direct fetches. Every DOI below was resolved against the Crossref API (title and authors matched). Every non-DOI URL was checked with an HTTP request from the box on 2026-09-24 and returned 200; the one exception is marked. Effect sizes come from the paper abstracts or publisher pages as found in search. **Full texts were not read for every paper**, so treat any number as "as reported in the abstract". No IRE/InferHub model was used to summarise in this pass (InferHub spend for the research phase: $0.00).
 - Evidence grading: **[E-peer]** peer-reviewed study or meta-analysis · **[E-co]** company research or engineering data (not peer-reviewed) · **[E-ux]** UX research firm study (NN/g, Baymard) · **[O]** opinion, teardown or design essay · **[Std]** standard or spec.
 - Verdict scale: **supported** / **weak** / **contradicted** / **unknown**, each with a confidence of low, medium or high. Verdicts are about *the hypothesis as stated*. Many are "supported with conditions", and the conditions matter more than the label.
@@ -28,6 +28,9 @@
 | H15 | One screen, one state: the question card stays visible and the companion panel opens beside it (side panel / half sheet); variants update the card in place | **Supported** (principle) — hypothesis for the specific UI | Medium | Split-attention/contiguity: integrating related information gives d≈0.85. Existing patterns: Khanmigo beside the exercise, Duolingo "Explain My Answer" inline. |
 
 **Source count: 86 distinct external sources**: 45 peer-reviewed/academic (37 Crossref-verified DOIs, 5 arXiv papers, and 3 academic PDFs: Mayer, Schneider et al., WWC) and 41 company, UX-research, standards, teardown, news, working-paper or tool pages. H14/H15 were added 2026-09-24 after Alex's interaction-design notes. References are listed in the final section.
+
+> **Product moat (Alex, 2026-09-24):** Study OS's main advantage is **multiple forms of information representation** plus **breaking hard problems into small stepwise pedagogical goals**. Recorded as decision D12 in [`decisions-2026-09-24.md`](./decisions-2026-09-24.md). Hypotheses H1, H2, H4, and H15 are the evidence gate for that moat; style/voice/home UI are secondary.
+
 
 ---
 

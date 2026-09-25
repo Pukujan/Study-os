@@ -1,0 +1,87 @@
+{
+  "problem_id": "binary-search",
+  "variant_kind": "algebra-katex",
+  "strategy": "Invariant: answer is always in [lo,hi] if present.",
+  "concept_graph": [
+    {
+      "id": "invariant",
+      "depends_on": [],
+      "label": "invariant"
+    },
+    {
+      "id": "mid_formula",
+      "depends_on": [],
+      "label": "mid_formula"
+    },
+    {
+      "id": "branch",
+      "depends_on": [],
+      "label": "branch"
+    }
+  ],
+  "steps": [
+    {
+      "step_id": "s01",
+      "step_index": 1,
+      "concept": "invariant",
+      "goal": "State the search invariant",
+      "representation": "algebra",
+      "artifact_format": "katex",
+      "artifact": "\\\\text{If target exists, then } \\\\mathrm{target} \\\\in nums[lo..hi]",
+      "tutor_prompt": "What shrinks each step?",
+      "expected_answer_patterns": [
+        "range",
+        "interval",
+        "hi-lo",
+        "window"
+      ],
+      "on_correct": "The [lo,hi] range",
+      "on_wrong": "The index range"
+    },
+    {
+      "step_id": "s02",
+      "step_index": 2,
+      "concept": "mid_formula",
+      "goal": "Write mid formula",
+      "representation": "algebra",
+      "artifact_format": "katex",
+      "artifact": "mid = \\\\left\\\\lfloor (lo+hi)/2 \\\\right\\\\rfloor",
+      "tutor_prompt": "Why not (lo+hi)/2 as float?",
+      "expected_answer_patterns": [
+        "index",
+        "integer",
+        "floor"
+      ],
+      "on_correct": "Need an integer index",
+      "on_wrong": "Indices are integers"
+    },
+    {
+      "step_id": "s03",
+      "step_index": 3,
+      "concept": "branch",
+      "goal": "Three-way compare",
+      "representation": "mermaid",
+      "artifact_format": "mermaid",
+      "artifact": "flowchart TD\n  A[nums mid vs target] -->|equal| B[return mid]\n  A -->|nums mid < target| C[lo = mid+1]\n  A -->|nums mid > target| D[hi = mid-1]",
+      "tutor_prompt": "If nums[mid] too big, what changes?",
+      "expected_answer_patterns": [
+        "hi",
+        "hi=mid-1"
+      ],
+      "on_correct": "hi=mid-1",
+      "on_wrong": "hi=mid-1"
+    }
+  ],
+  "_meta": {
+    "variant_id": "binary-search__algebra-katex__curated",
+    "problem_id": "binary-search",
+    "problem_title": "Binary search",
+    "problem_statement": "sorted array search",
+    "variant_kind": "algebra-katex",
+    "model": "curated",
+    "route": "curated:algebra",
+    "usage": {},
+    "sec": 0,
+    "seed": "curated"
+  }
+}

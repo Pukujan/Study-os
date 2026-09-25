@@ -1,0 +1,83 @@
+{
+  "problem_id": "sliding-window-max-sum",
+  "variant_kind": "algebra-katex",
+  "strategy": "Algebra after the box process is understood.",
+  "concept_graph": [
+    {
+      "id": "window_def",
+      "depends_on": [],
+      "label": "window_def"
+    },
+    {
+      "id": "slide_update",
+      "depends_on": [],
+      "label": "slide_update"
+    },
+    {
+      "id": "answer",
+      "depends_on": [],
+      "label": "answer"
+    }
+  ],
+  "steps": [
+    {
+      "step_id": "s01",
+      "step_index": 1,
+      "concept": "window_def",
+      "goal": "Define window sum symbolically after concrete",
+      "representation": "algebra",
+      "artifact_format": "katex",
+      "artifact": "S_i = \\\\sum_{t=0}^{k-1} a_{i+t}",
+      "tutor_prompt": "For k=3, expand S_i",
+      "expected_answer_patterns": [
+        "a_i+a_{i+1}+a_{i+2}",
+        "a[i]+a[i+1]+a[i+2]"
+      ],
+      "on_correct": "a_i+a_{i+1}+a_{i+2}",
+      "on_wrong": "sum of three terms"
+    },
+    {
+      "step_id": "s02",
+      "step_index": 2,
+      "concept": "slide_update",
+      "goal": "O(1) slide update",
+      "representation": "algebra",
+      "artifact_format": "katex",
+      "artifact": "S_{i+1} = S_i - a_i + a_{i+k}",
+      "tutor_prompt": "What is subtracted?",
+      "expected_answer_patterns": [
+        "a_i",
+        "leaving value"
+      ],
+      "on_correct": "a_i",
+      "on_wrong": "a_i"
+    },
+    {
+      "step_id": "s03",
+      "step_index": 3,
+      "concept": "answer",
+      "goal": "Max over valid i",
+      "representation": "algebra",
+      "artifact_format": "katex",
+      "artifact": "\\\\max_{0 \\\\le i \\\\le n-k} S_i",
+      "tutor_prompt": "How many windows for n=6,k=3?",
+      "expected_answer_patterns": [
+        "4"
+      ],
+      "on_correct": "4",
+      "on_wrong": "n-k+1=4"
+    }
+  ],
+  "_meta": {
+    "variant_id": "sliding-window-max-sum__algebra-katex__curated",
+    "problem_id": "sliding-window-max-sum",
+    "problem_title": "Max sum of k adjacent",
+    "problem_statement": "a=[4,7,2,6,1,9] k=3",
+    "variant_kind": "algebra-katex",
+    "model": "curated",
+    "route": "curated:algebra",
+    "usage": {},
+    "sec": 0,
+    "seed": "curated"
+  }
+}

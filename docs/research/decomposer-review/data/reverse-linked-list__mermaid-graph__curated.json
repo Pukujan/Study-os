@@ -1,0 +1,63 @@
+{
+  "problem_id": "reverse-linked-list",
+  "variant_kind": "mermaid-graph",
+  "strategy": "Loop state machine for reverse.",
+  "concept_graph": [
+    {
+      "id": "loop",
+      "depends_on": [],
+      "label": "loop"
+    },
+    {
+      "id": "flip_line",
+      "depends_on": [],
+      "label": "flip_line"
+    }
+  ],
+  "steps": [
+    {
+      "step_id": "s01",
+      "step_index": 1,
+      "concept": "loop",
+      "goal": "See the while-loop control flow",
+      "representation": "mermaid",
+      "artifact_format": "mermaid",
+      "artifact": "stateDiagram-v2\n  [*] --> Init: prev=null curr=head\n  Init --> Check: enter loop\n  Check --> Done: curr is null\n  Check --> Flip: curr exists\n  Flip --> Advance: curr.next=prev\n  Advance --> Check: prev=curr curr=next\n  Done --> [*]: return prev",
+      "tutor_prompt": "When do we stop?",
+      "expected_answer_patterns": [
+        "curr null",
+        "curr is null"
+      ],
+      "on_correct": "When curr is null",
+      "on_wrong": "curr is null"
+    },
+    {
+      "step_id": "s02",
+      "step_index": 2,
+      "concept": "flip_line",
+      "goal": "Name the flip assignment",
+      "representation": "code_tree",
+      "artifact_format": "code",
+      "artifact": "curr.next = prev",
+      "tutor_prompt": "Which pointer is rewired?",
+      "expected_answer_patterns": [
+        "curr.next",
+        "next of curr"
+      ],
+      "on_correct": "curr.next",
+      "on_wrong": "curr.next"
+    }
+  ],
+  "_meta": {
+    "variant_id": "reverse-linked-list__mermaid-graph__curated",
+    "problem_id": "reverse-linked-list",
+    "problem_title": "Reverse linked list",
+    "problem_statement": "1\u21922\u21923\u21924\u21925",
+    "variant_kind": "mermaid-graph",
+    "model": "curated",
+    "route": "curated:mermaid",
+    "usage": {},
+    "sec": 0,
+    "seed": "curated"
+  }
+}

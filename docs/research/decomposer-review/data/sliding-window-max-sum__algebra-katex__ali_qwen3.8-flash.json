@@ -1,0 +1,228 @@
+{
+  "problem_id": "sliding-window-max-sum",
+  "variant_kind": "algebra-katex",
+  "strategy": "Define the window sum, derive a constant-time slide recurrence, track the running maximum, then instantiate the recurrences on the example.",
+  "concept_graph": [
+    {
+      "id": "c01",
+      "depends_on": [],
+      "label": "Window sum definition"
+    },
+    {
+      "id": "c02",
+      "depends_on": [
+        "c01"
+      ],
+      "label": "Initial window sum"
+    },
+    {
+      "id": "c03",
+      "depends_on": [
+        "c01"
+      ],
+      "label": "Sliding-window recurrence"
+    },
+    {
+      "id": "c04",
+      "depends_on": [
+        "c02",
+        "c03"
+      ],
+      "label": "Example window sequence"
+    },
+    {
+      "id": "c05",
+      "depends_on": [
+        "c01"
+      ],
+      "label": "Maximum recurrence"
+    },
+    {
+      "id": "c06",
+      "depends_on": [
+        "c04",
+        "c05"
+      ],
+      "label": "Example maximum sequence"
+    },
+    {
+      "id": "c07",
+      "depends_on": [
+        "c06"
+      ],
+      "label": "Final maximum sum"
+    },
+    {
+      "id": "c08",
+      "depends_on": [
+        "c03",
+        "c05"
+      ],
+      "label": "Linear-time cost"
+    }
+  ],
+  "steps": [
+    {
+      "step_id": "s01",
+      "step_index": 1,
+      "concept": "c01",
+      "goal": "Represent any k adjacent elements as a window sum.",
+      "representation": "algebra",
+      "artifact": "W_i = \\sum_{j=i}^{i+k-1} a_j,\\quad 1 \\le i \\le n-k+1",
+      "artifact_format": "katex",
+      "tutor_prompt": "What does W_i mean in words before computing it?",
+      "expected_answer_patterns": [
+        "sum of k adjacent elements",
+        "sum from i to i+k-1",
+        "window sum"
+      ],
+      "on_correct": "Proceed to compute the first window.",
+      "on_wrong": "A window is a contiguous block of length k starting at index i."
+    },
+    {
+      "step_id": "s02",
+      "step_index": 2,
+      "concept": "c02",
+      "goal": "Compute the first window sum for the example.",
+      "representation": "algebra",
+      "artifact": "W_1 = \\sum_{j=1}^{k} a_j = a_1+a_2+\\cdots+a_k;\\quad W_1=4+7+2=13",
+      "artifact_format": "katex",
+      "tutor_prompt": "Using a=[4,7,2,6,1,9] and k=3, what is the first window sum?",
+      "expected_answer_patterns": [
+        "13",
+        "4+7+2=13",
+        "W_1=13"
+      ],
+      "on_correct": "Now derive how to move the window one step.",
+      "on_wrong": "Add exactly the first k elements: 4, 7, and 2."
+    },
+    {
+      "step_id": "s03",
+      "step_index": 3,
+      "concept": "c03",
+      "goal": "Derive the recurrence for sliding the window by one position.",
+      "representation": "algebra",
+      "artifact": "W_{i+1} = W_i - a_i + a_{i+k}",
+      "artifact_format": "katex",
+      "tutor_prompt": "When the window moves right, which element leaves and which enters?",
+      "expected_answer_patterns": [
+        "remove a_i",
+        "add a_{i+k}",
+        "W_{i+1}=W_i-a_i+a_{i+k}"
+      ],
+      "on_correct": "Apply the recurrence to the example.",
+      "on_wrong": "The next window drops the leftmost element and adds the next element to the right."
+    },
+    {
+      "step_id": "s04",
+      "step_index": 4,
+      "concept": "c04",
+      "goal": "Compute all window sums using the slide recurrence.",
+      "representation": "algebra",
+      "artifact": "W_2 = W_1-a_1+a_4 = 13-4+6 = 15,\\quad W_3 = W_2-a_2+a_5 = 15-7+1 = 9,\\quad W_4 = W_3-a_3+a_6 = 9-2+9 = 16",
+      "artifact_format": "katex",
+      "tutor_prompt": "What are W_2, W_3, and W_4 for the example?",
+      "expected_answer_patterns": [
+        "15, 9, 16",
+        "W_2=15",
+        "W_3=9",
+        "W_4=16"
+      ],
+      "on_correct": "Now track the maximum while sliding.",
+      "on_wrong": "Use W_{i+1}=W_i-a_i+a_{i+k} for each step."
+    },
+    {
+      "step_id": "s05",
+      "step_index": 5,
+      "concept": "c05",
+      "goal": "Define the running maximum recurrence.",
+      "representation": "algebra",
+      "artifact": "M_1 = W_1,\\quad M_{i+1} = \\max(M_i, W_{i+1})",
+      "artifact_format": "katex",
+      "tutor_prompt": "How should M_{i+1} update after computing the next window sum?",
+      "expected_answer_patterns": [
+        "max of previous maximum and new window",
+        "M_{i+1}=max(M_i,W_{i+1})",
+        "keep the larger"
+      ],
+      "on_correct": "Compute the maximum sequence for the example.",
+      "on_wrong": "The maximum cannot decrease; compare the old maximum with the new window sum."
+    },
+    {
+      "step_id": "s06",
+      "step_index": 6,
+      "concept": "c06",
+      "goal": "Compute the running maximum sequence for the example.",
+      "representation": "algebra",
+      "artifact": "M_1=13,\\quad M_2=\\max(13,15)=15,\\quad M_3=\\max(15,9)=15,\\quad M_4=\\max(15,16)=16",
+      "artifact_format": "katex",
+      "tutor_prompt": "What is the running maximum after each window?",
+      "expected_answer_patterns": [
+        "13, 15, 15, 16",
+        "M_4=16",
+        "maximum is 16"
+      ],
+      "on_correct": "State the final answer.",
+      "on_wrong": "Compare each new window sum with the previous maximum."
+    },
+    {
+      "step_id": "s07",
+      "step_index": 7,
+      "concept": "c07",
+      "goal": "Express the final answer as a maximized window sum.",
+      "representation": "algebra",
+      "artifact": "\\max_{1\\le i\\le n-k+1} W_i = \\max_{1\\le i\\le 4} W_i = 16;\\quad a_4+a_5+a_6=6+1+9=16",
+      "artifact_format": "katex",
+      "tutor_prompt": "Which window gives the largest sum, and what is that sum?",
+      "expected_answer_patterns": [
+        "16",
+        "6+1+9=16",
+        "window starting at index 4"
+      ],
+      "on_correct": "Connect the recurrence to the algorithmic cost.",
+      "on_wrong": "The largest window sum is 16 from [6,1,9]."
+    },
+    {
+      "step_id": "s08",
+      "step_index": 8,
+      "concept": "c08",
+      "goal": "Explain why the recurrence gives a linear-time method.",
+      "representation": "algebra",
+      "artifact": "T(n) = \\Theta(k + (n-k)) = \\Theta(n)",
+      "artifact_format": "katex",
+      "tutor_prompt": "Why is this faster than summing each window from scratch?",
+      "expected_answer_patterns": [
+        "constant work per slide",
+        "O(n)",
+        "linear time",
+        "reuses previous window sum"
+      ],
+      "on_correct": "The sliding-window recurrence is complete.",
+      "on_wrong": "Each slide updates the sum with one subtraction and one addition."
+    }
+  ],
+  "_meta": {
+    "variant_id": "sliding-window-max-sum__algebra-katex__ali_qwen3.8-flash",
+    "problem_id": "sliding-window-max-sum",
+    "problem_title": "Max sum of k adjacent numbers",
+    "problem_statement": "Given array a and integer k, find the largest sum of any k adjacent numbers. Example: a=[4,7,2,6,1,9], k=3.",
+    "variant_kind": "algebra-katex",
+    "model": "ali/qwen3.8-flash",
+    "route": "inferhub:ali/qwen3.8-flash",
+    "usage": {
+      "completion_tokens": 6875,
+      "completion_tokens_details": {
+        "reasoning_tokens": 4663,
+        "text_tokens": 6875
+      },
+      "cost": 2.95335e-05,
+      "prompt_tokens": 335,
+      "prompt_tokens_details": {
+        "cached_tokens": 0,
+        "text_tokens": 335
+      },
+      "total_tokens": 7210
+    },
+    "sec": 94.34083604812622
+  }
+}

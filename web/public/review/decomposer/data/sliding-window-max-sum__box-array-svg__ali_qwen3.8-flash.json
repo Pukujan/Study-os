@@ -1,0 +1,222 @@
+{
+  "problem_id": "sliding-window-max-sum",
+  "variant_kind": "box-array-svg",
+  "strategy": "Build an index-box array, instantiate a fixed-width window, update its sum by sliding, compare with best, and repeat until all k-adjacent blocks are considered.",
+  "concept_graph": [
+    {
+      "id": "c01",
+      "depends_on": [],
+      "label": "array-index-boxes"
+    },
+    {
+      "id": "c02",
+      "depends_on": [
+        "c01"
+      ],
+      "label": "fixed-k-window"
+    },
+    {
+      "id": "c03",
+      "depends_on": [
+        "c02"
+      ],
+      "label": "initial-window-sum"
+    },
+    {
+      "id": "c04",
+      "depends_on": [
+        "c03"
+      ],
+      "label": "slide-update-rule"
+    },
+    {
+      "id": "c05",
+      "depends_on": [
+        "c04"
+      ],
+      "label": "max-tracking"
+    },
+    {
+      "id": "c06",
+      "depends_on": [
+        "c05"
+      ],
+      "label": "full-scan-termination"
+    },
+    {
+      "id": "c07",
+      "depends_on": [
+        "c01",
+        "c02"
+      ],
+      "label": "edge-cases"
+    },
+    {
+      "id": "c08",
+      "depends_on": [
+        "c06"
+      ],
+      "label": "final-answer"
+    }
+  ],
+  "steps": [
+    {
+      "step_id": "s01",
+      "step_index": 1,
+      "concept": "c01",
+      "goal": "See the array as indexed boxes before using any formula.",
+      "representation": "box_index",
+      "artifact": "Index boxes for the array:\n\n [0] [1] [2] [3] [4] [5]\n +---+---+---+---+---+---+\n | 4 | 7 | 2 | 6 | 1 | 9 |\n +---+---+---+---+---+---+\n\nEach box has one value and one index.",
+      "artifact_format": "ascii",
+      "tutor_prompt": "Name the index of each box in the array.",
+      "expected_answer_patterns": [
+        "0 1 2 3 4 5",
+        "index of each box",
+        "values 4 7 2 6 1 9"
+      ],
+      "on_correct": "You can locate each value by index.",
+      "on_wrong": "Point to one box and say its index before moving on."
+    },
+    {
+      "step_id": "s02",
+      "step_index": 2,
+      "concept": "c02",
+      "goal": "Create a fixed-size window covering k adjacent boxes.",
+      "representation": "box_index",
+      "artifact": "Fixed window size k=3:\n\n +---+---+---+   +---+---+---+\n | 4 | 7 | 2 |   | 6 | 1 | 9 |\n +---+---+---+   +---+---+---+\n   window 1       outside\n\nThe window always covers exactly 3 adjacent boxes.",
+      "artifact_format": "ascii",
+      "tutor_prompt": "Which boxes are inside the first window?",
+      "expected_answer_patterns": [
+        "4 7 2",
+        "first three boxes",
+        "window 1"
+      ],
+      "on_correct": "The window is a contiguous block of length k.",
+      "on_wrong": "Count the boxes inside the highlighted block; it must be k."
+    },
+    {
+      "step_id": "s03",
+      "step_index": 3,
+      "concept": "c03",
+      "goal": "Compute the sum of the first window by adding its boxes.",
+      "representation": "box_index",
+      "artifact": "Initial window sum:\n\n +---+---+---+\n | 4 | 7 | 2 |\n +---+---+---+\n\nAdd the three visible boxes:\n4 + 7 + 2 = 13\n\nStart best = 13.",
+      "artifact_format": "ascii",
+      "tutor_prompt": "What is the sum of the first window?",
+      "expected_answer_patterns": [
+        "13",
+        "4 + 7 + 2 = 13"
+      ],
+      "on_correct": "The first window gives the initial best sum.",
+      "on_wrong": "Add only the boxes inside the current window."
+    },
+    {
+      "step_id": "s04",
+      "step_index": 4,
+      "concept": "c04",
+      "goal": "Slide the window one box right and update the sum without re-adding everything.",
+      "representation": "box_index",
+      "artifact": "Slide one box to the right:\n\nOld window:       New window:\n +---+---+---+     +---+---+---+\n | 4 | 7 | 2 |     | 7 | 2 | 6 |\n +---+---+---+     +---+---+---+\n   remove 4          add 6\n\nUpdate: 13 - 4 + 6 = 15.",
+      "artifact_format": "ascii",
+      "tutor_prompt": "How does the sum change when the window slides right?",
+      "expected_answer_patterns": [
+        "remove left add right",
+        "15",
+        "13 - 4 + 6 = 15"
+      ],
+      "on_correct": "Sliding removes the left value and adds the new right value.",
+      "on_wrong": "Look at the box leaving and the box entering the window."
+    },
+    {
+      "step_id": "s05",
+      "step_index": 5,
+      "concept": "c05",
+      "goal": "Compare each window sum with the current best and keep the largest.",
+      "representation": "box_index",
+      "artifact": "Track the best after each slide:\n\nW1: [4][7][2] sum=13 best=13\nW2: [7][2][6] sum=15 best=15\nW3: [2][6][1] sum=9  best=15\nW4: [6][1][9] sum=16 best=16\n\nOnly replace best when the new window sum is larger.",
+      "artifact_format": "ascii",
+      "tutor_prompt": "What is the best sum after checking these windows?",
+      "expected_answer_patterns": [
+        "16",
+        "best = 16",
+        "replace when larger"
+      ],
+      "on_correct": "The best value is updated only when a window beats it.",
+      "on_wrong": "Compare the new window sum to the current best before deciding."
+    },
+    {
+      "step_id": "s06",
+      "step_index": 6,
+      "concept": "c06",
+      "goal": "Determine when the scan is complete.",
+      "representation": "box_index",
+      "artifact": "Termination: cover every adjacent k-block:\n\nn=6, k=3\nnumber of windows = 6 - 3 + 1 = 4\n\n[0..2] [1..3] [2..4] [3..5]\n +---+   +---+   +---+   +---+\n | 4 |   | 7 |   | 2 |   | 6 |\n | 7 |   | 2 |   | 6 |   | 1 |\n | 2 |   | 6 |   | 1 |   | 9 |\n +---+   +---+   +---+   +---+\n\nStop after the last block.",
+      "artifact_format": "ascii",
+      "tutor_prompt": "How many adjacent windows must be checked?",
+      "expected_answer_patterns": [
+        "4 windows",
+        "6 - 3 + 1 = 4",
+        "stop after W4"
+      ],
+      "on_correct": "All possible adjacent k-blocks have been considered.",
+      "on_wrong": "Count the starting positions that allow k boxes inside the array."
+    },
+    {
+      "step_id": "s07",
+      "step_index": 7,
+      "concept": "c07",
+      "goal": "Recognize edge cases before applying the sliding process.",
+      "representation": "box_index",
+      "artifact": "Edge cases before sliding:\n\nIf k > n: no adjacent block exists.\n +---+---+---+---+---+---+\n | 4 | 7 | 2 | 6 | 1 | 9 |\n +---+---+---+---+---+---+\n cannot place 7 boxes\n\nIf k = n: one window is the whole array.\nIf k = 1: the answer is the maximum single box.",
+      "artifact_format": "ascii",
+      "tutor_prompt": "What happens if k is larger than the array length?",
+      "expected_answer_patterns": [
+        "k > n no window",
+        "cannot place k boxes",
+        "no adjacent block"
+      ],
+      "on_correct": "The window cannot fit, so there is no valid block.",
+      "on_wrong": "Try to place a window of size k inside the box array."
+    },
+    {
+      "step_id": "s08",
+      "step_index": 8,
+      "concept": "c08",
+      "goal": "Return the maximum sum found by the sliding-window process.",
+      "representation": "box_index",
+      "artifact": "Final answer from the best window:\n\n +---+---+---+\n | 6 | 1 | 9 |\n +---+---+---+\n\nSum = 16\nAnswer: 16",
+      "artifact_format": "ascii",
+      "tutor_prompt": "What is the final maximum sum?",
+      "expected_answer_patterns": [
+        "16",
+        "6 + 1 + 9 = 16"
+      ],
+      "on_correct": "The final answer is the largest window sum.",
+      "on_wrong": "Report the best value kept during the scan."
+    }
+  ],
+  "_meta": {
+    "variant_id": "sliding-window-max-sum__box-array-svg__ali_qwen3.8-flash",
+    "problem_id": "sliding-window-max-sum",
+    "problem_title": "Max sum of k adjacent numbers",
+    "problem_statement": "Given array a and integer k, find the largest sum of any k adjacent numbers. Example: a=[4,7,2,6,1,9], k=3.",
+    "variant_kind": "box-array-svg",
+    "model": "ali/qwen3.8-flash",
+    "route": "inferhub:ali/qwen3.8-flash",
+    "usage": {
+      "completion_tokens": 8188,
+      "completion_tokens_details": {
+        "reasoning_tokens": 5690,
+        "text_tokens": 8188
+      },
+      "cost": 3.509019e-05,
+      "prompt_tokens": 337,
+      "prompt_tokens_details": {
+        "cached_tokens": 0,
+        "text_tokens": 337
+      },
+      "total_tokens": 8525
+    },
+    "sec": 102.9186520576477
+  }
+}

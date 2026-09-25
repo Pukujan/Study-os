@@ -1,0 +1,101 @@
+{
+  "problem_id": "binary-search",
+  "variant_kind": "geometry-svg",
+  "strategy": "Halve a sorted range on a number-line / index range.",
+  "concept_graph": [
+    {
+      "id": "range",
+      "depends_on": [],
+      "label": "range"
+    },
+    {
+      "id": "compare",
+      "depends_on": [],
+      "label": "compare"
+    },
+    {
+      "id": "next_mid",
+      "depends_on": [],
+      "label": "next_mid"
+    },
+    {
+      "id": "hit",
+      "depends_on": [],
+      "label": "hit"
+    }
+  ],
+  "steps": [
+    {
+      "step_id": "s01",
+      "step_index": 1,
+      "concept": "range",
+      "goal": "See full search range lo..hi",
+      "representation": "number_line",
+      "artifact_format": "svg",
+      "artifact": "<svg xmlns='http://www.w3.org/2000/svg' width='480' height='90' viewBox='0 0 480 90'>\n  <line x1='30' y1='50' x2='450' y2='50' stroke='#334' stroke-width='2'/>\n  <g font-size='12' text-anchor='middle'>\n    <circle cx='60' cy='50' r='14' fill='#e8f0fe' stroke='#334'/><text x='60' y='54'>-1</text><text x='60' y='78'>0</text>\n    <circle cx='130' cy='50' r='14' fill='#e8f0fe' stroke='#334'/><text x='130' y='54'>0</text><text x='130' y='78'>1</text>\n    <circle cx='200' cy='50' r='14' fill='#e8f0fe' stroke='#334'/><text x='200' y='54'>3</text><text x='200' y='78'>2</text>\n    <circle cx='270' cy='50' r='14' fill='#e8f0fe' stroke='#334'/><text x='270' y='54'>5</text><text x='270' y='78'>3</text>\n    <circle cx='340' cy='50' r='14' fill='#ffe8a3' stroke='#334'/><text x='340' y='54'>9</text><text x='340' y='78'>4</text>\n    <circle cx='410' cy='50' r='14' fill='#e8f0fe' stroke='#334'/><text x='410' y='54'>12</text><text x='410' y='78'>5</text>\n  </g>\n  <text x='30' y='18' font-size='12'>lo=0                              hi=5     target=9</text>\n</svg>",
+      "tutor_prompt": "Initial mid index? (lo+hi)//2",
+      "expected_answer_patterns": [
+        "2"
+      ],
+      "on_correct": "2",
+      "on_wrong": "(0+5)//2=2"
+    },
+    {
+      "step_id": "s02",
+      "step_index": 2,
+      "concept": "compare",
+      "goal": "Compare nums[mid] to target",
+      "representation": "algebra",
+      "artifact_format": "algebra",
+      "artifact": "mid=2, nums[mid]=3\n3 ? 9  \u2192 too small \u2192 search right half\nlo = mid+1 = ?",
+      "tutor_prompt": "new lo?",
+      "expected_answer_patterns": [
+        "3"
+      ],
+      "on_correct": "3",
+      "on_wrong": "3"
+    },
+    {
+      "step_id": "s03",
+      "step_index": 3,
+      "concept": "next_mid",
+      "goal": "Recompute mid on [3,5]",
+      "representation": "number_line",
+      "artifact_format": "ascii",
+      "artifact": "lo=3 hi=5\nvalues still: 5, 9, 12 at indices 3,4,5\nmid=(3+5)//2=?",
+      "tutor_prompt": "mid?",
+      "expected_answer_patterns": [
+        "4"
+      ],
+      "on_correct": "4",
+      "on_wrong": "4"
+    },
+    {
+      "step_id": "s04",
+      "step_index": 4,
+      "concept": "hit",
+      "goal": "nums[4]=9 equals target",
+      "representation": "algebra",
+      "artifact_format": "algebra",
+      "artifact": "nums[4]=9 == target \u2192 return 4",
+      "tutor_prompt": "Return?",
+      "expected_answer_patterns": [
+        "4"
+      ],
+      "on_correct": "4",
+      "on_wrong": "4"
+    }
+  ],
+  "_meta": {
+    "variant_id": "binary-search__geometry-svg__curated",
+    "problem_id": "binary-search",
+    "problem_title": "Binary search",
+    "problem_statement": "nums=[-1,0,3,5,9,12], target=9",
+    "variant_kind": "geometry-svg",
+    "model": "curated",
+    "route": "curated:numberline",
+    "usage": {},
+    "sec": 0,
+    "seed": "curated"
+  }
+}
