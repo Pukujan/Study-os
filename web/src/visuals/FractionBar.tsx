@@ -23,7 +23,7 @@ export default function FractionBar({ frame }: { frame: FractionBarFrame }) {
       role="img"
       aria-label={describeFractionBar(frame)}
       viewBox={`0 0 ${width} ${height}`}
-      style={{ width: "100%", maxWidth: "560px", height: "auto" }}
+      style={{ width: "100%", maxWidth: "560px", height: "auto", maxHeight: "38vh" }}
     >
       {frame.bars.map((bar, bi) => {
         const y = topPad + bi * (barHeight + barGap);

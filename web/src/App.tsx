@@ -70,7 +70,7 @@ export default function App() {
       </header>
       <main className="shell">
         {route.name === "login" && <Login onSignedIn={(m) => { setMe(m); navigate("/"); }} />}
-        {me && route.name === "home" && <HomeLanes />}
+        {me && route.name === "home" && <HomeLanes me={me} />}
         {me && route.name === "try" && <TryPage onSignedIn={(m) => { setMe(m); navigate("/"); }} />}
         {!me && (route.name === "home" || route.name === "try") && <TryPage onSignedIn={(m) => { setMe(m); navigate("/"); }} />}
         {me && route.name === "play" && <Player sessionId={route.id} />}

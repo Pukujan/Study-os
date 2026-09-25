@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { api, ApiError, type LanesPayload } from "../api";
+import { api, ApiError, type LanesPayload, type Me } from "../api";
 import { navigate } from "../router";
-import OldHome from "./Home";
 
 const STATE_LABEL: Record<string, string> = {
   not_started: "Start",
@@ -9,7 +8,21 @@ const STATE_LABEL: Record<string, string> = {
   done: "Review",
 };
 
-export default function HomeLanes() {
+const LANE_ART: Record<string, string> = {
+  dsa: "/art/lane-dsa.webp",
+  hesi: "/art/lane-hesi.webp",
+  ai: "/art/lane-ai.webp",
+  "study-os": "/art/lane-studyos.webp",
+};
+
+const LANE_ART_ALT: Record<string, string> = {
+  dsa: "A focused learner works through algorithms with a robot helper nearby.",
+  hesi: "A calm study scene for HESI prep with the learner reviewing notes.",
+  ai: "The learner explores AI concepts with sketches and diagrams around them.",
+  "study-os": "The learner stands in a bright Study OS workspace ready to learn.",
+};
+
+export default function HomeLanes({ me }: { me?: Me }) {
   const [data, setData] = useState<LanesPayload | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -64,11 +77,12 @@ export default function HomeLanes() {
   if (error) return <p className="error">Could not load lanes ({error}).</p>;
   if (!data) return <p className="muted">Loading…</p>;
 
+  const greeting = me?.display_name ? `Hi, ${me.display_name}!` : me?.handle ? `Hi, ${me.handle}!` : "Hi!";
+
   return (
     <div className="home-lanes">
       <section className="hello">
-        <img src="/stickers/mascot-welcome.svg" alt="" width={64} height={64} className="sticker-inline" />
-        <h1>Hi there</h1>
+        <h1>{greeting}</h1>
         <p className="muted">Pick up where you left off or explore a lane.</p>
       </section>
 
@@ -81,6 +95,14 @@ export default function HomeLanes() {
       <section className="lanes-grid">
         {data.lanes.map((lane) => (
           <article key={lane.lane_id} className="card lane-card">
+            <div className="lane-art-wrapper">
+              <img
+                className="lane-art"
+                src={LANE_ART[lane.lane_id]}
+                alt={LANE_ART_ALT[lane.lane_id]}
+                loading="lazy"
+              />
+            </div>
             <h2>{lane.title}</h2>
             <p className="muted">{lane.blurb}</p>
             {lane.status === "in_progress_content" ? (
@@ -90,7 +112,9 @@ export default function HomeLanes() {
                 {lane.lessons.map((lesson) => (
                   <li key={lesson.lesson_id} className="lesson-item">
                     <span className="lesson-title">{lesson.title}</span>
-                    <span className="lesson-progress muted">{lesson.progress.done}/{lesson.progress.total}</span>
+                    <span className="lesson-progress muted">
+                      {lesson.progress.done}/{lesson.progress.total}
+                    </span>
                     <button
                       className="btn small"
                       disabled={busy}
@@ -103,15 +127,9 @@ export default function HomeLanes() {
                 ))}
               </ul>
             )}
-            {lane.legacy?.kind === "hesi_topics" && (
-              <details className="legacy">
-                <summary>Practice HESI topics</summary>
-                <OldHome />
-              </details>
-            )}
             {lane.legacy?.kind === "dsa_pir" && (
               <button className="btn small" onClick={startLegacyDsa} disabled={busy} data-track="home.dsa.classic">
-                Classic sliding-window lesson
+                {lane.legacy.label}
               </button>
             )}
           </article>

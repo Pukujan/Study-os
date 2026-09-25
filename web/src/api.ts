@@ -92,6 +92,8 @@ export type Feedback = {
   next_action: "continue" | "retry_same";
 };
 
+export type WorkedExample = { steps_md: string[] } | { md: string };
+
 export type PlayerView = {
   session_id: string;
   lesson: {
@@ -115,6 +117,10 @@ export type PlayerView = {
   scaffold: number;
   progress: { done: number; total: number };
   is_guest: boolean;
+  card_mode?: "probe" | "worked_example";
+  variant_tag?: string | null;
+  can_go_back?: boolean;
+  worked_example?: WorkedExample;
 };
 
 export type LanesPayload = {
@@ -146,6 +152,7 @@ export type TutorReply = {
   prompt_version: string;
   model: string;
   served: "generated" | "fallback";
+  suggested_action?: "example" | "easier" | "harder" | "reexplain" | null;
 };
 
 export type FeedbackBody = {
@@ -269,6 +276,8 @@ export const api = {
   playerConfused: (id: string) => post<PlayerView>(`/api/player/sessions/${id}/confused`),
   playerNext: (id: string) => post<PlayerView>(`/api/player/sessions/${id}/next`),
   tutor: (id: string, message: string) => post<TutorReply>(`/api/player/sessions/${id}/tutor`, { message }),
+  adapt: (id: string, kind: "example" | "easier" | "harder" | "back") =>
+    post<PlayerView>(`/api/player/sessions/${id}/adapt`, { kind }),
   feedback: (body: FeedbackBody) => post<{ ok: boolean; feedback_id: string }>("/api/feedback", body),
   adminFeedback: () => get<AdminFeedback>("/api/admin/feedback"),
 };
