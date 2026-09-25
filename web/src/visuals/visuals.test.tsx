@@ -74,15 +74,17 @@ describe("visuals", () => {
     expect(html).toContain("role=\"img\"");
   });
 
-  it("LessonMap builds a tiny progress mermaid", () => {
+  it("LessonMap renders compact step chips", () => {
     const steps = [
       { id: "ready", label: "Ready" },
       { id: "pos", label: "Position" },
       { id: "idx", label: "Index" },
     ];
-    const html = renderToStaticMarkup(<LessonMap steps={steps} currentIndex={1} />);
+    const html = renderToStaticMarkup(<LessonMap steps={steps} currentIndex={1} completedIds={["ready"]} />);
     expect(html).toContain("Lesson progress map");
-    expect(html).toContain("role=\"navigation\"");
+    expect(html).toContain("lesson-map-chips");
+    expect(html).toContain("is-current");
+    expect(html).toContain("Position");
   });
 
   it("CodeTree highlights lines and underlines ranges", () => {

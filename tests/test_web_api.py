@@ -491,6 +491,37 @@ class StaticAndCliTests(_DbCase):
         self.assertEqual(c.get("/api/nope").status_code, 404)
         self.assertNotIn("root", c.get("/../../etc/passwd").text.replace("root", "", 0) if False else "")
 
+    def test_mascot_and_review_data_served_as_real_files(self) -> None:
+        """ /mascot and /review/decomposer/data must never SPA-fallback to index.html. """
+        root = Path(self.settings.static_dir)
+        mascot = root / "mascot"
+        mascot.mkdir(parents=True, exist_ok=True)
+        # Minimal RIFF/WEBP header bytes (enough for magic + length checks).
+        webp = b"RIFF" + bytes([0x10, 0, 0, 0]) + b"WEBPVP8 " + bytes([4, 0, 0, 0, 0, 0, 0, 0])
+        (mascot / "pet-idle.webp").write_bytes(webp)
+        data_dir = root / "review" / "decomposer" / "data"
+        data_dir.mkdir(parents=True, exist_ok=True)
+        (data_dir / "index.json").write_text('{"ok": true}')
+
+        # Recreate app so mounts pick up the new dirs.
+        from fastapi.testclient import TestClient
+        from study_os.web.api import create_app
+
+        app = create_app(self.settings, jev=None, llm=None, use_env_models=False)
+        tc = TestClient(app)
+
+        pet = tc.get("/mascot/pet-idle.webp")
+        self.assertEqual(pet.status_code, 200, pet.text[:80])
+        self.assertEqual(pet.headers.get("content-type", "").split(";")[0], "image/webp")
+        self.assertTrue(pet.content.startswith(b"RIFF"))
+        self.assertIn(b"WEBP", pet.content[:16])
+        self.assertNotIn(b"<!doctype", pet.content[:32].lower())
+
+        data = tc.get("/review/decomposer/data/index.json")
+        self.assertEqual(data.status_code, 200)
+        self.assertEqual(data.headers.get("content-type", "").split(";")[0], "application/json")
+        self.assertEqual(data.json(), {"ok": True})
+
     def test_cli_commands(self) -> None:
         from study_os.web import cli
 

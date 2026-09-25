@@ -240,9 +240,9 @@ export default function Pet({
       const next = pickWanderTarget(width, height);
       setPos(next);
       writeSessionPos(next);
-      wanderTimer.current = window.setTimeout(tick, 6000 + Math.random() * 4000);
+      wanderTimer.current = window.setTimeout(tick, 28000 + Math.random() * 22000);
     };
-    wanderTimer.current = window.setTimeout(tick, 3500 + Math.random() * 2000);
+    wanderTimer.current = window.setTimeout(tick, 18000 + Math.random() * 12000);
     return () => {
       if (wanderTimer.current) window.clearTimeout(wanderTimer.current);
     };
@@ -264,7 +264,7 @@ export default function Pet({
         frameW={meta.frameW}
         frameH={meta.frameH}
         height={height}
-        fps={oneShot ? 5 : 8}
+        fps={oneShot ? 5 : 4}
         loop={!oneShot}
         onEnd={oneShot ? handleWaveEnd : undefined}
         paused={paused && !hovering}
@@ -341,7 +341,7 @@ export default function Pet({
       className={`pet-float${hovering ? " is-hover" : ""}${dragging ? " is-dragging" : ""}${reducedMotion ? " is-reduced" : ""}`}
       style={{
         transform: `translate3d(${pos.x}px, ${pos.y}px, 0)`,
-        transition: dragging || reducedMotion ? "none" : "transform 2.8s ease-in-out",
+        transition: dragging || reducedMotion ? "none" : "transform 4.5s cubic-bezier(0.33, 0, 0.2, 1)",
       }}
       data-pet-float
     >
@@ -354,7 +354,6 @@ export default function Pet({
         className="pet-button"
         type="button"
         aria-label="Open study assistant"
-        title="Open study assistant"
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={endPointer}

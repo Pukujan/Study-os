@@ -160,6 +160,7 @@ export default function Player({ sessionId }: { sessionId: string }) {
                 </section>
               )}
 
+              {(view.step.probe || view.card_mode === "worked_example" || view.variant_tag) && (
               <section className="probe card">
                 {(view.variant_tag || view.card_mode === "worked_example") && (
                   <div className="card-tags">
@@ -225,6 +226,7 @@ export default function Player({ sessionId }: { sessionId: string }) {
                   </>
                 )}
               </section>
+              )}
 
               {view.phase === "feedback" && view.feedback && (
                 <section className={`feedback card feedback-${view.feedback.outcome}`}>
