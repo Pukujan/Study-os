@@ -1,0 +1,98 @@
+{
+  "schema": "study-os.pedagogy-golden-dataset.v1",
+  "version": "0.1.0",
+  "task": "SOS-0010",
+  "issue": "https://github.com/Pukujan/Study-os/issues/111",
+  "extracted_at": "2026-09-24T20:40:00-04:00",
+  "sources": [
+    {
+      "path": "sessions/2026-09-04/sliding-window-pedagogy-calibration/raw/chat-visible-transcript-part01.md",
+      "box_path": "/workspace/golden-extract-work/raw/chat-visible-transcript-part01.md",
+      "lines": 805,
+      "sha256": "83f276be8c51f07aa71373de6e68e4f8eee2a1e66df38545f984fdc73cd12c95"
+    },
+    {
+      "path": "sessions/2026-09-04/sliding-window-pedagogy-calibration/raw/chat-visible-transcript-part02.md",
+      "box_path": "/workspace/golden-extract-work/raw/chat-visible-transcript-part02.md",
+      "lines": 2311,
+      "sha256": "6124bd40869282a407e03c5fd51d4a53c20032ad8b84c45eb70f6d8bccdeaa28"
+    },
+    {
+      "path": "sessions/2026-09-04/sliding-window-pedagogy-calibration/raw/chat-visible-transcript-part03.md",
+      "box_path": "/workspace/golden-extract-work/raw/chat-visible-transcript-part03.md",
+      "lines": 2128,
+      "sha256": "df815585181d251c271e404b52ec096f877f155515af145c72479f36496eb005"
+    },
+    {
+      "path": "sessions/2026-09-04/sliding-window-pedagogy-calibration/raw/chat-visible-transcript-part04.md",
+      "box_path": "/workspace/golden-extract-work/raw/chat-visible-transcript-part04.md",
+      "lines": 1167,
+      "sha256": "61359085733fc30e75d0ad57b8ba6ddf20340b23b631adb6a1f05d68a664543a"
+    },
+    {
+      "path": "sessions/2026-09-04/sliding-window-pedagogy-calibration/raw/chat-visible-transcript-part05.md",
+      "box_path": "/workspace/golden-extract-work/raw/chat-visible-transcript-part05.md",
+      "lines": 2342,
+      "sha256": "25512e864f2a622da39489fde7e7e833096f371d2133e75efaca67ef8625c07a"
+    },
+    {
+      "path": "sessions/2026-09-04/sliding-window-pedagogy-calibration/raw/chat-visible-transcript-part06.md",
+      "box_path": "/workspace/golden-extract-work/raw/chat-visible-transcript-part06.md",
+      "lines": 1243,
+      "sha256": "d31a2c7c74174e2430477df87482dcee5b06a5ff7b568b45e9fdc2caddd1d7dd"
+    },
+    {
+      "path": "sessions/2026-09-04/sliding-window-pedagogy-calibration/raw/chat-visible-transcript-part07.md",
+      "box_path": "/workspace/golden-extract-work/raw/chat-visible-transcript-part07.md",
+      "lines": 2357,
+      "sha256": "1be1bf9485bf05c7d4f1caf77fcc1dc32ab6ca8a1e5268d8d7813c5254878624"
+    },
+    {
+      "path": "sessions/2026-09-04/sliding-window-pedagogy-calibration/raw/chat-visible-transcript-part08.md",
+      "box_path": "/workspace/golden-extract-work/raw/chat-visible-transcript-part08.md",
+      "lines": 3969,
+      "sha256": "dd2092e542ccd14816eec7ea863856609f11c24266b954cb66e8b37f4f0edb8a"
+    },
+    {
+      "path": "domains/dsa/sliding-window/golden/beginner-progressive-box-index-sum.v0.1.md",
+      "sha256": "87ee609194c8b9baaab96385b3e583d584b2c12e47ea5a4d74935ba8b070e70f",
+      "lines": 334
+    },
+    {
+      "path": "domains/dsa/sliding-window/golden/beginner-sum-enumerate-append.v0.1.md",
+      "sha256": "97ece0d14987a807193e5ee8c7fa8e932aed3c841b7ce94e32344dc1b267f396",
+      "lines": 308
+    },
+    {
+      "path": "domains/dsa/sliding-window/golden/conformance-oracle.v0.1.json",
+      "sha256": "c43722cc3cca80faf432d62a1737bdbf425939a80329dc451aece4f4548ed196",
+      "lines": null
+    }
+  ],
+  "source_hash": "9c4933d57a005a43c10f3b96f29bc9886aace3ff82782cfbc2b4ffc8e3a7ef1b",
+  "counts": {
+    "moves": 12,
+    "diagrams": 16,
+    "anti_patterns": 10,
+    "transcript_lines": 16322
+  },
+  "jev": {
+    "model": "typesafe/jev-1.13",
+    "endpoint": "https://openrouter.ai/api/alpha/decisions",
+    "prompt_version": "study-os.pedagogy-jev-rank.v1",
+    "criteria_questions": [
+      "faithful_to_transcript",
+      "one_concept_only",
+      "diagram_does_not_leak_answer_on_exercise",
+      "same_representation_on_correct_and_wrong",
+      "stepwise_goal_clarity",
+      "multi_representation_moat_fit"
+    ],
+    "spend": {
+      "calls": 38,
+      "tokens_in": 43440,
+      "cost_usd": 0.001824
+    }
+  },
+  "branch": "task/SOS-0010-pedagogy-golden-dataset"
+}
