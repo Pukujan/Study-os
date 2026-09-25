@@ -26,7 +26,7 @@ web = [
 where = ["src"]
 
 [tool.setuptools.package-data]
-study_os = ["db/migrations/*.sql", "web/migrations/*.sql", "web/content/*.json"]
+study_os = ["db/migrations/*.sql", "web/migrations/*.sql", "web/content/*.json", "web/player/lessons/*.v1.json"]
 
 [tool.ruff]
 target-version = "py311"

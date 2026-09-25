@@ -1,0 +1,804 @@
+{
+  "schema_version": "study-os.player-lesson.v1",
+  "lesson_id": "sliding-window-box",
+  "revision": "sliding-window-box.v1",
+  "lane": "dsa",
+  "title": "Sliding window: box and index",
+  "summary": "Build the box representation for a fixed-size sliding window.",
+  "representation": "box_index",
+  "golden_ref": "domains/dsa/sliding-window/golden/beginner-progressive-box-index-sum.v0.1.md",
+  "steps": [
+    {
+      "step_id": "problem",
+      "kc": "sliding-window.problem",
+      "skippable": false,
+      "confirm": false,
+      "teach": {
+        "md": "We are learning how to find the largest sum of any 3 numbers next to each other in the array.",
+        "frames": [
+          {
+            "type": "box_index",
+            "array": [4, 7, 2, 6, 1, 9],
+            "show_positions": false,
+            "show_indices": false,
+            "box": null,
+            "arrows": [],
+            "sum_label": null
+          }
+        ]
+      },
+      "probe": null,
+      "variants": []
+    },
+    {
+      "step_id": "position",
+      "kc": "sliding-window.position",
+      "skippable": false,
+      "confirm": false,
+      "teach": {
+        "md": "The position p counts from 1 on the left. Position 1 is the first number.",
+        "frames": [
+          {
+            "type": "box_index",
+            "array": [4, 7, 2, 6, 1, 9],
+            "show_positions": true,
+            "show_indices": false,
+            "box": null,
+            "arrows": [{"at": 2, "label": "p = 3", "row": "positions"}],
+            "sum_label": null
+          }
+        ]
+      },
+      "probe": {
+        "prompt_md": "What is the position p of number 6?",
+        "frames": [
+          {
+            "type": "box_index",
+            "array": [4, 7, 2, 6, 1, 9],
+            "show_positions": true,
+            "show_indices": false,
+            "box": null,
+            "arrows": [],
+            "sum_label": null
+          }
+        ],
+        "answer_kind": "integer",
+        "accept": ["4"],
+        "partial": [],
+        "misconceptions": [
+          {
+            "id": "position-index-off-by-one",
+            "match": ["3"],
+            "note_md": "That is the index, which starts at 0. Position starts at 1."
+          }
+        ],
+        "correct_md": "Correct — **4**.",
+        "explain_md": "Number 6 sits in the 4th slot from the left, so its position p is 4.",
+        "explain_frames": [
+          {
+            "type": "box_index",
+            "array": [4, 7, 2, 6, 1, 9],
+            "show_positions": true,
+            "show_indices": false,
+            "box": null,
+            "arrows": [{"at": 3, "label": "p = 4", "row": "positions"}],
+            "sum_label": null
+          }
+        ],
+        "solution_md": "positions: 1 2 3 4 5 6; numbers: 4 7 2 6 1 9; 6 is at position 4.",
+        "hint_md": "Count from the left, starting at 1."
+      },
+      "variants": [
+        {
+          "teach_frames": [],
+          "probe": {
+            "prompt_md": "What is the position p of number 9?",
+            "frames": [
+              {
+                "type": "box_index",
+                "array": [4, 7, 2, 6, 1, 9],
+                "show_positions": true,
+                "show_indices": false,
+                "box": null,
+                "arrows": [],
+                "sum_label": null
+              }
+            ],
+            "answer_kind": "integer",
+            "accept": ["6"],
+            "partial": [],
+            "misconceptions": [
+              {
+                "id": "position-index-off-by-one",
+                "match": ["5"],
+                "note_md": "That is the index, which starts at 0. Position starts at 1."
+              }
+            ],
+            "correct_md": "Correct — **6**.",
+            "explain_md": "Number 9 is the 6th item from the left, so its position p is 6.",
+            "explain_frames": [
+              {
+                "type": "box_index",
+                "array": [4, 7, 2, 6, 1, 9],
+                "show_positions": true,
+                "show_indices": false,
+                "box": null,
+                "arrows": [{"at": 5, "label": "p = 6", "row": "positions"}],
+                "sum_label": null
+              }
+            ],
+            "solution_md": "positions: 1 2 3 4 5 6; numbers: 4 7 2 6 1 9; 9 is at position 6.",
+            "hint_md": "Count from the left, starting at 1."
+          }
+        },
+        {
+          "teach_frames": [],
+          "probe": {
+            "prompt_md": "What is the position p of number 7?",
+            "frames": [
+              {
+                "type": "box_index",
+                "array": [4, 7, 2, 6, 1, 9],
+                "show_positions": true,
+                "show_indices": false,
+                "box": null,
+                "arrows": [],
+                "sum_label": null
+              }
+            ],
+            "answer_kind": "integer",
+            "accept": ["2"],
+            "partial": [],
+            "misconceptions": [
+              {
+                "id": "position-index-off-by-one",
+                "match": ["1"],
+                "note_md": "That is the index, which starts at 0. Position starts at 1."
+              }
+            ],
+            "correct_md": "Correct — **2**.",
+            "explain_md": "Number 7 is the 2nd item from the left, so its position p is 2.",
+            "explain_frames": [
+              {
+                "type": "box_index",
+                "array": [4, 7, 2, 6, 1, 9],
+                "show_positions": true,
+                "show_indices": false,
+                "box": null,
+                "arrows": [{"at": 1, "label": "p = 2", "row": "positions"}],
+                "sum_label": null
+              }
+            ],
+            "solution_md": "positions: 1 2 3 4 5 6; numbers: 4 7 2 6 1 9; 7 is at position 2.",
+            "hint_md": "Count from the left, starting at 1."
+          }
+        }
+      ]
+    },
+    {
+      "step_id": "index",
+      "kc": "sliding-window.index",
+      "skippable": false,
+      "confirm": false,
+      "teach": {
+        "md": "The index i is one less than the position: i = p - 1. Index 0 is the first item.",
+        "frames": [
+          {
+            "type": "box_index",
+            "array": [4, 7, 2, 6, 1, 9],
+            "show_positions": true,
+            "show_indices": true,
+            "box": null,
+            "arrows": [{"at": 2, "label": "i = 2, p = 3", "row": "numbers"}],
+            "sum_label": null
+          }
+        ]
+      },
+      "probe": {
+        "prompt_md": "What is the index i of number 6?",
+        "frames": [
+          {
+            "type": "box_index",
+            "array": [4, 7, 2, 6, 1, 9],
+            "show_positions": false,
+            "show_indices": true,
+            "box": null,
+            "arrows": [],
+            "sum_label": null
+          }
+        ],
+        "answer_kind": "integer",
+        "accept": ["3"],
+        "partial": [],
+        "misconceptions": [
+          {
+            "id": "index-position-off-by-one",
+            "match": ["4"],
+            "note_md": "That is the position. The index is one less than the position."
+          }
+        ],
+        "correct_md": "Correct — **3**.",
+        "explain_md": "Number 6 is at position 4, so its index is 4 - 1 = 3.",
+        "explain_frames": [
+          {
+            "type": "box_index",
+            "array": [4, 7, 2, 6, 1, 9],
+            "show_positions": true,
+            "show_indices": true,
+            "box": null,
+            "arrows": [{"at": 3, "label": "i = 3, p = 4", "row": "numbers"}],
+            "sum_label": null
+          }
+        ],
+        "solution_md": "position of 6 is 4; index i = p - 1 = 4 - 1 = 3.",
+        "hint_md": "Subtract 1 from the position."
+      },
+      "variants": [
+        {
+          "teach_frames": [],
+          "probe": {
+            "prompt_md": "What is the index i of number 9?",
+            "frames": [
+              {
+                "type": "box_index",
+                "array": [4, 7, 2, 6, 1, 9],
+                "show_positions": false,
+                "show_indices": true,
+                "box": null,
+                "arrows": [],
+                "sum_label": null
+              }
+            ],
+            "answer_kind": "integer",
+            "accept": ["5"],
+            "partial": [],
+            "misconceptions": [
+              {
+                "id": "index-position-off-by-one",
+                "match": ["6"],
+                "note_md": "That is the position. The index is one less than the position."
+              }
+            ],
+            "correct_md": "Correct — **5**.",
+            "explain_md": "Number 9 is at position 6, so its index is 6 - 1 = 5.",
+            "explain_frames": [
+              {
+                "type": "box_index",
+                "array": [4, 7, 2, 6, 1, 9],
+                "show_positions": true,
+                "show_indices": true,
+                "box": null,
+                "arrows": [{"at": 5, "label": "i = 5, p = 6", "row": "numbers"}],
+                "sum_label": null
+              }
+            ],
+            "solution_md": "position of 9 is 6; index i = p - 1 = 6 - 1 = 5.",
+            "hint_md": "Subtract 1 from the position."
+          }
+        },
+        {
+          "teach_frames": [],
+          "probe": {
+            "prompt_md": "What is the index i of number 7?",
+            "frames": [
+              {
+                "type": "box_index",
+                "array": [4, 7, 2, 6, 1, 9],
+                "show_positions": false,
+                "show_indices": true,
+                "box": null,
+                "arrows": [],
+                "sum_label": null
+              }
+            ],
+            "answer_kind": "integer",
+            "accept": ["1"],
+            "partial": [],
+            "misconceptions": [
+              {
+                "id": "index-position-off-by-one",
+                "match": ["2"],
+                "note_md": "That is the position. The index is one less than the position."
+              }
+            ],
+            "correct_md": "Correct — **1**.",
+            "explain_md": "Number 7 is at position 2, so its index is 2 - 1 = 1.",
+            "explain_frames": [
+              {
+                "type": "box_index",
+                "array": [4, 7, 2, 6, 1, 9],
+                "show_positions": true,
+                "show_indices": true,
+                "box": null,
+                "arrows": [{"at": 1, "label": "i = 1, p = 2", "row": "numbers"}],
+                "sum_label": null
+              }
+            ],
+            "solution_md": "position of 7 is 2; index i = p - 1 = 2 - 1 = 1.",
+            "hint_md": "Subtract 1 from the position."
+          }
+        }
+      ]
+    },
+    {
+      "step_id": "box-size",
+      "kc": "sliding-window.box-size",
+      "skippable": false,
+      "confirm": false,
+      "teach": {
+        "md": "k tells us how many numbers fit inside the box. Here k is 3.",
+        "frames": [
+          {
+            "type": "box_index",
+            "array": [4, 7, 2, 6, 1, 9],
+            "show_positions": false,
+            "show_indices": true,
+            "box": {"start": 0, "k": 3},
+            "arrows": [],
+            "sum_label": null
+          }
+        ]
+      },
+      "probe": {
+        "prompt_md": "What numbers are inside the box?",
+        "frames": [
+          {
+            "type": "box_index",
+            "array": [4, 7, 2, 6, 1, 9],
+            "show_positions": false,
+            "show_indices": true,
+            "box": {"start": 0, "k": 3},
+            "arrows": [],
+            "sum_label": null
+          }
+        ],
+        "answer_kind": "text",
+        "accept": ["4 7 2", "4,7,2", "[4,7,2]", "4, 7, 2", "4  7  2"],
+        "partial": [
+          {
+            "match": ["4"],
+            "note_md": "4 is the first number. What comes after it?"
+          }
+        ],
+        "misconceptions": [
+          {
+            "id": "box-count-instead-of-values",
+            "match": ["3"],
+            "note_md": "That is the size k, not the numbers inside."
+          }
+        ],
+        "correct_md": "Correct — **4, 7, 2**.",
+        "explain_md": "The box starts at index 0 and holds 3 numbers: 4, 7, and 2.",
+        "explain_frames": [
+          {
+            "type": "box_index",
+            "array": [4, 7, 2, 6, 1, 9],
+            "show_positions": false,
+            "show_indices": true,
+            "box": {"start": 0, "k": 3},
+            "arrows": [{"at": 0, "label": "4, 7, 2", "row": "numbers"}],
+            "sum_label": null
+          }
+        ],
+        "solution_md": "box from index 0 with k = 3 contains a[0], a[1], a[2] = 4, 7, 2.",
+        "hint_md": "Read the numbers under the box from left to right."
+      },
+      "variants": [
+        {
+          "teach_frames": [],
+          "probe": {
+            "prompt_md": "The box starts at index 1 and k = 2. What numbers are inside?",
+            "frames": [
+              {
+                "type": "box_index",
+                "array": [4, 7, 2, 6, 1, 9],
+                "show_positions": false,
+                "show_indices": true,
+                "box": {"start": 1, "k": 2},
+                "arrows": [],
+                "sum_label": null
+              }
+            ],
+            "answer_kind": "text",
+            "accept": ["7 2", "7,2", "[7,2]", "7, 2"],
+            "partial": [
+              {
+                "match": ["7"],
+                "note_md": "7 is the first number. What comes after it?"
+              }
+            ],
+            "misconceptions": [
+              {
+                "id": "box-count-instead-of-values",
+                "match": ["2"],
+                "note_md": "That is the size k, not the numbers inside."
+              }
+            ],
+            "correct_md": "Correct — **7, 2**.",
+            "explain_md": "The box starts at index 1 and holds 2 numbers: 7 and 2.",
+            "explain_frames": [
+              {
+                "type": "box_index",
+                "array": [4, 7, 2, 6, 1, 9],
+                "show_positions": false,
+                "show_indices": true,
+                "box": {"start": 1, "k": 2},
+                "arrows": [{"at": 1, "label": "7, 2", "row": "numbers"}],
+                "sum_label": null
+              }
+            ],
+            "solution_md": "box from index 1 with k = 2 contains a[1], a[2] = 7, 2.",
+            "hint_md": "Read the numbers under the box from left to right."
+          }
+        },
+        {
+          "teach_frames": [],
+          "probe": {
+            "prompt_md": "The box starts at index 2 and k = 4. What numbers are inside?",
+            "frames": [
+              {
+                "type": "box_index",
+                "array": [4, 7, 2, 6, 1, 9],
+                "show_positions": false,
+                "show_indices": true,
+                "box": {"start": 2, "k": 4},
+                "arrows": [],
+                "sum_label": null
+              }
+            ],
+            "answer_kind": "text",
+            "accept": ["2 6 1 9", "2,6,1,9", "[2,6,1,9]", "2, 6, 1, 9"],
+            "partial": [
+              {
+                "match": ["2"],
+                "note_md": "2 is the first number. What comes after it?"
+              }
+            ],
+            "misconceptions": [
+              {
+                "id": "box-count-instead-of-values",
+                "match": ["4"],
+                "note_md": "That is the size k, not the numbers inside."
+              }
+            ],
+            "correct_md": "Correct — **2, 6, 1, 9**.",
+            "explain_md": "The box starts at index 2 and holds 4 numbers: 2, 6, 1, and 9.",
+            "explain_frames": [
+              {
+                "type": "box_index",
+                "array": [4, 7, 2, 6, 1, 9],
+                "show_positions": false,
+                "show_indices": true,
+                "box": {"start": 2, "k": 4},
+                "arrows": [{"at": 2, "label": "2, 6, 1, 9", "row": "numbers"}],
+                "sum_label": null
+              }
+            ],
+            "solution_md": "box from index 2 with k = 4 contains a[2], a[3], a[4], a[5] = 2, 6, 1, 9.",
+            "hint_md": "Read the numbers under the box from left to right."
+          }
+        }
+      ]
+    },
+    {
+      "step_id": "box-start",
+      "kc": "sliding-window.box-start",
+      "skippable": false,
+      "confirm": false,
+      "teach": {
+        "md": "The index i tells us where the box starts. i moves the box along the array.",
+        "frames": [
+          {
+            "type": "box_index",
+            "array": [4, 7, 2, 6, 1, 9],
+            "show_positions": false,
+            "show_indices": true,
+            "box": {"start": 0, "k": 3},
+            "arrows": [{"at": 0, "label": "i = 0", "row": "numbers"}],
+            "sum_label": null
+          }
+        ]
+      },
+      "probe": {
+        "prompt_md": "The box starts at i = 1 and k = 3. What numbers are inside?",
+        "frames": [
+          {
+            "type": "box_index",
+            "array": [4, 7, 2, 6, 1, 9],
+            "show_positions": false,
+            "show_indices": true,
+            "box": {"start": 1, "k": 3},
+            "arrows": [],
+            "sum_label": null
+          }
+        ],
+        "answer_kind": "text",
+        "accept": ["7 2 6", "7,2,6", "[7,2,6]", "7, 2, 6"],
+        "partial": [
+          {
+            "match": ["7"],
+            "note_md": "7 is the first number. What comes after it?"
+          }
+        ],
+        "misconceptions": [
+          {
+            "id": "starts-at-position-not-index",
+            "match": ["2 6 1"],
+            "note_md": "You started at position 2. Start at index i instead."
+          }
+        ],
+        "correct_md": "Correct — **7, 2, 6**.",
+        "explain_md": "Starting at i = 1 with k = 3 gives a[1], a[2], a[3] = 7, 2, 6.",
+        "explain_frames": [
+          {
+            "type": "box_index",
+            "array": [4, 7, 2, 6, 1, 9],
+            "show_positions": false,
+            "show_indices": true,
+            "box": {"start": 1, "k": 3},
+            "arrows": [{"at": 1, "label": "7, 2, 6", "row": "numbers"}],
+            "sum_label": null
+          }
+        ],
+        "solution_md": "i = 1, k = 3 => a[1], a[2], a[3] = 7, 2, 6.",
+        "hint_md": "Start at index i and read k numbers to the right."
+      },
+      "variants": [
+        {
+          "teach_frames": [],
+          "probe": {
+            "prompt_md": "The box starts at i = 3 and k = 2. What numbers are inside?",
+            "frames": [
+              {
+                "type": "box_index",
+                "array": [4, 7, 2, 6, 1, 9],
+                "show_positions": false,
+                "show_indices": true,
+                "box": {"start": 3, "k": 2},
+                "arrows": [],
+                "sum_label": null
+              }
+            ],
+            "answer_kind": "text",
+            "accept": ["6 1", "6,1", "[6,1]", "6, 1"],
+            "partial": [
+              {
+                "match": ["6"],
+                "note_md": "6 is the first number. What comes after it?"
+              }
+            ],
+            "misconceptions": [
+              {
+                "id": "starts-at-position-not-index",
+                "match": ["1 9"],
+                "note_md": "You started at position 4. Start at index i instead."
+              }
+            ],
+            "correct_md": "Correct — **6, 1**.",
+            "explain_md": "Starting at i = 3 with k = 2 gives a[3], a[4] = 6, 1.",
+            "explain_frames": [
+              {
+                "type": "box_index",
+                "array": [4, 7, 2, 6, 1, 9],
+                "show_positions": false,
+                "show_indices": true,
+                "box": {"start": 3, "k": 2},
+                "arrows": [{"at": 3, "label": "6, 1", "row": "numbers"}],
+                "sum_label": null
+              }
+            ],
+            "solution_md": "i = 3, k = 2 => a[3], a[4] = 6, 1.",
+            "hint_md": "Start at index i and read k numbers to the right."
+          }
+        },
+        {
+          "teach_frames": [],
+          "probe": {
+            "prompt_md": "The box starts at i = 0 and k = 2. What numbers are inside?",
+            "frames": [
+              {
+                "type": "box_index",
+                "array": [4, 7, 2, 6, 1, 9],
+                "show_positions": false,
+                "show_indices": true,
+                "box": {"start": 0, "k": 2},
+                "arrows": [],
+                "sum_label": null
+              }
+            ],
+            "answer_kind": "text",
+            "accept": ["4 7", "4,7", "[4,7]", "4, 7"],
+            "partial": [
+              {
+                "match": ["4"],
+                "note_md": "4 is the first number. What comes after it?"
+              }
+            ],
+            "misconceptions": [
+              {
+                "id": "starts-at-position-not-index",
+                "match": ["7 2"],
+                "note_md": "You started at position 2. Start at index i instead."
+              }
+            ],
+            "correct_md": "Correct — **4, 7**.",
+            "explain_md": "Starting at i = 0 with k = 2 gives a[0], a[1] = 4, 7.",
+            "explain_frames": [
+              {
+                "type": "box_index",
+                "array": [4, 7, 2, 6, 1, 9],
+                "show_positions": false,
+                "show_indices": true,
+                "box": {"start": 0, "k": 2},
+                "arrows": [{"at": 0, "label": "4, 7", "row": "numbers"}],
+                "sum_label": null
+              }
+            ],
+            "solution_md": "i = 0, k = 2 => a[0], a[1] = 4, 7.",
+            "hint_md": "Start at index i and read k numbers to the right."
+          }
+        }
+      ]
+    },
+    {
+      "step_id": "window-sum",
+      "kc": "sliding-window.window-sum",
+      "skippable": false,
+      "confirm": true,
+      "teach": {
+        "md": "sum[i] means add the numbers inside the box that starts at i.",
+        "frames": [
+          {
+            "type": "box_index",
+            "array": [4, 7, 2, 6, 1, 9],
+            "show_positions": false,
+            "show_indices": true,
+            "box": {"start": 2, "k": 3},
+            "arrows": [],
+            "sum_label": "sum[i=2]"
+          }
+        ]
+      },
+      "probe": {
+        "prompt_md": "What is sum[i=2] for k = 3?",
+        "frames": [
+          {
+            "type": "box_index",
+            "array": [4, 7, 2, 6, 1, 9],
+            "show_positions": false,
+            "show_indices": true,
+            "box": {"start": 2, "k": 3},
+            "arrows": [],
+            "sum_label": null
+          }
+        ],
+        "answer_kind": "integer",
+        "accept": ["9"],
+        "partial": [
+          {
+            "match": ["2 6 1", "2,6,1"],
+            "note_md": "Those are the right numbers. Now add them: 2 + 6 + 1 = ?"
+          }
+        ],
+        "misconceptions": [
+          {
+            "id": "sum-returns-count",
+            "match": ["3"],
+            "note_md": "That is how many numbers are in the box. We need their sum."
+          }
+        ],
+        "correct_md": "Correct — **9**.",
+        "explain_md": "sum[i=2] = 2 + 6 + 1 = 9.",
+        "explain_frames": [
+          {
+            "type": "box_index",
+            "array": [4, 7, 2, 6, 1, 9],
+            "show_positions": false,
+            "show_indices": true,
+            "box": {"start": 2, "k": 3},
+            "arrows": [{"at": 2, "label": "2 + 6 + 1 = 9", "row": "numbers"}],
+            "sum_label": "sum[i=2] = 9"
+          }
+        ],
+        "solution_md": "sum[i=2] = a[2] + a[3] + a[4] = 2 + 6 + 1 = 9.",
+        "hint_md": "Add the k numbers that sit under the box."
+      },
+      "variants": [
+        {
+          "teach_frames": [],
+          "probe": {
+            "prompt_md": "What is sum[i=0] for k = 3?",
+            "frames": [
+              {
+                "type": "box_index",
+                "array": [4, 7, 2, 6, 1, 9],
+                "show_positions": false,
+                "show_indices": true,
+                "box": {"start": 0, "k": 3},
+                "arrows": [],
+                "sum_label": null
+              }
+            ],
+            "answer_kind": "integer",
+            "accept": ["13"],
+            "partial": [
+              {
+                "match": ["4 7 2", "4,7,2"],
+                "note_md": "Those are the right numbers. Now add them: 4 + 7 + 2 = ?"
+              }
+            ],
+            "misconceptions": [
+              {
+                "id": "sum-returns-count",
+                "match": ["3"],
+                "note_md": "That is how many numbers are in the box. We need their sum."
+              }
+            ],
+            "correct_md": "Correct — **13**.",
+            "explain_md": "sum[i=0] = 4 + 7 + 2 = 13.",
+            "explain_frames": [
+              {
+                "type": "box_index",
+                "array": [4, 7, 2, 6, 1, 9],
+                "show_positions": false,
+                "show_indices": true,
+                "box": {"start": 0, "k": 3},
+                "arrows": [{"at": 0, "label": "4 + 7 + 2 = 13", "row": "numbers"}],
+                "sum_label": "sum[i=0] = 13"
+              }
+            ],
+            "solution_md": "sum[i=0] = a[0] + a[1] + a[2] = 4 + 7 + 2 = 13.",
+            "hint_md": "Add the k numbers that sit under the box."
+          }
+        },
+        {
+          "teach_frames": [],
+          "probe": {
+            "prompt_md": "What is sum[i=1] for k = 2?",
+            "frames": [
+              {
+                "type": "box_index",
+                "array": [4, 7, 2, 6, 1, 9],
+                "show_positions": false,
+                "show_indices": true,
+                "box": {"start": 1, "k": 2},
+                "arrows": [],
+                "sum_label": null
+              }
+            ],
+            "answer_kind": "integer",
+            "accept": ["9"],
+            "partial": [
+              {
+                "match": ["7 2", "7,2"],
+                "note_md": "Those are the right numbers. Now add them: 7 + 2 = ?"
+              }
+            ],
+            "misconceptions": [
+              {
+                "id": "sum-returns-count",
+                "match": ["2"],
+                "note_md": "That is how many numbers are in the box. We need their sum."
+              }
+            ],
+            "correct_md": "Correct — **9**.",
+            "explain_md": "sum[i=1] = 7 + 2 = 9.",
+            "explain_frames": [
+              {
+                "type": "box_index",
+                "array": [4, 7, 2, 6, 1, 9],
+                "show_positions": false,
+                "show_indices": true,
+                "box": {"start": 1, "k": 2},
+                "arrows": [{"at": 1, "label": "7 + 2 = 9", "row": "numbers"}],
+                "sum_label": "sum[i=1] = 9"
+              }
+            ],
+            "solution_md": "sum[i=1] = a[1] + a[2] = 7 + 2 = 9.",
+            "hint_md": "Add the k numbers that sit under the box."
+          }
+        }
+      ]
+    }
+  ]
+}
