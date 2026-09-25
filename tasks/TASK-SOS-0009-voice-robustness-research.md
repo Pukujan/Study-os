@@ -39,7 +39,7 @@ Alex can decide in one read: STT stack and fallbacks, front-end audio policy, gr
 - [x] Recommended stack + dropdown design + benchmark plan included.
 - [x] Start comments on #106 and #107; summary comment after push.
 - [x] SOS-0005 and production untouched.
-- [ ] PR opened with `Refs #106` only (no closing keywords).
+- [x] PR opened with `Refs #106` only (no closing keywords): https://github.com/Pukujan/Study-os/pull/109
 
 ## Checkpoint log
 
@@ -64,3 +64,21 @@ Next:
 Evidence:
 - gravebuster read-only hardware check (Ryzen 7 5800U, no NVIDIA, load 30–51).
 - Box STT table in the research note §3; TTS samples under `/workspace/voice-samples/`.
+
+### 2026-09-24 — PR opened
+
+Completed:
+- Pushed `efb5715`; opened PR #109 with `Refs #106`; posted summary on #106 and pointer on #107.
+
+Decisions:
+- None new.
+
+Blocked/uncertain:
+- Awaiting Alex review of the note and TTS samples.
+
+Next:
+- Alex review; then either close research or open a follow-up measurement task on gravebuster.
+
+Evidence:
+- PR https://github.com/Pukujan/Study-os/pull/109
+- Issue comment https://github.com/Pukujan/Study-os/issues/106#issuecomment-5824576987
