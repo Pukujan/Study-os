@@ -24,8 +24,10 @@
 | H11 | Voice learning agent | **Weak** for this product now | Medium-low | Modality effect d≈0.72, but it reverses under learner pacing (d≈−0.14) and drops to ≈0.20 after bias correction. ASR error doubles for some groups. Turn-taking expectation is about 200 ms. Voice is proven for *language speaking* (Duolingo, Speak), not for DSA or maths. InferHub has no STT/TTS routes. |
 | H12 | LLM-first, then retrieval/caching of proven outputs | **Weak as ordered.** Grounding should come *first*; caching later is fine | Medium | Khan: accuracy rises when human-written steps are in context. RAG improves factuality. Ungrounded 2023 hints had a 30% error rate. Prompt caching cuts input cost by up to 90%. Logging everything from day one is well supported. |
 | H13 | Goldens + oracle as the eval suite | **Supported as necessary, not sufficient** | Medium | Expert-authored references match the "human-authored hints" that beat 2023 LLM hints. But LLM judges show position and verbosity bias, and conformance is not learning. LearnLM and the RCTs use multi-method evals and learning outcomes. |
+| H14 | Chibi pet companion on the lesson screen (tap to talk, reacts to answers; robot visits during idle) | **Weak-to-supported, conditional** — hypothesis to validate with Alex's like/dislike feedback | Medium-low | Pedagogical agents: small effect g≈0.19–0.20, smaller for post-secondary (g≈0.12); the benefit comes from interaction and words, not the image (no image effect). Decorative motion and irrelevant sounds carry a distraction risk. |
+| H15 | One screen, one state: the question card stays visible and the companion panel opens beside it (side panel / half sheet); variants update the card in place | **Supported** (principle) — hypothesis for the specific UI | Medium | Split-attention/contiguity: integrating related information gives d≈0.85. Existing patterns: Khanmigo beside the exercise, Duolingo "Explain My Answer" inline. |
 
-**Source count: 77 distinct external sources**: 38 peer-reviewed/academic (30 Crossref-verified DOIs, 5 arXiv papers, and 3 academic PDFs: Mayer, Schneider et al., WWC) and 39 company, UX-research, standards, teardown, news or tool pages. References are listed in the final section.
+**Source count: 86 distinct external sources**: 45 peer-reviewed/academic (37 Crossref-verified DOIs, 5 arXiv papers, and 3 academic PDFs: Mayer, Schneider et al., WWC) and 41 company, UX-research, standards, teardown, news, working-paper or tool pages. H14/H15 were added 2026-09-24 after Alex's interaction-design notes. References are listed in the final section.
 
 ---
 
@@ -251,6 +253,44 @@
 
 **Verdict:** supported as necessary, not sufficient. Confidence: medium.
 
+## H14: Chibi pet companion (pedagogical agent)
+
+**Claim under test:** a small chibi pet (the learner character) lives on the lesson screen. Tapping it opens the companion panel, where it talks (talking loop + TTS + speech bubble) and reacts to answers (celebrate / encourage loops). The chibi robot helper visits rarely during idle.
+
+**Evidence FOR**
+- Pedagogical agents have a small but significant positive effect on learning, g=0.19 across 43 comparisons [E-peer, R78]; a later meta-analysis finds g+=0.20 [E-peer, R79].
+- The persona effect: learners rate lifelike agents as helpful and credible [E-peer, R81].
+- Interaction with an agent improved transfer and interest [E-peer, R80].
+
+**Evidence AGAINST / disconfirming**
+- The effect is smaller for post-secondary learners (g≈0.12 in R78), and our learner is an adult.
+- In R80 the agent's *visual presence* had no effect (no "image effect"). The gains came from interactivity and words, so the pet's art adds motivation at best.
+- In R78, agents communicating by on-screen text beat narration. Keep the transcript bubble visible even when TTS is on.
+- Irrelevant sounds and decorative animation hurt learning (coherence effect) [E-peer, R84; R6, R14].
+
+**Design implications (opinion, derived from the evidence above):**
+- Keep the pet small (≤ 96 px mobile / 120 px desktop) and never covering the question or visual.
+- Reactions only at feedback moments.
+- Idle robot visits rare (≥ 90 s idle, at most once per 10 min), never during assessment or typing.
+- Paused under reduced motion; mute/hide toggle remembered per user.
+- The talking loop always paired with the text transcript.
+- The tutor behind it is the same guarded, grounded, logged tutor (H3).
+
+**Verdict:** weak-to-supported, conditional on the constraints above. Confidence: medium-low. Validate with like/dislike feedback and a hide-rate metric.
+
+## H15: One screen, one state (companion panel beside the question card)
+
+**Evidence FOR**
+- The split-attention effect [E-peer, R83] and the spatial/temporal contiguity meta-analysis, d≈0.85 across 50 studies (larger for complex material) [E-peer, R82]: keep help next to the thing it explains, not on another page or in another mode.
+- Khanmigo shows the tutor beside the exercise (chat icon / "Tutor Me" next to the question) [E-peer working paper, R85]. The same paper reports that 39.4% of student messages were bare answers, which is a caution for chat-heavy designs.
+- Duolingo's "Explain My Answer" appears inline right after the exercise [E-co, R86].
+
+**Evidence AGAINST**
+- A side panel shrinks the question area on small screens.
+- A half-height sheet on mobile can hide part of the visual. **Mitigation:** the card scrolls above the sheet, and variants update the card itself, not the chat.
+
+**Verdict:** supported as a principle; the specific layout is a hypothesis to validate with Alex's live testing and the like/dislike feedback. Confidence: medium.
+
 ---
 
 ## Cross-cutting: gamification and celebration (bears on H7 and H8)
@@ -362,5 +402,16 @@ Teardowns / opinion / news / data
 - R69. NBC News, Duolingo redesign interview. https://www.nbcnews.com/tech/tech-news/duolingos-update-redesign-luis-von-ahn-interview-rcna44655 — user backlash over the path.
 - R76. Appcues GoodUX, Headspace onboarding sequence. https://goodux.appcues.com/blog/headspaces-mindful-onboarding-sequence — three questions, routine anchoring.
 - R77. UX Collective, Interactive play for learning math and science online. https://uxdesign.cc/the-key-to-learning-math-and-science-online-is-interactive-play-6ea68ce167fe — opinion.
+
+Added 2026-09-24 (H14/H15; DOIs verified via Crossref, URLs HTTP 200)
+- R78. Schroeder, Adesope & Gilbert (2013). How effective are pedagogical agents for learning? A meta-analytic review. JECR. https://doi.org/10.2190/ec.49.1.a — g=0.19 (43 comparisons, N=3,088); text > narration; K-12 > post-secondary.
+- R79. Castro-Alonso, Wong, Adesope & Paas (2021). Effectiveness of multimedia pedagogical agents predicted by diverse theories: a meta-analysis. EPR. https://doi.org/10.1007/s10648-020-09587-1 — g+=0.20 (32 effects, 2012–2019).
+- R80. Moreno, Mayer, Spires & Lester (2001). The case for social agency in computer-based teaching. Cognition & Instruction. https://doi.org/10.1207/s1532690xci1902_02 — agent group better on transfer and interest; the agent's image alone had no effect; interactivity and voice did.
+- R81. Lester et al. (1997). The persona effect: affective impact of animated pedagogical agents. CHI. https://doi.org/10.1145/258549.258797 — learners perceive lifelike agents as helpful and credible (affective).
+- R82. Ginns (2006). Integrating information: a meta-analysis of the spatial contiguity and temporal contiguity effects. L&I. https://doi.org/10.1016/j.learninstruc.2006.10.001 — d≈0.85, 50 studies.
+- R83. Chandler & Sweller (1992). The split-attention effect as a factor in the design of instruction. BJEP. https://doi.org/10.1111/j.2044-8279.1992.tb01017.x — physically integrating related sources reduces extraneous load.
+- R84. Moreno & Mayer (2000). A coherence effect in multimedia learning: minimizing irrelevant sounds. JEP. https://doi.org/10.1037/0022-0663.92.1.117 — irrelevant sounds/music hurt learning.
+- R85. "One Click Away: AI tutoring with Khanmigo in a two-year school experiment" (EdWorkingPaper ai26-1551). https://edworkingpapers.com/sites/default/files/ai26-1551.pdf — tutor sits beside the exercise; 39.4% of messages were bare answers.
+- R86. Duolingo, Explain My Answer is now free. https://blog.duolingo.com/explain-my-answer-now-free/ — inline, learner-chosen feedback after an exercise.
 
 Repo evidence (not counted as external sources): `domains/dsa/sliding-window/golden/*.md`, `conformance-oracle.v0.1.json`, `src/study_os/pir/sliding_window.py`, `docs/webapp/LLM_ROUTE.md`.
