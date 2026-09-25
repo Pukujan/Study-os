@@ -25,6 +25,10 @@ def _new_state(lesson: dict[str, Any]) -> dict[str, Any]:
         "scaffold": 0,
         "history": [],
         "status_by_step": {step["step_id"]: "not_started" for step in lesson.get("steps", [])},
+        "card_mode": "probe",
+        "variant_tag": None,
+        "hint_open": False,
+        "adapt_stack": [],
     }
 
 
@@ -108,6 +112,11 @@ def view(lesson: dict[str, Any], state: dict[str, Any]) -> dict[str, Any]:
         # Feedback is already built into state by attempt/confused; keep it public.
         feedback = state.get("feedback")
 
+    worked_example = None
+    if state.get("card_mode") == "worked_example":
+        worked_example = _strip_server_only(state.get("worked_example"))
+        public_probe = None
+
     return {
         "session_id": None,
         "lesson": {
@@ -133,6 +142,11 @@ def view(lesson: dict[str, Any], state: dict[str, Any]) -> dict[str, Any]:
             "done": progress_done,
             "total": len(lesson["steps"]),
         },
+        "card_mode": state.get("card_mode", "probe"),
+        "variant_tag": state.get("variant_tag"),
+        "can_go_back": bool(state.get("adapt_stack")),
+        "hint_open": state.get("hint_open", False),
+        "worked_example": worked_example,
         "is_guest": False,
     }
 
@@ -152,6 +166,10 @@ def _advance(lesson: dict[str, Any], state: dict[str, Any]) -> dict[str, Any]:
         state["phase"] = "done"
         state["pending"] = None
         state["misses_on_step"] = 0
+        state["card_mode"] = "probe"
+        state["variant_tag"] = None
+        state["hint_open"] = False
+        state["worked_example"] = None
         return state
 
     state["step_index"] = next_index
@@ -159,6 +177,10 @@ def _advance(lesson: dict[str, Any], state: dict[str, Any]) -> dict[str, Any]:
     state["phase"] = "probe"
     state["pending"] = None
     state["misses_on_step"] = 0
+    state["card_mode"] = "probe"
+    state["variant_tag"] = None
+    state["hint_open"] = False
+    state["worked_example"] = None
     next_step = steps[next_index]
     state["status_by_step"][next_step["step_id"]] = "in_progress"
     return state
@@ -418,6 +440,106 @@ def next(lesson: dict[str, Any], state: dict[str, Any]) -> dict[str, Any]:  # no
 
     # No pending action: advance to the next step.
     return _advance(lesson, state)
+
+
+def _push_adapt(state: dict[str, Any]) -> None:
+    """Save a snapshot of the current variant/mode onto the adapt stack."""
+
+    stack = state.setdefault("adapt_stack", [])
+    stack.append({
+        "variant_index": state.get("variant_index", -1),
+        "card_mode": state.get("card_mode", "probe"),
+        "variant_tag": state.get("variant_tag"),
+        "hint_open": state.get("hint_open", False),
+    })
+    if len(stack) > 5:
+        stack.pop(0)
+
+
+def _restore_adapt(state: dict[str, Any]) -> bool:
+    """Restore the most recent adapt snapshot. Returns True if a snapshot existed."""
+
+    stack = state.get("adapt_stack", [])
+    if not stack:
+        return False
+    snap = stack.pop()
+    state["variant_index"] = snap["variant_index"]
+    state["card_mode"] = snap["card_mode"]
+    state["variant_tag"] = snap["variant_tag"]
+    state["hint_open"] = snap["hint_open"]
+    return True
+
+
+def adapt(lesson: dict[str, Any], state: dict[str, Any], kind: str) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Switch the current card to a worked example or a different-difficulty variant.
+
+    Returns ``(new_state, info)``.  ``info`` contains metadata such as
+    ``card_mode``, ``variant_tag``, or ``refused``.
+    """
+
+    if kind == "back":
+        _restore_adapt(state)
+        info: dict[str, Any] = {"can_go_back": bool(state.get("adapt_stack"))}
+        return state, info
+
+    if kind in ("example", "easier", "harder"):
+        # Assessment lessons refuse adaptive changes while a probe is open.
+        if lesson.get("mode") == "assessment" and state.get("phase") == "probe":
+            return state, {"refused": True}
+
+    if kind == "example":
+        _push_adapt(state)
+        probe = _current_probe(lesson, state)
+        if probe:
+            solution_md = probe.get("solution_md", "")
+            frames = list(probe.get("frames", []))
+        else:
+            solution_md = _current_step(lesson, state).get("teach", {}).get("md", "")
+            frames = list(_current_step(lesson, state).get("teach", {}).get("frames", []))
+        state["card_mode"] = "worked_example"
+        state["worked_example"] = {"solution_md": solution_md, "frames": frames}
+        state["variant_tag"] = "example"
+        return state, {"card_mode": "worked_example", "can_go_back": True}
+
+    if kind in ("easier", "harder"):
+        step = _current_step(lesson, state)
+        variants = step.get("variants", [])
+        if not variants:
+            return state, {"refused": True}
+        current = state.get("variant_index", -1)
+
+        def _diff(idx: int) -> int:
+            if idx == -1:
+                return step.get("difficulty", 0)
+            v = variants[idx]
+            return v.get("difficulty", 0)
+
+        current_diff = _diff(current)
+        candidates: list[tuple[int, int]] = []
+        for i, v in enumerate(variants):
+            if i == current:
+                continue
+            d = v.get("difficulty", 0)
+            if kind == "easier" and d < current_diff:
+                candidates.append((i, d))
+            if kind == "harder" and d > current_diff:
+                candidates.append((i, d))
+        if not candidates:
+            candidates = [(i, v.get("difficulty", 0)) for i, v in enumerate(variants) if i != current]
+        if not candidates:
+            return state, {"refused": True}
+        if kind == "easier":
+            chosen = sorted(candidates, key=lambda x: x[1])[0][0]
+        else:
+            chosen = sorted(candidates, key=lambda x: -x[1])[0][0]
+        _push_adapt(state)
+        state["variant_index"] = chosen
+        state["card_mode"] = "probe"
+        state["variant_tag"] = kind
+        state["hint_open"] = kind == "easier"
+        return state, {"variant_tag": kind, "can_go_back": True}
+
+    return state, {"refused": True}
 
 
 def check_lesson(lesson: dict[str, Any]) -> list[str]:

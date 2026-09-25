@@ -26,7 +26,8 @@ EXPECTED_TABLES = {
     "learn.subject", "learn.content_revision", "learn.session", "learn.turn", "learn.attempt",
     "learn.capability_transition", "learn.interpretation", "learn.generation", "learn.decision",
     "learn.decision_label", "learn.experiment_assignment", "learn.review_schedule", "learn.topic_progress",
-    "cache.model_response", "ux.reaction", "ux.event", "public.schema_migrations",
+    "learn.player_session", "learn.player_event", "learn.llm_interaction",
+    "cache.model_response", "ux.reaction", "ux.event", "ux.feedback", "public.schema_migrations",
 }
 
 

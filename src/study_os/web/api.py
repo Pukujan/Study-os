@@ -18,6 +18,7 @@ from .config import Settings, load_settings
 from .db import Database
 from .models import DecisionTransport, InferHubLLM, LLMTransport, OpenRouterJev
 from .ratelimit import RateLimiter
+from .player.service import PlayerService
 from .service import ServiceError, StudyService
 
 log = logging.getLogger("study_os.web")
@@ -48,6 +49,43 @@ class StartBody(_Body):
     track: str = Field(max_length=8)
     topic_id: str | None = Field(default=None, max_length=64)
     checkpoint: str | None = Field(default=None, max_length=64)
+
+
+class TryBody(_Body):
+    lesson_id: str | None = Field(default="fractions-compare", max_length=64)
+
+
+class PlayerSessionBody(_Body):
+    lesson_id: str = Field(max_length=64)
+
+
+class PlayerAttemptBody(_Body):
+    response: str = Field(max_length=2000)
+    modality: str = Field(max_length=16)
+    idempotency_key: str = Field(max_length=80)
+
+
+class TutorBody(_Body):
+    message: str = Field(max_length=500)
+
+
+class AdaptBody(_Body):
+    kind: str = Field(max_length=16)
+
+
+class ClaimBody(_Body):
+    email: str = Field(max_length=254)
+    passphrase: str = Field(max_length=256)
+
+
+class FeedbackBody(_Body):
+    session_id: str | None = Field(default=None, max_length=64)
+    step_id: str | None = Field(default=None, max_length=120)
+    target_kind: str = Field(max_length=16)
+    target_id: str = Field(max_length=64)
+    rating: str = Field(max_length=8)
+    reasons: list[str] = Field(default_factory=list)
+    free_text: str | None = Field(default=None, max_length=500)
 
 
 class AttemptBody(_Body):
@@ -100,6 +138,7 @@ def create_app(
         database.migrate()
         state["db"] = database
         state["svc"] = StudyService(database, settings, jev=jev, llm=llm)
+        state["player"] = PlayerService(database, settings, llm=llm)
         # Compile lesson graphs once per process (D018 caching).
         for section in packs.topic_graph():
             for topic in section["topics"]:
@@ -113,6 +152,9 @@ def create_app(
 
     def svc() -> StudyService:
         return state["svc"]
+
+    def player() -> PlayerService:
+        return state["player"]
 
     def database() -> Database:
         return state["db"]
@@ -238,7 +280,7 @@ def create_app(
                 "UPDATE auth.session SET csrf_token_hash = %s WHERE session_id_hash = %s",
                 (auth.sha256(csrf), auth.sha256(request.cookies.get(settings.cookie_name) or "")),
             )
-        return {"handle": p.handle, "display_name": p.display_name, "role": p.role, "csrf_token": csrf}
+        return {"handle": p.handle, "display_name": p.display_name, "role": p.role, "is_guest": p.is_guest, "csrf_token": csrf}
 
     @app.post("/api/auth/handle")
     def change_handle(body: HandleBody, request: Request) -> dict[str, Any]:
@@ -327,6 +369,89 @@ def create_app(
         if p is not None and not auth.check_csrf(p, request.headers.get(CSRF_HEADER)):
             p = None  # still accept anonymous-shaped events, but never attribute them
         return {"stored": svc().record_events(p, body.events)}
+
+    # ---------- player ----------
+    @app.get("/api/lanes")
+    def lanes(request: Request) -> dict[str, Any]:
+        return player().lanes(principal(request))
+
+    @app.post("/api/try")
+    def try_first(body: TryBody, request: Request) -> JSONResponse:
+        token = request.cookies.get(settings.cookie_name)
+        if token:
+            with database().tx() as conn:
+                if auth.resolve_session(conn, token) is not None:
+                    raise HTTPException(409, "already_signed_in")
+        if not limiter.allow("signup:" + _client_ip(request), 10, 3600):
+            raise HTTPException(429, "rate_limited")
+        with database().tx() as conn:
+            p = auth.create_guest_account(conn)
+            opened = auth.open_session(conn, p)
+        view = player().start_or_resume(p, body.lesson_id or "fractions-compare")
+        resp = JSONResponse({
+            "me": {
+                "handle": p.handle,
+                "display_name": p.display_name,
+                "role": p.role,
+                "is_guest": p.is_guest,
+                "csrf_token": opened.csrf_token,
+            },
+            "session": view,
+        })
+        set_cookie(resp, opened.token)
+        return resp
+
+    @app.post("/api/auth/claim")
+    def claim(body: ClaimBody, request: Request) -> dict[str, Any]:
+        p = principal(request, mutate=True)
+        if not p.is_guest:
+            raise HTTPException(403, "not_guest")
+        with database().tx() as conn:
+            p = auth.claim_local(conn, principal=p, email=body.email, passphrase=body.passphrase)
+        return {
+            "handle": p.handle,
+            "display_name": p.display_name,
+            "role": p.role,
+            "is_guest": p.is_guest,
+        }
+
+    @app.post("/api/player/sessions")
+    def player_start(body: PlayerSessionBody, request: Request) -> dict[str, Any]:
+        return player().start_or_resume(principal(request, mutate=True), body.lesson_id)
+
+    @app.get("/api/player/sessions/{session_id}")
+    def player_get(session_id: str, request: Request) -> dict[str, Any]:
+        return player().get(principal(request), session_id)
+
+    @app.post("/api/player/sessions/{session_id}/attempt")
+    def player_attempt(session_id: str, body: PlayerAttemptBody, request: Request) -> dict[str, Any]:
+        return player().attempt(
+            principal(request, mutate=True), session_id, body.response, body.modality, body.idempotency_key
+        )
+
+    @app.post("/api/player/sessions/{session_id}/confused")
+    def player_confused(session_id: str, request: Request) -> dict[str, Any]:
+        return player().confused(principal(request, mutate=True), session_id)
+
+    @app.post("/api/player/sessions/{session_id}/next")
+    def player_next(session_id: str, request: Request) -> dict[str, Any]:
+        return player().next(principal(request, mutate=True), session_id)
+
+    @app.post("/api/player/sessions/{session_id}/tutor")
+    def player_tutor(session_id: str, body: TutorBody, request: Request) -> dict[str, Any]:
+        return player().tutor(principal(request, mutate=True), session_id, body.message)
+
+    @app.post("/api/player/sessions/{session_id}/adapt")
+    def player_adapt(session_id: str, body: AdaptBody, request: Request) -> dict[str, Any]:
+        return player().adapt(principal(request, mutate=True), session_id, body.kind)
+
+    @app.post("/api/feedback")
+    def feedback(body: FeedbackBody, request: Request) -> dict[str, Any]:
+        return player().feedback(principal(request, mutate=True), body)
+
+    @app.get("/api/admin/feedback")
+    def admin_feedback(request: Request) -> dict[str, Any]:
+        return player().admin_feedback(principal(request))
 
     # ---------- static frontend ----------
     static_dir = settings.static_dir or os.environ.get("STATIC_DIR")

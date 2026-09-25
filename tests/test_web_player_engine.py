@@ -502,5 +502,144 @@ class RenderTextTests(unittest.TestCase):
         self.assertIn("3/4", text)
 
 
+class AdaptTests(unittest.TestCase):
+    def _lesson(self):
+        return {
+            "schema_version": "study-os.player-lesson.v1",
+            "lesson_id": "adapt-test",
+            "revision": "adapt-test.v1",
+            "lane": "dsa",
+            "title": "Adapt test",
+            "summary": "x",
+            "representation": "box_index",
+            "golden_ref": "derived",
+            "steps": [
+                {
+                    "step_id": "a1",
+                    "kc": "test.adapt",
+                    "skippable": False,
+                    "confirm": False,
+                    "teach": {"md": "Teach.", "frames": []},
+                    "probe": {
+                        "prompt_md": "Main probe.",
+                        "frames": [{"type": "box_index", "array": [1, 2, 3], "box": {"start": 0, "k": 2}}],
+                        "answer_kind": "integer",
+                        "accept": ["3"],
+                        "partial": [],
+                        "misconceptions": [],
+                        "correct_md": "Correct.",
+                        "explain_md": "Because.",
+                        "explain_frames": [],
+                        "solution_md": "Main solution: 1 + 2 = 3.",
+                        "hint_md": "Add the first two numbers.",
+                    },
+                    "variants": [
+                        {
+                            "teach_frames": [],
+                            "difficulty": 1,
+                            "probe": {
+                                "prompt_md": "Variant 0.",
+                                "frames": [{"type": "box_index", "array": [4, 5], "box": {"start": 0, "k": 1}}],
+                                "answer_kind": "integer",
+                                "accept": ["4"],
+                                "partial": [],
+                                "misconceptions": [],
+                                "correct_md": "Correct.",
+                                "explain_md": "Because.",
+                                "explain_frames": [],
+                                "solution_md": "Variant 0 solution.",
+                                "hint_md": "Hint 0.",
+                            },
+                        },
+                        {
+                            "teach_frames": [],
+                            "difficulty": 3,
+                            "probe": {
+                                "prompt_md": "Variant 1.",
+                                "frames": [{"type": "box_index", "array": [7, 8, 9], "box": {"start": 1, "k": 2}}],
+                                "answer_kind": "integer",
+                                "accept": ["15"],
+                                "partial": [],
+                                "misconceptions": [],
+                                "correct_md": "Correct.",
+                                "explain_md": "Because.",
+                                "explain_frames": [],
+                                "solution_md": "Variant 1 solution.",
+                                "hint_md": "Hint 1.",
+                            },
+                        },
+                    ],
+                }
+            ],
+        }
+
+    def test_example_puts_card_in_worked_example_mode(self):
+        from study_os.web.player import engine
+
+        lesson = self._lesson()
+        state = engine.start(lesson)
+        state, info = engine.adapt(lesson, state, "example")
+        self.assertEqual(info["card_mode"], "worked_example")
+        self.assertTrue(info["can_go_back"])
+        self.assertEqual(state["card_mode"], "worked_example")
+        self.assertEqual(state["worked_example"]["solution_md"], "Main solution: 1 + 2 = 3.")
+        view = engine.view(lesson, state)
+        self.assertEqual(view["card_mode"], "worked_example")
+        self.assertIsNotNone(view["worked_example"])
+        self.assertIsNone(view["step"]["probe"])
+
+    def test_back_restores_previous_mode(self):
+        from study_os.web.player import engine
+
+        lesson = self._lesson()
+        state = engine.start(lesson)
+        state, _ = engine.adapt(lesson, state, "example")
+        self.assertEqual(state["card_mode"], "worked_example")
+        state, info = engine.adapt(lesson, state, "back")
+        self.assertEqual(state["card_mode"], "probe")
+        self.assertFalse(info["can_go_back"])
+        view = engine.view(lesson, state)
+        self.assertEqual(view["card_mode"], "probe")
+        self.assertIsNotNone(view["step"]["probe"])
+
+    def test_easier_switches_to_lower_difficulty_variant(self):
+        from study_os.web.player import engine
+
+        lesson = self._lesson()
+        state = engine.start(lesson)
+        state, info = engine.adapt(lesson, state, "easier")
+        self.assertEqual(info["variant_tag"], "easier")
+        self.assertEqual(state["variant_index"], 0)
+        self.assertTrue(state["hint_open"])
+
+    def test_harder_switches_to_higher_difficulty_variant(self):
+        from study_os.web.player import engine
+
+        lesson = self._lesson()
+        state = engine.start(lesson)
+        state, info = engine.adapt(lesson, state, "harder")
+        self.assertEqual(info["variant_tag"], "harder")
+        self.assertEqual(state["variant_index"], 1)
+
+    def test_assessment_refuses_adapt_during_probe(self):
+        from study_os.web.player import engine
+
+        lesson = self._lesson()
+        lesson["mode"] = "assessment"
+        state = engine.start(lesson)
+        state, info = engine.adapt(lesson, state, "easier")
+        self.assertTrue(info["refused"])
+        self.assertEqual(state["variant_index"], -1)
+
+    def test_stack_max_five_drops_oldest(self):
+        from study_os.web.player import engine
+
+        lesson = self._lesson()
+        state = engine.start(lesson)
+        for _ in range(6):
+            state, _ = engine.adapt(lesson, state, "easier")
+        self.assertEqual(len(state["adapt_stack"]), 5)
+
+
 if __name__ == "__main__":
     unittest.main()
