@@ -1,0 +1,155 @@
+{
+  "schema": "study-os.decomposer-review-index.v1",
+  "task": "SOS-0011",
+  "variants": [
+    {
+      "variant_id": "binary-search__algebra-katex__curated",
+      "problem_id": "binary-search",
+      "problem_title": "Binary search",
+      "problem_statement": "sorted array search",
+      "variant_kind": "algebra-katex",
+      "model": "curated",
+      "route": "curated:algebra",
+      "file": "binary-search__algebra-katex__curated.json",
+      "n_steps": 3
+    },
+    {
+      "variant_id": "binary-search__geometry-svg__curated",
+      "problem_id": "binary-search",
+      "problem_title": "Binary search",
+      "problem_statement": "nums=[-1,0,3,5,9,12], target=9",
+      "variant_kind": "geometry-svg",
+      "model": "curated",
+      "route": "curated:numberline",
+      "file": "binary-search__geometry-svg__curated.json",
+      "n_steps": 4
+    },
+    {
+      "variant_id": "reverse-linked-list__box-array-ascii__curated",
+      "problem_id": "reverse-linked-list",
+      "problem_title": "Reverse linked list",
+      "problem_statement": "1\u21922\u21923\u21924\u21925 \u2192 5\u21924\u21923\u21922\u21921",
+      "variant_kind": "box-array-ascii",
+      "model": "curated",
+      "route": "curated:pointers",
+      "file": "reverse-linked-list__box-array-ascii__curated.json",
+      "n_steps": 4
+    },
+    {
+      "variant_id": "reverse-linked-list__mermaid-graph__curated",
+      "problem_id": "reverse-linked-list",
+      "problem_title": "Reverse linked list",
+      "problem_statement": "1\u21922\u21923\u21924\u21925",
+      "variant_kind": "mermaid-graph",
+      "model": "curated",
+      "route": "curated:mermaid",
+      "file": "reverse-linked-list__mermaid-graph__curated.json",
+      "n_steps": 2
+    },
+    {
+      "variant_id": "sliding-window-max-sum__algebra-katex__ali_qwen3.8-flash",
+      "problem_id": "sliding-window-max-sum",
+      "problem_title": "Max sum of k adjacent numbers",
+      "problem_statement": "Given array a and integer k, find the largest sum of any k adjacent numbers. Example: a=[4,7,2,6,1,9], k=3.",
+      "variant_kind": "algebra-katex",
+      "model": "ali/qwen3.8-flash",
+      "route": "inferhub:ali/qwen3.8-flash",
+      "file": "sliding-window-max-sum__algebra-katex__ali_qwen3.8-flash.json",
+      "n_steps": 8
+    },
+    {
+      "variant_id": "sliding-window-max-sum__algebra-katex__curated",
+      "problem_id": "sliding-window-max-sum",
+      "problem_title": "Max sum of k adjacent",
+      "problem_statement": "a=[4,7,2,6,1,9] k=3",
+      "variant_kind": "algebra-katex",
+      "model": "curated",
+      "route": "curated:algebra",
+      "file": "sliding-window-max-sum__algebra-katex__curated.json",
+      "n_steps": 3
+    },
+    {
+      "variant_id": "sliding-window-max-sum__box-array-svg__ali_qwen3.8-flash",
+      "problem_id": "sliding-window-max-sum",
+      "problem_title": "Max sum of k adjacent numbers",
+      "problem_statement": "Given array a and integer k, find the largest sum of any k adjacent numbers. Example: a=[4,7,2,6,1,9], k=3.",
+      "variant_kind": "box-array-svg",
+      "model": "ali/qwen3.8-flash",
+      "route": "inferhub:ali/qwen3.8-flash",
+      "file": "sliding-window-max-sum__box-array-svg__ali_qwen3.8-flash.json",
+      "n_steps": 8
+    },
+    {
+      "variant_id": "sliding-window-max-sum__golden-aligned-ascii__curated",
+      "problem_id": "sliding-window-max-sum",
+      "problem_title": "Max sum of k adjacent numbers",
+      "problem_statement": "Given array a and integer k, find the largest sum of any k adjacent numbers. Example: a=[4,7,2,6,1,9], k=3.",
+      "variant_kind": "golden-aligned-ascii",
+      "model": "curated",
+      "route": "curated:golden-aligned",
+      "file": "sliding-window-max-sum__golden-aligned-ascii__curated.json",
+      "n_steps": 9
+    },
+    {
+      "variant_id": "sliding-window-max-sum__mermaid-graph__curated",
+      "problem_id": "sliding-window-max-sum",
+      "problem_title": "Max sum of k adjacent",
+      "problem_statement": "a=[4,7,2,6,1,9] k=3",
+      "variant_kind": "mermaid-graph",
+      "model": "curated",
+      "route": "curated:mermaid",
+      "file": "sliding-window-max-sum__mermaid-graph__curated.json",
+      "n_steps": 2
+    },
+    {
+      "variant_id": "two-sum__algebra-katex__ali_qwen3.8-flash",
+      "problem_id": "two-sum",
+      "problem_title": "Two Sum",
+      "problem_statement": "nums=[2,7,11,15], target=9",
+      "variant_kind": "algebra-katex",
+      "model": "ali/qwen3.8-flash",
+      "route": "inferhub:ali/qwen3.8-flash",
+      "file": "two-sum__algebra-katex__ali_qwen3.8-flash.json",
+      "n_steps": 6
+    },
+    {
+      "variant_id": "two-sum__box-array-ascii__curated",
+      "problem_id": "two-sum",
+      "problem_title": "Two Sum",
+      "problem_statement": "nums=[2,7,11,15], target=9 \u2192 [0,1]",
+      "variant_kind": "box-array-ascii",
+      "model": "curated",
+      "route": "curated:box",
+      "file": "two-sum__box-array-ascii__curated.json",
+      "n_steps": 5
+    },
+    {
+      "variant_id": "two-sum__code-tree__cb_deepseek-v4.1-flash",
+      "problem_id": "two-sum",
+      "problem_title": "Two Sum",
+      "problem_statement": "nums=[2,7,11,15], target=9",
+      "variant_kind": "code-tree",
+      "model": "cb/deepseek-v4.1-flash",
+      "route": "inferhub:cb/deepseek-v4.1-flash",
+      "file": "two-sum__code-tree__cb_deepseek-v4.1-flash.json",
+      "n_steps": 5
+    },
+    {
+      "variant_id": "two-sum__mermaid-graph__curated",
+      "problem_id": "two-sum",
+      "problem_title": "Two Sum",
+      "problem_statement": "nums=[2,7,11,15], target=9",
+      "variant_kind": "mermaid-graph",
+      "model": "curated",
+      "route": "curated:mermaid",
+      "file": "two-sum__mermaid-graph__curated.json",
+      "n_steps": 4
+    }
+  ],
+  "problems": [
+    "binary-search",
+    "reverse-linked-list",
+    "sliding-window-max-sum",
+    "two-sum"
+  ]
+}

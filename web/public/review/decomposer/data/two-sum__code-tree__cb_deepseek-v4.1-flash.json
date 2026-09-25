@@ -1,0 +1,130 @@
+{
+  "problem_id": "two-sum",
+  "variant_kind": "code-tree",
+  "strategy": "Incrementally build hash-map pseudocode for Two Sum using nums=[2,7,11,15], target=9.",
+  "steps": [
+    {
+      "step_id": "s01",
+      "step_index": 1,
+      "concept": "Problem decomposition",
+      "goal": "Identify that the function must return indices of two values summing to target.",
+      "representation": "code_tree",
+      "artifact": "function twoSum(nums, target):\n    # find two indices i, j such that nums[i] + nums[j] == target\n    return []",
+      "artifact_format": "code",
+      "tutor_prompt": "What is the goal of twoSum for nums=[2,7,11,15], target=9?",
+      "expected_answer_patterns": [
+        "return indices of 2 and 7",
+        "indices [0,1]",
+        "pair summing to 9"
+      ],
+      "on_correct": "Yes: find indices whose values sum to target.",
+      "on_wrong": "Focus on returning indices, not values."
+    },
+    {
+      "step_id": "s02",
+      "step_index": 2,
+      "concept": "Hash map initialization",
+      "goal": "Introduce a map from seen values to their indices.",
+      "representation": "code_tree",
+      "artifact": "function twoSum(nums, target):\n    seen = {}   # value -> index\n    return []",
+      "artifact_format": "code",
+      "tutor_prompt": "What should seen store to support O(1) complement lookup?",
+      "expected_answer_patterns": [
+        "value to index map",
+        "store value -> index",
+        "hash map of seen values"
+      ],
+      "on_correct": "Correct: map each seen value to its index.",
+      "on_wrong": "We need value -> index, so complement lookup can return index."
+    },
+    {
+      "step_id": "s03",
+      "step_index": 3,
+      "concept": "Iteration",
+      "goal": "Loop through nums while tracking current value and index.",
+      "representation": "code_tree",
+      "artifact": "function twoSum(nums, target):\n    seen = {}\n    for i from 0 to length(nums)-1:\n        current = nums[i]\n        # process current\n    return []",
+      "artifact_format": "code",
+      "tutor_prompt": "What variable tracks the current value and its index during the loop?",
+      "expected_answer_patterns": [
+        "i and nums[i]",
+        "current = nums[i]",
+        "loop index i"
+      ],
+      "on_correct": "Yes: i is index, current is nums[i].",
+      "on_wrong": "Use loop index i and current value nums[i]."
+    },
+    {
+      "step_id": "s04",
+      "step_index": 4,
+      "concept": "Complement lookup",
+      "goal": "Compute target-current and return if complement was seen earlier.",
+      "representation": "code_tree",
+      "artifact": "function twoSum(nums, target):\n    seen = {}\n    for i from 0 to length(nums)-1:\n        current = nums[i]\n        complement = target - current\n        if complement in seen:\n            return [seen[complement], i]\n    return []",
+      "artifact_format": "code",
+      "tutor_prompt": "Given current=7 and target=9, what complement is needed, and is it in seen after first iteration?",
+      "expected_answer_patterns": [
+        "2",
+        "complement=2",
+        "yes, seen has 2 -> 0"
+      ],
+      "on_correct": "Exactly: complement 2 was stored at index 0, so return [0,1].",
+      "on_wrong": "Compute target-current and check seen."
+    },
+    {
+      "step_id": "s05",
+      "step_index": 5,
+      "concept": "Store after checking",
+      "goal": "Add current to seen only after the complement check to avoid reusing the same index.",
+      "representation": "code_tree",
+      "artifact": "function twoSum(nums, target):\n    seen = {}\n    for i from 0 to length(nums)-1:\n        current = nums[i]\n        complement = target - current\n        if complement in seen:\n            return [seen[complement], i]\n        seen[current] = i\n    return []",
+      "artifact_format": "code",
+      "tutor_prompt": "Why store current in seen after the complement check rather than before?",
+      "expected_answer_patterns": [
+        "avoid matching same element with itself",
+        "prevent using same index twice",
+        "so complement check uses only earlier elements"
+      ],
+      "on_correct": "Correct: storing after ensures we only pair with previous elements.",
+      "on_wrong": "Storing before could reuse the same index."
+    }
+  ],
+  "_meta": {
+    "variant_id": "two-sum__code-tree__cb_deepseek-v4.1-flash",
+    "problem_id": "two-sum",
+    "problem_title": "Two Sum",
+    "problem_statement": "nums=[2,7,11,15], target=9",
+    "variant_kind": "code-tree",
+    "model": "cb/deepseek-v4.1-flash",
+    "route": "inferhub:cb/deepseek-v4.1-flash",
+    "usage": {
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "cached_tokens": 0,
+      "completion_thinking_tokens": 1227,
+      "completion_tokens": 2139,
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": 0,
+        "audio_tokens": 0,
+        "cached_tokens": 0,
+        "reasoning_tokens": 1227,
+        "rejected_prediction_tokens": 0
+      },
+      "cost": 1.3053e-05,
+      "credit": 0,
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 205,
+      "prompt_cache_write_tokens": 0,
+      "prompt_tokens": 146,
+      "prompt_tokens_details": {
+        "accepted_prediction_tokens": 0,
+        "audio_tokens": 0,
+        "cached_tokens": 0,
+        "reasoning_tokens": 0,
+        "rejected_prediction_tokens": 0
+      },
+      "total_tokens": 2344
+    },
+    "sec": 10.7
+  }
+}
