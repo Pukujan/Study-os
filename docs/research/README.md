@@ -5,7 +5,7 @@ This directory is the **durable home** for Study OS research notes and decision 
 | File | What it is | Issues |
 |---|---|---|
 | [`sos-0005-evidence-review.md`](./sos-0005-evidence-review.md) | SOS-0005 research gate: 15 hypotheses, verdicts, 86 sources | [#107](https://github.com/Pukujan/Study-os/issues/107) |
-| [`voice-robustness.md`](./voice-robustness.md) | SOS-0009 voice robustness: STT/TTS stack, biasing, grading cascade, cold-boot TTS dropdown, box measurements | [#106](https://github.com/Pukujan/Study-os/issues/106), [#107](https://github.com/Pukujan/Study-os/issues/107) |
+| [`voice-robustness.md`](./voice-robustness.md) | SOS-0009 voice robustness (authoritative from `62f1969` / PR #109): STT/TTS stack, biasing, grading cascade, cold-boot TTS dropdown, box measurements | [#106](https://github.com/Pukujan/Study-os/issues/106), [#107](https://github.com/Pukujan/Study-os/issues/107), [#109](https://github.com/Pukujan/Study-os/pull/109) |
 | [`decisions-2026-09-24.md`](./decisions-2026-09-24.md) | Alex's post-review product decisions (anime via CGM, no Netflix carousel, companion panel, pet/robot roles, cheap voice, LLM logging, feedback, goldens-as-evals) | [#107](https://github.com/Pukujan/Study-os/issues/107) and linked leaves |
 
 ## Rules

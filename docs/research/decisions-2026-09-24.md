@@ -11,7 +11,7 @@ Source comments (ET): [#107 Alex decisions](https://github.com/Pukujan/Study-os/
 | D3 | **One home screen with all lanes** (DSA, HESI, AI from scratch, Study OS) and a single primary **Continue** action; fix HESI-only bug. | [#107](https://github.com/Pukujan/Study-os/issues/107), [#105](https://github.com/Pukujan/Study-os/issues/105), [#101](https://github.com/Pukujan/Study-os/issues/101) | Aligns with H10. |
 | D4 | **Companion panel on one screen**: question card always visible; panel opens beside (desktop) or as half-sheet (mobile). Variants / worked examples update the card **in place**. | [#107](https://github.com/Pukujan/Study-os/issues/107), [#101](https://github.com/Pukujan/Study-os/issues/101) | H15 supported principle. Design §9 on draft PR #102 — not merged in this docs PR. |
 | D5 | **Pet = chibi Learner (human)**; **robot = idle visitor only** (rare, never during assessment / typing). | [#107](https://github.com/Pukujan/Study-os/issues/107), [#103](https://github.com/Pukujan/Study-os/issues/103) | H14 weak-to-supported conditional. Character bible on draft PR #102. |
-| D6 | **Voice = cheap, no paid speech models.** Browser TTS (`speechSynthesis`) + OS STT cascade where available; open fallbacks (transformers.js Whisper/Moonshine, faster-whisper on gravebuster). Optional I/O mode on suitable lessons, not a chatbot. **Cold-boot TTS voice dropdown** with lazy engines (see voice research §10). | [#107](https://github.com/Pukujan/Study-os/issues/107), [#106](https://github.com/Pukujan/Study-os/issues/106) | H11 stayed weak for a full agent; cheap optional mode approved. Full stack: [`voice-robustness.md`](./voice-robustness.md). |
+| D6 | **Voice = cheap, no paid speech models.** Browser TTS (`speechSynthesis`) + OS STT cascade where available; open fallbacks (transformers.js Whisper/Moonshine, faster-whisper on gravebuster). Optional I/O mode on suitable lessons, not a chatbot. **Cold-boot TTS voice dropdown** with lazy engines. Concrete stack: table below (from SOS-0009 @ `62f1969`). | [#107](https://github.com/Pukujan/Study-os/issues/107), [#106](https://github.com/Pukujan/Study-os/issues/106), [PR #109](https://github.com/Pukujan/Study-os/pull/109) | H11 stayed weak for a full agent; cheap optional mode approved. Full note: [`voice-robustness.md`](./voice-robustness.md). |
 | D7 | **Spoken-answer grading cascade:** rules / normalised match → MiniLM or bge-small vs expected answers and misconceptions → Jev when unsure; always-editable transcript; "did you mean…?". | [#106](https://github.com/Pukujan/Study-os/issues/106), [#107](https://github.com/Pukujan/Study-os/issues/107) | Detail in voice research §7. |
 | D8 | **LLM-first with versioned prompts and full logging** (prompt version, PII-scrubbed I/O, model/route, tokens, cost, latency, validator, next-step outcome). Ground prompts in goldens/solutions from day one; cache proven outputs later. | [#107](https://github.com/Pukujan/Study-os/issues/107), [#101](https://github.com/Pukujan/Study-os/issues/101), [#106](https://github.com/Pukujan/Study-os/issues/106) | Amends H12 ordering: grounded-first, then cache. |
 | D9 | **Like / dislike (+ why) feedback** on every step and every tutor message; store with prompt version, model, step, session; admin or Metabase-ready SQL view. | [#107](https://github.com/Pukujan/Study-os/issues/107), [#101](https://github.com/Pukujan/Study-os/issues/101) | Primary validation path without human spot-checkers. |
@@ -27,3 +27,22 @@ Source comments (ET): [#107 Alex decisions](https://github.com/Pukujan/Study-os/
 ## How to cite
 
 Prefer linking files under `docs/research/` on `main` over issue-comment URLs. When a decision changes, append a dated row here rather than editing history out of earlier rows.
+
+## Recommended voice stack (from SOS-0009 / `voice-robustness.md` @ `62f1969`)
+
+Source: [`voice-robustness.md`](./voice-robustness.md) on branch `task/SOS-0009-voice-robustness-research` (PR #109). Research only — not a build commit.
+
+| Layer | Recommendation |
+|---|---|
+| **STT primary** | Browser Moonshine (streaming, MIT English) or Whisper `small.en` / `base.en` via transformers.js, with **lesson hotwords / keyterms** every time |
+| **STT server fallback** | gravebuster `faster-whisper small.en` + hotwords (or Parakeet-TDT-0.6B int8 via sherpa-onnx); never `distil-small.en` with hotwords (degenerates) |
+| **STT vendor opt-in** | Chrome/Edge Web Speech API only as labelled opt-in (`processLocally` when available) |
+| **Grading** | Normalise → exact/alias → phonetic+fuzzy → MiniLM/bge-small embeddings → Jev only when unsure; always-editable transcript; "Did you mean X?" |
+| **Front-end audio** | echoCancellation + autoGainControl on; Silero VAD; no aggressive ML denoiser by default |
+| **TTS default** | Always-warm **Kokoro-82M** (incl. original style blend); kokoro.js in-browser when WebGPU available |
+| **TTS dropdown (cold-boot)** | Lazy Pocket TTS (CC0/CC-BY voices only) and Piper (PD/CC0); Chatterbox only if gravebuster latency bar clears; device `speechSynthesis` last resort |
+| **Exclude** | F5-TTS / XTTS-v2 (NC weights); Style-Bert-VITS2 / GPT-SoVITS for v1; per-user accent LoRA for now |
+| **Privacy** | No raw audio stored by default |
+
+Product decisions D6/D7 above already chose cheap browser-first voice; this table is the research note's concrete stack for when voice is built.
+

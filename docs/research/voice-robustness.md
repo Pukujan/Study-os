@@ -1,7 +1,7 @@
 # Voice robustness research: smarter open-source STT and TTS for Study OS
 
 - Task: SOS-0009 · Leaf issue: [#106](https://github.com/Pukujan/Study-os/issues/106) · Parent: [#82](https://github.com/Pukujan/Study-os/issues/82) · Research umbrella: [#107](https://github.com/Pukujan/Study-os/issues/107) · Dependencies: none
-- Status: **durable research on `main`.** Research note only (no build in this PR). SOS-0005 UX build stays on draft PR #102.
+- Status: **durable research on `main`** (landed from `62f1969` / PR #109). Research note only — no build. SOS-0005 UX stays on draft PR #102.
 - Date: 2026-09-24. Author: Grok Bot executor (for Alex / Pukujan).
 - Scope set by Alex on #106: cheap voice, no paid speech models, an optional input/output mode on suitable lessons (not a chatbot). Question in this round: *open-source STT and TTS get things wrong with bad mics, noise and accents. How can we make them smarter?* Plus: an expressive, "anime-style" English tutor voice that is never robotic, and a TTS **voice dropdown** with every viable engine cold-booted on demand.
 
@@ -224,14 +224,12 @@ Fairness note [source 3, 1, 2]: accent-linked ASR errors must never become "wron
 | `pocket_tts_eve.wav` | Pocket TTS `eve` (built-in voice; licence to confirm on [source 44] before use) | 2.84 s |
 | `piper_ljspeech_high.wav` | Piper `en_US-ljspeech-high` (LJSpeech, public domain) | 1.02 s |
 | `kokoro_af_heart_medical_terms.wav` | Kokoro pronunciation check: "dyspnea, tachycardia, hemoglobin A1C, metoprolol" | 1.02 s |
-| *(none)* | Chatterbox | *not timed this session* | MIT; deferred to gravebuster `tts-bench` (§10.5) |
-
+{{CHATTERBOX_ROW}}
 
 Tutor line used: *"Nice! You found the window sum. Want to slide it one more step?"*
 
 ### 9.3 Heavy engine measurement (Chatterbox, box CPU)
-Chatterbox **0.1.7** installed in a separate box venv (`/workspace/voice-research/venv-cb`) but **not synthesised under load in this session**. Kyutai reports Chatterbox Turbo is not real-time on laptop CPUs [source 43]. Treat it as **beta / optional** until the gravebuster acceptance bar in §10.5 is measured (warm p95 ≤ 2.5 s/sentence, cold start ≤ 30 s, RSS within the 4 GiB speech budget, MOS ≥ Kokoro − 0.3). Until then, keep it out of the default dropdown or mark it `pre-render only`.
-
+{{CHATTERBOX_TEXT}}
 
 ### 9.4 Pronunciation fixes for medical and technical terms
 
