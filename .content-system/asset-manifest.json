@@ -1,5 +1,348 @@
 {
   "schema_version": "content-generation.asset-manifest.v1",
   "system_version": "0.4.0",
-  "assets": []
+  "assets": [
+    {
+      "id": "char-learner-turnaround",
+      "path": ".content-system/characters/refs/learner-turnaround.webp",
+      "role": "character-reference",
+      "subject": "learner",
+      "description": "turnaround (front / three-quarter / side), mature anime",
+      "dimensions": "1024x1024",
+      "model": "cb/gemini-3.1-flash-image",
+      "provider": "InferHub",
+      "prompt_file": ".content-system/characters/prompts/learner-turn.full.txt",
+      "prompt_sha256": "91ab569f5f09c5b0dae5294f7c8ca9ecde9d05708fcba3699d992c743b77ad04",
+      "references": [
+        {
+          "path": "cgm-look/assets/marketing/story-loop-square.png",
+          "sha256": "c38720314c79e7b1cc5693ebbb3e50fd2524675c3171e28e21c497c9d5c5d0c6"
+        }
+      ],
+      "settings": {
+        "modalities": [
+          "image",
+          "text"
+        ],
+        "seed": "not supported by provider"
+      },
+      "source_sha256": "2582d8eb5bd8077127c56f41aacf8731bafb2a938f2b33e6421b73d94c501f9f",
+      "final_sha256": "60aec2c99da0ba693f8ce0c1fd25f34967bc0322f6835d35c061576141511fc8",
+      "review": "canonical (accepted by orchestrator; owner review pending)",
+      "generated_at": "2026-09-24T19:53:51-0400"
+    },
+    {
+      "id": "char-learner-expressions",
+      "path": ".content-system/characters/refs/learner-expressions.webp",
+      "role": "character-reference",
+      "subject": "learner",
+      "description": "expression sheet, mature anime",
+      "dimensions": "1024x1024",
+      "model": null,
+      "provider": "InferHub",
+      "prompt_file": ".content-system/characters/prompts/",
+      "prompt_sha256": null,
+      "references": [],
+      "settings": {
+        "modalities": [
+          "image",
+          "text"
+        ],
+        "seed": "not supported by provider"
+      },
+      "source_sha256": "eb3773dfac9a1c783326b812ad85b04632b16d8c880fce144cb5fb2665a00bbc",
+      "final_sha256": "61a61f590f00ca3e3329beada2d3857eb33ab17cc5ac00c8f521c8835f42f2f3",
+      "review": "canonical (accepted by orchestrator; owner review pending)",
+      "generated_at": null
+    },
+    {
+      "id": "char-helper-turnaround",
+      "path": ".content-system/characters/refs/helper-turnaround.webp",
+      "role": "character-reference",
+      "subject": "helper",
+      "description": "turnaround (front / three-quarter / side)",
+      "dimensions": "1024x1024",
+      "model": "cb/gemini-3.1-flash-image",
+      "provider": "InferHub",
+      "prompt_file": ".content-system/characters/prompts/robot-turn.full.txt",
+      "prompt_sha256": "07e8b28eb045abe8be80d83158daf940e427b5ae44e6f071dbd9015f064aa454",
+      "references": [
+        {
+          "path": "cgm-look/assets/marketing/story-loop-square.png",
+          "sha256": "c38720314c79e7b1cc5693ebbb3e50fd2524675c3171e28e21c497c9d5c5d0c6"
+        }
+      ],
+      "settings": {
+        "modalities": [
+          "image",
+          "text"
+        ],
+        "seed": "not supported by provider"
+      },
+      "source_sha256": "b62d72772e08426bc46871299079b1eecb30f6234e52dcfebd993a82d407a2d5",
+      "final_sha256": "e6c48d70c771a4dfc6ebc0a8adf3c48c92c8f51430d28ece0431d615c420bac7",
+      "review": "canonical (accepted by orchestrator; owner review pending)",
+      "generated_at": "2026-09-24T19:53:52-0400"
+    },
+    {
+      "id": "char-helper-expressions",
+      "path": ".content-system/characters/refs/helper-expressions.webp",
+      "role": "character-reference",
+      "subject": "helper",
+      "description": "expression sheet",
+      "dimensions": "1024x1024",
+      "model": null,
+      "provider": "InferHub",
+      "prompt_file": ".content-system/characters/prompts/",
+      "prompt_sha256": null,
+      "references": [],
+      "settings": {
+        "modalities": [
+          "image",
+          "text"
+        ],
+        "seed": "not supported by provider"
+      },
+      "source_sha256": "921bd04e1422fee3dac7267985452852e48abbcd53163e9d01f6f16fad073fd1",
+      "final_sha256": "49628de73d67deeaecbe840d46048eec0fe3fe37d2f498ff41c962f0c84836d8",
+      "review": "canonical (accepted by orchestrator; owner review pending)",
+      "generated_at": null
+    },
+    {
+      "id": "char-pair-key-art",
+      "path": ".content-system/characters/refs/pair-key-art.webp",
+      "role": "character-reference",
+      "subject": "both",
+      "description": "key art: learner + helper, mature anime, style anchor for general art",
+      "dimensions": "1024x1024",
+      "model": null,
+      "provider": "InferHub",
+      "prompt_file": ".content-system/characters/prompts/",
+      "prompt_sha256": null,
+      "references": [],
+      "settings": {
+        "modalities": [
+          "image",
+          "text"
+        ],
+        "seed": "not supported by provider"
+      },
+      "source_sha256": "1d1bd061197f487558c83c12a2efaf85805ef35ca531d0d43e876ae90ee38cf2",
+      "final_sha256": "e8105b7795ac4061ed81d108571074a624930b2285f8cd8f077fe47ae8ccfee9",
+      "review": "canonical (accepted by orchestrator; owner review pending)",
+      "generated_at": null
+    },
+    {
+      "id": "char-learner-chibi-master",
+      "path": ".content-system/characters/refs/learner-chibi-master.webp",
+      "role": "character-reference",
+      "subject": "learner",
+      "description": "chibi PET master (main in-app mascot)",
+      "dimensions": "1024x1024",
+      "model": null,
+      "provider": "InferHub",
+      "prompt_file": ".content-system/characters/prompts/",
+      "prompt_sha256": null,
+      "references": [],
+      "settings": {
+        "modalities": [
+          "image",
+          "text"
+        ],
+        "seed": "not supported by provider"
+      },
+      "source_sha256": "5f610925f64d3f0601dee097f709f88b75fbace01afc3049432d6190b8238e6f",
+      "final_sha256": "7a98a1e42e4761b6a1090e6c436ff9f53c855ee6faebe5f279d8bb69bd6d3b0f",
+      "review": "canonical (accepted by orchestrator; owner review pending)",
+      "generated_at": null,
+      "processing": "chroma-keyed to transparent (mascot/visit.py key())"
+    },
+    {
+      "id": "char-helper-chibi-master",
+      "path": ".content-system/characters/refs/helper-chibi-master.webp",
+      "role": "character-reference",
+      "subject": "helper",
+      "description": "chibi robot master (supporting idle visitor)",
+      "dimensions": "1024x1024",
+      "model": null,
+      "provider": "InferHub",
+      "prompt_file": ".content-system/characters/prompts/",
+      "prompt_sha256": null,
+      "references": [],
+      "settings": {
+        "modalities": [
+          "image",
+          "text"
+        ],
+        "seed": "not supported by provider"
+      },
+      "source_sha256": "bc6d890322568958738305a79740bca5f9599363383ac90c9f7eb87fb9a7ce38",
+      "final_sha256": "9237728e93a83ec51dca897b59b4eb3acd0c1d2868a4b788face83122968707e",
+      "review": "canonical (accepted by orchestrator; owner review pending)",
+      "generated_at": null,
+      "processing": "chroma-keyed to transparent (mascot/visit.py key())"
+    },
+    {
+      "id": "mascot-duo-headpat",
+      "path": "web/public/mascot/duo-headpat.webp",
+      "role": "mascot-sprite",
+      "frames": 9,
+      "frame_w": 216,
+      "frame_h": 144,
+      "bytes": 54648,
+      "model": null,
+      "provider": "InferHub",
+      "prompt_file": ".content-system/characters/prompts/",
+      "prompt_sha256": null,
+      "references": [],
+      "source_sha256": "2e1a705dd53461d8b72da4afaba897f2367e9fca24c4d6a4f5054a9e83a93ac9",
+      "final_sha256": "c1128d7458f747b0efd1e7718b208b62cf125dd7ac97a0478161d6515e1fde25",
+      "processing": "tools: chroma-key, grid split, union-bbox alignment, transparent WebP strip (mascot/sprites.py)",
+      "review": "draft (orchestrator + cheap vision critique; owner review pending)"
+    },
+    {
+      "id": "mascot-duo-starplay",
+      "path": "web/public/mascot/duo-starplay.webp",
+      "role": "mascot-sprite",
+      "frames": 9,
+      "frame_w": 216,
+      "frame_h": 144,
+      "bytes": 62074,
+      "model": null,
+      "provider": "InferHub",
+      "prompt_file": ".content-system/characters/prompts/",
+      "prompt_sha256": null,
+      "references": [],
+      "source_sha256": "1f8baf8fc943c546406d448ca191ec331a0027fc3d7f0ddc42214961dafdce7b",
+      "final_sha256": "4532fe905b4670b92c0cd714f1f6ead091f65a2e93bfcc08598ff96ca2529901",
+      "processing": "tools: chroma-key, grid split, union-bbox alignment, transparent WebP strip (mascot/sprites.py)",
+      "review": "draft (orchestrator + cheap vision critique; owner review pending)"
+    },
+    {
+      "id": "mascot-pet-celebrate",
+      "path": "web/public/mascot/pet-celebrate.webp",
+      "role": "mascot-sprite",
+      "frames": 6,
+      "frame_w": 144,
+      "frame_h": 176,
+      "bytes": 32156,
+      "model": null,
+      "provider": "InferHub",
+      "prompt_file": ".content-system/characters/prompts/",
+      "prompt_sha256": null,
+      "references": [],
+      "source_sha256": "386c1edba268e84bb458050f7482efded98b242848ff9ad8d944adbb9deb33d1",
+      "final_sha256": "538337749a65891df8a999a283d6dda1144cfec1f1f515b4ea05db99e166674b",
+      "processing": "tools: chroma-key, grid split, union-bbox alignment, transparent WebP strip (mascot/sprites.py)",
+      "review": "draft (orchestrator + cheap vision critique; owner review pending)"
+    },
+    {
+      "id": "mascot-pet-encourage",
+      "path": "web/public/mascot/pet-encourage.webp",
+      "role": "mascot-sprite",
+      "frames": 6,
+      "frame_w": 144,
+      "frame_h": 176,
+      "bytes": 32060,
+      "model": null,
+      "provider": "InferHub",
+      "prompt_file": ".content-system/characters/prompts/",
+      "prompt_sha256": null,
+      "references": [],
+      "source_sha256": "753dc585b099dc399beada2d8ae3a97c178894f6f1e8f28a3a4768ef8be714ce",
+      "final_sha256": "30cfcd20809effce737b120b66f1431def1c6148972515f6725131c568d53f59",
+      "processing": "tools: chroma-key, grid split, union-bbox alignment, transparent WebP strip (mascot/sprites.py)",
+      "review": "draft (orchestrator + cheap vision critique; owner review pending)"
+    },
+    {
+      "id": "mascot-pet-idle",
+      "path": "web/public/mascot/pet-idle.webp",
+      "role": "mascot-sprite",
+      "frames": 6,
+      "frame_w": 144,
+      "frame_h": 176,
+      "bytes": 32328,
+      "model": null,
+      "provider": "InferHub",
+      "prompt_file": ".content-system/characters/prompts/",
+      "prompt_sha256": null,
+      "references": [],
+      "source_sha256": "3dc1d9b6a3da705eacc797af2d989dd74f51ef1c2a5285b22dda40e5ccc024a7",
+      "final_sha256": "482ed65d3ac39f7445611ba0858056d0c17a7945ea16ed881faca0472345b2a0",
+      "processing": "tools: chroma-key, grid split, union-bbox alignment, transparent WebP strip (mascot/sprites.py)",
+      "review": "draft (orchestrator + cheap vision critique; owner review pending)"
+    },
+    {
+      "id": "mascot-pet-talking",
+      "path": "web/public/mascot/pet-talking.webp",
+      "role": "mascot-sprite",
+      "frames": 6,
+      "frame_w": 144,
+      "frame_h": 176,
+      "bytes": 34590,
+      "model": null,
+      "provider": "InferHub",
+      "prompt_file": ".content-system/characters/prompts/",
+      "prompt_sha256": null,
+      "references": [],
+      "source_sha256": "c6471472d0899272f650ab22870d69d78d1f9408772cbc1f15398e52328cb089",
+      "final_sha256": "dae9c01275dbeb43e0d44a6d2747f7afde3d287097bff149cbb5d06bb40008de",
+      "processing": "tools: chroma-key, grid split, union-bbox alignment, transparent WebP strip (mascot/sprites.py)",
+      "review": "draft (orchestrator + cheap vision critique; owner review pending)"
+    },
+    {
+      "id": "mascot-pet-thinking",
+      "path": "web/public/mascot/pet-thinking.webp",
+      "role": "mascot-sprite",
+      "frames": 6,
+      "frame_w": 144,
+      "frame_h": 176,
+      "bytes": 35262,
+      "model": null,
+      "provider": "InferHub",
+      "prompt_file": ".content-system/characters/prompts/",
+      "prompt_sha256": null,
+      "references": [],
+      "source_sha256": "86113ff27213f7eb653c14e7f1c5672aae673ddc1b8035fd1e830c4281ab9d3a",
+      "final_sha256": "4b4e46d16f3aeb8dd7e68e325a9309567662cc963b37a9fc04488d57ff81505b",
+      "processing": "tools: chroma-key, grid split, union-bbox alignment, transparent WebP strip (mascot/sprites.py)",
+      "review": "draft (orchestrator + cheap vision critique; owner review pending)"
+    },
+    {
+      "id": "mascot-pet-wave",
+      "path": "web/public/mascot/pet-wave.webp",
+      "role": "mascot-sprite",
+      "frames": 6,
+      "frame_w": 144,
+      "frame_h": 176,
+      "bytes": 32460,
+      "model": null,
+      "provider": "InferHub",
+      "prompt_file": ".content-system/characters/prompts/",
+      "prompt_sha256": null,
+      "references": [],
+      "source_sha256": "163d056649e35fd480bf6c0044b94ebd1606e23186ec1701aeeac5d9e1425f09",
+      "final_sha256": "6b914b780d791034f8c6ff4c1ecfff52886bbe5e84b2ce0ac86da2436f08110b",
+      "processing": "tools: chroma-key, grid split, union-bbox alignment, transparent WebP strip (mascot/sprites.py)",
+      "review": "draft (orchestrator + cheap vision critique; owner review pending)"
+    },
+    {
+      "id": "mascot-robot-hover",
+      "path": "web/public/mascot/robot-hover.webp",
+      "role": "mascot-sprite",
+      "frames": 6,
+      "frame_w": 120,
+      "frame_h": 160,
+      "bytes": 20134,
+      "model": null,
+      "provider": "InferHub",
+      "prompt_file": ".content-system/characters/prompts/",
+      "prompt_sha256": null,
+      "references": [],
+      "source_sha256": "bc6d890322568958738305a79740bca5f9599363383ac90c9f7eb87fb9a7ce38",
+      "final_sha256": "58c75b4a4e4a8c8c6471902be88ca83869d2f650e69300407840f7292e0014d7",
+      "processing": "keyed chibi master + programmatic 6-frame hover bob (mascot/visit.py)",
+      "review": "draft (orchestrator + cheap vision critique; owner review pending)"
+    }
+  ]
 }

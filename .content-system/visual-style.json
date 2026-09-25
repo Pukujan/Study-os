@@ -1,7 +1,7 @@
 {
   "schema_version": "content-generation.visual-style.v1",
-  "reference_asset": "none yet: no reviewed Study OS visual exists; image generation is deferred until Research Gate R0 (AGENTS.md 'Explicitly deferred')",
-  "generation_workflow": "built-in image_gen",
+  "reference_asset": ".content-system/characters/refs/pair-key-art.webp (style anchor: CGM assets/marketing/story-loop-square.png)",
+  "generation_workflow": "InferHub cb/gemini-3.1-flash-image with canonical character refs; see .content-system/characters/README.md",
   "narrative_roles": [
     "hero",
     "problem",
@@ -11,14 +11,20 @@
     "social"
   ],
   "palette": {
-    "background": "to be chosen at first reviewed visual",
-    "primary": "to be chosen",
-    "accent": "to be chosen",
-    "warm_accent": "to be chosen",
-    "text": "to be chosen"
+    "background": "#111B4D night ink (dark) / #F4F1FF cream (light)",
+    "primary": "#8F7CFF violet",
+    "accent": "#63D9FF cyan",
+    "warm_accent": "#FF8A70 coral",
+    "text": "#111B4D on light, #F4F1FF on dark",
+    "support": {
+      "mint": "#94E3CB",
+      "gold": "#FFD28A"
+    },
+    "light": "blue-violet evening light with warm accents"
   },
   "subjects": [
-    "a learner and deterministic trace/state diagrams; never a human-like AI tutor presented as authority"
+    "canonical characters only (.content-system/characters): the adult anime Learner and the robot Helper; the chibi Learner is the in-app pet, the chibi Helper is an idle-only supporting visitor; deterministic trace/state diagrams stay code-rendered",
+    "never a human-like AI tutor presented as authority"
   ],
   "composition": [
     "one dominant idea",
@@ -48,7 +54,13 @@
     "implies mastery or efficacy not supported by evidence",
     "depicts private learner data or transcript text",
     "uses generated media as authoritative algorithm state",
-    "adopts CGM's default characters or scene instead of a Study OS direction"
+    "adopts CGM's default characters instead of the Study OS canonical characters",
+    "off-model: differs from the canonical refs (hair clip side, beauty mark, outfit colours, robot fin-ears/scarf)",
+    "hand-authored SVG used in place of an image asset"
   ],
-  "status_note": "Provisional placeholder so the adapter is complete; the palette and reference asset are an owner decision for the first reviewed visual."
+  "status_note": "CGM palette and canonical characters applied in SOS-0005 (Refs #103); owner review pending.",
+  "styles": {
+    "general_art": "mature anime editorial (lesson illustrations, onboarding, lane cards, empty states, hero)",
+    "mascot": "chibi sticker style of the same canonical characters"
+  }
 }
