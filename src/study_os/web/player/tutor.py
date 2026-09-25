@@ -142,13 +142,13 @@ def reply(
 ) -> TutorResult:
     """Call the guarded tutor, validate, repair once, then fall back."""
 
-    version = version or getattr(settings, "tutor_prompt_version", _DEFAULT_VERSION)
+    resolved: str = version or getattr(settings, "tutor_prompt_version", None) or _DEFAULT_VERSION
 
     if not llm_enabled or llm is None:
         return TutorResult(
             reply_md=_fallback_hint(lesson, state),
             served="fallback",
-            prompt_version=version,
+            prompt_version=resolved,
             route=None,
             model=None,
             tokens=0,
@@ -163,7 +163,7 @@ def reply(
         return TutorResult(
             reply_md=_fallback_hint(lesson, state),
             served="fallback",
-            prompt_version=version,
+            prompt_version=resolved,
             route=None,
             model=None,
             tokens=0,
@@ -174,7 +174,7 @@ def reply(
             suggested_action=None,
         )
 
-    messages = build_messages(lesson, state, learner_message, history or [], version)
+    messages = build_messages(lesson, state, learner_message, history or [], resolved)
 
     probe = _engine._current_probe(lesson, state)  # noqa: SLF001
     forbidden: tuple[str, ...] = ()
@@ -199,7 +199,7 @@ def reply(
         return TutorResult(
             reply_md=_fallback_hint(lesson, state),
             served="fallback",
-            prompt_version=version,
+            prompt_version=resolved,
             route=None,
             model=None,
             tokens=0,
@@ -217,7 +217,7 @@ def reply(
         return TutorResult(
             reply_md=reply_md,
             served="generated",
-            prompt_version=version,
+            prompt_version=resolved,
             route=response.route,
             model=response.route,
             tokens=response.tokens_in + response.tokens_out,
@@ -244,7 +244,7 @@ def reply(
         return TutorResult(
             reply_md=_fallback_hint(lesson, state),
             served="fallback",
-            prompt_version=version,
+            prompt_version=resolved,
             route=None,
             model=None,
             tokens=0,
@@ -262,7 +262,7 @@ def reply(
         return TutorResult(
             reply_md=reply_md2,
             served="generated",
-            prompt_version=version,
+            prompt_version=resolved,
             route=response2.route,
             model=response2.route,
             tokens=response2.tokens_in + response2.tokens_out,
@@ -276,7 +276,7 @@ def reply(
     return TutorResult(
         reply_md=_fallback_hint(lesson, state),
         served="fallback",
-        prompt_version=version,
+        prompt_version=resolved,
         route=None,
         model=None,
         tokens=0,
