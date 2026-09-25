@@ -16,3 +16,6 @@ This directory is the **durable home** for Study OS research notes and decision 
 4. When Alex decides, append to a dated decisions file (or a new dated file) and link the evidence note that informed it.
 
 Draft UX work continues on `task/SOS-0005-lesson-player-redesign` (PR #102) and is out of scope for this tree until approved.
+
+- [`pedagogical-decomposer.md`](./pedagogical-decomposer.md) — SOS-0011 research gate (CTA/ITS/representations/LLM curricula; recovery test; architecture).
+- [`decomposer-review/`](./decomposer-review/) — human-eval UI data + mirror of `/review/decomposer`.

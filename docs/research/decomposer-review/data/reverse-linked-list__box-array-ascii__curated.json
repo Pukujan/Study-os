@@ -1,0 +1,104 @@
+{
+  "problem_id": "reverse-linked-list",
+  "variant_kind": "box-array-ascii",
+  "strategy": "Three pointers prev/curr/next; reverse one edge at a time.",
+  "concept_graph": [
+    {
+      "id": "list_picture",
+      "depends_on": [],
+      "label": "list_picture"
+    },
+    {
+      "id": "three_ptrs",
+      "depends_on": [],
+      "label": "three_ptrs"
+    },
+    {
+      "id": "one_flip",
+      "depends_on": [],
+      "label": "one_flip"
+    },
+    {
+      "id": "advance",
+      "depends_on": [],
+      "label": "advance"
+    }
+  ],
+  "steps": [
+    {
+      "step_id": "s01",
+      "step_index": 1,
+      "concept": "list_picture",
+      "goal": "See nodes and arrows",
+      "representation": "geometry_svg",
+      "artifact_format": "svg",
+      "artifact": "<svg xmlns='http://www.w3.org/2000/svg' width='420' height='80' viewBox='0 0 420 80'>\n  <defs><marker id='a' markerWidth='8' markerHeight='8' refX='6' refY='3' orient='auto'><path d='M0,0 L6,3 L0,6 Z' fill='#334'/></marker></defs>\n  <rect x='10' y='25' width='40' height='30' rx='4' fill='#e8f0fe' stroke='#334'/><text x='30' y='45' text-anchor='middle' font-size='14'>1</text>\n  <line x1='50' y1='40' x2='80' y2='40' stroke='#334' marker-end='url(#a)'/>\n  <rect x='80' y='25' width='40' height='30' rx='4' fill='#e8f0fe' stroke='#334'/><text x='100' y='45' text-anchor='middle' font-size='14'>2</text>\n  <line x1='120' y1='40' x2='150' y2='40' stroke='#334' marker-end='url(#a)'/>\n  <rect x='150' y='25' width='40' height='30' rx='4' fill='#e8f0fe' stroke='#334'/><text x='170' y='45' text-anchor='middle' font-size='14'>3</text>\n  <line x1='190' y1='40' x2='220' y2='40' stroke='#334' marker-end='url(#a)'/>\n  <rect x='220' y='25' width='40' height='30' rx='4' fill='#e8f0fe' stroke='#334'/><text x='240' y='45' text-anchor='middle' font-size='14'>4</text>\n  <line x1='260' y1='40' x2='290' y2='40' stroke='#334' marker-end='url(#a)'/>\n  <rect x='290' y='25' width='40' height='30' rx='4' fill='#e8f0fe' stroke='#334'/><text x='310' y='45' text-anchor='middle' font-size='14'>5</text>\n  <line x1='330' y1='40' x2='360' y2='40' stroke='#334' marker-end='url(#a)'/>\n  <text x='370' y='45' font-size='14'>null</text>\n</svg>",
+      "tutor_prompt": "How many nodes?",
+      "expected_answer_patterns": [
+        "5"
+      ],
+      "on_correct": "5",
+      "on_wrong": "5"
+    },
+    {
+      "step_id": "s02",
+      "step_index": 2,
+      "concept": "three_ptrs",
+      "goal": "Introduce prev, curr, next",
+      "representation": "box_index",
+      "artifact_format": "ascii",
+      "artifact": "prev = null\ncurr = head (1)\nnext = ? (we peek before flipping)\nStart: prev=null, curr=1\u21922\u21923\u21924\u21925",
+      "tutor_prompt": "What is curr's value at start?",
+      "expected_answer_patterns": [
+        "1"
+      ],
+      "on_correct": "1",
+      "on_wrong": "1"
+    },
+    {
+      "step_id": "s03",
+      "step_index": 3,
+      "concept": "one_flip",
+      "goal": "Reverse one edge: curr.next = prev",
+      "representation": "geometry_svg",
+      "artifact_format": "svg",
+      "artifact": "<svg xmlns='http://www.w3.org/2000/svg' width='420' height='100' viewBox='0 0 420 100'>\n  <text x='10' y='18' font-size='12' fill='#666'>after one flip</text>\n  <text x='20' y='90' font-size='12'>prev</text>\n  <text x='100' y='90' font-size='12'>curr</text>\n  <rect x='10' y='30' width='40' height='30' rx='4' fill='#fde8e8' stroke='#334'/><text x='30' y='50' text-anchor='middle'>1</text>\n  <path d='M30,30 C30,10 100,10 100,30' fill='none' stroke='#c00' stroke-width='2'/>\n  <text x='55' y='12' font-size='11' fill='#c00'>next\u2192prev</text>\n  <rect x='90' y='30' width='40' height='30' rx='4' fill='#e8f0fe' stroke='#334'/><text x='110' y='50' text-anchor='middle'>2</text>\n  <line x1='130' y1='45' x2='160' y2='45' stroke='#334'/>\n  <rect x='160' y='30' width='40' height='30' rx='4' fill='#e8f0fe' stroke='#334'/><text x='180' y='50' text-anchor='middle'>3</text>\n  <text x='220' y='50' font-size='14'>\u2026</text>\n</svg>",
+      "tutor_prompt": "After flip, what does 1 point to?",
+      "expected_answer_patterns": [
+        "null",
+        "prev",
+        "nothing"
+      ],
+      "on_correct": "null (old prev)",
+      "on_wrong": "null"
+    },
+    {
+      "step_id": "s04",
+      "step_index": 4,
+      "concept": "advance",
+      "goal": "Advance prev\u2190curr\u2190next",
+      "representation": "code_tree",
+      "artifact_format": "code",
+      "artifact": "while curr:\n    next = curr.next\n    curr.next = prev   # flip\n    prev = curr\n    curr = next\nreturn prev",
+      "tutor_prompt": "What do we return?",
+      "expected_answer_patterns": [
+        "prev",
+        "new head"
+      ],
+      "on_correct": "prev (new head)",
+      "on_wrong": "prev"
+    }
+  ],
+  "_meta": {
+    "variant_id": "reverse-linked-list__box-array-ascii__curated",
+    "problem_id": "reverse-linked-list",
+    "problem_title": "Reverse linked list",
+    "problem_statement": "1\u21922\u21923\u21924\u21925 \u2192 5\u21924\u21923\u21922\u21921",
+    "variant_kind": "box-array-ascii",
+    "model": "curated",
+    "route": "curated:pointers",
+    "usage": {},
+    "sec": 0,
+    "seed": "curated"
+  }
+}

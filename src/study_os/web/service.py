@@ -610,6 +610,75 @@ class StudyService:
         return len(rows)
 
 
+    def record_decomposer_reviews(self, principal: Principal | None, body: dict[str, Any]) -> dict[str, Any]:
+        """Append-only SOS-0011 pedagogical decomposer ratings (per-step + overall)."""
+        batch = _clean(body.get("review_batch_id"), r"^[A-Za-z0-9_-]{8,64}$") or _clean(
+            body.get("client_session"), r"^[A-Za-z0-9_-]{8,64}$"
+        )
+        client = _clean(body.get("client_session"), r"^[A-Za-z0-9_-]{8,64}$") or "anonymous0"
+        if not batch:
+            raise ServiceError("bad_request", 400)
+        problem_id = str(body.get("problem_id") or "")[:80]
+        variant_id = str(body.get("variant_id") or "")[:160]
+        if not problem_id or not variant_id:
+            raise ServiceError("bad_request", 400)
+        ratings = body.get("ratings") or []
+        if not isinstance(ratings, list) or len(ratings) > 200:
+            raise ServiceError("bad_request", 400)
+        allowed = {"good", "bad", "prefer", "ok", "skip"}
+        formats = {None, "ascii", "mermaid", "algebra", "katex", "code", "svg", "mixed", "overall"}
+        rows = []
+        for r in ratings:
+            if not isinstance(r, dict):
+                continue
+            rating = str(r.get("rating") or "").lower()
+            if rating not in allowed:
+                continue
+            note = r.get("note")
+            if note is not None:
+                note = str(note)[:4000]
+            fmt = r.get("artifact_format")
+            if fmt is not None:
+                fmt = str(fmt)[:32]
+            if fmt not in formats:
+                fmt = None
+            step_id = r.get("step_id")
+            step_id = str(step_id)[:80] if step_id else None
+            step_index = _int_or_none(r.get("step_index"), 0, 500)
+            payload = r.get("payload") if isinstance(r.get("payload"), dict) else {}
+            rows.append((
+                batch, client,
+                principal.subject_id if principal else None,
+                problem_id, variant_id, step_id, step_index, fmt, rating, note,
+                json.dumps(payload), _ts_or_none(r.get("ts") or body.get("client_ts")),
+            ))
+        # optional overall note as its own row
+        overall = body.get("overall")
+        if isinstance(overall, dict):
+            rating = str(overall.get("rating") or "ok").lower()
+            if rating in allowed:
+                note = overall.get("note")
+                note = str(note)[:4000] if note is not None else None
+                rows.append((
+                    batch, client,
+                    principal.subject_id if principal else None,
+                    problem_id, variant_id, None, None, "overall", rating, note,
+                    json.dumps({"kind": "overall"}), _ts_or_none(body.get("client_ts")),
+                ))
+        if not rows:
+            raise ServiceError("bad_request", 400)
+        with self.db.tx() as conn:
+            with conn.cursor() as cur:
+                cur.executemany(
+                    "INSERT INTO ux.decomposer_review ("
+                    "review_batch_id, client_session, subject_id, problem_id, variant_id, "
+                    "step_id, step_index, artifact_format, rating, note, payload, client_ts"
+                    ") VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s::jsonb,%s)",
+                    rows,
+                )
+        return {"stored": len(rows), "review_batch_id": batch}
+
+
 def _uuid_or_none(value: Any) -> str | None:
     try:
         return str(uuid.UUID(str(value))) if value else None

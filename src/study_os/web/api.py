@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import logging
 import os
 from contextlib import asynccontextmanager
@@ -68,6 +69,16 @@ class ReactionBody(_Body):
 
 class EventsBody(_Body):
     events: list[dict[str, Any]] = Field(max_length=100)
+
+class DecomposerReviewBody(_Body):
+    review_batch_id: str | None = Field(default=None, max_length=64)
+    client_session: str = Field(max_length=64)
+    problem_id: str = Field(max_length=80)
+    variant_id: str = Field(max_length=160)
+    ratings: list[dict[str, Any]] = Field(max_length=200)
+    overall: dict[str, Any] | None = None
+    client_ts: str | None = Field(default=None, max_length=40)
+
 
 
 def _client_ip(request: Request) -> str:
@@ -328,10 +339,60 @@ def create_app(
             p = None  # still accept anonymous-shaped events, but never attribute them
         return {"stored": svc().record_events(p, body.events)}
 
+
+    @app.post("/api/review/decomposer")
+    def review_decomposer(body: DecomposerReviewBody, request: Request) -> dict[str, Any]:
+        """SOS-0011: append-only per-step ratings for pedagogical decomposer proposals. Auth optional."""
+        token = request.cookies.get(settings.cookie_name)
+        p = None
+        if token:
+            with database().tx() as conn:
+                p = auth.resolve_session(conn, token)
+            if p is not None and not auth.check_csrf(p, request.headers.get(CSRF_HEADER)):
+                p = None
+        return svc().record_decomposer_reviews(p, body.model_dump())
+
+    @app.get("/api/review/decomposer/variants")
+    def review_decomposer_variants() -> dict[str, Any]:
+        """List packaged decomposer review variants (static JSON under /review/decomposer/data/)."""
+        sdir = settings.static_dir or os.environ.get("STATIC_DIR")
+        if not sdir:
+            return {"problems": [], "variants": []}
+        data_dir = Path(sdir).resolve() / "review" / "decomposer" / "data"
+        variants = []
+        if data_dir.is_dir():
+            for path in sorted(data_dir.glob("*.json")):
+                if path.name in ("index.json", "spend.json"):
+                    continue
+                try:
+                    meta = json.loads(path.read_text(encoding="utf-8")).get("_meta") or {}
+                    variants.append({
+                        "variant_id": meta.get("variant_id") or path.stem,
+                        "problem_id": meta.get("problem_id"),
+                        "problem_title": meta.get("problem_title"),
+                        "variant_kind": meta.get("variant_kind"),
+                        "model": meta.get("model"),
+                        "route": meta.get("route"),
+                        "file": path.name,
+                    })
+                except Exception:
+                    continue
+        problems = sorted({v["problem_id"] for v in variants if v.get("problem_id")})
+        return {"problems": problems, "variants": variants}
+
+
     # ---------- static frontend ----------
     static_dir = settings.static_dir or os.environ.get("STATIC_DIR")
     if static_dir and Path(static_dir).is_dir():
         root = Path(static_dir).resolve()
+
+        @app.get("/review/decomposer", include_in_schema=False)
+        @app.get("/review/decomposer/", include_in_schema=False)
+        def decomposer_review_page() -> Response:
+            index = root / "review" / "decomposer" / "index.html"
+            if not index.is_file():
+                raise HTTPException(404, "not_found")
+            return FileResponse(index, headers={"Cache-Control": "no-cache"})
 
         @app.get("/{full_path:path}", include_in_schema=False)
         def spa(full_path: str) -> Response:
@@ -345,6 +406,11 @@ def create_app(
                     else {"Cache-Control": "public, max-age=300"}
                 )
                 return FileResponse(candidate, headers=headers)
+            # Directory index for review sub-apps (and similar static folders)
+            if full_path and candidate.is_dir() and root in candidate.parents:
+                index = candidate / "index.html"
+                if index.is_file():
+                    return FileResponse(index, headers={"Cache-Control": "no-cache"})
             if full_path.startswith("assets/"):
                 raise HTTPException(404, "not_found")
             return FileResponse(root / "index.html", headers={"Cache-Control": "no-cache"})

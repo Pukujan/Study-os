@@ -1,0 +1,204 @@
+{
+  "problem_id": "sliding-window-max-sum",
+  "variant_kind": "golden-aligned-ascii",
+  "strategy": "Build position\u2192index\u2192k-box\u2192window sum\u2192slide\u2192max; process before code.",
+  "concept_graph": [
+    {
+      "id": "problem",
+      "depends_on": [],
+      "label": "problem"
+    },
+    {
+      "id": "position",
+      "depends_on": [],
+      "label": "position"
+    },
+    {
+      "id": "index",
+      "depends_on": [],
+      "label": "index"
+    },
+    {
+      "id": "box_size_k",
+      "depends_on": [],
+      "label": "box_size_k"
+    },
+    {
+      "id": "box_start_i",
+      "depends_on": [],
+      "label": "box_start_i"
+    },
+    {
+      "id": "window_sum",
+      "depends_on": [],
+      "label": "window_sum"
+    },
+    {
+      "id": "successive_sums",
+      "depends_on": [],
+      "label": "successive_sums"
+    },
+    {
+      "id": "recurrence",
+      "depends_on": [],
+      "label": "recurrence"
+    },
+    {
+      "id": "max",
+      "depends_on": [],
+      "label": "max"
+    }
+  ],
+  "steps": [
+    {
+      "step_id": "s01",
+      "step_index": 1,
+      "concept": "problem",
+      "goal": "State problem and introduce a=numbers",
+      "representation": "box_index",
+      "artifact": "numbers(a): [ 4 , 7 , 2 , 6 , 1 , 9 ]\nFind largest sum of any 3 numbers next to each other.",
+      "artifact_format": "ascii",
+      "tutor_prompt": "a = numbers. Are you ready?",
+      "expected_answer_patterns": [
+        "yes",
+        "ready",
+        "ok"
+      ],
+      "on_correct": "Proceed",
+      "on_wrong": "Restate briefly"
+    },
+    {
+      "step_id": "s02",
+      "step_index": 2,
+      "concept": "position",
+      "goal": "Name 1-based position of a number",
+      "representation": "box_index",
+      "artifact": "  values:  4   7   2   6   1   9\nposition:  1   2   3   4   5   6\nWhat is the position of 6?",
+      "artifact_format": "ascii",
+      "tutor_prompt": "Position of 6?",
+      "expected_answer_patterns": [
+        "4"
+      ],
+      "on_correct": "Yes \u2014 6 is at position 4 on this chart.",
+      "on_wrong": "Answer is 4. Count from the left starting at 1."
+    },
+    {
+      "step_id": "s03",
+      "step_index": 3,
+      "concept": "index",
+      "goal": "Compute i = p - 1 (0-based)",
+      "representation": "box_index",
+      "artifact": "  values:  4   7   2   6   1   9\nposition:  1   2   3   4   5   6\n  index:   0   1   2   3   4   5\nIf position of 6 is 4, what is index i?",
+      "artifact_format": "ascii",
+      "tutor_prompt": "i = p - 1. What is i for 6?",
+      "expected_answer_patterns": [
+        "3"
+      ],
+      "on_correct": "Correct: i=3.",
+      "on_wrong": "i=4-1=3. Index starts at 0."
+    },
+    {
+      "step_id": "s04",
+      "step_index": 4,
+      "concept": "box_size_k",
+      "goal": "List numbers inside a box of size k=3",
+      "representation": "box_index",
+      "artifact": "  values: | 4   7   2 | 6   1   9\n  index:  | 0   1   2 | 3   4   5\n             \u2514\u2500 k=3 \u2500\u2518\nList the numbers in the box.",
+      "artifact_format": "ascii",
+      "tutor_prompt": "Numbers in the box?",
+      "expected_answer_patterns": [
+        "4,7,2",
+        "4 7 2"
+      ],
+      "on_correct": "Yes: 4,7,2.",
+      "on_wrong": "The box covers the first three: 4,7,2."
+    },
+    {
+      "step_id": "s05",
+      "step_index": 5,
+      "concept": "box_start_i",
+      "goal": "Box contents when i is start index",
+      "representation": "box_index",
+      "artifact": "  values:  4 | 7   2   6 | 1   9\n  index:   0 | 1   2   3 | 4   5\n              \u2514\u2500 start i=1 \u2500\u2518\nFor i=1, k=3, what numbers are in the box?",
+      "artifact_format": "ascii",
+      "tutor_prompt": "Box at i=1?",
+      "expected_answer_patterns": [
+        "7,2,6",
+        "7 2 6"
+      ],
+      "on_correct": "Yes.",
+      "on_wrong": "Starting at index 1: 7,2,6."
+    },
+    {
+      "step_id": "s06",
+      "step_index": 6,
+      "concept": "window_sum",
+      "goal": "Compute sum[i] of the box",
+      "representation": "box_index",
+      "artifact": "  values:  4 | 7   2   6 | 1   9\n  index:   0 | 1   2   3 | 4   5\nsum[1] = 7+2+6 = ?",
+      "artifact_format": "ascii",
+      "tutor_prompt": "What is sum[1]?",
+      "expected_answer_patterns": [
+        "15"
+      ],
+      "on_correct": "15 \u2014 shown on the same chart.",
+      "on_wrong": "7+2+6=15."
+    },
+    {
+      "step_id": "s07",
+      "step_index": 7,
+      "concept": "successive_sums",
+      "goal": "Find successive window sums on same chart",
+      "representation": "box_index",
+      "artifact": "sum[0]=4+7+2=13\nsum[1]=7+2+6=15\nsum[2]=2+6+1=?\nKeep the same box idea; only the start i moves.",
+      "artifact_format": "ascii",
+      "tutor_prompt": "sum[2]?",
+      "expected_answer_patterns": [
+        "9"
+      ],
+      "on_correct": "9.",
+      "on_wrong": "2+6+1=9."
+    },
+    {
+      "step_id": "s08",
+      "step_index": 8,
+      "concept": "recurrence_repetition",
+      "goal": "See same formula with new i each turn",
+      "representation": "algebra",
+      "artifact": "sum[i] = a[i] + a[i+1] + a[i+2]   (for k=3)\nTry i=3: sum[3] = a[3]+a[4]+a[5] = 6+1+9 = ?",
+      "artifact_format": "algebra",
+      "tutor_prompt": "sum[3]?",
+      "expected_answer_patterns": [
+        "16"
+      ],
+      "on_correct": "16. Same formula, new i.",
+      "on_wrong": "6+1+9=16."
+    },
+    {
+      "step_id": "s09",
+      "step_index": 9,
+      "concept": "max_over_sums",
+      "goal": "Pick the maximum among window sums",
+      "representation": "table",
+      "artifact": "i | sum[i]\n0 | 13\n1 | 15\n2 | 9\n3 | 16\nLargest?",
+      "artifact_format": "ascii",
+      "tutor_prompt": "Largest sum?",
+      "expected_answer_patterns": [
+        "16"
+      ],
+      "on_correct": "16 at i=3.",
+      "on_wrong": "Scan the column: 16 is largest."
+    }
+  ],
+  "_meta": {
+    "variant_id": "sliding-window-max-sum__golden-aligned-ascii__curated",
+    "problem_id": "sliding-window-max-sum",
+    "problem_title": "Max sum of k adjacent numbers",
+    "problem_statement": "Given array a and integer k, find the largest sum of any k adjacent numbers. Example: a=[4,7,2,6,1,9], k=3.",
+    "variant_kind": "golden-aligned-ascii",
+    "model": "curated",
+    "route": "curated:golden-aligned",
+    "usage": {},
+    "sec": 0
+  }
+}

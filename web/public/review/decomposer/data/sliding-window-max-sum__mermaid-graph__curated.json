@@ -1,0 +1,61 @@
+{
+  "problem_id": "sliding-window-max-sum",
+  "variant_kind": "mermaid-graph",
+  "strategy": "Dependency path then per-node mini-program (Alex three layers).",
+  "concept_graph": [
+    {
+      "id": "layer1_path",
+      "depends_on": [],
+      "label": "layer1_path"
+    },
+    {
+      "id": "layer2_node",
+      "depends_on": [],
+      "label": "layer2_node"
+    }
+  ],
+  "steps": [
+    {
+      "step_id": "s01",
+      "step_index": 1,
+      "concept": "layer1_path",
+      "goal": "See concept dependency path",
+      "representation": "mermaid",
+      "artifact_format": "mermaid",
+      "artifact": "flowchart TD\n  P[problem] --> Pos[position]\n  Pos --> Idx[index]\n  Idx --> K[k / box size]\n  K --> Box[box at i]\n  Box --> Sum[sum i]\n  Sum --> Slide[successive sums]\n  Slide --> Max[max]",
+      "tutor_prompt": "What comes before index?",
+      "expected_answer_patterns": [
+        "position"
+      ],
+      "on_correct": "position",
+      "on_wrong": "position"
+    },
+    {
+      "step_id": "s02",
+      "step_index": 2,
+      "concept": "layer2_node",
+      "goal": "Each node is a mini program with probe/repair",
+      "representation": "mermaid",
+      "artifact_format": "mermaid",
+      "artifact": "stateDiagram-v2\n  [*] --> Show\n  Show --> Exercise\n  Exercise --> Correct: ok\n  Exercise --> Repair: wrong\n  Repair --> Retry\n  Retry --> Verify\n  Correct --> Verify\n  Verify --> Next: stable\n  Next --> [*]",
+      "tutor_prompt": "Do we advance after one corrected error?",
+      "expected_answer_patterns": [
+        "no"
+      ],
+      "on_correct": "No \u2014 verify again",
+      "on_wrong": "No"
+    }
+  ],
+  "_meta": {
+    "variant_id": "sliding-window-max-sum__mermaid-graph__curated",
+    "problem_id": "sliding-window-max-sum",
+    "problem_title": "Max sum of k adjacent",
+    "problem_statement": "a=[4,7,2,6,1,9] k=3",
+    "variant_kind": "mermaid-graph",
+    "model": "curated",
+    "route": "curated:mermaid",
+    "usage": {},
+    "sec": 0,
+    "seed": "curated"
+  }
+}
