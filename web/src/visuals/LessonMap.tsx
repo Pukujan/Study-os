@@ -5,21 +5,29 @@ export type LessonMapStep = {
   label: string;
 };
 
+function slugId(label: string, fallback: string): string {
+  const slug = label.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  return slug || fallback;
+}
+
 export function getLessonSteps(lesson_id: string, total_steps: number): LessonMapStep[] {
+  // Labels must be Mermaid-safe when quoted; avoid raw [] in unquoted node text.
   const known: Record<string, string[]> = {
-    "sliding-window-box": ["Ready", "Position", "Index", "Box k", "Move i", "sum[i]"],
+    "sliding-window-box": ["Ready", "Position", "Index", "Box k", "Move i", "sum i"],
   };
   const labels = known[lesson_id];
   if (labels) {
-    return labels.slice(0, total_steps).map((label) => ({ id: label.toLowerCase().replace(/[^a-z0-9]+/g, "-"), label }));
+    return labels.slice(0, total_steps).map((label, i) => ({ id: slugId(label, `s${i}`), label }));
   }
   return Array.from({ length: total_steps }, (_, i) => ({ id: `step-${i}`, label: `Step ${i + 1}` }));
 }
 
 function buildSource(steps: LessonMapStep[]): string {
+  // Quote node labels so characters like [] never break the Mermaid parser.
   let source = "flowchart TD\n";
   steps.forEach((step, i) => {
-    source += `  ${step.id}[${step.label}]\n`;
+    const safe = step.label.replace(/"/g, "#quot;");
+    source += `  ${step.id}["${safe}"]\n`;
     if (i > 0) {
       source += `  ${steps[i - 1].id} --> ${step.id}\n`;
     }
