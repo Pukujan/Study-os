@@ -184,6 +184,51 @@ pre.chart { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monosp
 }
 
 .lesson-map { margin: 0.5rem 0 1rem; }
+.lesson-map-chips { margin: 0.35rem 0 0.85rem; }
+.lesson-map-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.lesson-map-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.lesson-map-chip.is-done {
+  color: var(--ink);
+  background: rgba(143, 124, 255, 0.08);
+  border-color: rgba(143, 124, 255, 0.35);
+}
+.lesson-map-chip.is-current {
+  color: #fff;
+  background: var(--primary, #8F7CFF);
+  border-color: transparent;
+}
+.lesson-map-chip-index {
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  background: rgba(17, 27, 77, 0.08);
+}
+.lesson-map-chip.is-current .lesson-map-chip-index {
+  background: rgba(255, 255, 255, 0.25);
+}
+
 
 .code-tree { margin: 0.75rem 0; }
 .code-tree-code {
@@ -335,17 +380,15 @@ pre.chart { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monosp
 .pet-button:hover,
 .pet-float.is-hover .pet-button,
 .pet-button:focus-visible {
-  transform: scale(1.12);
-  filter:
-    drop-shadow(0 0 10px rgba(143, 124, 255, 0.75))
-    drop-shadow(0 0 22px rgba(99, 217, 255, 0.55))
-    drop-shadow(0 8px 18px rgba(17, 27, 77, 0.2));
+  transform: scale(1.05);
+  filter: drop-shadow(0 8px 16px rgba(17, 27, 77, 0.18));
+  cursor: pointer;
 }
 .pet-button:hover::after,
 .pet-float.is-hover .pet-button::after,
 .pet-button:focus-visible::after {
-  box-shadow: 0 0 0 3px rgba(143, 124, 255, 0.85), 0 0 0 7px rgba(99, 217, 255, 0.35);
-  background: rgba(143, 124, 255, 0.08);
+  box-shadow: 0 0 0 2px rgba(143, 124, 255, 0.55);
+  background: transparent;
 }
 .pet-float.is-dragging .pet-button {
   transform: scale(1.04);
@@ -356,46 +399,58 @@ pre.chart { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monosp
 
 .pet-tip {
   position: absolute;
-  bottom: calc(100% + 0.35rem);
-  left: 50%;
-  transform: translateX(-50%);
+  bottom: calc(100% + 0.5rem);
+  left: 0;
+  transform: translateX(-10%);
   background: var(--ink, #111B4D);
   color: #fff;
   font-size: 0.75rem;
   font-weight: 600;
-  padding: 0.35rem 0.65rem;
-  border-radius: 10px;
+  padding: 0.45rem 0.7rem;
+  border-radius: 12px 12px 12px 4px;
   white-space: nowrap;
   box-shadow: 0 4px 12px var(--shadow);
   pointer-events: none;
   z-index: 2;
+  max-width: 11rem;
+  white-space: normal;
+  line-height: 1.25;
 }
 .pet-tip::after {
   content: "";
   position: absolute;
   top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 1.1rem;
   border: 6px solid transparent;
   border-top-color: var(--ink, #111B4D);
 }
 
 .pet-hide-link {
-  background: transparent;
-  border: none;
-  border-radius: 999px;
-  padding: 0.1rem 0.35rem;
-  font-size: 0.65rem;
-  color: var(--muted);
-  cursor: pointer;
-  opacity: 0.55;
-  transition: opacity 150ms ease;
-}
-.pet-hide-link:hover,
-.pet-float.is-hover .pet-hide-link {
-  opacity: 0.95;
-  background: rgba(255, 255, 255, 0.75);
+  position: absolute;
+  top: 0.15rem;
+  right: -0.15rem;
+  transform: translateX(100%);
+  background: rgba(255, 255, 255, 0.92);
   border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.15rem 0.45rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms ease;
+  box-shadow: 0 2px 8px rgba(17, 27, 77, 0.08);
+  white-space: nowrap;
+}
+.pet-float.is-hover .pet-hide-link,
+.pet-hide-link:focus-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.pet-hide-link:hover {
+  background: #fff;
 }
 
 .pet-hidden-toggle {

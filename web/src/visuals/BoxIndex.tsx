@@ -140,6 +140,21 @@ export default function BoxIndex({ frame, onSelectIndex }: BoxIndexProps) {
         </>
       )}
 
+      {/* Number cell chrome — golden chart look even without a window box */}
+      {frame.array.map((_, i) => (
+        <rect
+          key={`cell-${i}`}
+          x={cx(i) - Math.min(cellW * 0.42, 22)}
+          y={numbersY - 18}
+          width={Math.min(cellW * 0.84, 44)}
+          height={28}
+          rx={6}
+          fill="var(--card, #fff)"
+          stroke="var(--line, #d7d2ef)"
+          strokeWidth={1.5}
+        />
+      ))}
+
       {/* Numbers row */}
       <text x={10} y={numbersY} style={{ fill: "var(--muted)", fontSize: 12, fontWeight: 600, fontFamily: "ui-monospace, monospace" }}>
         numbers(a)
@@ -148,9 +163,9 @@ export default function BoxIndex({ frame, onSelectIndex }: BoxIndexProps) {
         <text
           key={`num-${i}`}
           x={cx(i)}
-          y={numbersY}
+          y={numbersY + 2}
           textAnchor="middle"
-          style={{ fill: "var(--ink)", fontSize: 16, fontWeight: 600, fontFamily: "ui-monospace, monospace" }}
+          style={{ fill: "var(--ink)", fontSize: 16, fontWeight: 700, fontFamily: "ui-monospace, monospace" }}
         >
           {v}
         </text>

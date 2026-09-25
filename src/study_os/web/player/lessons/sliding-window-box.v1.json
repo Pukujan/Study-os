@@ -26,11 +26,12 @@
               1,
               9
             ],
-            "show_positions": false,
+            "show_positions": true,
             "show_indices": false,
             "box": null,
             "arrows": [],
-            "sum_label": null
+            "sum_label": null,
+            "caption": "The array we will search with a sliding window of size 3."
           }
         ]
       },

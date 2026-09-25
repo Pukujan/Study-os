@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+import mimetypes
 import os
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -12,6 +13,7 @@ from typing import Any
 import httpx
 from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, ConfigDict, Field
 
 from . import WEB_API_VERSION, auth, packs
@@ -24,6 +26,31 @@ from .service import ServiceError, StudyService
 
 log = logging.getLogger("study_os.web")
 CSRF_HEADER = "x-csrf-token"
+
+# Python's stdlib mimetypes table is incomplete on slim images (no .webp).
+# With X-Content-Type-Options: nosniff, a wrong type blocks CSS background-image.
+_EXTRA_MIME = {
+    ".webp": "image/webp",
+    ".json": "application/json",
+    ".svg": "image/svg+xml",
+    ".wasm": "application/wasm",
+    ".map": "application/json",
+}
+for _ext, _ctype in _EXTRA_MIME.items():
+    mimetypes.add_type(_ctype, _ext)
+
+
+def _media_type_for(path: Path) -> str | None:
+    ext = path.suffix.lower()
+    if ext in _EXTRA_MIME:
+        return _EXTRA_MIME[ext]
+    guessed, _ = mimetypes.guess_type(str(path))
+    return guessed
+
+
+def _file_response(path: Path, *, headers: dict[str, str] | None = None) -> FileResponse:
+    return FileResponse(path, media_type=_media_type_for(path), headers=headers or {})
+
 
 
 class _Body(BaseModel):
@@ -512,34 +539,56 @@ def create_app(
     if static_dir and Path(static_dir).is_dir():
         root = Path(static_dir).resolve()
 
+        # Mount real asset trees BEFORE the SPA catch-all so /mascot/*.webp and
+        # /review/decomposer/data/*.json never fall through to index.html.
+        mascot_dir = root / "mascot"
+        if mascot_dir.is_dir():
+            app.mount("/mascot", StaticFiles(directory=str(mascot_dir)), name="mascot")
+        review_data = root / "review" / "decomposer" / "data"
+        if review_data.is_dir():
+            app.mount(
+                "/review/decomposer/data",
+                StaticFiles(directory=str(review_data)),
+                name="decomposer-data",
+            )
+
         @app.get("/review/decomposer", include_in_schema=False)
         @app.get("/review/decomposer/", include_in_schema=False)
         def decomposer_review_page() -> Response:
             index = root / "review" / "decomposer" / "index.html"
             if not index.is_file():
                 raise HTTPException(404, "not_found")
-            return FileResponse(index, headers={"Cache-Control": "no-cache"})
+            return _file_response(index, headers={"Cache-Control": "no-cache"})
 
         @app.get("/{full_path:path}", include_in_schema=False)
         def spa(full_path: str) -> Response:
             if full_path.startswith("api/"):
                 raise HTTPException(404, "not_found")
+            # Mounted prefixes should never reach here; guard anyway.
+            if full_path == "mascot" or full_path.startswith("mascot/"):
+                raise HTTPException(404, "not_found")
+            if full_path.startswith("review/decomposer/data"):
+                raise HTTPException(404, "not_found")
             candidate = (root / full_path).resolve()
-            if full_path and candidate.is_file() and root in candidate.parents:
+            try:
+                candidate.relative_to(root)
+            except ValueError as exc:
+                raise HTTPException(404, "not_found") from exc
+            if full_path and candidate.is_file():
                 headers = (
                     {"Cache-Control": "public, max-age=31536000, immutable"}
                     if full_path.startswith("assets/")
                     else {"Cache-Control": "public, max-age=300"}
                 )
-                return FileResponse(candidate, headers=headers)
+                return _file_response(candidate, headers=headers)
             # Directory index for review sub-apps (and similar static folders)
-            if full_path and candidate.is_dir() and root in candidate.parents:
+            if full_path and candidate.is_dir():
                 index = candidate / "index.html"
                 if index.is_file():
-                    return FileResponse(index, headers={"Cache-Control": "no-cache"})
+                    return _file_response(index, headers={"Cache-Control": "no-cache"})
             if full_path.startswith("assets/"):
                 raise HTTPException(404, "not_found")
-            return FileResponse(root / "index.html", headers={"Cache-Control": "no-cache"})
+            return _file_response(root / "index.html", headers={"Cache-Control": "no-cache"})
 
     return app
 

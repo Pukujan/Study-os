@@ -1,4 +1,4 @@
-import MermaidDiagram from "./MermaidDiagram";
+import type { CSSProperties } from "react";
 
 export type LessonMapStep = {
   id: string;
@@ -11,7 +11,6 @@ function slugId(label: string, fallback: string): string {
 }
 
 export function getLessonSteps(lesson_id: string, total_steps: number): LessonMapStep[] {
-  // Labels must be Mermaid-safe when quoted; avoid raw [] in unquoted node text.
   const known: Record<string, string[]> = {
     "sliding-window-box": ["Ready", "Position", "Index", "Box k", "Move i", "sum i"],
   };
@@ -22,19 +21,6 @@ export function getLessonSteps(lesson_id: string, total_steps: number): LessonMa
   return Array.from({ length: total_steps }, (_, i) => ({ id: `step-${i}`, label: `Step ${i + 1}` }));
 }
 
-function buildSource(steps: LessonMapStep[]): string {
-  // Quote node labels so characters like [] never break the Mermaid parser.
-  let source = "flowchart TD\n";
-  steps.forEach((step, i) => {
-    const safe = step.label.replace(/"/g, "#quot;");
-    source += `  ${step.id}["${safe}"]\n`;
-    if (i > 0) {
-      source += `  ${steps[i - 1].id} --> ${step.id}\n`;
-    }
-  });
-  return source;
-}
-
 type LessonMapProps = {
   steps: LessonMapStep[];
   currentIndex: number;
@@ -42,16 +28,21 @@ type LessonMapProps = {
 };
 
 export default function LessonMap({ steps, currentIndex, completedIds }: LessonMapProps) {
-  const revealedSet = new Set<string>();
-  for (let i = 0; i <= currentIndex && i < steps.length; i++) {
-    revealedSet.add(steps[i].id);
-  }
-  (completedIds || []).forEach((id) => revealedSet.add(id));
-  const revealed = Array.from(revealedSet);
-  const source = buildSource(steps);
+  const done = new Set(completedIds || []);
   return (
-    <div className="lesson-map" role="navigation" aria-label="Lesson progress map">
-      <MermaidDiagram source={source} revealedNodes={revealed} direction="LR" zoomPan={true} caption="Lesson progress map" />
-    </div>
+    <nav className="lesson-map lesson-map-chips" aria-label="Lesson progress map">
+      <ol className="lesson-map-list">
+        {steps.map((step, i) => {
+          const state = i === currentIndex ? "current" : done.has(step.id) || i < currentIndex ? "done" : "todo";
+          const style: CSSProperties = {};
+          return (
+            <li key={step.id} className={`lesson-map-chip is-${state}`} style={style} aria-current={state === "current" ? "step" : undefined}>
+              <span className="lesson-map-chip-index">{i + 1}</span>
+              <span className="lesson-map-chip-label">{step.label}</span>
+            </li>
+          );
+        })}
+      </ol>
+    </nav>
   );
 }
