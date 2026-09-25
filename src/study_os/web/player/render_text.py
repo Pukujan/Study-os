@@ -53,7 +53,6 @@ def _render_box_index(frame: dict[str, Any]) -> str:
     # Circles represented by parentheses around the value.
     if circles:
         line = " " * 14
-        pos = 14
         for i in sorted(circles):
             if 0 <= i < len(array):
                 # crude alignment; enough for tutor grounding
