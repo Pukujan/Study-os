@@ -1,7 +1,7 @@
 {
   "schema_version": "content-generation.visual-style.v1",
   "reference_asset": ".content-system/characters/refs/pair-key-art.webp (style anchor: CGM assets/marketing/story-loop-square.png)",
-  "generation_workflow": "InferHub cb/gemini-3.1-flash-image with canonical character refs; see .content-system/characters/README.md",
+  "generation_workflow": "built-in image_gen",
   "narrative_roles": [
     "hero",
     "problem",
@@ -62,5 +62,6 @@
   "styles": {
     "general_art": "mature anime editorial (lesson illustrations, onboarding, lane cards, empty states, hero)",
     "mascot": "chibi sticker style of the same canonical characters"
-  }
+  },
+  "generator_notes": "SOS-0005: images generated with InferHub cb/gemini-3.1-flash-image using the canonical character refs; see .content-system/characters/README.md"
 }
