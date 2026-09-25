@@ -1,5 +1,503 @@
 {
   "schema_version": "content-generation.asset-manifest.v1",
   "system_version": "0.4.0",
-  "assets": []
+  "assets": [
+    {
+      "id": "char-learner-turnaround",
+      "path": ".content-system/characters/refs/learner-turnaround.webp",
+      "role": "character-reference",
+      "subject": "learner",
+      "description": "turnaround (front / three-quarter / side), mature anime",
+      "dimensions": "1024x1024",
+      "model": "cb/gemini-3.1-flash-image",
+      "provider": "InferHub",
+      "prompt_file": ".content-system/characters/prompts/learner-turn.full.txt",
+      "prompt_sha256": "91ab569f5f09c5b0dae5294f7c8ca9ecde9d05708fcba3699d992c743b77ad04",
+      "references": [
+        {
+          "path": "cgm-look/assets/marketing/story-loop-square.png",
+          "sha256": "c38720314c79e7b1cc5693ebbb3e50fd2524675c3171e28e21c497c9d5c5d0c6"
+        }
+      ],
+      "settings": {
+        "modalities": [
+          "image",
+          "text"
+        ],
+        "seed": "not supported by provider"
+      },
+      "source_sha256": "2582d8eb5bd8077127c56f41aacf8731bafb2a938f2b33e6421b73d94c501f9f",
+      "final_sha256": "60aec2c99da0ba693f8ce0c1fd25f34967bc0322f6835d35c061576141511fc8",
+      "review": "canonical (accepted by orchestrator; owner review pending)",
+      "generated_at": "2026-09-24T19:53:51-0400"
+    },
+    {
+      "id": "char-learner-expressions",
+      "path": ".content-system/characters/refs/learner-expressions.webp",
+      "role": "character-reference",
+      "subject": "learner",
+      "description": "expression sheet, mature anime",
+      "dimensions": "1024x1024",
+      "model": null,
+      "provider": "InferHub",
+      "prompt_file": ".content-system/characters/prompts/",
+      "prompt_sha256": null,
+      "references": [],
+      "settings": {
+        "modalities": [
+          "image",
+          "text"
+        ],
+        "seed": "not supported by provider"
+      },
+      "source_sha256": "eb3773dfac9a1c783326b812ad85b04632b16d8c880fce144cb5fb2665a00bbc",
+      "final_sha256": "61a61f590f00ca3e3329beada2d3857eb33ab17cc5ac00c8f521c8835f42f2f3",
+      "review": "canonical (accepted by orchestrator; owner review pending)",
+      "generated_at": null
+    },
+    {
+      "id": "char-helper-turnaround",
+      "path": ".content-system/characters/refs/helper-turnaround.webp",
+      "role": "character-reference",
+      "subject": "helper",
+      "description": "turnaround (front / three-quarter / side)",
+      "dimensions": "1024x1024",
+      "model": "cb/gemini-3.1-flash-image",
+      "provider": "InferHub",
+      "prompt_file": ".content-system/characters/prompts/robot-turn.full.txt",
+      "prompt_sha256": "07e8b28eb045abe8be80d83158daf940e427b5ae44e6f071dbd9015f064aa454",
+      "references": [
+        {
+          "path": "cgm-look/assets/marketing/story-loop-square.png",
+          "sha256": "c38720314c79e7b1cc5693ebbb3e50fd2524675c3171e28e21c497c9d5c5d0c6"
+        }
+      ],
+      "settings": {
+        "modalities": [
+          "image",
+          "text"
+        ],
+        "seed": "not supported by provider"
+      },
+      "source_sha256": "b62d72772e08426bc46871299079b1eecb30f6234e52dcfebd993a82d407a2d5",
+      "final_sha256": "e6c48d70c771a4dfc6ebc0a8adf3c48c92c8f51430d28ece0431d615c420bac7",
+      "review": "canonical (accepted by orchestrator; owner review pending)",
+      "generated_at": "2026-09-24T19:53:52-0400"
+    },
+    {
+      "id": "char-helper-expressions",
+      "path": ".content-system/characters/refs/helper-expressions.webp",
+      "role": "character-reference",
+      "subject": "helper",
+      "description": "expression sheet",
+      "dimensions": "1024x1024",
+      "model": null,
+      "provider": "InferHub",
+      "prompt_file": ".content-system/characters/prompts/",
+      "prompt_sha256": null,
+      "references": [],
+      "settings": {
+        "modalities": [
+          "image",
+          "text"
+        ],
+        "seed": "not supported by provider"
+      },
+      "source_sha256": "921bd04e1422fee3dac7267985452852e48abbcd53163e9d01f6f16fad073fd1",
+      "final_sha256": "49628de73d67deeaecbe840d46048eec0fe3fe37d2f498ff41c962f0c84836d8",
+      "review": "canonical (accepted by orchestrator; owner review pending)",
+      "generated_at": null
+    },
+    {
+      "id": "char-pair-key-art",
+      "path": ".content-system/characters/refs/pair-key-art.webp",
+      "role": "character-reference",
+      "subject": "both",
+      "description": "key art: learner + helper, mature anime, style anchor for general art",
+      "dimensions": "1024x1024",
+      "model": null,
+      "provider": "InferHub",
+      "prompt_file": ".content-system/characters/prompts/",
+      "prompt_sha256": null,
+      "references": [],
+      "settings": {
+        "modalities": [
+          "image",
+          "text"
+        ],
+        "seed": "not supported by provider"
+      },
+      "source_sha256": "1d1bd061197f487558c83c12a2efaf85805ef35ca531d0d43e876ae90ee38cf2",
+      "final_sha256": "e8105b7795ac4061ed81d108571074a624930b2285f8cd8f077fe47ae8ccfee9",
+      "review": "canonical (accepted by orchestrator; owner review pending)",
+      "generated_at": null
+    },
+    {
+      "id": "char-learner-chibi-master",
+      "path": ".content-system/characters/refs/learner-chibi-master.webp",
+      "role": "character-reference",
+      "subject": "learner",
+      "description": "chibi PET master (main in-app mascot)",
+      "dimensions": "1024x1024",
+      "model": null,
+      "provider": "InferHub",
+      "prompt_file": ".content-system/characters/prompts/",
+      "prompt_sha256": null,
+      "references": [],
+      "settings": {
+        "modalities": [
+          "image",
+          "text"
+        ],
+        "seed": "not supported by provider"
+      },
+      "source_sha256": "5f610925f64d3f0601dee097f709f88b75fbace01afc3049432d6190b8238e6f",
+      "final_sha256": "7a98a1e42e4761b6a1090e6c436ff9f53c855ee6faebe5f279d8bb69bd6d3b0f",
+      "review": "canonical (accepted by orchestrator; owner review pending)",
+      "generated_at": null,
+      "processing": "chroma-keyed to transparent (mascot/visit.py key())"
+    },
+    {
+      "id": "char-helper-chibi-master",
+      "path": ".content-system/characters/refs/helper-chibi-master.webp",
+      "role": "character-reference",
+      "subject": "helper",
+      "description": "chibi robot master (supporting idle visitor)",
+      "dimensions": "1024x1024",
+      "model": null,
+      "provider": "InferHub",
+      "prompt_file": ".content-system/characters/prompts/",
+      "prompt_sha256": null,
+      "references": [],
+      "settings": {
+        "modalities": [
+          "image",
+          "text"
+        ],
+        "seed": "not supported by provider"
+      },
+      "source_sha256": "bc6d890322568958738305a79740bca5f9599363383ac90c9f7eb87fb9a7ce38",
+      "final_sha256": "9237728e93a83ec51dca897b59b4eb3acd0c1d2868a4b788face83122968707e",
+      "review": "canonical (accepted by orchestrator; owner review pending)",
+      "generated_at": null,
+      "processing": "chroma-keyed to transparent (mascot/visit.py key())"
+    },
+    {
+      "id": "mascot-duo-headpat",
+      "path": "web/public/mascot/duo-headpat.webp",
+      "role": "mascot-sprite",
+      "frames": 9,
+      "frame_w": 216,
+      "frame_h": 144,
+      "bytes": 54648,
+      "model": null,
+      "provider": "InferHub",
+      "prompt_file": ".content-system/characters/prompts/",
+      "prompt_sha256": null,
+      "references": [],
+      "source_sha256": "2e1a705dd53461d8b72da4afaba897f2367e9fca24c4d6a4f5054a9e83a93ac9",
+      "final_sha256": "c1128d7458f747b0efd1e7718b208b62cf125dd7ac97a0478161d6515e1fde25",
+      "processing": "tools: chroma-key, grid split, union-bbox alignment, transparent WebP strip (mascot/sprites.py)",
+      "review": "draft (orchestrator + cheap vision critique; owner review pending)"
+    },
+    {
+      "id": "mascot-duo-starplay",
+      "path": "web/public/mascot/duo-starplay.webp",
+      "role": "mascot-sprite",
+      "frames": 9,
+      "frame_w": 216,
+      "frame_h": 144,
+      "bytes": 62074,
+      "model": null,
+      "provider": "InferHub",
+      "prompt_file": ".content-system/characters/prompts/",
+      "prompt_sha256": null,
+      "references": [],
+      "source_sha256": "1f8baf8fc943c546406d448ca191ec331a0027fc3d7f0ddc42214961dafdce7b",
+      "final_sha256": "4532fe905b4670b92c0cd714f1f6ead091f65a2e93bfcc08598ff96ca2529901",
+      "processing": "tools: chroma-key, grid split, union-bbox alignment, transparent WebP strip (mascot/sprites.py)",
+      "review": "draft (orchestrator + cheap vision critique; owner review pending)"
+    },
+    {
+      "id": "mascot-pet-celebrate",
+      "path": "web/public/mascot/pet-celebrate.webp",
+      "role": "mascot-sprite",
+      "frames": 6,
+      "frame_w": 144,
+      "frame_h": 176,
+      "bytes": 32156,
+      "model": null,
+      "provider": "InferHub",
+      "prompt_file": ".content-system/characters/prompts/",
+      "prompt_sha256": null,
+      "references": [],
+      "source_sha256": "386c1edba268e84bb458050f7482efded98b242848ff9ad8d944adbb9deb33d1",
+      "final_sha256": "538337749a65891df8a999a283d6dda1144cfec1f1f515b4ea05db99e166674b",
+      "processing": "tools: chroma-key, grid split, union-bbox alignment, transparent WebP strip (mascot/sprites.py)",
+      "review": "draft (orchestrator + cheap vision critique; owner review pending)"
+    },
+    {
+      "id": "mascot-pet-encourage",
+      "path": "web/public/mascot/pet-encourage.webp",
+      "role": "mascot-sprite",
+      "frames": 6,
+      "frame_w": 144,
+      "frame_h": 176,
+      "bytes": 32060,
+      "model": null,
+      "provider": "InferHub",
+      "prompt_file": ".content-system/characters/prompts/",
+      "prompt_sha256": null,
+      "references": [],
+      "source_sha256": "753dc585b099dc399beada2d8ae3a97c178894f6f1e8f28a3a4768ef8be714ce",
+      "final_sha256": "30cfcd20809effce737b120b66f1431def1c6148972515f6725131c568d53f59",
+      "processing": "tools: chroma-key, grid split, union-bbox alignment, transparent WebP strip (mascot/sprites.py)",
+      "review": "draft (orchestrator + cheap vision critique; owner review pending)"
+    },
+    {
+      "id": "mascot-pet-idle",
+      "path": "web/public/mascot/pet-idle.webp",
+      "role": "mascot-sprite",
+      "frames": 6,
+      "frame_w": 144,
+      "frame_h": 176,
+      "bytes": 32328,
+      "model": null,
+      "provider": "InferHub",
+      "prompt_file": ".content-system/characters/prompts/",
+      "prompt_sha256": null,
+      "references": [],
+      "source_sha256": "3dc1d9b6a3da705eacc797af2d989dd74f51ef1c2a5285b22dda40e5ccc024a7",
+      "final_sha256": "482ed65d3ac39f7445611ba0858056d0c17a7945ea16ed881faca0472345b2a0",
+      "processing": "tools: chroma-key, grid split, union-bbox alignment, transparent WebP strip (mascot/sprites.py)",
+      "review": "draft (orchestrator + cheap vision critique; owner review pending)"
+    },
+    {
+      "id": "mascot-pet-talking",
+      "path": "web/public/mascot/pet-talking.webp",
+      "role": "mascot-sprite",
+      "frames": 6,
+      "frame_w": 144,
+      "frame_h": 176,
+      "bytes": 34590,
+      "model": null,
+      "provider": "InferHub",
+      "prompt_file": ".content-system/characters/prompts/",
+      "prompt_sha256": null,
+      "references": [],
+      "source_sha256": "c6471472d0899272f650ab22870d69d78d1f9408772cbc1f15398e52328cb089",
+      "final_sha256": "dae9c01275dbeb43e0d44a6d2747f7afde3d287097bff149cbb5d06bb40008de",
+      "processing": "tools: chroma-key, grid split, union-bbox alignment, transparent WebP strip (mascot/sprites.py)",
+      "review": "draft (orchestrator + cheap vision critique; owner review pending)"
+    },
+    {
+      "id": "mascot-pet-thinking",
+      "path": "web/public/mascot/pet-thinking.webp",
+      "role": "mascot-sprite",
+      "frames": 6,
+      "frame_w": 144,
+      "frame_h": 176,
+      "bytes": 35262,
+      "model": null,
+      "provider": "InferHub",
+      "prompt_file": ".content-system/characters/prompts/",
+      "prompt_sha256": null,
+      "references": [],
+      "source_sha256": "86113ff27213f7eb653c14e7f1c5672aae673ddc1b8035fd1e830c4281ab9d3a",
+      "final_sha256": "4b4e46d16f3aeb8dd7e68e325a9309567662cc963b37a9fc04488d57ff81505b",
+      "processing": "tools: chroma-key, grid split, union-bbox alignment, transparent WebP strip (mascot/sprites.py)",
+      "review": "draft (orchestrator + cheap vision critique; owner review pending)"
+    },
+    {
+      "id": "mascot-pet-wave",
+      "path": "web/public/mascot/pet-wave.webp",
+      "role": "mascot-sprite",
+      "frames": 6,
+      "frame_w": 144,
+      "frame_h": 176,
+      "bytes": 32460,
+      "model": null,
+      "provider": "InferHub",
+      "prompt_file": ".content-system/characters/prompts/",
+      "prompt_sha256": null,
+      "references": [],
+      "source_sha256": "163d056649e35fd480bf6c0044b94ebd1606e23186ec1701aeeac5d9e1425f09",
+      "final_sha256": "6b914b780d791034f8c6ff4c1ecfff52886bbe5e84b2ce0ac86da2436f08110b",
+      "processing": "tools: chroma-key, grid split, union-bbox alignment, transparent WebP strip (mascot/sprites.py)",
+      "review": "draft (orchestrator + cheap vision critique; owner review pending)"
+    },
+    {
+      "id": "mascot-robot-hover",
+      "path": "web/public/mascot/robot-hover.webp",
+      "role": "mascot-sprite",
+      "frames": 6,
+      "frame_w": 120,
+      "frame_h": 160,
+      "bytes": 20134,
+      "model": null,
+      "provider": "InferHub",
+      "prompt_file": ".content-system/characters/prompts/",
+      "prompt_sha256": null,
+      "references": [],
+      "source_sha256": "bc6d890322568958738305a79740bca5f9599363383ac90c9f7eb87fb9a7ce38",
+      "final_sha256": "58c75b4a4e4a8c8c6471902be88ca83869d2f650e69300407840f7292e0014d7",
+      "processing": "keyed chibi master + programmatic 6-frame hover bob (mascot/visit.py)",
+      "review": "draft (orchestrator + cheap vision critique; owner review pending)"
+    },
+    {
+      "id": "art-lane-dsa",
+      "path": "web/public/art/lane-dsa.webp",
+      "role": "lane-card",
+      "style": "mature anime",
+      "dimensions": "960x600",
+      "alt": "The learner arranges a row of glowing boxes under a sliding highlight window on an evening whiteboard while her robot helper holds a box.",
+      "model": "cb/gemini-3.1-flash-image",
+      "provider": "InferHub",
+      "prompt_file": ".content-system/characters/prompts/art-lane-dsa.full.txt",
+      "prompt_sha256": "e3b64a50c70a2ad7e1e91326b7ddfb1786087cd7cfcaca37fc88373b1915ddb3",
+      "references": [
+        {
+          "path": "mascot/gen/learner-turn-a-0.png",
+          "sha256": "2582d8eb5bd8077127c56f41aacf8731bafb2a938f2b33e6421b73d94c501f9f"
+        },
+        {
+          "path": "mascot/gen/robot-turn-a-0.png",
+          "sha256": "b62d72772e08426bc46871299079b1eecb30f6234e52dcfebd993a82d407a2d5"
+        },
+        {
+          "path": "cgm-look/assets/marketing/story-loop-square.png",
+          "sha256": "c38720314c79e7b1cc5693ebbb3e50fd2524675c3171e28e21c497c9d5c5d0c6"
+        }
+      ],
+      "source_sha256": "3eae6e780c0a490bd21248bdc5b1e04631f5884154b060c9066596963a0069fd",
+      "final_sha256": "5b10323d49448670d7b4cb293aafa0034633e70b0700d0e5e7fbdac892d2ba15",
+      "processing": "1024x1024 candidate cropped to 16:10 and resized to 960x600 WebP q80",
+      "candidates": 2,
+      "review": "draft (orchestrator pick; owner review pending)"
+    },
+    {
+      "id": "art-lane-hesi",
+      "path": "web/public/art/lane-hesi.webp",
+      "role": "lane-card",
+      "style": "mature anime",
+      "dimensions": "960x600",
+      "alt": "The learner studies anatomy and fraction flashcards at an evening desk with a stethoscope; her robot helper holds a card.",
+      "model": "cb/gemini-3.1-flash-image",
+      "provider": "InferHub",
+      "prompt_file": ".content-system/characters/prompts/art-lane-hesi.full.txt",
+      "prompt_sha256": "347c256bf9930a8c5cfbefc588be9c81cd14d7eefcd4381f741c2446d3a28fc9",
+      "references": [
+        {
+          "path": "mascot/gen/learner-turn-a-0.png",
+          "sha256": "2582d8eb5bd8077127c56f41aacf8731bafb2a938f2b33e6421b73d94c501f9f"
+        },
+        {
+          "path": "mascot/gen/robot-turn-a-0.png",
+          "sha256": "b62d72772e08426bc46871299079b1eecb30f6234e52dcfebd993a82d407a2d5"
+        },
+        {
+          "path": "cgm-look/assets/marketing/story-loop-square.png",
+          "sha256": "c38720314c79e7b1cc5693ebbb3e50fd2524675c3171e28e21c497c9d5c5d0c6"
+        }
+      ],
+      "source_sha256": "34537a0b029b6fe64c6068434dbcf12a6328a1c11a983ff91eacb7c4b14db21a",
+      "final_sha256": "03752d8a2440faad239f6a83667a20a2f9c39dbace52c0c37e81a667cef7fad3",
+      "processing": "1024x1024 candidate cropped to 16:10 and resized to 960x600 WebP q80",
+      "candidates": 2,
+      "review": "draft (orchestrator pick; owner review pending)"
+    },
+    {
+      "id": "art-lane-ai",
+      "path": "web/public/art/lane-ai.webp",
+      "role": "lane-card",
+      "style": "mature anime",
+      "dimensions": "960x600",
+      "alt": "The learner sketches a glowing neural-network diagram in the air; her robot helper touches a node.",
+      "model": "cb/gemini-3.1-flash-image",
+      "provider": "InferHub",
+      "prompt_file": ".content-system/characters/prompts/art-lane-ai.full.txt",
+      "prompt_sha256": "05814296b7182f99940e8eeff9651596969902f12ff2bd50a826acc501fad7ee",
+      "references": [
+        {
+          "path": "mascot/gen/learner-turn-a-0.png",
+          "sha256": "2582d8eb5bd8077127c56f41aacf8731bafb2a938f2b33e6421b73d94c501f9f"
+        },
+        {
+          "path": "mascot/gen/robot-turn-a-0.png",
+          "sha256": "b62d72772e08426bc46871299079b1eecb30f6234e52dcfebd993a82d407a2d5"
+        },
+        {
+          "path": "cgm-look/assets/marketing/story-loop-square.png",
+          "sha256": "c38720314c79e7b1cc5693ebbb3e50fd2524675c3171e28e21c497c9d5c5d0c6"
+        }
+      ],
+      "source_sha256": "36c10f963d2a91503ed0f2de069416da83ab954b22c324fcb4609c7077d4526f",
+      "final_sha256": "414d760935b77b2eee183f6a8e185fbfd35977b554a9195affa33abb2023d80e",
+      "processing": "1024x1024 candidate cropped to 16:10 and resized to 960x600 WebP q80",
+      "candidates": 2,
+      "review": "draft (orchestrator pick; owner review pending)"
+    },
+    {
+      "id": "art-lane-studyos",
+      "path": "web/public/art/lane-studyos.webp",
+      "role": "lane-card",
+      "style": "mature anime",
+      "dimensions": "960x600",
+      "alt": "The learner plans her study week with a notebook and sticky notes; her robot helper floats beside her with a small star.",
+      "model": "cb/gemini-3.1-flash-image",
+      "provider": "InferHub",
+      "prompt_file": ".content-system/characters/prompts/art-lane-studyos.full.txt",
+      "prompt_sha256": "f9af7c45853be09b6ebfeb588b361671751ce57d7f7f38ad1141a3d5c7618e7c",
+      "references": [
+        {
+          "path": "mascot/gen/learner-turn-a-0.png",
+          "sha256": "2582d8eb5bd8077127c56f41aacf8731bafb2a938f2b33e6421b73d94c501f9f"
+        },
+        {
+          "path": "mascot/gen/robot-turn-a-0.png",
+          "sha256": "b62d72772e08426bc46871299079b1eecb30f6234e52dcfebd993a82d407a2d5"
+        },
+        {
+          "path": "cgm-look/assets/marketing/story-loop-square.png",
+          "sha256": "c38720314c79e7b1cc5693ebbb3e50fd2524675c3171e28e21c497c9d5c5d0c6"
+        }
+      ],
+      "source_sha256": "6301dea4c9a38d8abb2f7ad7a68b6ec03350c2fe5bd90396d8dabd0c3fadf03c",
+      "final_sha256": "20832a1bde57107b857be387e584da86dfea8b0a0ea3fc72b6d16b2a91308664",
+      "processing": "1024x1024 candidate cropped to 16:10 and resized to 960x600 WebP q80",
+      "candidates": 2,
+      "review": "draft (orchestrator pick; owner review pending)"
+    },
+    {
+      "id": "art-onboarding",
+      "path": "web/public/art/onboarding.webp",
+      "role": "onboarding-hero",
+      "style": "mature anime",
+      "dimensions": "960x600",
+      "alt": "The learner opens her laptop at a window seat in blue-violet evening light while her robot helper waves hello.",
+      "model": "cb/gemini-3.1-flash-image",
+      "provider": "InferHub",
+      "prompt_file": ".content-system/characters/prompts/art-onboarding.full.txt",
+      "prompt_sha256": "6df388816d293e9449a2dea8686618ca1a3628969fc2da1c57e287b09de5c779",
+      "references": [
+        {
+          "path": "mascot/gen/learner-turn-a-0.png",
+          "sha256": "2582d8eb5bd8077127c56f41aacf8731bafb2a938f2b33e6421b73d94c501f9f"
+        },
+        {
+          "path": "mascot/gen/robot-turn-a-0.png",
+          "sha256": "b62d72772e08426bc46871299079b1eecb30f6234e52dcfebd993a82d407a2d5"
+        },
+        {
+          "path": "cgm-look/assets/marketing/story-loop-square.png",
+          "sha256": "c38720314c79e7b1cc5693ebbb3e50fd2524675c3171e28e21c497c9d5c5d0c6"
+        }
+      ],
+      "source_sha256": "aa9144e1b4b613f168d715198a909858c8b35d5ef8f99f3b71363b9a4bb55b6a",
+      "final_sha256": "aa7a289df9396bad2eafca96804c0083ebea60caba138be974db98f1c800f688",
+      "processing": "1024x1024 candidate cropped to 16:10 and resized to 960x600 WebP q80",
+      "candidates": 2,
+      "review": "draft (orchestrator pick; owner review pending)"
+    }
+  ]
 }

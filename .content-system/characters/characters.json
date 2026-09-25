@@ -1,0 +1,95 @@
+{
+  "schema_version": "study-os.characters.v1",
+  "characters": [
+    {
+      "id": "learner",
+      "placeholder_name": "Learner",
+      "kind": "human",
+      "forms": {
+        "mature": {
+          "refs": [
+            "refs/learner-turnaround.webp",
+            "refs/learner-expressions.webp",
+            "refs/pair-key-art.webp"
+          ]
+        },
+        "chibi": {
+          "refs": [
+            "refs/learner-chibi-master.webp"
+          ],
+          "in_app_role": "pet",
+          "sprites": [
+            "pet-idle",
+            "pet-wave",
+            "pet-thinking",
+            "pet-talking",
+            "pet-celebrate",
+            "pet-encourage"
+          ]
+        }
+      },
+      "prompt_block": "prompts/block-learner.txt"
+    },
+    {
+      "id": "helper",
+      "placeholder_name": "Helper",
+      "kind": "robot",
+      "forms": {
+        "mature": {
+          "refs": [
+            "refs/helper-turnaround.webp",
+            "refs/helper-expressions.webp",
+            "refs/pair-key-art.webp"
+          ]
+        },
+        "chibi": {
+          "refs": [
+            "refs/helper-chibi-master.webp"
+          ],
+          "in_app_role": "idle_visitor",
+          "sprites": [
+            "robot-hover",
+            "duo-headpat",
+            "duo-starplay"
+          ]
+        }
+      },
+      "prompt_block": "prompts/block-robot.txt"
+    }
+  ],
+  "style_block": "prompts/block-style.txt",
+  "style_anchor": "CGM assets/marketing/story-loop-square.png",
+  "palette": {
+    "night_ink": "#111B4D",
+    "violet": "#8F7CFF",
+    "cyan": "#63D9FF",
+    "coral": "#FF8A70",
+    "cream": "#F4F1FF",
+    "mint": "#94E3CB",
+    "gold": "#FFD28A"
+  },
+  "model": {
+    "id": "cb/gemini-3.1-flash-image",
+    "provider": "InferHub",
+    "modalities": [
+      "image",
+      "text"
+    ],
+    "seed": null
+  },
+  "robot_visit": {
+    "min_idle_seconds": 90,
+    "min_interval_seconds": 600,
+    "max_on_screen_seconds": 6,
+    "never_when": [
+      "assessment_probe_open",
+      "typing",
+      "speaking",
+      "pet_talking",
+      "pet_thinking",
+      "pet_reacting",
+      "reduced_motion",
+      "mascot_hidden"
+    ]
+  }
+}
