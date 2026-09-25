@@ -1,9 +1,13 @@
 # Agent Handoff
 
-<!-- continuity:current {"active_task":null,"active_task_file":null,"protocol_version":"0.1.0-draft","schema":"project-continuity.current.v1"} -->
+<!-- continuity:current {"active_task":"SOS-0009","active_task_file":"tasks/TASK-SOS-0009-voice-robustness-research.md","protocol_version":"0.1.0-draft","schema":"project-continuity.current.v1"} -->
 
 Last updated: 2026-09-24
 Primary tracker: #63 (runtime) · #82 (web app epic)
+
+## Active research task
+
+**SOS-0009 — voice robustness** (leaf #106, parent #82, umbrella #107). Note: `docs/research/voice-robustness.md` on `task/SOS-0009-voice-robustness-research`. Research only; SOS-0005 untouched. TTS samples on the agent box at `/workspace/voice-samples/`.
 
 ## Web app track (D017 accepted, D018 amendment) — slice 1 live
 
