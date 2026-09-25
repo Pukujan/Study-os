@@ -348,3 +348,7 @@ The controller remains authority regardless of which implementation fulfills an 
 ## Web app track (SOS-0003, proposed)
 
 As of 2026-09-24 (SOS-0003 completed; PR #96 merge pending, live result on #83): an owner-requested hosted web app is specified in `docs/webapp/` (leaf #83, epic #82, children #84–#95 and #97). Proposed decision D017 would promote a private, invite-only, two-learner web beta. Until Alex accepts D017, the "Explicitly deferred" list in `AGENTS.md` still applies to implementation merges. The web surface must reuse the deterministic controller (ADR-0016), with interpretation as a cascade: rules, then hosted Jev / Laya (calibrated, low-stakes only), then a frontier LLM on low confidence (see `docs/webapp/DEEP_RESEARCH.md`). Start with `docs/webapp/BUILD_PLAN.md` → slice 1.
+
+## SOS-0005 visuals slice (in progress on `sos5-visuals`)
+
+Added `box_index` enhancements (brace, arrows with direction, circles, interactive cells) and two new player frame types: `mermaid_flow` (progressive reveal, responsive TD/LR, zoom/pan) and `code_tree` (line highlights, underlines, expandable tree). Wired the sliding-window lesson to a `LessonMap` in `Player.tsx`. Engine `check_lesson` now forbids `circles` on probe frames alongside arrows/highlight. Next: Alex/orchestrator review, then screenshots/dogfooding.

@@ -169,6 +169,12 @@ schemas:
   learner_snapshot: "0.1.0"
   decision_proposal: "0.1.0"
   attempt_telemetry: "0.1.0"
+  player_lesson: "study-os.player-lesson.v1"
+  player_frame_types:
+    - fraction_bar
+    - box_index
+    - mermaid_flow
+    - code_tree
 
 learning:
   execution_tracker: 10
