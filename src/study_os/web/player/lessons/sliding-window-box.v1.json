@@ -598,12 +598,10 @@
             ],
             "show_positions": false,
             "show_indices": true,
-            "box": {
-              "start": 0,
-              "k": 3
-            },
+            "box": null,
             "arrows": [],
-            "sum_label": null
+            "sum_label": null,
+            "caption": "i = 0, k = 3"
           }
         ],
         "answer_kind": "text",
@@ -695,12 +693,10 @@
                 ],
                 "show_positions": false,
                 "show_indices": true,
-                "box": {
-                  "start": 1,
-                  "k": 2
-                },
+                "box": null,
                 "arrows": [],
-                "sum_label": null
+                "sum_label": null,
+                "caption": "i = 1, k = 2"
               }
             ],
             "answer_kind": "text",
@@ -785,12 +781,10 @@
                 ],
                 "show_positions": false,
                 "show_indices": true,
-                "box": {
-                  "start": 2,
-                  "k": 4
-                },
+                "box": null,
                 "arrows": [],
-                "sum_label": null
+                "sum_label": null,
+                "caption": "i = 2, k = 4"
               }
             ],
             "answer_kind": "text",
@@ -924,12 +918,10 @@
             ],
             "show_positions": false,
             "show_indices": true,
-            "box": {
-              "start": 1,
-              "k": 3
-            },
+            "box": null,
             "arrows": [],
-            "sum_label": null
+            "sum_label": null,
+            "caption": "i = 1, k = 3"
           }
         ],
         "answer_kind": "text",
@@ -1008,12 +1000,10 @@
                 ],
                 "show_positions": false,
                 "show_indices": true,
-                "box": {
-                  "start": 3,
-                  "k": 2
-                },
+                "box": null,
                 "arrows": [],
-                "sum_label": null
+                "sum_label": null,
+                "caption": "i = 3, k = 2"
               }
             ],
             "answer_kind": "text",
@@ -1092,12 +1082,10 @@
                 ],
                 "show_positions": false,
                 "show_indices": true,
-                "box": {
-                  "start": 0,
-                  "k": 2
-                },
+                "box": null,
                 "arrows": [],
-                "sum_label": null
+                "sum_label": null,
+                "caption": "i = 0, k = 2"
               }
             ],
             "answer_kind": "text",
@@ -1233,12 +1221,10 @@
             ],
             "show_positions": false,
             "show_indices": true,
-            "box": {
-              "start": 2,
-              "k": 3
-            },
+            "box": null,
             "arrows": [],
-            "sum_label": null
+            "sum_label": null,
+            "caption": "i = 2, k = 3"
           }
         ],
         "answer_kind": "integer",
@@ -1315,12 +1301,10 @@
                 ],
                 "show_positions": false,
                 "show_indices": true,
-                "box": {
-                  "start": 0,
-                  "k": 3
-                },
+                "box": null,
                 "arrows": [],
-                "sum_label": null
+                "sum_label": null,
+                "caption": "i = 0, k = 3"
               }
             ],
             "answer_kind": "integer",
@@ -1397,12 +1381,10 @@
                 ],
                 "show_positions": false,
                 "show_indices": true,
-                "box": {
-                  "start": 1,
-                  "k": 2
-                },
+                "box": null,
                 "arrows": [],
-                "sum_label": null
+                "sum_label": null,
+                "caption": "i = 1, k = 2"
               }
             ],
             "answer_kind": "integer",
