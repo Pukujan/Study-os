@@ -343,6 +343,161 @@
       "final_sha256": "58c75b4a4e4a8c8c6471902be88ca83869d2f650e69300407840f7292e0014d7",
       "processing": "keyed chibi master + programmatic 6-frame hover bob (mascot/visit.py)",
       "review": "draft (orchestrator + cheap vision critique; owner review pending)"
+    },
+    {
+      "id": "art-lane-dsa",
+      "path": "web/public/art/lane-dsa.webp",
+      "role": "lane-card",
+      "style": "mature anime",
+      "dimensions": "960x600",
+      "alt": "The learner arranges a row of glowing boxes under a sliding highlight window on an evening whiteboard while her robot helper holds a box.",
+      "model": "cb/gemini-3.1-flash-image",
+      "provider": "InferHub",
+      "prompt_file": ".content-system/characters/prompts/art-lane-dsa.full.txt",
+      "prompt_sha256": "e3b64a50c70a2ad7e1e91326b7ddfb1786087cd7cfcaca37fc88373b1915ddb3",
+      "references": [
+        {
+          "path": "mascot/gen/learner-turn-a-0.png",
+          "sha256": "2582d8eb5bd8077127c56f41aacf8731bafb2a938f2b33e6421b73d94c501f9f"
+        },
+        {
+          "path": "mascot/gen/robot-turn-a-0.png",
+          "sha256": "b62d72772e08426bc46871299079b1eecb30f6234e52dcfebd993a82d407a2d5"
+        },
+        {
+          "path": "cgm-look/assets/marketing/story-loop-square.png",
+          "sha256": "c38720314c79e7b1cc5693ebbb3e50fd2524675c3171e28e21c497c9d5c5d0c6"
+        }
+      ],
+      "source_sha256": "3eae6e780c0a490bd21248bdc5b1e04631f5884154b060c9066596963a0069fd",
+      "final_sha256": "5b10323d49448670d7b4cb293aafa0034633e70b0700d0e5e7fbdac892d2ba15",
+      "processing": "1024x1024 candidate cropped to 16:10 and resized to 960x600 WebP q80",
+      "candidates": 2,
+      "review": "draft (orchestrator pick; owner review pending)"
+    },
+    {
+      "id": "art-lane-hesi",
+      "path": "web/public/art/lane-hesi.webp",
+      "role": "lane-card",
+      "style": "mature anime",
+      "dimensions": "960x600",
+      "alt": "The learner studies anatomy and fraction flashcards at an evening desk with a stethoscope; her robot helper holds a card.",
+      "model": "cb/gemini-3.1-flash-image",
+      "provider": "InferHub",
+      "prompt_file": ".content-system/characters/prompts/art-lane-hesi.full.txt",
+      "prompt_sha256": "347c256bf9930a8c5cfbefc588be9c81cd14d7eefcd4381f741c2446d3a28fc9",
+      "references": [
+        {
+          "path": "mascot/gen/learner-turn-a-0.png",
+          "sha256": "2582d8eb5bd8077127c56f41aacf8731bafb2a938f2b33e6421b73d94c501f9f"
+        },
+        {
+          "path": "mascot/gen/robot-turn-a-0.png",
+          "sha256": "b62d72772e08426bc46871299079b1eecb30f6234e52dcfebd993a82d407a2d5"
+        },
+        {
+          "path": "cgm-look/assets/marketing/story-loop-square.png",
+          "sha256": "c38720314c79e7b1cc5693ebbb3e50fd2524675c3171e28e21c497c9d5c5d0c6"
+        }
+      ],
+      "source_sha256": "34537a0b029b6fe64c6068434dbcf12a6328a1c11a983ff91eacb7c4b14db21a",
+      "final_sha256": "03752d8a2440faad239f6a83667a20a2f9c39dbace52c0c37e81a667cef7fad3",
+      "processing": "1024x1024 candidate cropped to 16:10 and resized to 960x600 WebP q80",
+      "candidates": 2,
+      "review": "draft (orchestrator pick; owner review pending)"
+    },
+    {
+      "id": "art-lane-ai",
+      "path": "web/public/art/lane-ai.webp",
+      "role": "lane-card",
+      "style": "mature anime",
+      "dimensions": "960x600",
+      "alt": "The learner sketches a glowing neural-network diagram in the air; her robot helper touches a node.",
+      "model": "cb/gemini-3.1-flash-image",
+      "provider": "InferHub",
+      "prompt_file": ".content-system/characters/prompts/art-lane-ai.full.txt",
+      "prompt_sha256": "05814296b7182f99940e8eeff9651596969902f12ff2bd50a826acc501fad7ee",
+      "references": [
+        {
+          "path": "mascot/gen/learner-turn-a-0.png",
+          "sha256": "2582d8eb5bd8077127c56f41aacf8731bafb2a938f2b33e6421b73d94c501f9f"
+        },
+        {
+          "path": "mascot/gen/robot-turn-a-0.png",
+          "sha256": "b62d72772e08426bc46871299079b1eecb30f6234e52dcfebd993a82d407a2d5"
+        },
+        {
+          "path": "cgm-look/assets/marketing/story-loop-square.png",
+          "sha256": "c38720314c79e7b1cc5693ebbb3e50fd2524675c3171e28e21c497c9d5c5d0c6"
+        }
+      ],
+      "source_sha256": "36c10f963d2a91503ed0f2de069416da83ab954b22c324fcb4609c7077d4526f",
+      "final_sha256": "414d760935b77b2eee183f6a8e185fbfd35977b554a9195affa33abb2023d80e",
+      "processing": "1024x1024 candidate cropped to 16:10 and resized to 960x600 WebP q80",
+      "candidates": 2,
+      "review": "draft (orchestrator pick; owner review pending)"
+    },
+    {
+      "id": "art-lane-studyos",
+      "path": "web/public/art/lane-studyos.webp",
+      "role": "lane-card",
+      "style": "mature anime",
+      "dimensions": "960x600",
+      "alt": "The learner plans her study week with a notebook and sticky notes; her robot helper floats beside her with a small star.",
+      "model": "cb/gemini-3.1-flash-image",
+      "provider": "InferHub",
+      "prompt_file": ".content-system/characters/prompts/art-lane-studyos.full.txt",
+      "prompt_sha256": "f9af7c45853be09b6ebfeb588b361671751ce57d7f7f38ad1141a3d5c7618e7c",
+      "references": [
+        {
+          "path": "mascot/gen/learner-turn-a-0.png",
+          "sha256": "2582d8eb5bd8077127c56f41aacf8731bafb2a938f2b33e6421b73d94c501f9f"
+        },
+        {
+          "path": "mascot/gen/robot-turn-a-0.png",
+          "sha256": "b62d72772e08426bc46871299079b1eecb30f6234e52dcfebd993a82d407a2d5"
+        },
+        {
+          "path": "cgm-look/assets/marketing/story-loop-square.png",
+          "sha256": "c38720314c79e7b1cc5693ebbb3e50fd2524675c3171e28e21c497c9d5c5d0c6"
+        }
+      ],
+      "source_sha256": "6301dea4c9a38d8abb2f7ad7a68b6ec03350c2fe5bd90396d8dabd0c3fadf03c",
+      "final_sha256": "20832a1bde57107b857be387e584da86dfea8b0a0ea3fc72b6d16b2a91308664",
+      "processing": "1024x1024 candidate cropped to 16:10 and resized to 960x600 WebP q80",
+      "candidates": 2,
+      "review": "draft (orchestrator pick; owner review pending)"
+    },
+    {
+      "id": "art-onboarding",
+      "path": "web/public/art/onboarding.webp",
+      "role": "onboarding-hero",
+      "style": "mature anime",
+      "dimensions": "960x600",
+      "alt": "The learner opens her laptop at a window seat in blue-violet evening light while her robot helper waves hello.",
+      "model": "cb/gemini-3.1-flash-image",
+      "provider": "InferHub",
+      "prompt_file": ".content-system/characters/prompts/art-onboarding.full.txt",
+      "prompt_sha256": "6df388816d293e9449a2dea8686618ca1a3628969fc2da1c57e287b09de5c779",
+      "references": [
+        {
+          "path": "mascot/gen/learner-turn-a-0.png",
+          "sha256": "2582d8eb5bd8077127c56f41aacf8731bafb2a938f2b33e6421b73d94c501f9f"
+        },
+        {
+          "path": "mascot/gen/robot-turn-a-0.png",
+          "sha256": "b62d72772e08426bc46871299079b1eecb30f6234e52dcfebd993a82d407a2d5"
+        },
+        {
+          "path": "cgm-look/assets/marketing/story-loop-square.png",
+          "sha256": "c38720314c79e7b1cc5693ebbb3e50fd2524675c3171e28e21c497c9d5c5d0c6"
+        }
+      ],
+      "source_sha256": "aa9144e1b4b613f168d715198a909858c8b35d5ef8f99f3b71363b9a4bb55b6a",
+      "final_sha256": "aa7a289df9396bad2eafca96804c0083ebea60caba138be974db98f1c800f688",
+      "processing": "1024x1024 candidate cropped to 16:10 and resized to 960x600 WebP q80",
+      "candidates": 2,
+      "review": "draft (orchestrator pick; owner review pending)"
     }
   ]
 }
