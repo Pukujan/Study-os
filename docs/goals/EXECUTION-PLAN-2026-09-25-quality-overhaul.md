@@ -55,3 +55,17 @@ Goal-level DoD unchanged from `GOAL-2026-09-25-quality-overhaul.md`.
 - SDD proposed a header-first idempotency and a new `learn.idempotency_keys` design; kept with R2 body-field-primary amendment (existing convention compatibility).
 - SDD proposed `0003_player_review.sql`; renamed `0003_player_regen_review.sql` (covers both new surfaces; R3).
 - SDD §5.2 z-index note self-corrected in-line; frozen: sheet z-index 60, mascot hidden while sheet open on ≤1023px (S3 may hide via `hidden` attribute, no stacking hacks).
+
+## Workspace isolation (post-incident, binding)
+
+Every slice works ONLY in its own git worktree; the primary checkout `D:/claude/study-os` is orchestrator-owned; no agent ever `git checkout` outside its worktree:
+
+| Slice | Worktree | Branch |
+|---|---|---|
+| S1 | `D:/claude/study-os-s1` | `task/SOS-0012-decomposer-rebuild` |
+| S2 | `D:/claude/study-os-s2` | `task/SOS-0013-regen-api` |
+| S3 | `D:/claude/study-os-s3` | `task/SOS-0013b-regen-review-ui` |
+| S4 | `D:/claude/study-os-s4` | `task/SOS-0014-mascot-locomotion` |
+| S5 | after S1–S4 merge | `task/SOS-0015-frontend-viewport` |
+
+Local verification environment: `.venv-ci/Scripts/python` (full dev deps incl. psycopg) + `TEST_DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:5433/postgres` (docker `sos-test-pg`). Known pre-existing LOCAL-only failures at baseline (env-specific, CI green — ignore, never "fix"): `test_helper_adoption.test_protocol_schemas_are_exact_pinned_copy` (local PCM clone drift), `test_pir_golden_conformance.test_oracle_pins_goldens_and_benchmarker`, `test_pir_mutation_gate_contract.test_checker_accepts_audited_equivalent_survivor` (CRLF hash drift).
