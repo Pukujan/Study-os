@@ -1,0 +1,177 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://study-os.local/schemas/decomposition.v2.schema.json",
+  "title": "Study OS Decomposition v2",
+  "description": "Frozen output contract for the Study OS pedagogical decomposer v2 (SOS-0012, Refs #118). Cross-field rules (topological validity, coverage, step indexing) are enforced by the generator and tests, not by this schema.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "problem_id",
+    "problem_statement_scrubbed",
+    "strategy",
+    "concept_dag",
+    "learning_order",
+    "steps",
+    "provenance",
+    "revision"
+  ],
+  "properties": {
+    "schema_version": { "const": "study-os.decomposition.v2" },
+    "problem_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{1,63}$" },
+    "problem_statement_scrubbed": { "type": "string", "maxLength": 4000 },
+    "revision": { "type": "string", "pattern": "^[a-z0-9-]+\\.v2$" },
+    "strategy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["summary", "approach", "invariants"],
+      "properties": {
+        "summary": { "type": "string", "maxLength": 600 },
+        "approach": { "type": "string", "maxLength": 600 },
+        "invariants": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 8,
+          "items": { "type": "string", "maxLength": 300 }
+        }
+      }
+    },
+    "concept_dag": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["nodes", "edges"],
+      "properties": {
+        "nodes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 40,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["concept_id", "label"],
+            "properties": {
+              "concept_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$" },
+              "label": { "type": "string", "maxLength": 120 },
+              "kc": { "type": ["string", "null"], "maxLength": 120 }
+            }
+          }
+        },
+        "edges": {
+          "type": "array",
+          "maxItems": 200,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["from", "to"],
+            "properties": {
+              "from": { "$ref": "#/$defs/concept_id" },
+              "to": { "$ref": "#/$defs/concept_id" },
+              "kind": {
+                "type": "string",
+                "enum": ["prerequisite", "reinforces"],
+                "default": "prerequisite"
+              }
+            }
+          }
+        }
+      }
+    },
+    "learning_order": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 40,
+      "items": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$" },
+      "description": "Every concept_id exactly once; must be a valid topological order of concept_dag."
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 40,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["step_id", "step_index", "concept_id", "goal", "presentation"],
+        "properties": {
+          "step_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$" },
+          "step_index": { "type": "integer", "minimum": 0, "maximum": 500 },
+          "concept_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$" },
+          "goal": { "type": "string", "maxLength": 300 },
+          "presentation": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["question", "example", "visual"],
+            "properties": {
+              "question": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["md"],
+                "properties": {
+                  "md": { "type": "string", "maxLength": 1200 }
+                }
+              },
+              "example": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["md"],
+                "properties": {
+                  "md": { "type": "string", "maxLength": 2000 }
+                }
+              },
+              "visual": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["format", "artifact"],
+                "properties": {
+                  "format": {
+                    "type": "string",
+                    "enum": [
+                      "ascii",
+                      "mermaid",
+                      "algebra",
+                      "katex",
+                      "code",
+                      "svg",
+                      "fraction_bar",
+                      "box_index",
+                      "number_line",
+                      "none"
+                    ]
+                  },
+                  "artifact": { "type": "string", "maxLength": 4000 },
+                  "caption": { "type": ["string", "null"], "maxLength": 300 }
+                }
+              },
+              "tutor_prompt": { "type": ["string", "null"], "maxLength": 500 },
+              "expected_answer_patterns": {
+                "type": "array",
+                "maxItems": 10,
+                "items": { "type": "string", "maxLength": 120 }
+              }
+            }
+          }
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["module_version", "generator", "route", "created_at"],
+      "properties": {
+        "module_version": { "type": "string", "pattern": "^decomposer-v2\\.[0-9]+$" },
+        "generator": {
+          "type": "string",
+          "enum": ["deterministic", "llm"],
+          "description": "deterministic = template/rules path; llm = Jev/cheap-IRE cascade"
+        },
+        "route": { "type": ["string", "null"], "maxLength": 120 },
+        "model": { "type": ["string", "null"], "maxLength": 120 },
+        "prompt_sha256": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" },
+        "problem_sha256": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" },
+        "created_at": { "type": "string", "format": "date-time" }
+      }
+    }
+  },
+  "$defs": {
+    "concept_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$" }
+  }
+}

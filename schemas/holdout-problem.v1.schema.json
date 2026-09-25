@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://study-os.local/schemas/holdout-problem.v1.schema.json",
+  "title": "Study OS Holdout Problem v1",
+  "description": "One line of the private holdout problems.jsonl (SOS-0012 S6, Refs #118 #114). Never committed; source_class private files must never appear in the repo tree (P5_NO_PRIVATE guard).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["problem_id", "statement_md", "domain", "difficulty", "source_class", "version"],
+  "properties": {
+    "problem_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{1,63}$" },
+    "statement_md": { "type": "string", "minLength": 1, "maxLength": 4000 },
+    "domain": { "type": "string", "enum": ["dsa"] },
+    "difficulty": { "type": "string", "enum": ["easy", "medium", "hard"] },
+    "source_class": { "type": "string", "enum": ["public", "private"] },
+    "version": { "type": "integer", "const": 2 }
+  }
+}
