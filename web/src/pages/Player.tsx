@@ -280,13 +280,6 @@ export default function Player({ sessionId }: { sessionId: string }) {
         </div>
 
         <div className="player-side">
-          <Pet
-            mood={petMood}
-            hidden={petHidden}
-            onHiddenChange={setPetHidden}
-            onTap={() => setCompanionOpen(true)}
-            paused={probeOpen && !companionOpen && !companionSpeaking}
-          />
           {companionOpen && (
             <CompanionPanel
               sessionId={sessionId}
@@ -317,6 +310,14 @@ export default function Player({ sessionId }: { sessionId: string }) {
           />
         </div>
       </div>
+      {/* Free-roam pet overlays the whole lesson viewport (not docked). */}
+      <Pet
+        mood={petMood}
+        hidden={petHidden}
+        onHiddenChange={setPetHidden}
+        onTap={() => setCompanionOpen(true)}
+        paused={probeOpen && !companionOpen && !companionSpeaking}
+      />
     </div>
   );
 

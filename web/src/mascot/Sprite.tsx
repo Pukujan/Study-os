@@ -11,6 +11,7 @@ export type SpriteProps = {
   onEnd?: () => void;
   paused?: boolean;
   alt?: string;
+  className?: string;
 };
 
 export default function Sprite({
@@ -24,6 +25,7 @@ export default function Sprite({
   onEnd,
   paused = false,
   alt = "",
+  className,
 }: SpriteProps) {
   const [reduced, setReduced] = useState(false);
 
@@ -36,7 +38,6 @@ export default function Sprite({
       mq.addEventListener("change", handler);
       return () => mq.removeEventListener("change", handler);
     }
-    // older Safari
     const legacy = mq as unknown as {
       addListener: (h: (e: MediaQueryListEvent) => void) => void;
       removeListener: (h: (e: MediaQueryListEvent) => void) => void;
@@ -49,8 +50,8 @@ export default function Sprite({
   const ratio = frameW / frameH;
   const h = height ?? frameH;
   const w = Math.round(h * ratio);
-  const totalW = frames * frameW;
-  const animName = useMemo(() => `sos-sprite-${frames}-${frameW}-${frameH}`, [frames, frameW, frameH]);
+  const sheetW = Math.round((frames * frameW * h) / frameH);
+  const animName = useMemo(() => `sos-sprite-${frames}-${frameW}-${frameH}-${h}`, [frames, frameW, frameH, h]);
   const isStatic = reduced || paused;
   const duration = frames / fps;
 
@@ -58,26 +59,34 @@ export default function Sprite({
     <>
       <style>{`
         @keyframes ${animName} {
-          from { background-position-x: 0; }
-          to { background-position-x: -${totalW}px; }
+          from { background-position: 0 0; }
+          to { background-position: -${sheetW}px 0; }
         }
       `}</style>
       <div
         role="img"
         aria-label={alt}
+        className={className}
         onAnimationEnd={onEnd}
         style={{
           width: `${w}px`,
           height: `${h}px`,
+          minWidth: `${w}px`,
+          minHeight: `${h}px`,
+          maxWidth: `${w}px`,
+          maxHeight: `${h}px`,
           backgroundImage: `url("${src}")`,
           backgroundRepeat: "no-repeat",
-          backgroundSize: "auto 100%",
-          backgroundPosition: isStatic ? "0 0" : ("0 0" as React.CSSProperties["backgroundPosition"]),
+          backgroundSize: `${sheetW}px ${h}px`,
+          backgroundPosition: "0 0",
           animation: isStatic
             ? undefined
             : `${animName} ${duration}s steps(${frames}) ${loop ? "infinite" : "1"} both`,
           imageRendering: "auto",
           flexShrink: 0,
+          overflow: "hidden",
+          display: "block",
+          boxSizing: "content-box",
         }}
       />
     </>
