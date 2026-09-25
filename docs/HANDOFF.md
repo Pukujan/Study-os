@@ -346,3 +346,7 @@ The controller remains authority regardless of which implementation fulfills an 
 ## Web app track (SOS-0003, proposed)
 
 As of 2026-09-24 (SOS-0003 completed; PR #96 merge pending, live result on #83): an owner-requested hosted web app is specified in `docs/webapp/` (leaf #83, epic #82, children #84–#95 and #97). Proposed decision D017 would promote a private, invite-only, two-learner web beta. Until Alex accepts D017, the "Explicitly deferred" list in `AGENTS.md` still applies to implementation merges. The web surface must reuse the deterministic controller (ADR-0016), with interpretation as a cascade: rules, then hosted Jev / Laya (calibrated, low-stakes only), then a frontier LLM on low confidence (see `docs/webapp/DEEP_RESEARCH.md`). Start with `docs/webapp/BUILD_PLAN.md` → slice 1.
+
+## SOS-0010 pedagogy golden dataset (active)
+
+Leaf #111 / branch `task/SOS-0010-pedagogy-golden-dataset`: durable extract of the 2026-09-04 transcript into `domains/dsa/sliding-window/golden/dataset/` plus `docs/pedagogy/SKILL-golden-tutor.md`. Do not mix with SOS-0005 UI work.
