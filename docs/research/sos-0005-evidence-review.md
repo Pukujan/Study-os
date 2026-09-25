@@ -29,6 +29,9 @@
 
 **Source count: 86 distinct external sources**: 45 peer-reviewed/academic (37 Crossref-verified DOIs, 5 arXiv papers, and 3 academic PDFs: Mayer, Schneider et al., WWC) and 41 company, UX-research, standards, teardown, news, working-paper or tool pages. H14/H15 were added 2026-09-24 after Alex's interaction-design notes. References are listed in the final section.
 
+> **Product moat (Alex, 2026-09-24):** Study OS's main advantage is **multiple forms of information representation** plus **breaking hard problems into small stepwise pedagogical goals**. Recorded as decision D12 in [`decisions-2026-09-24.md`](./decisions-2026-09-24.md). Hypotheses H1, H2, H4, and H15 are the evidence gate for that moat; style/voice/home UI are secondary.
+
+
 ---
 
 ## H1: Micro-step lesson player, produce/predict first
