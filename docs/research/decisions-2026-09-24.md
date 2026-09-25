@@ -4,6 +4,11 @@ Durable record of Alex's post-review decisions after the SOS-0005 research gate 
 
 Source comments (ET): [#107 Alex decisions](https://github.com/Pukujan/Study-os/issues/107#issuecomment-5823916572), [#107 H14/H15 addendum](https://github.com/Pukujan/Study-os/issues/107#issuecomment-5824369749), [#106 voice scope](https://github.com/Pukujan/Study-os/issues/106#issuecomment-5823918487), [#103 character roles](https://github.com/Pukujan/Study-os/issues/103#issuecomment-5824368687), [#101 companion update](https://github.com/Pukujan/Study-os/issues/101#issuecomment-5824369775).
 
+
+## Product moat (Alex)
+
+**Study OS's main advantage is multiple forms of information representation, plus breaking hard problems into small stepwise pedagogical goals.** UI chrome, mascots, and voice are support; the learning core is: show the same idea in the representations that help *this* learner, and sequence hard material as tiny produce-first steps with fading help. See **D12**.
+
 | ID | Decision | Linked issues | Evidence / note |
 |---|---|---|---|
 | D1 | **Anime / sticker visual style: GO** via Pukujan/content-generation-modules (`.content-system/`), grown-up not childish; assets with provenance. | [#107](https://github.com/Pukujan/Study-os/issues/107), [#103](https://github.com/Pukujan/Study-os/issues/103) | Overrides H7 "unknown/lean weak". Spec and sprites remain on draft PR #102 until Alex approves screenshots. |
@@ -17,6 +22,7 @@ Source comments (ET): [#107 Alex decisions](https://github.com/Pukujan/Study-os/
 | D9 | **Like / dislike (+ why) feedback** on every step and every tutor message; store with prompt version, model, step, session; admin or Metabase-ready SQL view. | [#107](https://github.com/Pukujan/Study-os/issues/107), [#101](https://github.com/Pukujan/Study-os/issues/101) | Primary validation path without human spot-checkers. |
 | D10 | **Goldens + conformance oracle as evals** (necessary, not sufficient); golden-replay agent evals with pass rates per prompt version; Alex live testing. | [#107](https://github.com/Pukujan/Study-os/issues/107), [#101](https://github.com/Pukujan/Study-os/issues/101) | Aligns with H13. |
 | D11 | Apply remaining evidence verdicts: fading micro-steps; representational learner-paced visuals; guarded grounded tutor chat (answer server-side); re-explain with **new example, same representation** first; lesson before signup / no tutorial deck; honour `prefers-reduced-motion`. | [#107](https://github.com/Pukujan/Study-os/issues/107), [#101](https://github.com/Pukujan/Study-os/issues/101) | H1–H6, H8. |
+| D12 | **Product moat:** Study OS's main advantage is **multiple forms of information representation** (same concept shown as diagram, worked example, metaphor, formula, code, spoken form, etc.) **plus breaking hard problems into small stepwise pedagogical goals** (one new idea per step, produce/predict before being told, fade scaffolding). Everything else (anime style, companion, voice, Netflix-no) is subordinate to this. | [#107](https://github.com/Pukujan/Study-os/issues/107), [#101](https://github.com/Pukujan/Study-os/issues/101) | Anchors H1 (micro-steps), H2 (representational visuals), H4 (new example / same chart first), H15 (one screen). |
 
 ## Explicitly not decided / not landed here
 
