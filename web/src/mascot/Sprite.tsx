@@ -51,7 +51,14 @@ export default function Sprite({
   const h = height ?? frameH;
   const w = Math.round(h * ratio);
   const sheetW = Math.round((frames * frameW * h) / frameH);
-  const animName = useMemo(() => `sos-sprite-${frames}-${frameW}-${frameH}-${h}`, [frames, frameW, frameH, h]);
+  // Infinite loops advance to -sheetW (wraps before the empty slot). One-shots must
+  // end on the last visible frame (-(frames-1)*w) or fill-mode:both holds an empty frame.
+  const endShift = loop ? sheetW : Math.max(0, sheetW - w);
+  const stepCount = loop ? frames : Math.max(1, frames - 1);
+  const animName = useMemo(
+    () => `sos-sprite-${frames}-${frameW}-${frameH}-${h}-${loop ? "loop" : "once"}`,
+    [frames, frameW, frameH, h, loop],
+  );
   const isStatic = reduced || paused;
   const duration = frames / fps;
 
@@ -60,7 +67,7 @@ export default function Sprite({
       <style>{`
         @keyframes ${animName} {
           from { background-position: 0 0; }
-          to { background-position: -${sheetW}px 0; }
+          to { background-position: -${endShift}px 0; }
         }
       `}</style>
       <div
@@ -81,7 +88,7 @@ export default function Sprite({
           backgroundPosition: "0 0",
           animation: isStatic
             ? undefined
-            : `${animName} ${duration}s steps(${frames}) ${loop ? "infinite" : "1"} both`,
+            : `${animName} ${duration}s steps(${stepCount}) ${loop ? "infinite" : "1"} ${loop ? "both" : "forwards"}`,
           imageRendering: "auto",
           flexShrink: 0,
           overflow: "hidden",
