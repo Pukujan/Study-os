@@ -20,6 +20,7 @@ def _new_state(lesson: dict[str, Any]) -> dict[str, Any]:
         "variant_index": -1,
         "phase": "probe",
         "pending": None,
+        "pending_variant": None,
         "misses_on_step": 0,
         "first_try_streak": 0,
         "scaffold": 0,
@@ -155,6 +156,7 @@ def _advance(lesson: dict[str, Any], state: dict[str, Any]) -> dict[str, Any]:
     steps = lesson["steps"]
     current = state["step_index"]
     current_step = steps[current]
+    state["pending_variant"] = None
 
     # Mark current step done unless it already has a terminal status.
     status = state["status_by_step"].get(current_step["step_id"])
@@ -230,6 +232,8 @@ def attempt(
     Returns ``(new_state, feedback)``.
     """
 
+    if state["phase"] != "probe":
+        raise ValueError("probe_not_open")
     probe = _current_probe(lesson, state)
     step = _current_step(lesson, state)
     step_id = step["step_id"]
@@ -291,8 +295,8 @@ def attempt(
         elif state["pending"] == "retry":
             # Retry correct; one more check before advancing.
             next_variant = _pick_next_variant(lesson, state)
-            state["variant_index"] = next_variant
-            feedback = _build_feedback("correct", message, frames, "continue", sticker="correct")
+            state["pending_variant"] = next_variant
+            feedback = _build_feedback("correct", message, frames, "check", sticker="correct")
             state["phase"] = "feedback"
             state["pending"] = "check"
         else:
@@ -300,9 +304,9 @@ def attempt(
             if step.get("confirm"):
                 # Ask one confirm variant before advancing.
                 next_variant = _pick_next_variant(lesson, state)
-                state["variant_index"] = next_variant
+                state["pending_variant"] = next_variant
                 state["pending"] = "check"
-                feedback = _build_feedback("correct", message, frames, "continue", sticker="correct")
+                feedback = _build_feedback("correct", message, frames, "check", sticker="correct")
                 state["phase"] = "feedback"
             else:
                 feedback = _build_feedback("correct", message, frames, "continue", sticker="correct")
@@ -323,6 +327,8 @@ def attempt(
             sticker=None,
         )
         state["phase"] = "feedback"
+        # Preserve the probe context while retrying this same question.
+        state["retry_same_pending"] = state["pending"]
         state["pending"] = "retry_same"
         state["feedback"] = _strip_server_only(feedback)
         return state, feedback
@@ -373,7 +379,7 @@ def attempt(
 
     # Pick a different variant for the retry.
     next_variant = _pick_next_variant(lesson, state)
-    state["variant_index"] = next_variant
+    state["pending_variant"] = next_variant
     state["phase"] = "feedback"
     state["pending"] = "retry"
     state["feedback"] = _strip_server_only(feedback)
@@ -383,6 +389,8 @@ def attempt(
 def confused(lesson: dict[str, Any], state: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
     """Re-explain: show explain frames and switch to a different variant, same representation."""
 
+    if state["phase"] != "probe":
+        raise ValueError("probe_not_open")
     probe = _current_probe(lesson, state)
 
     if probe is None:
@@ -401,7 +409,7 @@ def confused(lesson: dict[str, Any], state: dict[str, Any]) -> tuple[dict[str, A
 
     # Show explain frames, then retry with a different variant.
     next_variant = _pick_next_variant(lesson, state)
-    state["variant_index"] = next_variant
+    state["pending_variant"] = next_variant
     state["phase"] = "feedback"
     state["pending"] = "retry"
 
@@ -420,22 +428,28 @@ def confused(lesson: dict[str, Any], state: dict[str, Any]) -> tuple[dict[str, A
 def next(lesson: dict[str, Any], state: dict[str, Any]) -> dict[str, Any]:  # noqa: A001
     """Acknowledge any pending feedback and move to the next probe or step."""
 
+    if state["phase"] == "probe" and _current_probe(lesson, state) is None:
+        return _advance(lesson, state)
     if state["phase"] != "feedback":
         return state
 
     if state["pending"] == "retry":
+        queued = state.pop("pending_variant", None)
+        if queued is not None:
+            state["variant_index"] = queued
         state["phase"] = "probe"
-        state["pending"] = None
         return state
 
     if state["pending"] == "retry_same":
         state["phase"] = "probe"
-        state["pending"] = None
+        state["pending"] = state.pop("retry_same_pending", None)
         return state
 
     if state["pending"] == "check":
+        queued = state.pop("pending_variant", None)
+        if queued is not None:
+            state["variant_index"] = queued
         state["phase"] = "probe"
-        state["pending"] = None
         return state
 
     # No pending action: advance to the next step.

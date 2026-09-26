@@ -140,13 +140,16 @@ class PlayerService:
         response = (response or "")[:2000]
         lesson, state = self._load(principal, session_id)
         with self.db.tx() as conn:
-            self._session_row(conn, principal, session_id, lock=True)
+            row = self._session_row(conn, principal, session_id, lock=True)
+            state = dict(row["state"])
             prior = conn.execute(
                 "SELECT id FROM learn.player_event WHERE session_id = %s AND idempotency_key = %s",
                 (session_id, f"{principal.subject_id}:{idempotency_key}"),
             ).fetchone()
             if prior is not None:
                 return self._view(lesson, state, principal, session_id)
+            if state["phase"] != "probe":
+                raise ServiceError("probe_not_open")
             state, feedback = engine.attempt(lesson, state, response, modality)
             self._update_session_state(conn, session_id, state)
             self._log_event(
@@ -165,7 +168,10 @@ class PlayerService:
     def confused(self, principal: Any, session_id: str) -> dict[str, Any]:
         lesson, state = self._load(principal, session_id)
         with self.db.tx() as conn:
-            self._session_row(conn, principal, session_id, lock=True)
+            row = self._session_row(conn, principal, session_id, lock=True)
+            state = dict(row["state"])
+            if state["phase"] != "probe":
+                raise ServiceError("probe_not_open")
             state, feedback = engine.confused(lesson, state)
             self._update_session_state(conn, session_id, state)
             self._log_event(
@@ -180,7 +186,8 @@ class PlayerService:
     def next(self, principal: Any, session_id: str) -> dict[str, Any]:
         lesson, state = self._load(principal, session_id)
         with self.db.tx() as conn:
-            self._session_row(conn, principal, session_id, lock=True)
+            row = self._session_row(conn, principal, session_id, lock=True)
+            state = dict(row["state"])
             state = engine.next(lesson, state)
             self._update_session_state(conn, session_id, state)
             self._log_event(
