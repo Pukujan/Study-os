@@ -84,9 +84,9 @@ helpers:
     repository: Pukujan/project-continuity-modules
     role: continuity_protocol_and_validator
     adoption: mature_repository_overlay
-    cli_version: "0.4.0"
+    cli_version: "0.6.0"
     protocol_version: "0.1.0-draft"
-    commit: 0b3be9ca80da816de4621ac4e85612990084216e
+    commit: c18bfd6064d1249996bc00c45dbbc6721ec5dfd9
     task_prefix: SOS
     github_issue_authority: true
   content_generation_modules:
