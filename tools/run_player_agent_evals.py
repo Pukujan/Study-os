@@ -99,12 +99,32 @@ def learner_response(persona: str, step_id: str, attempt: int) -> str:
     return ANSWERS.get(step_id, "ok")
 
 
+def review_event_detector(events: list[dict[str, Any]]) -> list[dict[str, str]]:
+    """Require a typed review after the tutor render on the golden player path."""
+
+    tutors = [i for i, event in enumerate(events) if event["kind"] == "tutor"]
+    reviews = [(i, event) for i, event in enumerate(events) if event["kind"] == "review"]
+    if len(tutors) != 1 or len(reviews) != 1:
+        return [{"code": "MISSING_STEP_REVIEW", "detail": "expected one reviewed tutor step"}]
+    index, review = reviews[0]
+    tutor = events[tutors[0]]
+    if (index <= tutors[0] or review.get("step_id") != tutor.get("step_id")
+            or review.get("golden_concept") != PLAYER_TO_GOLDEN.get(tutor.get("step_id"))
+            or review.get("presentation_version") != tutor.get("presentation_version_after")
+            or type(review.get("rating")) is not int or review["rating"] not in range(1, 6)
+            or not str(review.get("why", "")).strip()
+            or review.get("http_status") != 200):
+        return [{"code": "INVALID_STEP_REVIEW_EVENT", "detail": "review is not bound to the rendered golden step"}]
+    return []
+
+
 def _record(events: list[dict[str, Any]], kind: str, payload: dict[str, Any]) -> None:
     events.append({"kind": kind, **payload})
 
 
-def run_roleplay(app: Any, persona: str, seed: int) -> dict[str, Any]:
+def run_roleplay(app: Any, persona: str, seed: int, db_url: str) -> dict[str, Any]:
     from fastapi.testclient import TestClient
+    import psycopg
     from web_testkit import ApiClient
 
     client = ApiClient(TestClient(app))
@@ -117,6 +137,7 @@ def run_roleplay(app: Any, persona: str, seed: int) -> dict[str, Any]:
     violations: list[dict[str, str]] = []
     response_attempts: Counter[str] = Counter()
     tutor_checked = False
+    review_checked = False
     view = client.post("/api/player/sessions", {"lesson_id": "sliding-window-box"}).json()
     session_id = view["session_id"]
 
@@ -155,6 +176,58 @@ def run_roleplay(app: Any, persona: str, seed: int) -> dict[str, Any]:
                 view = after
                 if adapted_success:
                     continue
+        if tutor_checked and not review_checked:
+            review_checked = True
+            review_key = f"review-{persona}-{seed}-{uuid.uuid4()}"
+            review = client.post("/api/feedback", {
+                "session_id": session_id,
+                "step_id": view["step"]["step_id"],
+                "target_kind": "step",
+                "target_id": f"{view['step']['step_id']}:{view['step']['variant']}",
+                "presentation_version": view["presentation_version"],
+                "rating": 3,
+                "free_text": "The box helped; the index label was unclear.",
+                "idempotency_key": review_key,
+            })
+            _record(events, "review", {
+                "step_id": view["step"]["step_id"],
+                "golden_concept": PLAYER_TO_GOLDEN.get(view["step"]["step_id"]),
+                "presentation_version": view["presentation_version"],
+                "rating": 3,
+                "why": "The box helped; the index label was unclear.",
+                "http_status": review.status_code,
+            })
+            if review.status_code != 200:
+                violations.append({"code": "STEP_REVIEW_HTTP_ERROR", "detail": review.text[:200]})
+            else:
+                replay = client.post("/api/feedback", {
+                    "session_id": session_id,
+                    "step_id": view["step"]["step_id"],
+                    "target_kind": "step",
+                    "target_id": f"{view['step']['step_id']}:{view['step']['variant']}",
+                    "presentation_version": view["presentation_version"],
+                    "rating": 3,
+                    "free_text": "The box helped; the index label was unclear.",
+                    "idempotency_key": review_key,
+                })
+                with psycopg.connect(db_url) as conn:
+                    rows = conn.execute(
+                        "SELECT feedback_id, step_id, rating, free_text_scrubbed FROM ux.feedback "
+                        "WHERE session_id = %s AND target_kind = 'step'", (session_id,),
+                    ).fetchall()
+                    learned_review = conn.execute(
+                        "SELECT count(*) FROM learn.player_event WHERE session_id = %s AND event = 'review'", (session_id,),
+                    ).fetchone()[0]
+                if (replay.status_code != 200 or replay.json().get("feedback_id") != review.json().get("feedback_id")
+                        or len(rows) != 1 or str(rows[0][0]) != review.json().get("feedback_id")
+                        or rows[0][1] != view["step"]["step_id"] or rows[0][2] != "3"
+                        or rows[0][3] != "The box helped; the index label was unclear." or learned_review):
+                    violations.append({"code": "STEP_REVIEW_PERSISTENCE_MISMATCH", "detail": "review replay, UX row, or evidence boundary differs"})
+                served = client.get(f"/api/player/sessions/{session_id}").json()
+                if (served["step"]["step_id"] != view["step"]["step_id"]
+                        or served["phase"] != view["phase"] or served["progress"] != view["progress"]):
+                    violations.append({"code": "STEP_REVIEW_MOVED_PLAYER", "detail": "review changed the learner path"})
+                view = served
         if view.get("phase") == "feedback" or step.get("probe") is None:
             result = client.post(f"/api/player/sessions/{session_id}/next", {})
             if result.status_code != 200:
@@ -196,6 +269,7 @@ def run_roleplay(app: Any, persona: str, seed: int) -> dict[str, Any]:
     expected, _, _ = golden_prefix()
     if observed[: len(expected)] != expected:
         violations.append({"code": "GOLDEN_PATH_MISMATCH", "detail": f"expected prefix {expected}, observed {observed}"})
+    violations.extend(review_event_detector(events))
     return {"persona": persona, "seed": seed, "session_id": session_id, "observed_path": observed, "events": events, "violations": violations, "end_phase": view.get("phase")}
 
 
@@ -258,7 +332,7 @@ def main(argv: list[str] | None = None) -> int:
         stack.enter_context(TestClient(app))
         for seed in range(args.seeds):
             for persona in personas:
-                results.append(run_roleplay(app, persona, seed))
+                results.append(run_roleplay(app, persona, seed, db_url))
     scorecard = build_scorecard(results, live)
     destination = Path(args.out)
     destination.parent.mkdir(parents=True, exist_ok=True)

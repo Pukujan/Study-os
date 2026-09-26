@@ -103,6 +103,31 @@ class PlayerAgentEvalTests(unittest.TestCase):
         self.assertIn("transcripts", card)
         json.dumps(card)
 
+    def test_review_event_is_golden_adjacent_and_synthetic_only(self) -> None:
+        events = [
+            {"kind": "view", "step_id": "position"},
+            {"kind": "tutor", "step_id": "position", "presentation_version_after": 1},
+            {"kind": "review", "step_id": "position", "golden_concept": "position", "presentation_version": 1,
+             "rating": 3, "why": "The box helped; the index label was unclear.", "http_status": 200},
+            {"kind": "attempt", "step_id": "position", "outcome": "correct"},
+        ]
+        self.assertEqual(events[2]["golden_concept"], harness.PLAYER_TO_GOLDEN[events[1]["step_id"]])
+        self.assertEqual(events[2]["presentation_version"], events[1]["presentation_version_after"])
+        card = harness.build_scorecard(
+            [{"persona": "golden", "seed": 0, "observed_path": ["position"], "events": events,
+              "violations": [], "end_phase": "probe"}], live=False,
+        )
+        self.assertTrue(card["synthetic_only"])
+        self.assertEqual(card["transcripts"][0]["events"][2]["kind"], "review")
+        self.assertEqual(harness.review_event_detector(events), [])
+        self.assertEqual(harness.review_event_detector(events[:2] + events[3:])[0]["code"], "MISSING_STEP_REVIEW")
+        stale = [dict(event) for event in events]
+        stale[2]["step_id"] = "index"
+        self.assertEqual(harness.review_event_detector(stale)[0]["code"], "INVALID_STEP_REVIEW_EVENT")
+        boolean_rating = [dict(event) for event in events]
+        boolean_rating[2]["rating"] = True
+        self.assertEqual(harness.review_event_detector(boolean_rating)[0]["code"], "INVALID_STEP_REVIEW_EVENT")
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -298,3 +298,9 @@ Decision:
 - **HESI:** the second learner (Alex's wife) consents and is the target learner. The HESI track becomes a checkpointed, topic-based program: a topic graph with prerequisites and section checkpoints mapped from the public HESI A2 sections (math, reading, vocabulary, grammar, anatomy and physiology, biology, chemistry) with HESI Exit content areas scaffolded. Topics are compiled into PIR teaching assets and served by the same deterministic controller as the sliding-window lesson. Content is original and cites openly licensed sources (OpenStax, Open RN, CDC); no commercial prep questions are copied. Every item carries an LLM review pass and stays `unreviewed` until Alex reviews it.
 
 Unchanged: ADR-0016 deterministic control, the evidence invariants, and "synthetic evaluation is never learner evidence".
+
+## D019 proposal - learner step review as append-only self-report
+
+Status: proposed for issue #126 by A8 on 2026-09-25; implementation/acceptance belongs to InferHub A8-exec and the issue/PR record.
+
+The learner player step review uses an intentional Submit of a 1-5 usefulness rating and nonblank typed why. The committed `ux.feedback` row is the review decision record, with step/variant/presentation context and an idempotency key. Exact retries return one receipt; a distinct review intent appends a new row. A re-render preserves step identity. Historical thumbs remain historical and decomposer review is a separate surface. Numeric opinion and rationale are self-report, never mastery evidence or `learn.*` review events. See `docs/webapp/SOS-0016_STEP_REVIEW_PDD.md`, `SOS-0016_STEP_REVIEW_SDD.md`, and `SOS-0016_STEP_REVIEW_TDD.md` for rationale, boundaries, and tests. Research Gate R0 and FOSSIL policy are unchanged.
