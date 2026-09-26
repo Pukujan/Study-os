@@ -1,4 +1,4 @@
-manifest_version: "0.2.4"
+manifest_version: "0.2.6"
 project:
   name: Study OS
   repository: Pukujan/Study-os
@@ -170,6 +170,8 @@ schemas:
   decision_proposal: "0.1.0"
   attempt_telemetry: "0.1.0"
   player_lesson: "study-os.player-lesson.v1"
+  player_presentation: "study-os.player-presentation.v1"
+  player_step_review: "study-os.player-step-review.v1"
   player_frame_types:
     - fraction_bar
     - box_index

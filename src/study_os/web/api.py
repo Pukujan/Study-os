@@ -14,7 +14,7 @@ import httpx
 from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from . import WEB_API_VERSION, auth, packs
 from .config import Settings, load_settings
@@ -111,9 +111,19 @@ class FeedbackBody(_Body):
     step_id: str | None = Field(default=None, max_length=120)
     target_kind: str = Field(max_length=16)
     target_id: str = Field(max_length=64)
-    rating: str = Field(max_length=8)
+    rating: int | str | None = None
     reasons: list[str] = Field(default_factory=list)
     free_text: str | None = Field(default=None, max_length=500)
+    presentation_version: int | None = Field(default=None, ge=0)
+    idempotency_key: str | None = Field(default=None, max_length=80)
+
+    @field_validator("rating", mode="before")
+    @classmethod
+    def _rating_is_not_a_boolean(cls, value: Any) -> Any:
+        # bool is an int subclass; a JSON true/false is not a 1-5 review rating.
+        if isinstance(value, bool):
+            raise ValueError("rating must be an integer 1-5")
+        return value
 
 
 class AttemptBody(_Body):

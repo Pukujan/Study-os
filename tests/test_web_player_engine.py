@@ -113,13 +113,15 @@ class PlayerEngineTests(unittest.TestCase):
             # Retry correctly.
             state, feedback = engine.attempt(lesson, state, self._first_probe_accept(lesson, state), "text")
             self.assertEqual(feedback["outcome"], "correct")
-            self.assertEqual(feedback["next_action"], "continue")
+            self.assertEqual(feedback["next_action"], "check")
             state = engine.next(lesson, state)
 
             # One more check before advancing.
             self.assertEqual(state["phase"], "probe")
+            self.assertEqual(state["pending"], "check")
             state, feedback = engine.attempt(lesson, state, self._first_probe_accept(lesson, state), "text")
             self.assertEqual(feedback["outcome"], "correct")
+            self.assertEqual(feedback["next_action"], "continue")
             state = engine.next(lesson, state)
             self.assertIn(state["phase"], {"probe", "done"})
             break
@@ -204,6 +206,83 @@ class PlayerEngineTests(unittest.TestCase):
         state = engine.next(lesson, state)
         self.assertEqual(state["phase"], "probe")
         self.assertEqual(state["variant_index"], -1)
+        self.assertIsNone(state["pending"])
+        state, feedback = engine.attempt(lesson, state, "5", "text")
+        self.assertEqual(feedback["next_action"], "continue")
+
+    def test_repeated_partials_preserve_retry_and_check_context(self):
+        from study_os.web.player import engine
+
+        def probe(answer, partial):
+            return {
+                "prompt_md": f"Say {answer}.",
+                "frames": [],
+                "answer_kind": "integer",
+                "accept": [answer],
+                "partial": [{"match": [partial], "note_md": "Almost."}],
+                "misconceptions": [],
+                "correct_md": "Correct.",
+                "explain_md": "Because.",
+                "explain_frames": [],
+                "solution_md": "s",
+                "hint_md": "h",
+            }
+
+        lesson = {
+            "schema_version": "study-os.player-lesson.v1",
+            "lesson_id": "retry-check-partial-test",
+            "revision": "retry-check-partial-test.v1",
+            "lane": "dsa",
+            "title": "Retry/check partial test",
+            "summary": "x",
+            "representation": "box_index",
+            "steps": [{
+                "step_id": "p1",
+                "kc": "test.retry-check-partial",
+                "confirm": False,
+                "teach": {"md": "Test.", "frames": []},
+                "probe": probe("5", "3"),
+                "variants": [
+                    {"teach_frames": [], "probe": probe("6", "4")},
+                    {"teach_frames": [], "probe": probe("7", "8")},
+                ],
+            }],
+        }
+
+        for partial_count in (1, 3):
+            with self.subTest(partial_count=partial_count):
+                state = engine.start(lesson)
+                state, feedback = engine.attempt(lesson, state, "wrong", "text")
+                self.assertEqual(feedback["next_action"], "retry")
+                self.assertEqual(engine.view(lesson, state)["step"]["variant"], -1)
+                state = engine.next(lesson, json.loads(json.dumps(state)))
+                self.assertEqual(state["pending"], "retry")
+                self.assertEqual(state["variant_index"], 0)
+
+                for context, answer, partial, expected_action in (
+                    ("retry", "6", "4", "check"),
+                    ("check", "7", "8", "continue"),
+                ):
+                    for _ in range(partial_count):
+                        state, feedback = engine.attempt(lesson, state, partial, "text")
+                        self.assertEqual(feedback["next_action"], "retry_same")
+                        self.assertEqual(state["retry_same_pending"], context)
+                        current_variant = state["variant_index"]
+                        state = engine.next(lesson, json.loads(json.dumps(state)))
+                        self.assertEqual(state["pending"], context)
+                        self.assertEqual(state["variant_index"], current_variant)
+                        self.assertNotIn("retry_same_pending", state)
+
+                    state, feedback = engine.attempt(lesson, state, answer, "text")
+                    self.assertEqual(feedback["outcome"], "correct")
+                    self.assertEqual(feedback["next_action"], expected_action)
+                    state = engine.next(lesson, json.loads(json.dumps(state)))
+                    if context == "retry":
+                        self.assertEqual(state["pending"], "check")
+                        self.assertEqual(state["variant_index"], 1)
+
+                self.assertEqual(state["phase"], "done")
+                self.assertEqual(state["status_by_step"]["p1"], "done")
 
     def test_three_misses_advance_needs_review(self):
         from study_os.web.player import engine
@@ -352,6 +431,7 @@ class PlayerEngineTests(unittest.TestCase):
             ],
         }
 
+        lesson["steps"].append({**lesson["steps"][1], "step_id": "s3", "kc": "test.scaffold3"})
         state = engine.start(lesson)
         self.assertEqual(state["scaffold"], 0)
         # First correct first try.

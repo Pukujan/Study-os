@@ -243,7 +243,13 @@ export default function Player({ sessionId }: { sessionId: string }) {
                 </section>
               )}
 
-              <FeedbackBar session_id={sessionId} step_id={view.step.step_id} target_kind="step" target_id={`${view.step.step_id}:${view.step.variant}`} />
+              <FeedbackBar
+                session_id={sessionId}
+                step_id={view.step.step_id}
+                target_kind="step"
+                target_id={`${view.step.step_id}:${view.step.variant}`}
+                presentation_version={view.presentation_version}
+              />
             </>
           )}
 

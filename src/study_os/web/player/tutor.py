@@ -16,10 +16,11 @@ from ..models import LLMTransport, ModelUnavailable
 from ..privacy import scrub
 from ..validator import validate_generated
 from . import render_text
+from . import presentation
 from . import engine as _engine
 
 
-_DEFAULT_VERSION = os.environ.get("TUTOR_PROMPT_VERSION", "tutor.v2")
+_DEFAULT_VERSION = os.environ.get("TUTOR_PROMPT_VERSION", "tutor.v3")
 
 GOLDEN_RULES = """Golden rules for this reply:
 - One step only. Do not jump ahead.
@@ -43,6 +44,15 @@ TOOL = {
             "type": "object",
             "properties": {
                 "reply_md": {"type": "string"},
+                "regenerate_presentation": {
+                    "type": ["object", "null"],
+                    "properties": {
+                        "teach_md": {"type": "string"},
+                        "frame_indices": {"type": "array", "items": {"type": "integer"}},
+                    },
+                    "required": ["teach_md", "frame_indices"],
+                    "additionalProperties": False,
+                },
                 "suggested_action": {
                     "type": ["string", "null"],
                     "enum": ["example", "easier", "harder", "reexplain", None],
@@ -67,6 +77,7 @@ class TutorResult:
     validation_codes: tuple[str, ...]
     messages: list[dict[str, str]]
     suggested_action: str | None = None
+    regenerate_presentation: dict[str, Any] | None = None
 
 
 def _load_prompt(version: str) -> str:
@@ -93,12 +104,13 @@ def build_messages(
     """Assemble the scrubbed LLM messages for the tutor."""
 
     system = _load_prompt(version) + "\n\n" + GOLDEN_RULES
-    step = _engine._current_step(lesson, state)  # noqa: SLF001
     probe = _engine._current_probe(lesson, state)  # noqa: SLF001
 
-    teach = step.get("teach", {}) or {}
-    teach_md = teach.get("md", "")
-    teach_frames = [render_text.frame_to_text(f) for f in teach.get("frames", [])]
+    # Ground the tutor in what the learner can actually see right now; an applied
+    # presentation overlay replaces the step's authored teach text and frames.
+    current_md, current_frames = presentation.effective(lesson, state)
+    teach_md = current_md or ""
+    teach_frames = [render_text.frame_to_text(f) for f in current_frames]
 
     probe_prompt = ""
     probe_frames: list[str] = []
@@ -112,6 +124,8 @@ def build_messages(
             forbidden = list(probe.get("accept", []))
 
     context = {
+        "current_step": presentation.context(lesson, state),
+        "current_presentation": presentation.current(lesson, state),
         "teach_md": teach_md,
         "teach_frames": teach_frames,
         "probe_prompt": probe_prompt,
@@ -186,7 +200,7 @@ def reply(
             routes=(settings.llm_primary_route, settings.llm_fallback_route),
             messages=messages_list,
             tool=TOOL,
-            max_tokens=250,
+            max_tokens=550,
         )
 
     def _extract(response: Any) -> tuple[str, str | None]:
@@ -212,8 +226,11 @@ def reply(
 
     reply_md, suggested_action = _extract(response)
     result = validate_generated(reply_md, forbidden_answers=forbidden, required_blocks=(), word_budget=90)
+    update, update_codes = presentation.validate_proposal(
+        (response.args or {}).get("regenerate_presentation"), lesson, state, forbidden
+    )
 
-    if result.ok:
+    if result.ok and not update_codes:
         return TutorResult(
             reply_md=reply_md,
             served="generated",
@@ -226,12 +243,13 @@ def reply(
             validation_codes=result.codes,
             messages=messages,
             suggested_action=suggested_action,
+            regenerate_presentation=update,
         )
 
     # One repair attempt.
     repair = (
         "The previous reply violated these rules: "
-        f"{', '.join(result.codes)}. Rewrite it to follow the system prompt."
+        f"{', '.join(result.codes + update_codes)}. Rewrite it to follow the system prompt."
     )
     messages2 = messages + [
         {"role": "assistant", "content": reply_md},
@@ -257,8 +275,14 @@ def reply(
 
     reply_md2, suggested_action2 = _extract(response2)
     result2 = validate_generated(reply_md2, forbidden_answers=forbidden, required_blocks=(), word_budget=90)
+    update2, update_codes2 = presentation.validate_proposal(
+        (response2.args or {}).get("regenerate_presentation"), lesson, state, forbidden
+    )
 
     if result2.ok:
+        # The prose is acceptable.  Keep serving it even when the optional
+        # re-render proposal is unusable; the defect stays visible in
+        # validation_codes instead of degrading the reply to a fallback hint.
         return TutorResult(
             reply_md=reply_md2,
             served="generated",
@@ -268,9 +292,10 @@ def reply(
             tokens=response2.tokens_in + response2.tokens_out,
             cost=float(response2.cost_usd),
             latency=response2.latency_ms,
-            validation_codes=result2.codes,
+            validation_codes=result2.codes + update_codes2,
             messages=messages2,
             suggested_action=suggested_action2,
+            regenerate_presentation=update2 if not update_codes2 else None,
         )
 
     return TutorResult(
@@ -282,7 +307,7 @@ def reply(
         tokens=0,
         cost=0.0,
         latency=0,
-        validation_codes=tuple(result2.codes),
+        validation_codes=tuple(result2.codes) + update_codes2,
         messages=messages2,
         suggested_action=None,
     )

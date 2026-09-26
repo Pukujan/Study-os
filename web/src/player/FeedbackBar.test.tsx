@@ -8,6 +8,8 @@ afterEach(() => {
 });
 
 describe("FeedbackBar", () => {
+  // The like/dislike thumbs contract now belongs to the tutor-message surface;
+  // the learner step review is covered by FeedbackBar.contract.test.tsx (#126).
   it("sends the right body on dislike with reasons", async () => {
     const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify({ ok: true, feedback_id: "f1" }), { status: 200 }));
     vi.stubGlobal("fetch", fetchMock);
@@ -16,8 +18,8 @@ describe("FeedbackBar", () => {
       <FeedbackBar
         session_id="s1"
         step_id="step-a"
-        target_kind="step"
-        target_id="step-a:1"
+        target_kind="tutor_message"
+        target_id="msg-1"
       />,
     );
 
@@ -37,8 +39,8 @@ describe("FeedbackBar", () => {
     expect(body).toEqual({
       session_id: "s1",
       step_id: "step-a",
-      target_kind: "step",
-      target_id: "step-a:1",
+      target_kind: "tutor_message",
+      target_id: "msg-1",
       rating: "dislike",
       reasons: ["confusing"],
     });

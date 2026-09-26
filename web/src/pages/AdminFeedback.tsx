@@ -22,7 +22,7 @@ export default function AdminFeedback({ me }: { me: Me }) {
   return (
     <section className="admin-feedback">
       <h1>Feedback</h1>
-      <h2>By prompt version</h2>
+      <h2>Tutor thumbs by prompt version</h2>
       <table className="feedback-table">
         <thead>
           <tr><th>Prompt version</th><th>Likes</th><th>Dislikes</th><th>Top reasons</th></tr>
@@ -39,21 +39,44 @@ export default function AdminFeedback({ me }: { me: Me }) {
         </tbody>
       </table>
 
+      <h2>Step reviews (1-5, self-report)</h2>
+      <p className="muted">
+        Ordinal learner opinion of one presentation version. Not a mastery or correctness score, and not
+        comparable with the historical thumbs above.
+      </p>
+      <table className="feedback-table">
+        <thead>
+          <tr><th>Presentation version</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>Total</th></tr>
+        </thead>
+        <tbody>
+          {data.step_reviews.map((row) => (
+            <tr key={row.presentation_version ?? "unversioned"}>
+              <td>{row.presentation_version ?? "—"}</td>
+              {[1, 2, 3, 4, 5].map((score) => (
+                <td key={score}>{row.counts[String(score)] ?? 0}</td>
+              ))}
+              <td>{row.total}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
       <h2>Latest feedback</h2>
       <table className="feedback-table">
         <thead>
-          <tr><th>Time</th><th>Rating</th><th>Reasons</th><th>Target</th><th>Step</th><th>Prompt / Model</th><th>Free text</th></tr>
+          <tr><th>Time</th><th>Rating</th><th>Reasons</th><th>Target</th><th>Step</th><th>Version</th><th>Prompt / Model</th><th>Free text</th></tr>
         </thead>
         <tbody>
           {data.rows.map((row, i) => (
             <tr key={i}>
-              <td>{row.time}</td>
+              <td>{row.created_at}</td>
               <td>{row.rating}</td>
               <td>{row.reasons.join(", ") || "—"}</td>
               <td>{row.target_kind}</td>
-              <td>{row.step}</td>
+              <td>{row.step_id || row.target_id}</td>
+              <td>{row.presentation_version ?? "—"}</td>
               <td>{row.prompt_version || "—"} / {row.model || "—"}</td>
-              <td>{row.free_text || "—"}</td>
+              <td>{row.free_text_scrubbed || "—"}</td>
             </tr>
           ))}
         </tbody>
