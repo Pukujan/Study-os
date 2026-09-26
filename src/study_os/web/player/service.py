@@ -15,6 +15,7 @@ from study_os.web.service import DbGate, ServiceError
 from . import content
 from . import engine
 from . import tutor as tutor_module
+from . import presentation
 
 
 class PlayerService:
@@ -229,8 +230,20 @@ class PlayerService:
             gate=gate,
             llm_enabled=self.settings.llm_enabled,
         )
+        applied_update = None
         with self.db.tx() as conn:
-            self._session_row(conn, principal, session_id, lock=True)
+            row = self._session_row(conn, principal, session_id, lock=True)
+            locked_state = dict(row["state"])
+            if (result.regenerate_presentation is not None
+                    and presentation.context(lesson, locked_state) == presentation.context(lesson, state)):
+                applied_update = presentation.apply(lesson, locked_state, result.regenerate_presentation, {
+                    "prompt_version": result.prompt_version,
+                    "model": result.model,
+                    "route": result.route,
+                    "served": result.served,
+                })
+                self._update_session_state(conn, session_id, locked_state)
+                state = locked_state
             llm_id = str(uuid.uuid4())
             conn.execute(
                 "INSERT INTO learn.llm_interaction (id, session_id, step_id, operation, prompt_id, "
@@ -265,6 +278,7 @@ class PlayerService:
                     "prompt_version": result.prompt_version,
                     "route": result.route,
                     "model": result.model,
+                    "regenerate_presentation": applied_update,
                 },
             )
         return {
@@ -274,6 +288,7 @@ class PlayerService:
             "prompt_version": result.prompt_version,
             "model": result.model,
             "served": result.served,
+            "regenerate_presentation": applied_update,
         }
 
     def feedback(self, principal: Any, body: Any) -> dict[str, Any]:

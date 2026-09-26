@@ -8,6 +8,7 @@ Primary tracker: #63 (runtime) · #82 (web app epic)
 ## Web app track (D017 accepted, D018 amendment) — slice 1 live
 
 - Active: SOS-0005 (#101) lesson player redesign prototype on `task/SOS-0005-lesson-player-redesign`; not merged/deployed until Alex approves.
+- Player chat re-render (#126): a tutor reply may now carry a validated `regenerate_presentation` (`study-os.player-presentation.v1`) that the server applies **in place** on the current step before responding; step/concept identity, phase, variant and progress are preserved and only the displayed teach text/frames change. Tutor prompt version is `tutor.v3`. The remaining #126 work is the 1-5 typed per-step review, Playwright/vision verification, and a live (InferHub) A2A run.
 
 - Live at **https://study.design-bakery.com** (frontend `/`, API `/api`, same origin) on gravebuster: `/srv/study-os` Docker Compose (`api` on `127.0.0.1:18400`, `postgres:16` internal, `cloudflared` tunnel `study-os-gravebuster`, nightly `pg_dump`). See `deploy/README.md`.
 - Code: `src/study_os/web/` (FastAPI, auth, controller over PIR, decision layer, HESI packs), `web/` (React), `tools/run_agent_evals.py` (agent-vs-agent T0 evals). Task: `tasks/TASK-SOS-0004-first-slice.md`, issue #99.

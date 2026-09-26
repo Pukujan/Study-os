@@ -26,6 +26,16 @@ class PlayerAgentEvalTests(unittest.TestCase):
         self.assertEqual(harness.learner_response("wrong_then_right", "window-sum", 1), "9")
         self.assertEqual(harness.learner_response("partial_then_right", "window-sum", 0), "2 6 1")
 
+    def test_roleplays_get_distinct_stable_client_ips(self) -> None:
+        personas = ["golden", "wrong_then_right", "partial_then_right", "confused_then_right"]
+        first = {persona: harness.roleplay_ip(persona, 0) for persona in personas}
+        second = {persona: harness.roleplay_ip(persona, 1) for persona in personas}
+        self.assertEqual(len(set(first.values())), len(personas))
+        self.assertEqual(len(set(first.values()) | set(second.values())), 2 * len(personas))
+        for persona in personas:
+            self.assertEqual(harness.roleplay_ip(persona, 0), first[persona])
+            self.assertRegex(first[persona], r"^10\.0\.0\.\d+$")
+
     def test_missing_render_capability_is_a_failure(self) -> None:
         violations = harness.capability_detector(
             {"reply_md": "Try an example", "suggested_action": "example"},
@@ -33,6 +43,55 @@ class PlayerAgentEvalTests(unittest.TestCase):
             {"step": {"step_id": "position"}},
         )
         self.assertEqual(violations[0]["code"], "MISSING_REGENERATE_PRESENTATION")
+
+    @staticmethod
+    def _render(**overrides: object) -> dict:
+        render = {
+            "operation": "regenerate_presentation",
+            "step_id": "position",
+            "concept_id": "kc",
+            "version": 1,
+            "previous_version": 0,
+            "teach_md": "Same box, seen from the left edge.",
+        }
+        render.update(overrides)
+        return render
+
+    def _view(self, **overrides: object) -> dict:
+        view = {"step": {"step_id": "position", "concept_id": "kc", "variant": -1, "teach_md": "Same box, seen from the left edge."}, "phase": "probe", "presentation_version": 1}
+        view.update(overrides)
+        return view
+
+    def test_valid_render_preserves_identity_and_is_applied(self) -> None:
+        tutor = {"regenerate_presentation": self._render()}
+        self.assertEqual(harness.capability_detector(tutor, self._view(presentation_version=0), self._view()), [])
+
+    def test_render_that_moves_the_step_is_a_failure(self) -> None:
+        tutor = {"regenerate_presentation": self._render(step_id="index")}
+        codes = [v["code"] for v in harness.capability_detector(tutor, self._view(presentation_version=0), self._view())]
+        self.assertEqual(codes, ["INVALID_REGENERATE_PRESENTATION"])
+
+    def test_render_that_skips_a_version_is_a_failure(self) -> None:
+        tutor = {"regenerate_presentation": self._render(version=3, previous_version=0)}
+        codes = [v["code"] for v in harness.capability_detector(tutor, self._view(presentation_version=0), self._view())]
+        self.assertEqual(codes, ["INVALID_REGENERATE_PRESENTATION"])
+
+    def test_text_only_reply_is_still_a_capability_failure(self) -> None:
+        tutor = {"reply_md": "Try the left edge.", "regenerate_presentation": None}
+        codes = [v["code"] for v in harness.capability_detector(tutor, self._view(presentation_version=0), self._view())]
+        self.assertEqual(codes, ["MISSING_REGENERATE_PRESENTATION"])
+
+    def test_unapplied_render_is_a_failure(self) -> None:
+        tutor = {"regenerate_presentation": self._render()}
+        stale = self._view(presentation_version=0, step={"step_id": "position", "concept_id": "kc", "variant": -1, "teach_md": "authored"})
+        codes = [v["code"] for v in harness.capability_detector(tutor, self._view(presentation_version=0), stale)]
+        self.assertEqual(codes, ["RENDER_NOT_APPLIED"])
+
+    def test_render_that_advances_the_step_is_a_failure(self) -> None:
+        tutor = {"regenerate_presentation": self._render()}
+        moved = self._view(phase="feedback")
+        codes = [v["code"] for v in harness.capability_detector(tutor, self._view(presentation_version=0), moved)]
+        self.assertEqual(codes, ["RENDER_MOVED_STEP"])
 
     def test_scorecard_is_synthetic_and_machine_readable(self) -> None:
         card = harness.build_scorecard(

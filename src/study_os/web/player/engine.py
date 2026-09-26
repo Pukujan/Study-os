@@ -9,6 +9,7 @@ from __future__ import annotations
 from typing import Any
 
 from .grading import grade
+from . import presentation
 
 
 _MAX_MISSES = 3
@@ -51,17 +52,9 @@ def _current_probe(lesson: dict[str, Any], state: dict[str, Any]) -> dict[str, A
 
 
 def _teach_frames(lesson: dict[str, Any], state: dict[str, Any]) -> tuple[str | None, list[dict[str, Any]]]:
-    step = _current_step(lesson, state)
-    scaffold = state.get("scaffold", 0)
-    teach = step.get("teach", {})
-    md = teach.get("md", "")
-    frames = list(teach.get("frames", []))
+    """Teach content as displayed, including any applied presentation overlay."""
 
-    # If scaffold >= 1 and step is intro-only/skippable, collapse the teach frames.
-    if scaffold >= 1 and step.get("skippable"):
-        return None, []
-
-    return md, frames
+    return presentation.effective(lesson, state)
 
 
 def start(lesson: dict[str, Any]) -> dict[str, Any]:
@@ -103,6 +96,7 @@ def view(lesson: dict[str, Any], state: dict[str, Any]) -> dict[str, Any]:
 
     step = _current_step(lesson, state)
     teach_md, teach_frames = _teach_frames(lesson, state)
+    update = presentation.current(lesson, state)
     probe = _current_probe(lesson, state)
     public_probe = _public_probe(probe)
 
@@ -122,6 +116,7 @@ def view(lesson: dict[str, Any], state: dict[str, Any]) -> dict[str, Any]:
         "session_id": None,
         "lesson": {
             "lesson_id": lesson["lesson_id"],
+            "revision": lesson["revision"],
             "title": lesson["title"],
             "lane": lesson["lane"],
             "representation": lesson["representation"],
@@ -129,6 +124,7 @@ def view(lesson: dict[str, Any], state: dict[str, Any]) -> dict[str, Any]:
         },
         "step": {
             "step_id": step["step_id"],
+            "concept_id": step["kc"],
             "index": state["step_index"],
             "teach_md": teach_md,
             "teach_frames": teach_frames,
@@ -137,6 +133,8 @@ def view(lesson: dict[str, Any], state: dict[str, Any]) -> dict[str, Any]:
             "variant": state["variant_index"],
         },
         "phase": state["phase"],
+        "presentation_version": state.get("presentation_version", 0),
+        "presentation_update": update,
         "feedback": feedback,
         "scaffold": state["scaffold"],
         "progress": {

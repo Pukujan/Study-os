@@ -57,16 +57,35 @@ def golden_prefix() -> tuple[list[str], str, bool]:
     return prefix, hashlib.sha256(raw).hexdigest(), conforms
 
 
+def roleplay_ip(persona: str, seed: int) -> str:
+    """A stable distinct client IP per roleplay so rate budgets stay independent."""
+
+    digest = int(hashlib.sha256(persona.encode("utf-8")).hexdigest()[:2], 16)
+    return f"10.0.0.{1 + (seed * 16 + digest) % 250}"
+
+
 def capability_detector(tutor: dict[str, Any], before: dict[str, Any], after: dict[str, Any]) -> list[dict[str, str]]:
     """Detect the product contract required for chat-triggered re-render."""
 
-    if "regenerate_presentation" not in tutor:
+    if "regenerate_presentation" not in tutor or tutor.get("regenerate_presentation") is None:
         return [{"code": "MISSING_REGENERATE_PRESENTATION", "detail": "tutor response has no regenerate_presentation capability"}]
     render = tutor.get("regenerate_presentation")
-    if not isinstance(render, dict) or render.get("step_id") != before.get("step", {}).get("step_id"):
+    if not isinstance(render, dict) or render.get("operation") != "regenerate_presentation":
+        return [{"code": "INVALID_REGENERATE_PRESENTATION", "detail": "render payload is not a versioned presentation update"}]
+    if (render.get("step_id") != before.get("step", {}).get("step_id")
+            or render.get("concept_id") != before.get("step", {}).get("concept_id")):
         return [{"code": "INVALID_REGENERATE_PRESENTATION", "detail": "render payload must preserve the current step identity"}]
+    version, previous = render.get("version"), render.get("previous_version")
+    if not isinstance(version, int) or not isinstance(previous, int) or version != previous + 1 or version != before.get("presentation_version", 0) + 1:
+        return [{"code": "INVALID_REGENERATE_PRESENTATION", "detail": "render version must increment exactly once from the served view"}]
     if after.get("step", {}).get("step_id") != before.get("step", {}).get("step_id"):
         return [{"code": "RENDER_MOVED_STEP", "detail": "chat render changed the current step"}]
+    if after.get("presentation_version") != version:
+        return [{"code": "RENDER_NOT_APPLIED", "detail": "served view did not adopt the regenerated presentation"}]
+    if after.get("step", {}).get("teach_md") != render.get("teach_md"):
+        return [{"code": "RENDER_NOT_APPLIED", "detail": "served teach text is not the regenerated presentation"}]
+    if after.get("phase") != before.get("phase") or after.get("step", {}).get("variant") != before.get("step", {}).get("variant"):
+        return [{"code": "RENDER_MOVED_STEP", "detail": "chat render changed phase or variant"}]
     return []
 
 
@@ -89,6 +108,10 @@ def run_roleplay(app: Any, persona: str, seed: int) -> dict[str, Any]:
     from web_testkit import ApiClient
 
     client = ApiClient(TestClient(app))
+    # A fresh learner per roleplay (the golden prefix restarts from step 0), with
+    # its own client IP so one roleplay's signup and request budgets cannot
+    # throttle the next one in a multi-seed run.
+    client.headers["CF-Connecting-IP"] = roleplay_ip(persona, seed)
     client.signup(f"a2a-{persona}-{seed}-{uuid.uuid4().hex[:8]}@example.com")
     events: list[dict[str, Any]] = []
     violations: list[dict[str, str]] = []
@@ -111,9 +134,15 @@ def run_roleplay(app: Any, persona: str, seed: int) -> dict[str, Any]:
                 tutor_body: dict[str, Any] = {}
             else:
                 tutor_body = tutor.json()
-                _record(events, "tutor", {"step_id": step_id, "reply_md": tutor_body.get("reply_md", ""), "suggested_action": tutor_body.get("suggested_action")})
                 before = view
-                after = view
+                after = client.get(f"/api/player/sessions/{session_id}").json()
+                _record(events, "tutor", {
+                    "step_id": step_id,
+                    "reply_md": tutor_body.get("reply_md", ""),
+                    "suggested_action": tutor_body.get("suggested_action"),
+                    "regenerate_presentation": tutor_body.get("regenerate_presentation"),
+                    "presentation_version_after": after.get("presentation_version"),
+                })
                 adapted_success = False
                 if tutor_body.get("suggested_action") in {"example", "easier", "harder", "reexplain"}:
                     adapted = client.post(f"/api/player/sessions/{session_id}/adapt", {"kind": "example" if tutor_body["suggested_action"] == "reexplain" else tutor_body["suggested_action"]})
@@ -210,7 +239,14 @@ def main(argv: list[str] | None = None) -> int:
         llm = InferHubLLM(key, os.environ.get("INFERHUB_API_URL", "https://api.inferhub.dev/v1"))
     else:
         def policy(_name: str, _messages: list[dict[str, str]]) -> dict[str, Any]:
-            return {"reply_md": "Point to one part of the box. What do you notice?", "suggested_action": "example"}
+            return {
+                "reply_md": "Point to one part of the box. What do you notice?",
+                "suggested_action": None,
+                "regenerate_presentation": {
+                    "teach_md": "Look at the same box from another angle. Track how the left edge and the index describe one position.",
+                    "frame_indices": [0],
+                },
+            }
         llm = StubLLM(policy)
 
     personas = [name.strip() for name in args.personas.split(",") if name.strip()]

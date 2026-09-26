@@ -131,6 +131,7 @@ export type PlayerView = {
   session_id: string;
   lesson: {
     lesson_id: string;
+    revision: string;
     title: string;
     lane: string;
     representation: "fraction_bar" | "box_index";
@@ -138,6 +139,7 @@ export type PlayerView = {
   };
   step: {
     step_id: string;
+    concept_id: string;
     index: number;
     teach_md: string;
     teach_frames: Frame[];
@@ -146,6 +148,8 @@ export type PlayerView = {
     variant: number;
   };
   phase: "probe" | "feedback" | "done";
+  presentation_version: number;
+  presentation_update: PresentationUpdate | null;
   feedback: Feedback | null;
   scaffold: number;
   progress: { done: number; total: number };
@@ -154,6 +158,24 @@ export type PlayerView = {
   variant_tag?: string | null;
   can_go_back?: boolean;
   worked_example?: WorkedExample;
+};
+
+export type PresentationUpdate = {
+  schema_version: "study-os.player-presentation.v1";
+  operation: "regenerate_presentation";
+  lesson_id: string;
+  lesson_revision: string;
+  step_id: string;
+  concept_id: string;
+  variant: number;
+  phase: "probe" | "feedback";
+  card_mode: "probe" | "worked_example";
+  scaffold: number;
+  previous_version: number;
+  version: number;
+  teach_md: string;
+  teach_frames: Frame[];
+  provenance: { prompt_version: string; model: string | null; route: string | null; served: string };
 };
 
 export type LanesPayload = {
@@ -186,6 +208,7 @@ export type TutorReply = {
   model: string;
   served: "generated" | "fallback";
   suggested_action?: "example" | "easier" | "harder" | "reexplain" | null;
+  regenerate_presentation?: PresentationUpdate | null;
 };
 
 export type FeedbackBody = {

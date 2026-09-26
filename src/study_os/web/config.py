@@ -7,7 +7,7 @@ JEV_PINNED_MODEL = "typesafe/jev-1.13"
 JEV_FORBIDDEN_ALIASES = ("~typesafe/jev-latest", "typesafe/jev-latest")
 INFERHUB_PRIMARY_ROUTE = "cb/glm-5.3"
 INFERHUB_FALLBACK_ROUTE = "cb/deepseek-v4.1-flash"
-TUTOR_PROMPT_VERSION = "tutor.v2"
+TUTOR_PROMPT_VERSION = "tutor.v3"
 # IRE Top-20 snapshot that informed the route choice (docs/webapp/LLM_ROUTE.md §2).
 PRICE_SNAPSHOT_ID = "ire-top20-8e2b1b323cf9438b1274f321c309729d60f133ef14915895265ca76758570e7c"
 
