@@ -10,6 +10,22 @@ from ..validator import validate_generated
 SCHEMA_VERSION = "study-os.player-presentation.v1"
 
 
+def regeneration_allowed(lesson: dict[str, Any], state: dict[str, Any]) -> bool:
+    """Whether an in-place re-render of the current card is permitted right now.
+
+    Single source of truth for the refusals in :func:`validate_proposal` and for
+    the ``regeneration_allowed`` flag the tutor prompt is grounded in, so the
+    model is never left guessing whether this turn may refresh the card.
+    """
+
+    if state.get("phase") == "done":
+        return False
+    if lesson.get("mode") == "assessment" and state.get("phase") == "probe":
+        return False
+    step = lesson["steps"][state["step_index"]]
+    return not (state.get("scaffold", 0) >= 1 and step.get("skippable"))
+
+
 def context(lesson: dict[str, Any], state: dict[str, Any]) -> dict[str, Any]:
     step = lesson["steps"][state["step_index"]]
     return {
@@ -48,9 +64,7 @@ def validate_proposal(
     if proposal is None:
         return None, ()
     step = lesson["steps"][state["step_index"]]
-    if state["phase"] == "done" or (lesson.get("mode") == "assessment" and state["phase"] == "probe"):
-        return None, ("PRESENTATION_NOT_ALLOWED",)
-    if state.get("scaffold", 0) >= 1 and step.get("skippable"):
+    if not regeneration_allowed(lesson, state):
         return None, ("PRESENTATION_NOT_ALLOWED",)
     if not isinstance(proposal, dict) or set(proposal) != {"teach_md", "frame_indices"}:
         return None, ("INVALID_PRESENTATION",)
@@ -67,6 +81,31 @@ def validate_proposal(
     if not result.ok:
         return None, result.codes
     return {"teach_md": md, "teach_frames": deepcopy([frames[i] for i in indices])}, ()
+
+
+def authored_reserve(
+    lesson: dict[str, Any], state: dict[str, Any], forbidden: tuple[str, ...]
+) -> tuple[dict[str, Any] | None, tuple[str, ...]]:
+    """Offer the step's authored card when no model proposal is usable.
+
+    This is only an alternative when it actually differs from the card already on
+    screen: re-publishing the identical card as a new version would fake a
+    re-render. Same step, same concept, authored frames only, and no probe answer.
+    Callers record it in validation codes rather than passing it off as generated.
+    """
+
+    step = lesson["steps"][state["step_index"]]
+    teach = step.get("teach") or {}
+    md = str(teach.get("md") or "")
+    frames = list(teach.get("frames") or [])
+    if not md:
+        return None, ("NO_AUTHORED_CARD",)
+    current_md, current_frames = effective(lesson, state)
+    if md == (current_md or "") and frames == list(current_frames):
+        return None, ("RENDER_UNAVAILABLE",)
+    return validate_proposal(
+        {"teach_md": md, "frame_indices": list(range(len(frames)))}, lesson, state, forbidden
+    )
 
 
 def apply(

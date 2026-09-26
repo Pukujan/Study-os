@@ -235,6 +235,25 @@ class ModelTransportTests(unittest.TestCase):
             with self.assertRaises(ModelUnavailable):
                 llm.complete(("a", "b"), [], tool)
 
+    def test_inferhub_distinguishes_a_dropped_tool_call_from_truncated_arguments(self) -> None:
+        from unittest import mock
+
+        from study_os.web.models import InferHubLLM, ModelUnavailable, _tool_arguments
+
+        self.assertEqual(_tool_arguments({"choices": [{"message": {"content": "plain"}}]}), (None, "no_tool_call"))
+        self.assertEqual(_tool_arguments({}), (None, "no_tool_call"))
+        truncated = {"choices": [{"message": {"tool_calls": [{"function": {"arguments": '{"reply_md": "half'}}]}}]}
+        self.assertEqual(_tool_arguments(truncated), (None, "invalid_tool_arguments"))
+        usable = {"choices": [{"message": {"tool_calls": [{"function": {"arguments": '{"reply_md": "ok"}'}}]}}]}
+        self.assertEqual(_tool_arguments(usable), ({"reply_md": "ok"}, ""))
+
+        llm = InferHubLLM("k", "https://example.invalid/v1")
+        tool = {"type": "function", "function": {"name": "emit_turn", "parameters": {}}}
+        with mock.patch("study_os.web.models.httpx.post", return_value=self._resp(200, truncated)):
+            with self.assertRaises(ModelUnavailable) as caught:
+                llm.complete(("cb/glm-5.3",), [{"role": "user", "content": "x"}], tool)
+        self.assertIn("invalid_tool_arguments", caught.exception.reason)
+
 
 if __name__ == "__main__":
     unittest.main()

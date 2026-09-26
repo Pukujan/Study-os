@@ -54,6 +54,26 @@ class PresentationTests(unittest.TestCase):
     def test_no_proposal_is_not_a_defect(self) -> None:
         self.assertEqual(presentation.validate_proposal(None, self.lesson, self.state, ()), (None, ()))
 
+    def test_regeneration_allowed_mirrors_the_proposal_refusals(self) -> None:
+        self.assertTrue(presentation.regeneration_allowed(self.lesson, self.state))
+        self.assertFalse(presentation.regeneration_allowed(self.lesson, dict(self.state, phase="done")))
+        assessment = dict(self.lesson, mode="assessment")
+        self.assertFalse(presentation.regeneration_allowed(assessment, dict(self.state, phase="probe")))
+        self.assertTrue(presentation.regeneration_allowed(assessment, dict(self.state, phase="feedback")))
+        collapsed = dict(self.lesson, steps=[dict(self.lesson["steps"][0], skippable=True)])
+        self.assertFalse(presentation.regeneration_allowed(collapsed, dict(self.state, scaffold=1)))
+        self.assertTrue(presentation.regeneration_allowed(collapsed, dict(self.state, scaffold=0)))
+
+    def test_the_allowed_flag_agrees_with_validation_on_every_refusal(self) -> None:
+        proposal = {"teach_md": "A clearer view of the same position.", "frame_indices": [0]}
+        states = [self.state, dict(self.state, phase="done"), dict(self.state, scaffold=1)]
+        for lesson in (self.lesson, dict(self.lesson, mode="assessment")):
+            for state in states:
+                with self.subTest(mode=lesson.get("mode"), state=state):
+                    allowed = presentation.regeneration_allowed(lesson, state)
+                    _, codes = presentation.validate_proposal(proposal, lesson, state, ())
+                    self.assertEqual(allowed, "PRESENTATION_NOT_ALLOWED" not in codes)
+
     def test_regeneration_is_refused_once_the_lesson_is_done(self) -> None:
         state = dict(self.state, phase="done")
         content, codes = presentation.validate_proposal(
