@@ -81,3 +81,9 @@ Agent-vs-agent runs check **tutor behavior**. Decision accuracy and calibration 
 ## Output
 
 `evals/out/<run_id>/scorecard.json`: per persona/lesson/route. Contains turns, detector hits by code, fallback rate, cost, latency p50/p95, and the module version set. Metabase can read it through an `eval` schema import. A markdown summary is posted to the PR (T0) or to #92 (T1 regressions).
+
+## A6 player API slice
+
+`tools/run_player_agent_evals.py` is the minimal scripted learner/tutor roleplay for the live player route (`/api/player/sessions`). It uses the existing `temp_database` and `TestClient` pattern, runs `golden`, `wrong_then_right`, `partial_then_right`, and `confused_then_right` personas, and compares the observed player step prefix with the pinned sliding-window oracle. The default tutor is a deterministic `StubLLM`; set `STUDY_OS_EVAL_LIVE=1` and `INFERHUB_API_KEY` to opt into InferHub.
+
+The scorecard and embedded synthetic transcripts are written to `evals/out/player-a2a-scorecard.json`. They are evaluation artifacts only. The harness uses a throwaway database for the live API session rows and never inserts scorecards or synthetic learner evidence. A missing `regenerate_presentation` payload is reported as `MISSING_REGENERATE_PRESENTATION` and makes the run fail until the product contract exists.
