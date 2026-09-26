@@ -74,6 +74,8 @@ canonical_paths:
   continuity_tasks: tasks/
   continuity_protocol_schemas: schemas/v1/
   content_system_adapter: .content-system/
+  webapp_gate_receipt: web/e2e/.artifacts/vision-gate-receipt.json
+  webapp_gate_specs: web/e2e/
 
 helpers:
   ownership: >-
@@ -262,6 +264,7 @@ engineering:
     - branch_coverage_minimum_70
     - unit_contract_property_stateful_and_reference_model_tests
     - helper_adoption_offline_invariants
+    - playwright_vision_gate
   planned_pr_checks:
     - pinned_pcm_target_validation
     - ruff_format_check

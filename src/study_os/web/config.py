@@ -59,6 +59,10 @@ class Settings:
     global_daily_spend_usd: float = 3.0
     rate_per_ip_per_min: int = 240
     rate_per_user_per_min: int = 120
+    # Guest/signup account creation shares one per-IP bucket. It stays low in
+    # production but must be raisable so a branch-local gate that starts many
+    # guest lessons in one process is not throttled into a false failure.
+    rate_signup_per_hour: int = 10
     decision_model_enabled: bool = True
     llm_enabled: bool = True
     extra: dict[str, str] = field(default_factory=dict)
@@ -103,6 +107,7 @@ def load_settings() -> Settings:
         global_daily_spend_usd=_float("GLOBAL_DAILY_SPEND_USD", 3.0),
         rate_per_ip_per_min=int(_float("RATE_PER_IP_PER_MIN", 240)),
         rate_per_user_per_min=int(_float("RATE_PER_USER_PER_MIN", 120)),
+        rate_signup_per_hour=int(_float("RATE_SIGNUP_PER_HOUR", 10)),
         decision_model_enabled=_flag("DECISION_MODEL_ENABLED", True),
         llm_enabled=_flag("LLM_ENABLED", True),
     )

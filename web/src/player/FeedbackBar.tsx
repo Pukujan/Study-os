@@ -199,7 +199,9 @@ function StepReviewForm({
         free_text: why,
         idempotency_key: draft.key,
       });
-      setDraft((prev) => ({ ...prev, sent: true }));
+      // Keep the saved receipt on screen, but hand the learner a fresh draft so
+      // the review surface (1-5 + why + Submit) is still rendered after Submit.
+      setDraft(() => ({ ...newStepReviewDraft(), sent: true }));
     } catch (e) {
       // Keep the draft and its key: a retry is the same review intent.
       setError(e instanceof ApiError ? e.code : "error");
@@ -208,24 +210,22 @@ function StepReviewForm({
     }
   };
 
-  if (draft.sent) {
-    return (
-      <div className="feedback-form step-review" role="group" aria-label="Step review saved">
-        <p className="feedback-thanks">Thanks, your review of this step was saved.</p>
-        <button
-          type="button"
-          className="btn small"
-          onClick={() => setDraft(newStepReviewDraft())}
-          data-track="feedback.review_again"
-        >
-          Review again
-        </button>
-      </div>
-    );
-  }
-
+  // One stable review region: it holds the 1-5 + why + Submit form before a
+  // review is saved and the saved-review receipt afterwards, so the learner
+  // always sees a review surface for the current step.
   return (
-    <form className="feedback-form step-review" aria-label="Rate this step" onSubmit={submit}>
+    <div className="step-review-panel" data-testid="player.review.panel">
+      {draft.sent && (
+        <div
+          className="feedback-form step-review"
+          role="group"
+          aria-label="Step review saved"
+          data-testid="player.review.submitted"
+        >
+          <p className="feedback-thanks">Thanks, your review of this step was saved.</p>
+        </div>
+      )}
+      <form className="feedback-form step-review" aria-label="Rate this step" onSubmit={submit}>
       <fieldset className="feedback-scale">
         <legend>How useful was this step?</legend>
         <div className="feedback-chips" role="group" aria-label="Rate this step from 1 to 5">
@@ -239,6 +239,7 @@ function StepReviewForm({
               onClick={() => setDraft((prev) => ({ ...prev, rating: score }))}
               disabled={busy}
               data-track={`feedback.rate.${score}`}
+              data-testid={`player.review.score-${score}`}
             >
               {score}
             </button>
@@ -259,12 +260,20 @@ function StepReviewForm({
           value={draft.why}
           onChange={(e) => setDraft((prev) => ({ ...prev, why: e.target.value }))}
           placeholder="What was right, wrong, or unclear about this step?"
+          data-testid="player.review.why"
         />
       </label>
       {error && <p className="error">Could not save your review ({error}).</p>}
-      <button type="submit" className="btn primary" disabled={!ready || busy} data-track="feedback.submit">
+      <button
+        type="submit"
+        className="btn primary"
+        disabled={!ready || busy}
+        data-track="feedback.submit"
+        data-testid="player.review.submit"
+      >
         {busy ? "Submitting" : "Submit"}
       </button>
     </form>
+    </div>
   );
 }

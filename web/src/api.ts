@@ -348,7 +348,13 @@ export const api = {
   react: (turn_id: string, kind: string) => post<{ ok: boolean }>(`/api/turns/${turn_id}/reactions`, { kind }),
   // Player v2
   lanes: () => get<LanesPayload>("/api/lanes"),
-  tryLesson: (lesson_id?: string) => post<{ me: Me; session: PlayerView }>("/api/try", lesson_id ? { lesson_id } : {}),
+  tryLesson: async (lesson_id?: string) => {
+    // /api/try opens a fresh session, so it returns a fresh CSRF token; the
+    // client must adopt it before any later mutation (attempt, tutor, feedback).
+    const out = await post<{ me: Me; session: PlayerView }>("/api/try", lesson_id ? { lesson_id } : {});
+    setCsrf(out.me.csrf_token);
+    return out;
+  },
   playerStart: (lesson_id: string) => post<PlayerView>("/api/player/sessions", { lesson_id }),
   playerGet: (id: string) => get<PlayerView>(`/api/player/sessions/${id}`),
   playerAttempt: (id: string, response: string, modality: string, idempotency_key: string) =>

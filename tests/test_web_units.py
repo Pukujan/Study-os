@@ -95,10 +95,12 @@ class ConfigTests(unittest.TestCase):
             os.environ["ALLOWED_ORIGINS"] = "https://a.example, https://b.example"
             os.environ["COOKIE_SECURE"] = "0"
             os.environ["GLOBAL_DAILY_SPEND_USD"] = "1.5"
+            os.environ["RATE_SIGNUP_PER_HOUR"] = "500"
             s = load_settings()
             self.assertEqual(s.allowed_origins, ("https://a.example", "https://b.example"))
             self.assertFalse(s.cookie_secure)
             self.assertEqual(s.global_daily_spend_usd, 1.5)
+            self.assertEqual(s.rate_signup_per_hour, 500)
             self.assertEqual(s.jev_model, "typesafe/jev-1.13")
         finally:
             os.environ.clear()

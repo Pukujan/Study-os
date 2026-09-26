@@ -8,9 +8,25 @@ import LessonMap, { getLessonSteps } from "../visuals/LessonMap";
 import VoiceControls from "../player/VoiceControls";
 import CompanionPanel from "../player/CompanionPanel";
 import FeedbackBar from "../player/FeedbackBar";
+import { applyPresentation } from "../player/presentation";
 import Pet, { type PetMood } from "../mascot/Pet";
 import RobotVisit from "../mascot/RobotVisit";
 import { newIdempotencyKey } from "../api";
+
+type RegenKind = "reexplain" | "example";
+
+// Asking the tutor for another render of the *same* step/concept. The tutor
+// answers with a versioned regenerate_presentation update, which is what the
+// controls below adopt; a text-only reply leaves the view untouched.
+const REGEN_PROMPTS: Record<RegenKind, string> = {
+  reexplain: "Explain this step again with a different picture.",
+  example: "Show a worked example for this step with a different picture.",
+};
+
+const REGEN_LABELS: Record<RegenKind, string> = {
+  reexplain: "Explain again",
+  example: "Worked example",
+};
 
 export default function Player({ sessionId }: { sessionId: string }) {
   const [view, setView] = useState<PlayerView | null>(null);
@@ -110,6 +126,24 @@ export default function Player({ sessionId }: { sessionId: string }) {
     }
   };
 
+  // Chat-path presentation regeneration: asking the tutor for another render of
+  // the same step/concept, then adopting the versioned update it returns. The
+  // step, variant, phase and progress are untouched (see player/presentation.ts).
+  const regenerate = async (kind: RegenKind) => {
+    if (busy || !view) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const reply = await api.tutor(sessionId, REGEN_PROMPTS[kind]);
+      const next = applyPresentation(view, reply.regenerate_presentation);
+      if (next !== view) setView(next);
+    } catch (e) {
+      setError(e instanceof ApiError ? e.code : "error");
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const claim = async (e: FormEvent) => {
     e.preventDefault();
     setBusy(true);
@@ -157,6 +191,21 @@ export default function Player({ sessionId }: { sessionId: string }) {
                 <section className="teach card">
                   <Markdown text={view.step.teach_md} />
                   <FrameStepper frames={view.step.teach_frames} label="Teach frames" />
+                  <div className="regen-controls" role="group" aria-label="Show this step another way">
+                    {(Object.keys(REGEN_PROMPTS) as RegenKind[]).map((kind) => (
+                      <button
+                        key={kind}
+                        type="button"
+                        className="btn small"
+                        onClick={() => void regenerate(kind)}
+                        disabled={busy}
+                        data-track={`player.regen.${kind}`}
+                        data-testid={`player.step.regen-${kind}`}
+                      >
+                        {REGEN_LABELS[kind]}
+                      </button>
+                    ))}
+                  </div>
                 </section>
               )}
 
