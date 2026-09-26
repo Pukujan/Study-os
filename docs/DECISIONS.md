@@ -301,6 +301,6 @@ Unchanged: ADR-0016 deterministic control, the evidence invariants, and "synthet
 
 ## D019 proposal - learner step review as append-only self-report
 
-Status: proposed for issue #126 by A8 on 2026-09-25; implementation/acceptance belongs to InferHub A8-exec and the issue/PR record.
+Status: accepted for issue #126 on 2026-09-25. Proposed by A8; implemented and verified by the InferHub A8-exec slice on branch `task/SOS-frontend-lesson-ship-2026-09-25` (PR #127). Migration `0003_step_review.sql` adds `presentation_version` and a unique `idempotency_key` scope plus the `ux.feedback` append-only trigger; `POST /api/feedback` for `target_kind: "step"` enforces the contract below. Acceptance of the learner-facing slice still depends on the issue/PR record and the deferred Playwright/vision and live A2A gates.
 
 The learner player step review uses an intentional Submit of a 1-5 usefulness rating and nonblank typed why. The committed `ux.feedback` row is the review decision record, with step/variant/presentation context and an idempotency key. Exact retries return one receipt; a distinct review intent appends a new row. A re-render preserves step identity. Historical thumbs remain historical and decomposer review is a separate surface. Numeric opinion and rationale are self-report, never mastery evidence or `learn.*` review events. See `docs/webapp/SOS-0016_STEP_REVIEW_PDD.md`, `SOS-0016_STEP_REVIEW_SDD.md`, and `SOS-0016_STEP_REVIEW_TDD.md` for rationale, boundaries, and tests. Research Gate R0 and FOSSIL policy are unchanged.

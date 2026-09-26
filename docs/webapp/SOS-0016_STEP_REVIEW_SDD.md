@@ -1,6 +1,6 @@
 # SOS-0016 learner step review: system design (A8)
 
-Status: proposed implementation contract; issue #126. See [PDD](SOS-0016_STEP_REVIEW_PDD.md) and [TDD](SOS-0016_STEP_REVIEW_TDD.md).
+Status: implemented contract; issue #126, PR #127. See [PDD](SOS-0016_STEP_REVIEW_PDD.md) and [TDD](SOS-0016_STEP_REVIEW_TDD.md).
 
 ## Contract
 

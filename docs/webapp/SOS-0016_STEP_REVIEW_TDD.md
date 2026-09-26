@@ -1,6 +1,6 @@
 # SOS-0016 learner step review: test design (A8)
 
-Status: RED contract tests against current like/dislike player; issue #126. No product changes in A8.
+Status: contract tests, green after the A8-exec implementation; issue #126. The API/database cases in `tests/test_player_step_review_contract.py`, the frontend cases in `web/src/player/FeedbackBar.contract.test.tsx`, and the stub A2A scorecard pass. Playwright/vision and live InferHub remain later gates; hidden acceptance is `not_run`.
 
 ## Deterministic and metamorphic acceptance
 

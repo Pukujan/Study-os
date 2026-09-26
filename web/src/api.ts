@@ -211,32 +211,56 @@ export type TutorReply = {
   regenerate_presentation?: PresentationUpdate | null;
 };
 
-export type FeedbackBody = {
+export type FeedbackReason = "confusing" | "too_long" | "too_easy" | "wrong" | "not_helpful" | "other";
+
+export type TutorMessageFeedbackBody = {
   session_id: string;
   step_id: string;
-  target_kind: "step" | "tutor_message";
+  target_kind: "tutor_message";
   target_id: string;
   rating: "like" | "dislike";
-  reasons: ("confusing" | "too_long" | "too_easy" | "wrong" | "not_helpful" | "other")[];
+  reasons: FeedbackReason[];
   free_text?: string;
 };
 
+// Learner step review: one explicit Submit of a 1-5 usefulness rating and a
+// nonblank typed why, bound to the presentation version the learner reviewed.
+export type StepReviewBody = {
+  session_id: string;
+  step_id: string;
+  target_kind: "step";
+  target_id: string;
+  presentation_version: number;
+  rating: number;
+  free_text: string;
+  idempotency_key: string;
+};
+
+export type FeedbackBody = TutorMessageFeedbackBody | StepReviewBody;
+
 export type AdminFeedback = {
   rows: {
-    time: string;
-    rating: "like" | "dislike";
+    created_at: string;
+    rating: string;
     reasons: string[];
     target_kind: string;
-    step: string;
+    step_id: string | null;
+    target_id: string;
     prompt_version: string | null;
     model: string | null;
-    free_text: string | null;
+    free_text_scrubbed: string | null;
+    presentation_version: number | null;
   }[];
   by_prompt_version: {
     prompt_version: string;
     likes: number;
     dislikes: number;
     top_reasons: { reason: string; count: number }[];
+  }[];
+  step_reviews: {
+    presentation_version: number | null;
+    counts: Record<string, number>;
+    total: number;
   }[];
 };
 

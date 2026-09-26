@@ -1,6 +1,6 @@
 # SOS-0016 learner step review: product definition (A8)
 
-Status: proposed contract for InferHub A8-exec; no product implementation in A8. Owner: issue #126, parent #82, dependencies none recorded. Scope: product/UI + evaluation + schema/data specification, within the accepted D017/D018 web beta. Research Gate R0 and evidence policy do not change.
+Status: contract implemented by the InferHub A8-exec slice (issue #126, PR #127); the A8 spec slice added no product code. Owner: issue #126, parent #82, dependencies none recorded. Scope: product/UI + evaluation + schema/data specification, within the accepted D017/D018 web beta. Research Gate R0 and evidence policy do not change.
 
 ## Learner problem and outcome
 

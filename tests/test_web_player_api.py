@@ -361,20 +361,24 @@ class PlayerFeedbackTests(_PlayerDbCase):
         c.signup(self.email())
         view = c.c.post("/api/player/sessions", json={"lesson_id": "fractions-compare"}, headers=c.headers).json()
         sid = view["session_id"]
+        # A step review is a 1-5 rating plus a typed why (SOS-0016, #126); the
+        # old like/dislike step payload is intentionally no longer accepted.
         r = c.c.post("/api/feedback", json={
             "session_id": sid,
             "step_id": view["step"]["step_id"],
             "target_kind": "step",
-            "target_id": "step-1",
-            "rating": "dislike",
-            "reasons": ["too_easy"],
+            "target_id": f"{view['step']['step_id']}:{view['step']['variant']}",
+            "presentation_version": view["presentation_version"],
+            "rating": 2,
             "free_text": "I already knew this, my email is a@b.com",
+            "idempotency_key": str(uuid.uuid4()),
         }, headers=c.headers)
         self.assertEqual(r.status_code, 200)
         self.assertTrue(r.json()["ok"])
         rows = self.sql("SELECT * FROM ux.feedback WHERE session_id = %s", (sid,))
         self.assertEqual(len(rows), 1)
         self.assertNotIn("@", rows[0]["free_text_scrubbed"])
+        self.assertEqual(rows[0]["rating"], "2")
 
     def test_feedback_for_tutor_message_looks_up_model(self) -> None:
         c = self.client()

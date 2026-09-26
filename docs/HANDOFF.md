@@ -2,13 +2,14 @@
 
 <!-- continuity:current {"active_task":"SOS-0005","active_task_file":"tasks/TASK-SOS-0005-lesson-player-redesign.md","protocol_version":"0.1.0-draft","schema":"project-continuity.current.v1"} -->
 
-Last updated: 2026-09-24
+Last updated: 2026-09-26
 Primary tracker: #63 (runtime) · #82 (web app epic)
 
 ## Web app track (D017 accepted, D018 amendment) — slice 1 live
 
 - Active: SOS-0005 (#101) lesson player redesign prototype on `task/SOS-0005-lesson-player-redesign`; not merged/deployed until Alex approves.
-- Player chat re-render (#126): a tutor reply may now carry a validated `regenerate_presentation` (`study-os.player-presentation.v1`) that the server applies **in place** on the current step before responding; step/concept identity, phase, variant and progress are preserved and only the displayed teach text/frames change. Tutor prompt version is `tutor.v3`. The remaining #126 work is the 1-5 typed per-step review, Playwright/vision verification, and a live (InferHub) A2A run.
+- Player chat re-render (#126): a tutor reply may now carry a validated `regenerate_presentation` (`study-os.player-presentation.v1`) that the server applies **in place** on the current step before responding; step/concept identity, phase, variant and progress are preserved and only the displayed teach text/frames change. Tutor prompt version is `tutor.v3`.
+- Player step review (#126, D019 accepted): the learner player shows an optional five-choice review with a required typed why and explicit Submit (`FeedbackBar`). `POST /api/feedback` with `target_kind: "step"` requires an integer 1-5 rating, nonblank why, the served `presentation_version`, and an idempotency key; migration `0003_step_review.sql` adds those columns, a unique `(subject_id, idempotency_key)` scope, and the `ux.feedback` append-only trigger. Exact replay returns one receipt, a changed payload under the same key is a conflict, and a review never advances the step or writes a `learn.*` event. A same-step re-render keeps the draft; a step/variant change clears it. Reviews are `self_reported` UX feedback, not mastery evidence. Remaining #126 work: Playwright/vision verification and a live (InferHub) A2A run; hidden acceptance is not yet run.
 
 - Live at **https://study.design-bakery.com** (frontend `/`, API `/api`, same origin) on gravebuster: `/srv/study-os` Docker Compose (`api` on `127.0.0.1:18400`, `postgres:16` internal, `cloudflared` tunnel `study-os-gravebuster`, nightly `pg_dump`). See `deploy/README.md`.
 - Code: `src/study_os/web/` (FastAPI, auth, controller over PIR, decision layer, HESI packs), `web/` (React), `tools/run_agent_evals.py` (agent-vs-agent T0 evals). Task: `tasks/TASK-SOS-0004-first-slice.md`, issue #99.
