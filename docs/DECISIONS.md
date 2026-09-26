@@ -2,7 +2,7 @@
 
 This file records decisions that change project invariants, boundaries, or research interpretation. Routine implementation history belongs in Git/issues.
 
-## D001 â€” Dedicated Study OS learning schema
+## D001 — Dedicated Study OS learning schema
 
 **Status:** accepted
 
@@ -14,7 +14,7 @@ FOSSIL remains an optional export/promotion target for durable claims, curated t
 
 **Revisit when:** Study OS has repeated trajectories and a concrete need for cross-domain durable knowledge queries.
 
-## D002 â€” Raw transcripts private by default
+## D002 — Raw transcripts private by default
 
 **Status:** accepted
 
@@ -22,7 +22,7 @@ Full raw transcripts are not committed to the public Study OS repository by defa
 
 **Why:** transcript evidence may contain private or unrelated conversation content, and Git history is difficult to erase reliably once published.
 
-## D003 â€” Subject 001 is a design participant, not a population proxy
+## D003 — Subject 001 is a design participant, not a population proxy
 
 **Status:** accepted
 
@@ -34,15 +34,15 @@ Promotion path:
 
 No agent may skip these evidence scopes silently.
 
-## D004 â€” No fixed learning-style classification
+## D004 — No fixed learning-style classification
 
 **Status:** accepted
 
-Study OS may test visual, textual, auditory, formal, structural, and procedural representations. It will not infer or store a fixed â€œvisual learner,â€ â€œauditory learner,â€ or similar sensory type as a causal learning rule.
+Study OS may test visual, textual, auditory, formal, structural, and procedural representations. It will not infer or store a fixed “visual learner,” “auditory learner,” or similar sensory type as a causal learning rule.
 
 **Why:** the common learning-styles matching hypothesis lacks adequate empirical support. Study OS instead selects representations from observed task/state/outcome evidence.
 
-## D005 â€” Representation + operation are separate variables
+## D005 — Representation + operation are separate variables
 
 **Status:** accepted
 
@@ -56,9 +56,9 @@ or
 - representation: pseudocode
 - operation: reconstruct
 
-**Why:** â€œshowing a diagramâ€ and â€œasking the learner to predict from a diagramâ€ are different interventions. Visualization research suggests active engagement matters.
+**Why:** “showing a diagram” and “asking the learner to predict from a diagram” are different interventions. Visualization research suggests active engagement matters.
 
-## D006 â€” Deterministic algorithm state is authoritative
+## D006 — Deterministic algorithm state is authoritative
 
 **Status:** accepted
 
@@ -66,7 +66,7 @@ Generated images/video may later illustrate a concept, but canonical DSA state t
 
 **Why:** an attractive but incorrect pointer movement or queue state is a learning-data corruption event, not merely a UI bug.
 
-## D007 â€” CI now; CD deferred
+## D007 — CI now; CD deferred
 
 **Status:** accepted, clarified by D011
 
@@ -74,7 +74,7 @@ CI validates schemas, Python utilities, unit tests, data-boundary rules, and rep
 
 Continuous deployment is deferred until Research Gate R0 produces one complete auditable learning trajectory and a product surface is actually justified.
 
-## D008 â€” Build is gated by learning evidence
+## D008 — Build is gated by learning evidence
 
 **Status:** accepted; sequencing partially superseded by D014
 
@@ -93,7 +93,7 @@ Before broad UI/multimodal expansion, R0 requires:
 
 D014 later removes this as a global blocker on structured curriculum acquisition and ongoing product dogfooding. The evidence-quality requirements remain applicable to claims about intervention effectiveness.
 
-## D009 â€” Agent state is explicit and reviewable
+## D009 — Agent state is explicit and reviewable
 
 **Status:** accepted
 
@@ -101,7 +101,7 @@ Agents use root `AGENTS.md`, `PROJECT_MANIFEST.yaml`, and `docs/HANDOFF.md`.
 
 Agents may update project state but may not silently relax invariants. Changes to boundaries/gates require this decision log or a future ADR.
 
-## D010 â€” Local runtime owns live learner state
+## D010 — Local runtime owns live learner state
 
 **Status:** accepted
 
@@ -115,7 +115,7 @@ The existing repository checkpoint files are bootstrap/research artifacts. Once 
 
 **Architecture:** see `docs/LOCAL_RUNTIME_ARCHITECTURE.md` and Issue #4.
 
-## D011 â€” GitHub Actions is repository CI, never runtime infrastructure
+## D011 — GitHub Actions is repository CI, never runtime infrastructure
 
 **Status:** accepted
 
@@ -125,7 +125,7 @@ Repository CI may remain useful for schemas, migrations, tests, app/plugin contr
 
 If Actions becomes distracting during R0, it may be reduced or disabled without changing Study OS runtime semantics.
 
-## D012 â€” One semantic `@StudyOS` app surface
+## D012 — One semantic `@StudyOS` app surface
 
 **Status:** accepted
 
@@ -137,7 +137,7 @@ ChatGPT cannot directly reach a WSL-only `localhost` service. Integration must u
 
 **Why:** the tutor should decide how to teach while Study OS owns deterministic persistence, provenance, scoring, checkpointing, and validation.
 
-## D013 â€” Separate active research scope from planned competency tracks
+## D013 — Separate active research scope from planned competency tracks
 
 **Status:** accepted; execution-scope restriction partially superseded by D014
 
@@ -170,7 +170,7 @@ Scoring remains multidimensional and evidence-backed. Planned open-ended diagnos
 
 **Specification:** see `docs/LEARNING_CONTROL_MODEL.md`.
 
-## D014 â€” Operational learning and durable data are the primary product-development loop
+## D014 — Operational learning and durable data are the primary product-development loop
 
 **Status:** accepted
 
@@ -254,21 +254,21 @@ Frontend, Mermaid/diagram rendering, audio tutoring, imagery, and later video re
 
 **Roadmap:** see `docs/ROADMAP.md`.
 
-## D015 â€” Study OS owns its continuity state; PCM and CGM are pinned helpers
+## D015 — Study OS owns its continuity state; PCM and CGM are pinned helpers
 
 Status: proposed in #78 (task `SOS-0001`); accepted when its PR merges.
 
 This repository is the authoritative owner of Study OS project facts, continuity/task state, and human-facing claims. `Pukujan/project-continuity-modules` is adopted through its mature-repository overlay: `docs/PROJECT_CHARTER.md` is canonical PROJECT, `docs/HANDOFF.md` is canonical CURRENT, `tasks/` holds issue-backed PCM task projections, and `schemas/v1/` is an exact copy of the pinned protocol schemas. `Pukujan/content-generation-modules` is adopted as a pinned `.content-system/` adapter. Neither helper owns Study OS state, and neither is read from a moving branch during work.
 
-No project invariant is relaxed. The existing documents keep their meaning; the `continuity:*` markers only declare roles. Pins, rules, and validation commands are in `AGENTS.md` â†’ "Helper modules and project ownership".
+No project invariant is relaxed. The existing documents keep their meaning; the `continuity:*` markers only declare roles. Pins, rules, and validation commands are in `AGENTS.md` → "Helper modules and project ownership".
 
-## D016 â€” The shipped sliding-window lesson follows the two goldens step by step
+## D016 — The shipped sliding-window lesson follows the two goldens step by step
 
 Status: proposed in #80 (task `SOS-0002`); accepted when its PR merges.
 
 The canonical sliding-window PIR asset (`sliding-window.max-sum-k.sep4.v1`) is generated from the two goldens in `domains/dsa/sliding-window/golden/`, and its scope stops where they stop (`enumerate(a)` and `append`). It moves to revision `sep4.sliding-window.golden-box-index-enumerate-append.v2`. Runs pinned to v1 fail closed on the existing revision check. `domains/dsa/sliding-window/golden/conformance-oracle.v0.1.json` and `src/study_os/pir/conformance.py` mirror the `Pukujan/study-os-benchmarker` rules at `d438988` and are enforced by `tests/test_pir_golden_conformance.py`. Loop assembly, `max`, the `else` bridge, the stop condition, and `range(k)` need their own reviewed golden before they ship.
 
-## D017 â€” Owner promotes a private hosted web app track (accepted, amended by D018)
+## D017 — Owner promotes a private hosted web app track (accepted, amended by D018)
 
 Status: **accepted** on 2026-09-24 by Alex's assistant acting on his behalf (recorded in SOS-0004, #99), and amended the same day by D018. Proposed in #83 (task `SOS-0003`, epic #82).
 
@@ -284,7 +284,7 @@ Proposed decision:
 Spec: `docs/webapp/README.md`.
 
 
-## D018 â€” Owner amendment to D017: self-hosted on gravebuster, open signup with Google, first-party analytics
+## D018 — Owner amendment to D017: self-hosted on gravebuster, open signup with Google, first-party analytics
 
 Status: **accepted** by Alex (owner) on 2026-09-24, relayed by his assistant; recorded in SOS-0004 (#99). Detail: `docs/webapp/D018_AMENDMENT.md`.
 
