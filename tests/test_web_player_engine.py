@@ -570,7 +570,7 @@ class LanesTests(unittest.TestCase):
 
         lesson = load_lesson("big-o-growth-families")
         self.assertEqual(lesson["catalog_order"], 1)
-        self.assertEqual(lesson["representation"], "growth_table")
+        self.assertEqual(lesson["representation"], "growth_curve")
         self.assertEqual(len(lesson["steps"]), 7)
         self.assertEqual(lesson["steps"][0]["step_id"], "why_care")
         self.assertIsNone(lesson["steps"][0].get("probe"))

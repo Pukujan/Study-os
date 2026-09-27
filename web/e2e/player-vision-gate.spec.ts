@@ -247,15 +247,10 @@ test.describe("learner step review: metamorphic relations", () => {
     const progressBefore = await progressLabel(page);
 
     // The regeneration control family is the chat path to a re-render.
-    const regen = page.locator('[data-testid^="player.step.regen-"]');
-    await expect(regen.first()).toBeVisible();
-    // The regeneration path asks the tutor for another render of the same step.
-    const tutorCall = page.waitForRequest(
-      (request) => request.method() === "POST" && request.url().includes("/api/player/sessions/") && request.url().endsWith("/tutor"),
-      { timeout: 30_000 },
-    );
-    await regen.first().click();
-    await tutorCall;
+    // Explain again may resolve deterministically via adapt before needing the tutor.
+    const regen = page.getByTestId("player.step.regen-reexplain");
+    await expect(regen).toBeVisible();
+    await regen.click();
 
     await expect
       .poll(async () => page.locator(".teach.card").first().innerText(), { timeout: 30_000 })
