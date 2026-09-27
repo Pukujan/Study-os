@@ -36,6 +36,10 @@ Read these files before making substantive changes:
 
 See `PROJECT_MANIFEST.yaml` for machine-readable state.
 
+## Multi-agent authority
+
+For cross-agent task claims and verdicts, follow [`docs/AUTHORITY.md`](docs/AUTHORITY.md). `grok-bot@study-os` is the sole arbiter; Claude Code + InferHub sessions are claimable workers and must not self-arbitrate or merge to `main`.
+
 ## Agent change protocol
 
 For every substantive task:
