@@ -253,6 +253,16 @@ pre.chart { font-family: var(--font-mono); background: var(--surface-subtle); pa
 .growth-table { width: fit-content; max-width: 100%; }
 .growth-workers, .growth-curve { color: var(--ink); max-width: 28rem; width: fit-content; }
 .growth-workers-svg, .growth-curve-svg { display: block; margin: 0; max-width: 100%; }
+.growth-curve-legend {
+  display: flex; flex-wrap: wrap; gap: 0.35rem 0.75rem;
+  list-style: none; margin: 0.35rem 0 0; padding: 0;
+  font-size: 0.8rem; color: var(--ink);
+}
+.growth-curve-legend-item { display: inline-flex; align-items: center; gap: 0.3rem; }
+.growth-curve-legend-swatch {
+  width: 0.7rem; height: 0.7rem; border-radius: 2px; flex: 0 0 auto;
+}
+.growth-table-empty-n { margin: 0.15rem 0 0; font-size: 0.8rem; }
 .teach-advance { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
 .teach .md ol, .worked-example .md ol, .frame-caption {
   white-space: normal;

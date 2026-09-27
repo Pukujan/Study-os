@@ -137,6 +137,16 @@
   color: var(--muted, #667);
 }
 
+.emptyProbe {
+  max-width: 28rem;
+}
+
+.emptyN {
+  margin: 0.15rem 0 0;
+  font-size: 0.8rem;
+  color: var(--muted, #667);
+}
+
 .codeBlock {
   margin: 0;
   padding: 0.45rem 0.6rem;

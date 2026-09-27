@@ -7,6 +7,7 @@ import MermaidDiagram from "./MermaidDiagram";
 import LessonMap from "./LessonMap";
 import CodeTree from "./CodeTree";
 import GrowthTable from "./GrowthTable";
+import GrowthCurve from "./GrowthCurve";
 import GrowthWorkers from "./GrowthWorkers";
 
 describe("visuals", () => {
@@ -230,14 +231,82 @@ describe("visuals", () => {
     expect(unhighlighted).not.toContain('stroke-width="3.5"');
   });
 
-  it("GrowthTable empty series uses compact chips not a stretched row", () => {
+  it("GrowthTable empty series hides scoreboard and shows a current-problem hint (#178)", () => {
     const html = renderToStaticMarkup(
       <GrowthTable frame={{ type: "growth_table", n_values: [2, 4, 8, 16] }} />,
     );
-    expect(html).toContain("growth-scoreboard-chips");
-    expect(html).toContain(">2<");
-    expect(html).toContain(">16<");
-    expect(html).toContain("Counts arrive in the next steps.");
+    expect(html).toContain('data-testid="growth-table-empty"');
+    expect(html).not.toContain("growth-scoreboard-chips");
+    expect(html).not.toContain("Counts arrive in the next steps.");
+    expect(html).toContain("Estimate how the step count changes as n grows.");
+    expect(html).toContain("n = 2, 4, 8, 16");
+  });
+
+  it("GrowthTable empty_hint is the sole in-table line when no caption (#178)", () => {
+    const html = renderToStaticMarkup(
+      <GrowthTable
+        frame={{
+          type: "growth_table",
+          n_values: [4, 1000],
+          empty_hint: "Reading a[0] is one lookup. Does that stay 1 when n grows?",
+        }}
+      />,
+    );
+    expect(html).toContain("Reading a[0] is one lookup");
+    expect(html).not.toContain("Counts arrive");
+  });
+
+  it("GrowthTable does not repeat caption when island already shows it (#178)", () => {
+    const caption = "Still reading a[0]. Does a much larger n change the step count?";
+    const html = renderToStaticMarkup(
+      <GrowthTable
+        frame={{
+          type: "growth_table",
+          n_values: [10, 10000],
+          caption,
+          empty_hint: "Reading a[0] is one lookup. Does that stay 1 when n grows?",
+        }}
+      />,
+    );
+    // Caption is painted by TeachRenderBox figcaption — table must not add a second prose line.
+    expect(html).not.toContain("growth-table-empty-note");
+    expect(html).not.toContain("Counts arrive");
+    expect(html).toContain("n = 10, 10000");
+    // aria-label mirrors the visible caption (not a second empty_hint).
+    expect(html).toContain(caption);
+    expect(html).not.toContain("Reading a[0] is one lookup. Does that stay 1 when n grows?");
+    // Frame island surfaces the kept back-pointer as figcaption (not a second empty-note).
+    const island = renderToStaticMarkup(
+      <Frame
+        frame={{
+          type: "growth_table",
+          n_values: [10, 10000],
+          caption,
+        }}
+      />,
+    );
+    expect(island).toContain(caption);
+    expect(island).toContain("figcaption");
+    expect(island).not.toContain("growth-table-empty-note");
+    expect(island).not.toContain("Counts arrive");
+  });
+
+  it("GrowthCurve shows end-of-line labels and a color legend (#179)", () => {
+    const fourClass = [
+      { label: "O(1)", values: [1, 1, 1, 1] },
+      { label: "O(log n)", values: [1, 2, 3, 4] },
+      { label: "O(n)", values: [2, 4, 8, 16] },
+      { label: "O(n²)", values: [4, 16, 64, 256] },
+    ];
+    const html = renderToStaticMarkup(
+      <GrowthCurve frame={{ type: "growth_curve", n_values: [2, 4, 8, 16], series_multi: fourClass }} />,
+    );
+    expect(html).toContain("growth-curve-legend");
+    expect(html).toContain('data-series-label="O(1)"');
+    expect(html).toContain('data-series-label="O(log n)"');
+    expect(html).toContain('data-series-label="O(n)"');
+    expect(html).toContain('data-series-label="O(n²)"');
+    expect(html).toContain("growth-curve-end-label");
   });
 
   it("Frame mounts growth frames inside TeachRenderBox island", () => {
