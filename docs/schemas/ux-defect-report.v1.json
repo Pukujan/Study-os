@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://study-os.local/docs/schemas/ux-defect-report.v1.json",
+  "title": "Study-os UX defect report summary v1",
+  "description": "Machine summary for Jev Ultrafast exploratory and Playwright deterministic UX arms. See docs/PDD_UX_DEFECT_EXPLORATION.md.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "run_id", "source", "started_at", "finished_at", "base_url", "controls_exercised", "defects", "pass"],
+  "properties": {
+    "schema_version": { "const": "ux-defect-report.v1" },
+    "run_id": { "type": "string", "minLength": 1 },
+    "source": { "enum": ["jev", "playwright"] },
+    "started_at": { "type": "string", "format": "date-time" },
+    "finished_at": { "type": "string", "format": "date-time" },
+    "base_url": { "type": "string", "minLength": 1 },
+    "agent": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "model": { "type": "string" },
+        "harness_version": { "type": "string" }
+      }
+    },
+    "controls_exercised": { "type": "integer", "minimum": 0 },
+    "pass": {
+      "type": "boolean",
+      "description": "true iff no P0 defects and every exercised control produced an observable change within 3s"
+    },
+    "catch_rate": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "defects.length / controls_exercised when controls_exercised > 0"
+    },
+    "artifacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "actions_jsonl": { "type": "string" },
+        "decisions_jsonl": { "type": "string" },
+        "report_md": { "type": "string" },
+        "screenshots_dir": { "type": "string" }
+      }
+    },
+    "defects": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/defect" }
+    }
+  },
+  "$defs": {
+    "defect": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "severity",
+        "component",
+        "control_label",
+        "url",
+        "expected",
+        "actual",
+        "repro_steps",
+        "evidence",
+        "source"
+      ],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "severity": { "enum": ["P0", "P1", "P2"] },
+        "component": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Guest-facing component slug, e.g. home-lanes, player-shell, explain-again, worked-example, companion-chips, back-exit, mic-speaker, study-buddy-chat, review-submit, number-line, growth-table, arrows, error-boundary"
+        },
+        "control_label": { "type": "string", "minLength": 1 },
+        "url": { "type": "string", "minLength": 1 },
+        "expected": { "type": "string", "minLength": 1 },
+        "actual": { "type": "string", "minLength": 1 },
+        "repro_steps": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "evidence": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "screenshot": { "type": "string", "description": "Repo- or artifact-relative screenshot path" },
+            "action_id": { "type": "string", "description": "Id linking to actions.jsonl / Ultrafast history entry" }
+          }
+        },
+        "source": { "enum": ["jev", "playwright"] },
+        "related_issue_slice": {
+          "type": "string",
+          "pattern": "^A(1[2-9]|2[0-4])$",
+          "description": "Optional coordination slice A12..A24"
+        }
+      }
+    }
+  }
+}
