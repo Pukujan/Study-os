@@ -91,3 +91,18 @@ class BigOWhyVisualTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class AdaptReexplainFrameTypeSwapTests(unittest.TestCase):
+    """Explain again must change the visible frame *type*, not only prose."""
+
+    def test_big_o_reexplain_swaps_workers_to_curve(self):
+        lesson = load_lesson("big-o-growth-families")
+        state = engine._new_state(lesson)
+        before = teach_visual.resolve_teach(lesson["steps"][0]["teach"])[1]
+        self.assertEqual(before[0]["type"], "growth_workers")
+        state, info = engine.adapt(lesson, state, "reexplain")
+        self.assertTrue(info.get("frames_changed"))
+        after = presentation.effective(lesson, state)[1]
+        self.assertEqual(after[0]["type"], "growth_curve")
+

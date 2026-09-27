@@ -207,8 +207,13 @@ export default function CompanionPanel({
     try {
       if (kind === "reexplain") {
         pushSystem("Explained again.");
-        const v = await api.playerConfused(sessionId);
-        onViewChange(v);
+        try {
+          const v = await api.adapt(sessionId, "reexplain");
+          onViewChange(v);
+        } catch {
+          const v = await api.playerConfused(sessionId);
+          onViewChange(v);
+        }
       } else {
         pushSystem(`Updated the card: ${chipLabel(kind).toLowerCase()}.`);
         const v = await api.adapt(sessionId, kind);
