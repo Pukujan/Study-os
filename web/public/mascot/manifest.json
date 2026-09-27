@@ -1,0 +1,69 @@
+{
+  "character": "learner",
+  "schema_version": "study-os.mascot-sprite-manifest.v1",
+  "sheets": [
+    {
+      "animation": "turn",
+      "cols": 2,
+      "empty_frame_check": {
+        "alpha_threshold": 16,
+        "min_opaque_pixels": 1200
+      },
+      "file": "/mascot/pet-turn.webp",
+      "fps": 8,
+      "frame_h": 176,
+      "frame_w": 144,
+      "frames": 4,
+      "loop": false,
+      "provenance": {
+        "generated_at": "2026-09-25T05:05:00+00:00",
+        "model": "openai/gpt-image-2.5-flare",
+        "prompt_file": ".content-system/characters/prompts/pet-turn.full.txt",
+        "prompt_sha256": "370a5b054acfbe7c7216c5c7505f50b245c328e99fa5d27acc5ca0e1340b4982",
+        "provider": "OpenRouter",
+        "reference_paths": [
+          ".content-system/characters/refs/learner-chibi-master.webp"
+        ],
+        "reference_sha256": [
+          "7a98a1e42e4761b6a1090e6c436ff9f53c855ee6faebe5f279d8bb69bd6d3b0f"
+        ],
+        "source": "cgm",
+        "source_sheet_sha256": "0c27a77e1dcd0be358d401b933e5d69b74031bed37a6d0f6769e682aa34c8062"
+      },
+      "rows": 2,
+      "sha256": "c6fbe2a41cd1bb35f4d4f745807cfead889b8b9bb885837e47504be13b4327af"
+    },
+    {
+      "animation": "walk",
+      "cols": 3,
+      "empty_frame_check": {
+        "alpha_threshold": 16,
+        "min_opaque_pixels": 1200
+      },
+      "file": "/mascot/pet-walk.webp",
+      "fps": 8,
+      "frame_h": 176,
+      "frame_w": 144,
+      "frames": 6,
+      "loop": true,
+      "provenance": {
+        "generated_at": "2026-09-25T05:00:00+00:00",
+        "model": "openai/gpt-image-2.5-flare",
+        "prompt_file": ".content-system/characters/prompts/pet-walk.full.txt",
+        "prompt_sha256": "7e26b6e1727e66a41562d5f3b712a13115089f5b4bc1b58aecfe13b6da3c9370",
+        "provider": "OpenRouter",
+        "reference_paths": [
+          ".content-system/characters/refs/learner-chibi-master.webp"
+        ],
+        "reference_sha256": [
+          "7a98a1e42e4761b6a1090e6c436ff9f53c855ee6faebe5f279d8bb69bd6d3b0f"
+        ],
+        "source": "cgm",
+        "source_sheet_sha256": "04490c698ea4941ce0161c1961b9307c8172ca39dd44f4b44a3bf7292bc136db"
+      },
+      "rows": 2,
+      "sha256": "3baefc8e17d225f2f956c9f8574ef9a302008f10cce7c994f2b50cb38e51adcf"
+    }
+  ],
+  "system_version": "0.4.0"
+}
