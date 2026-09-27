@@ -1,7 +1,7 @@
 {
   "schema_version": "study-os.player-lesson.v1",
   "lesson_id": "big-o-growth-families",
-  "revision": "big-o-growth-families.v1.teach-visual-v1",
+  "revision": "big-o-growth-families.v1.sticks-boxes-185",
   "lane": "dsa",
   "title": "Big O: how work grows",
   "summary": "Feel O(1), O(log n), O(n), O(n log n), and O(n^2) with workers, boxes, and tiny concrete counts before arrays and windows.",
@@ -16,7 +16,7 @@
       "skippable": false,
       "confirm": false,
       "teach": {
-        "md": "Two correct programs can feel totally different as n grows. Watch O(1), O(log n), O(n), and O(n²) on the same axes. Big O names how that work grows.",
+        "md": "Two correct programs can feel totally different as n grows. Watch O(1), O(log n), O(n), and O(n²) on the same axes. Big O names how that work grows. Explain again opens a sticks-and-boxes game where you act as the computer.",
         "frames": [
           {
             "type": "growth_curve",
@@ -116,6 +116,14 @@
             "caption": "Four labeled curves. The steep O(n²) line is called out — doubling n roughly quadruples that work.",
             "series": null,
             "highlight_label": "O(n²)"
+          },
+          {
+            "type": "sticks_boxes_complexity",
+            "caption": "You place the sticks. Try O(1), O(n), and O(n²) and watch Total Work change with n.",
+            "initial_complexity": "O(1)",
+            "initial_n": 2,
+            "n_min": 2,
+            "n_max": 8
           }
         ],
         "presentation_raw": {
@@ -138,7 +146,7 @@
             0
           ],
           "explain_frame_indices": [
-            1
+            2
           ]
         }
       },
@@ -1352,6 +1360,14 @@
               ]
             },
             "caption": "Only O(n²): the count explodes as n grows."
+          },
+          {
+            "type": "sticks_boxes_complexity",
+            "caption": "Feel O(n²): cross-pair every box with every box and count the sticks.",
+            "initial_complexity": "O(n²)",
+            "initial_n": 2,
+            "n_min": 2,
+            "n_max": 8
           }
         ],
         "teach_visual_v1": {
@@ -1359,7 +1375,7 @@
             0
           ],
           "explain_frame_indices": [
-            1
+            2
           ]
         }
       },

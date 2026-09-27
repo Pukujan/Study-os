@@ -17,7 +17,9 @@ export type TeachRenderType =
   | "growth_table"
   | "fraction_bar"
   | "box_index"
-  | "code_tree";
+  | "code_tree"
+  | "sticks_boxes_complexity"
+  | "interactive_ops_boxes";
 
 export type TeachRenderer = {
   /** Canonical kind + aliases that share this renderer. */
@@ -46,5 +48,6 @@ export function listTeachRenderTypes(): string[] {
 /** Normalize authored aliases before lookup. */
 export function canonicalTeachRenderType(type: string): string {
   if (type === "mermaid") return "mermaid_flow";
+  if (type === "interactive_ops_boxes") return "sticks_boxes_complexity";
   return type;
 }

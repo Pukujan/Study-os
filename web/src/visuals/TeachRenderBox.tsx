@@ -28,6 +28,7 @@ import type {
   GrowthTableFrame,
   GrowthWorkersFrame,
   MermaidFlowFrame,
+  SticksBoxesComplexityFrame,
 } from "../api";
 import FractionBar, { describeFractionBar } from "./FractionBar";
 import NumberLine from "./NumberLine";
@@ -37,6 +38,7 @@ import CodeTree, { describeCodeTree } from "./CodeTree";
 import GrowthTable, { describeGrowthTable } from "./GrowthTable";
 import GrowthWorkers, { describeGrowthWorkers } from "./GrowthWorkers";
 import GrowthCurve, { describeGrowthCurve } from "./GrowthCurve";
+import SticksBoxesComplexity, { describeSticksBoxesComplexity } from "./SticksBoxesComplexity";
 import styles from "./TeachRenderBox.module.css";
 import islandCss from "./TeachRenderBox.module.css?inline";
 import {
@@ -226,6 +228,11 @@ function registerDefaults() {
     describe: (f) => describeCodeTree(f as CodeTreeFrame),
     render: (f) => <CodeTree frame={f as CodeTreeFrame} />,
   });
+  registerTeachRender({
+    types: ["sticks_boxes_complexity", "interactive_ops_boxes"],
+    describe: (f) => describeSticksBoxesComplexity(f as SticksBoxesComplexityFrame),
+    render: (f) => <SticksBoxesComplexity frame={f as SticksBoxesComplexityFrame} />,
+  });
 }
 
 registerDefaults();
@@ -246,7 +253,9 @@ export default function TeachRenderBox({ frame }: { frame: FrameType | null | un
         ? styles.workers
         : kind === "growth_curve"
           ? styles.curve
-          : undefined;
+          : kind === "sticks_boxes_complexity"
+            ? styles.sticksBoxes
+            : undefined;
   return (
     <PresentationIsland kind={kind} label={entry.describe(frame)} caption={caption} className={className}>
       {entry.render(frame)}
