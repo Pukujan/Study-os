@@ -92,3 +92,10 @@ Traditional unit tests are insufficient. Planned checks include:
 - hidden transfer fixtures do not leak into tutor-visible lesson content;
 - schema migrations preserve old session readability;
 - fixed benchmark trajectories remain reproducible across model/tooling changes.
+
+## Frontend CI vs local Ultrafast (Refs #126)
+
+- **Required CI for UI:** Playwright + InferHub vision (job `playwright` in `.github/workflows/ci.yml`).
+- **Ultrafast is not a CI job.** Agents run a **local** Ultrafast scout before claiming FE done (`docs/AGENT_FRONTEND_QA.md`). Do not add Ultrafast / Jev crawl jobs to GitHub Actions.
+- Local P0/P1 gate: `python tools/gate_ux_defect_report.py path/to/summary.json` (confidence never soft-skips).
+

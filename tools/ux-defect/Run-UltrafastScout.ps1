@@ -1,15 +1,17 @@
 <#
 .SYNOPSIS
-  Local Jev Ultrafast guest UX defect scout against live Study-os.
+  LOCAL Jev Ultrafast guest UX defect scout (FIRST gate for agent FE claims).
 
 .DESCRIPTION
-  Uses the jev-ultrafast checkout at D:\claude\jev-ultrafast (or $env:JEV_ULTRAFAST_ROOT),
-  cloning/pinning https://github.com/Pukujan/jev-ultrafast if missing.
+  Preferred on Teresa-Pujan. Uses jev-ultrafast at D:\claude\jev-ultrafast
+  (or $env:JEV_ULTRAFAST_ROOT), cloning https://github.com/Pukujan/jev-ultrafast if missing.
   Writes artifacts under artifacts/ux-defect-ultrafast/<stamp>/ with schema-shaped
   summary.json (docs/schemas/ux-defect-report.v1.json).
 
-  Requires OPENROUTER_API_KEY (Decisions). Local = scout; CI = merge gate.
-  P0/P1 fails the script. Low confidence => agents re-check manually.
+  Ultrafast is NOT a GitHub Actions job — CI stays Playwright+vision only.
+  Requires OPENROUTER_API_KEY (OpenRouter Decisions). Missing key / Decisions HTTP 4xx
+  is config/env, not an Ultrafast flake.
+  P0/P1 fails the script regardless of confidence. Low confidence => re-check manually.
 #>
 [CmdletBinding()]
 param(

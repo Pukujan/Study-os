@@ -9,7 +9,7 @@ echo "Mandate: docs/AGENT_FRONTEND_QA.md"
 echo "Specs: web/e2e/ (player-vision-gate.spec.ts)"
 echo "CI twin: .github/workflows/ci.yml job 'playwright'"
 
-# Optional fuller live UX defect pass (lands with Ultrafast-CI / local-runner work).
+# Optional fuller live UX defect pass (local only; Ultrafast is not a CI job).
 LIVE_PASS="${ROOT}/tools/ux-defect/ux-defect-pass.cjs"
 if [[ "${PLAYWRIGHT_UX_DEFECT_PASS:-}" == "1" && -f "${LIVE_PASS}" ]]; then
   echo "PLAYWRIGHT_UX_DEFECT_PASS=1 → running tools/ux-defect/ux-defect-pass.cjs"
