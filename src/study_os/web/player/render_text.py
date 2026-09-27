@@ -208,11 +208,67 @@ def _render_code_tree(frame: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
+
+
+def _render_code_block(frame: dict[str, Any]) -> str:
+    """Render a ``code_block`` frame as fenced source."""
+
+    lines: list[str] = []
+    caption = frame.get("caption")
+    if caption:
+        lines.append(str(caption))
+    lang = str(frame.get("language") or "").strip()
+    source = str(frame.get("source") or "")
+    lines.append(f"```{lang}")
+    lines.append(source.rstrip("\n"))
+    lines.append("```")
+    return "\n".join(lines)
+
+
+def _render_growth_workers(frame: dict[str, Any]) -> str:
+    """Render hikers/workers carrying n boxes as compact ASCII."""
+
+    lines: list[str] = []
+    caption = frame.get("caption")
+    if caption:
+        lines.append(str(caption))
+    role = frame.get("role_label") or "workers"
+    n_values = frame.get("n_values") or []
+    lines.append(f"{role} carrying boxes as n grows")
+    for n in n_values:
+        boxes = "■" * min(int(n), 16)
+        if int(n) > 16:
+            boxes += f" (+{int(n) - 16})"
+        lines.append(f"n={n}: {boxes}")
+    return "\n".join(lines)
+
+
+def _render_growth_curve(frame: dict[str, Any]) -> str:
+    """Render a fast-vs-slow growth curve as compact ASCII."""
+
+    lines: list[str] = []
+    caption = frame.get("caption")
+    if caption:
+        lines.append(str(caption))
+    n_values = [str(v) for v in frame.get("n_values", [])]
+    series: list[dict[str, Any]] = []
+    if frame.get("series"):
+        series.append(frame["series"])
+    series.extend(frame.get("series_multi") or [])
+    if n_values:
+        lines.append("n:            " + "  ".join(n_values))
+    for entry in series:
+        label = str(entry.get("label", ""))
+        values = [str(v) for v in entry.get("values", [])]
+        lines.append(f"{label + ':':<14}" + "  ".join(values))
+    return "\n".join(lines)
+
+
 def frame_to_text(frame: dict[str, Any]) -> str:
     """Return a compact ASCII rendering of a single frame.
 
-    Supports the ``box_index``, ``fraction_bar``, ``growth_table``,
-    ``mermaid_flow``, and ``code_tree`` representations used by the player.
+    Supports the ``box_index``, ``fraction_bar``, ``growth_table``, ``growth_workers``,
+    ``growth_curve``, ``mermaid_flow``/``mermaid``, ``code_block``, and ``code_tree`` representations used by the player.
     Frames that cannot be dispatched are rendered as a JSON-ish string so
     tutors still have something to ground on.
     """
@@ -224,8 +280,14 @@ def frame_to_text(frame: dict[str, Any]) -> str:
         return _render_fraction_bar(frame)
     if frame_type == "growth_table":
         return _render_growth_table(frame)
-    if frame_type == "mermaid_flow":
+    if frame_type == "growth_workers":
+        return _render_growth_workers(frame)
+    if frame_type == "growth_curve":
+        return _render_growth_curve(frame)
+    if frame_type in ("mermaid_flow", "mermaid"):
         return _render_mermaid_flow(frame)
+    if frame_type == "code_block":
+        return _render_code_block(frame)
     if frame_type == "code_tree":
         return _render_code_tree(frame)
 

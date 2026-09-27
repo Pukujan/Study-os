@@ -20,6 +20,7 @@
           "in_app_role": "pet",
           "sprites": [
             "pet-idle",
+            "pet-ball",
             "pet-wave",
             "pet-thinking",
             "pet-talking",

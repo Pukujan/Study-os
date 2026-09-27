@@ -41,6 +41,7 @@ from study_os.pir.contracts import (
     TransitionSpec,
 )
 from study_os.pir.controller import validate_asset
+from study_os.web.player import human_rewrite
 
 PACK_FILE = "hesi_a2_pack.v0.json"
 BLUEPRINT_FILE = "hesi_blueprint.v0.json"
@@ -192,18 +193,20 @@ def probe_markdown(item: PackItem) -> str:
 
 def why_markdown(item: PackItem) -> str:
     n = item.correct_index + 1
+    why = human_rewrite.rewrite(item.rationale, kind="rationale")
     return (
         f"{probe_markdown(item)}\n\n"
-        f"Yes: **{n}. {item.options[item.correct_index]}**\n\n**Why:** {item.rationale}"
+        f"Yes: **{n}. {item.options[item.correct_index]}**\n\n**Why:**\n{why}"
     )
 
 
 def fix_markdown(item: PackItem) -> str:
     n = item.correct_index + 1
+    why = human_rewrite.rewrite(item.rationale, kind="rationale")
     return (
         f"{probe_markdown(item)}\n\n"
         f"The right answer is **{n}. {item.options[item.correct_index]}**.\n\n"
-        f"**Why:** {item.rationale}\n\nIt’s okay. Let’s try a different one."
+        f"**Why:**\n{why}\n\nIt’s okay. Let’s try a different one."
     )
 
 
@@ -212,6 +215,7 @@ def intro_markdown(topic_id: str) -> str:
     title = topic.get("title", topic_id)
     points = "\n".join(f"- {point}" for point in topic.get("key_points", []))
     body = topic["intro_markdown"].replace("?", ".")
+    body = human_rewrite.rewrite(body, kind="decomposition")
     return f"### {title}\n\n{body}\n\n**Key points**\n\n{points}".strip()
 
 

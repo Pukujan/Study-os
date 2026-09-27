@@ -1,10 +1,10 @@
 {
   "schema_version": "study-os.player-lesson.v1",
   "lesson_id": "big-o-growth-families",
-  "revision": "big-o-growth-families.v1",
+  "revision": "big-o-growth-families.v1.teach-visual-v1",
   "lane": "dsa",
   "title": "Big O: how work grows",
-  "summary": "Feel O(1), O(log n), O(n), O(n log n), and O(n^2) with tiny concrete counts before arrays and windows.",
+  "summary": "Feel O(1), O(log n), O(n), O(n log n), and O(n^2) with workers, boxes, and tiny concrete counts before arrays and windows.",
   "representation": "growth_table",
   "golden_ref": null,
   "prerequisites": [],
@@ -16,22 +16,165 @@
       "skippable": false,
       "confirm": false,
       "teach": {
-        "md": "Two correct solutions can feel totally different as n grows. Before arrays or windows, we need Big O: a shared language for how work grows.",
+        "md": "Two correct programs can feel totally different as n grows. Watch O(1), O(log n), O(n), and O(n²) on the same axes. Big O names how that work grows.",
         "frames": [
           {
-            "type": "growth_table",
+            "type": "growth_curve",
             "n_values": [
               2,
               4,
               8,
               16
             ],
-            "caption": "We will watch how counts change as n doubles."
+            "series_multi": [
+              {
+                "label": "O(1)",
+                "values": [
+                  1,
+                  1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "label": "O(log n)",
+                "values": [
+                  1,
+                  2,
+                  3,
+                  4
+                ]
+              },
+              {
+                "label": "O(n)",
+                "values": [
+                  2,
+                  4,
+                  8,
+                  16
+                ]
+              },
+              {
+                "label": "O(n²)",
+                "values": [
+                  4,
+                  16,
+                  64,
+                  256
+                ]
+              }
+            ],
+            "caption": "Operations vs n for O(1), O(log n), O(n), and O(n²). Steeper curves explode sooner.",
+            "series": null
+          },
+          {
+            "type": "growth_workers",
+            "n_values": [
+              2,
+              4,
+              8,
+              16
+            ],
+            "caption": "Each column is one pile of boxes for size n. As n doubles, the pile grows.",
+            "role_label": "workers"
+          }
+        ],
+        "presentation_raw": {
+          "md": "Two correct solutions can feel totally different as n grows. Before arrays or windows, we need Big O: a shared language for how work grows.",
+          "frames": [
+            {
+              "type": "growth_table",
+              "n_values": [
+                2,
+                4,
+                8,
+                16
+              ],
+              "caption": "We will watch how counts change as n doubles."
+            }
+          ]
+        },
+        "teach_visual_v1": {
+          "default_frame_indices": [
+            0
+          ],
+          "explain_frame_indices": [
+            1
+          ]
+        }
+      },
+      "probe": null,
+      "variants": [],
+      "worked_example": {
+        "md": "At n=16, O(1) is still 1, O(n) is 16, and O(n²) is 256. Same n, very different work.",
+        "frames": [
+          {
+            "type": "growth_workers",
+            "n_values": [
+              2,
+              4,
+              8,
+              16
+            ],
+            "caption": "Each column is one pile of boxes for size n. As n doubles, the pile grows.",
+            "role_label": "workers"
           }
         ]
       },
-      "probe": null,
-      "variants": []
+      "worked_example_alt": {
+        "md": "Start from the flat line. O(1) barely moves while O(n²) climbs away as n grows.",
+        "frames": [
+          {
+            "type": "growth_curve",
+            "n_values": [
+              2,
+              4,
+              8,
+              16
+            ],
+            "series_multi": [
+              {
+                "label": "O(1)",
+                "values": [
+                  1,
+                  1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "label": "O(log n)",
+                "values": [
+                  1,
+                  2,
+                  3,
+                  4
+                ]
+              },
+              {
+                "label": "O(n)",
+                "values": [
+                  2,
+                  4,
+                  8,
+                  16
+                ]
+              },
+              {
+                "label": "O(n²)",
+                "values": [
+                  4,
+                  16,
+                  64,
+                  256
+                ]
+              }
+            ],
+            "caption": "Same axes: highlight how flat O(1) stays while O(n²) rises.",
+            "highlight_label": "O(1)"
+          }
+        ]
+      }
     },
     {
       "step_id": "o1_constant",
@@ -39,7 +182,7 @@
       "skippable": false,
       "confirm": false,
       "teach": {
-        "md": "1) **O(1)** stays about the same when n grows. 2) Reading `a[0]` is one lookup. 3) The table stays flat.",
+        "md": "**O(1)** stays about the same when n grows. Reading `a[0]` is one lookup. The table stays flat.",
         "frames": [
           {
             "type": "growth_table",
@@ -92,7 +235,7 @@
           }
         ],
         "correct_md": "Correct — still **1** step.",
-        "explain_md": "1) O(1) does not grow with n. 2) A longer array does not add lookups for `a[0]`.",
+        "explain_md": "O(1) does not grow with n.\nA longer array does not add lookups for `a[0]`.",
         "explain_frames": [
           {
             "type": "growth_table",
@@ -146,7 +289,7 @@
               }
             ],
             "correct_md": "Correct — still **1** step.",
-            "explain_md": "1) Constant work ignores n. 2) `a[0]` is still one read.",
+            "explain_md": "Constant work ignores n.\n`a[0]` is still one read.",
             "explain_frames": [
               {
                 "type": "growth_table",
@@ -199,7 +342,7 @@
               }
             ],
             "correct_md": "Correct — still **1**.",
-            "explain_md": "1) O(1) is a flat line. 2) n = 64 does not add steps here.",
+            "explain_md": "O(1) is a flat line.\nn = 64 does not add steps here.",
             "explain_frames": [
               {
                 "type": "growth_table",
@@ -229,7 +372,7 @@
       "skippable": false,
       "confirm": false,
       "teach": {
-        "md": "1) **O(log n)** grows slowly. 2) Each step can cut the space in half. 3) When n doubles, add about one step.",
+        "md": "**O(log n)** grows slowly. Each step can cut the space in half. When n doubles, add about one step.",
         "frames": [
           {
             "type": "growth_table",
@@ -282,7 +425,7 @@
           }
         ],
         "correct_md": "Correct — about **4** steps.",
-        "explain_md": "1) Halving 16 needs one more step than 8. 2) So 3 becomes 4.",
+        "explain_md": "Halving 16 needs one more step than 8.\nSo 3 becomes 4.",
         "explain_frames": [
           {
             "type": "growth_table",
@@ -335,7 +478,7 @@
               }
             ],
             "correct_md": "Correct — about **3**.",
-            "explain_md": "1) One more halving. 2) Count goes 2 → 3.",
+            "explain_md": "One more halving.\nCount goes 2 → 3.",
             "explain_frames": [
               {
                 "type": "growth_table",
@@ -388,7 +531,7 @@
               }
             ],
             "correct_md": "Correct — about **1** extra step.",
-            "explain_md": "1) Each doubling adds one halving. 2) Extra work ≈ 1.",
+            "explain_md": "Each doubling adds one halving.\nExtra work ≈ 1.",
             "explain_frames": [
               {
                 "type": "growth_table",
@@ -418,7 +561,7 @@
       "skippable": false,
       "confirm": false,
       "teach": {
-        "md": "1) **O(n)** grows with n. 2) One full pass visits every item. 3) When n doubles, work about doubles.",
+        "md": "**O(n)** grows with n. One full pass visits every item. When n doubles, work about doubles.",
         "frames": [
           {
             "type": "growth_table",
@@ -477,7 +620,7 @@
           }
         ],
         "correct_md": "Correct — about **16**.",
-        "explain_md": "1) One visit per element means work ≈ n. 2) Doubling n roughly doubles steps.",
+        "explain_md": "One visit per element means work ≈ n.\nDoubling n roughly doubles steps.",
         "explain_frames": [
           {
             "type": "growth_table",
@@ -537,7 +680,7 @@
               }
             ],
             "correct_md": "Correct — about **8**.",
-            "explain_md": "1) Work tracks n. 2) 4 → 8 when n doubles.",
+            "explain_md": "Work tracks n.\n4 → 8 when n doubles.",
             "explain_frames": [
               {
                 "type": "growth_table",
@@ -597,7 +740,7 @@
               }
             ],
             "correct_md": "Correct — about **10**.",
-            "explain_md": "1) Linear means roughly n steps. 2) n = 10 → about 10.",
+            "explain_md": "Linear means roughly n steps.\nn = 10 → about 10.",
             "explain_frames": [
               {
                 "type": "growth_table",
@@ -627,7 +770,7 @@
       "skippable": false,
       "confirm": false,
       "teach": {
-        "md": "1) **O(n log n)** sits between linear and quadratic. 2) Think: log-cost work for each of n items. 3) Doubling n grows a bit more than 2×.",
+        "md": "**O(n log n)** sits between linear and quadratic. Think: log-cost work for each of n items. Doubling n grows a bit more than 2×.",
         "frames": [
           {
             "type": "growth_table",
@@ -686,7 +829,7 @@
           }
         ],
         "correct_md": "Correct — about **64**.",
-        "explain_md": "1) Use n · log₂ n. 2) 16 · 4 = 64. 3) More than 2×24, less than n².",
+        "explain_md": "Use n · log₂ n.\n16 · 4 = 64.\nMore than 2×24, less than n².",
         "explain_frames": [
           {
             "type": "growth_table",
@@ -744,7 +887,7 @@
               }
             ],
             "correct_md": "Correct — **8**.",
-            "explain_md": "1) log₂(4) = 2. 2) 4 · 2 = 8.",
+            "explain_md": "log₂(4) = 2.\n4 · 2 = 8.",
             "explain_frames": [
               {
                 "type": "growth_table",
@@ -801,7 +944,7 @@
               }
             ],
             "correct_md": "Correct — **160**.",
-            "explain_md": "1) log₂(32) = 5. 2) 32 · 5 = 160.",
+            "explain_md": "log₂(32) = 5.\n32 · 5 = 160.",
             "explain_frames": [
               {
                 "type": "growth_table",
@@ -829,7 +972,7 @@
       "skippable": false,
       "confirm": false,
       "teach": {
-        "md": "1) **O(n²)** grows fast. 2) Nested pair loops do much more work as n grows. 3) When n doubles, work grows about 4×.",
+        "md": "**O(n²)** grows fast. Nested pair loops do much more work as n grows. When n doubles, work grows about 4×.",
         "frames": [
           {
             "type": "growth_table",
@@ -889,7 +1032,7 @@
           }
         ],
         "correct_md": "Correct — about **256**.",
-        "explain_md": "1) 8² = 64 and 16² = 256. 2) Doubling n multiplies quadratic work by about 4.",
+        "explain_md": "8² = 64 and 16² = 256.\nDoubling n multiplies quadratic work by about 4.",
         "explain_frames": [
           {
             "type": "growth_table",
@@ -941,7 +1084,7 @@
               }
             ],
             "correct_md": "Correct — about **64**.",
-            "explain_md": "1) 4² = 16. 2) 8² = 64.",
+            "explain_md": "4² = 16.\n8² = 64.",
             "explain_frames": [
               {
                 "type": "growth_table",
@@ -1000,7 +1143,7 @@
               }
             ],
             "correct_md": "Correct — **25**.",
-            "explain_md": "1) n² = n · n. 2) 5 · 5 = 25.",
+            "explain_md": "n² = n · n.\n5 · 5 = 25.",
             "explain_frames": [
               {
                 "type": "growth_table",
@@ -1028,7 +1171,7 @@
       "skippable": false,
       "confirm": false,
       "teach": {
-        "md": "1) At n=16: O(1)≈1, O(log n)≈4, O(n)≈16, O(n log n)≈64, O(n²)≈256. 2) Later patterns move work down this ladder.",
+        "md": "At n=16: O(1)≈1, O(log n)≈4, O(n)≈16, O(n log n)≈64, O(n²)≈256. Later patterns move work down this ladder.",
         "frames": [
           {
             "type": "growth_table",
@@ -1145,7 +1288,7 @@
           }
         ],
         "correct_md": "Correct — **O(n²)** grows fastest among these.",
-        "explain_md": "1) Compare the n=16 column. 2) 256 dwarfs 64, 16, 4, and 1. 3) Quadratic dominates this set.",
+        "explain_md": "Compare the n=16 column.\n256 dwarfs 64, 16, 4, and 1.\nQuadratic dominates this set.",
         "explain_frames": [
           {
             "type": "growth_table",
@@ -1241,7 +1384,7 @@
               }
             ],
             "correct_md": "Correct — **O(n²)**.",
-            "explain_md": "1) Same n. 2) n² climbs faster than n.",
+            "explain_md": "Same n.\nn² climbs faster than n.",
             "explain_frames": [
               {
                 "type": "growth_table",
@@ -1330,7 +1473,7 @@
               }
             ],
             "correct_md": "Correct — **O(1)**.",
-            "explain_md": "1) Flat beats slow growth. 2) O(1) is the lowest ladder rung.",
+            "explain_md": "Flat beats slow growth.\nO(1) is the lowest ladder rung.",
             "explain_frames": [
               {
                 "type": "growth_table",

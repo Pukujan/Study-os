@@ -207,8 +207,13 @@ export default function CompanionPanel({
     try {
       if (kind === "reexplain") {
         pushSystem("Explained again.");
-        const v = await api.playerConfused(sessionId);
-        onViewChange(v);
+        try {
+          const v = await api.adapt(sessionId, "reexplain");
+          onViewChange(v);
+        } catch {
+          const v = await api.playerConfused(sessionId);
+          onViewChange(v);
+        }
       } else {
         pushSystem(`Updated the card: ${chipLabel(kind).toLowerCase()}.`);
         const v = await api.adapt(sessionId, kind);
@@ -357,7 +362,8 @@ export default function CompanionPanel({
           {busy && (
             <div className="companion-bubble tutor thinking-bubble">
               <Sprite src="/mascot/pet-thinking.webp" frames={6} frameW={144} frameH={176} height={32} loop alt="Thinking" />
-              <span className="typing-indicator" aria-label="Study buddy is typing">
+              <span className="thinking-label">Thinking…</span>
+              <span className="typing-indicator" aria-hidden="true">
                 <span />
                 <span />
                 <span />

@@ -7,6 +7,7 @@ import MermaidDiagram from "./MermaidDiagram";
 import LessonMap from "./LessonMap";
 import CodeTree from "./CodeTree";
 import GrowthTable from "./GrowthTable";
+import GrowthWorkers from "./GrowthWorkers";
 
 describe("visuals", () => {
   it("FractionBar renders the right aria-label and shaded parts", () => {
@@ -103,7 +104,8 @@ describe("visuals", () => {
     expect(html).toContain("O(n²)");
     expect(html).toContain("256");
     expect(html).toContain("Side-by-side at n = 16.");
-    expect(html).toContain("frame-caption");
+    expect(html).toContain("teach-render-box");
+    expect(html).toContain('data-teach-render="growth_table"');
   });
 
   it("LessonMap renders compact step chips", () => {
@@ -156,4 +158,69 @@ describe("visuals", () => {
     expect(html).toContain("S.append(num");
     expect(html).toContain("same expression");
   });
+
+
+  it("GrowthWorkers draws hikers and n labels", () => {
+    const frame = {
+      type: "growth_workers" as const,
+      n_values: [2, 4, 8, 16],
+      role_label: "workers",
+      caption: "boxes grow",
+    };
+    const html = renderToStaticMarkup(<GrowthWorkers frame={frame} />);
+    expect(html).toContain("growth-workers");
+    expect(html).toContain("n=2");
+    expect(html).toContain("n=16");
+    expect(html).toContain("workers carrying boxes");
+  });
+
+  it("Frame dispatches growth_workers and growth_curve", () => {
+    const workers = renderToStaticMarkup(
+      <Frame frame={{ type: "growth_workers", n_values: [2, 4], role_label: "workers" }} />,
+    );
+    expect(workers).toContain("teach-render-box");
+    expect(workers).toContain('data-teach-render="growth_workers"');
+    expect(workers).toContain("growth-workers");
+    const curve = renderToStaticMarkup(
+      <Frame
+        frame={{
+          type: "growth_curve",
+          n_values: [2, 4],
+          series_multi: [
+            { label: "slow", values: [1, 2] },
+            { label: "fast", values: [4, 16] },
+          ],
+        }}
+      />,
+    );
+    expect(curve).toContain("teach-render-box");
+    expect(curve).toContain('data-teach-render="growth_curve"');
+    expect(curve).toContain("growth-curve");
+  });
+
+  it("GrowthTable empty series uses compact chips not a stretched row", () => {
+    const html = renderToStaticMarkup(
+      <GrowthTable frame={{ type: "growth_table", n_values: [2, 4, 8, 16] }} />,
+    );
+    expect(html).toContain("growth-scoreboard-chips");
+    expect(html).toContain(">2<");
+    expect(html).toContain(">16<");
+    expect(html).toContain("Counts arrive in the next steps.");
+  });
+
+  it("Frame mounts growth frames inside TeachRenderBox island", () => {
+    const html = renderToStaticMarkup(
+      <Frame
+        frame={{
+          type: "growth_table",
+          n_values: [2, 4, 8, 16],
+          series: { label: "O(n)", values: [2, 4, 8, 16] },
+        }}
+      />,
+    );
+    expect(html).toContain('data-testid="teach-render-box"');
+    expect(html).toContain('data-teach-render="growth_table"');
+    expect(html).toContain("O(n)");
+  });
+
 });

@@ -164,21 +164,40 @@ export default function Player({ sessionId }: { sessionId: string }) {
         return;
       }
 
-      // Explain again: try a tutor re-render first; fall back to confused /
-      // re-show teach so the button is never a silent no-op.
+      // Explain again: deterministic diagram/type swap first (adapt reexplain),
+      // then tutor re-render, then confused — never prose-only / silent no-op.
       setShowTeach(true);
       let applied = false;
+      let latest = view;
+      try {
+        const beforeFrames = JSON.stringify(latest.step.teach_frames || []);
+        const v = await api.adapt(sessionId, "reexplain");
+        const afterFrames = JSON.stringify(v.step.teach_frames || []);
+        // Only adopt adapt payload once it has a usable step (tests / errors may stub).
+        if (v?.step) latest = v;
+        if (afterFrames !== beforeFrames || v.variant_tag === "reexplain") {
+          setView(v);
+          setMood("encourage", 1200);
+          applied = afterFrames !== beforeFrames;
+          if (applied) return;
+        } else {
+          setView(v);
+        }
+      } catch {
+        // Fall through.
+      }
       try {
         const reply = await api.tutor(sessionId, REGEN_PROMPTS.reexplain);
-        const next = applyPresentation(view, reply.regenerate_presentation);
-        if (next !== view) {
+        const next = applyPresentation(latest, reply.regenerate_presentation);
+        if (next !== latest) {
           setView(next);
+          latest = next;
           applied = true;
         }
       } catch {
-        // Fall through to the deterministic path below.
+        // Fall through to confused.
       }
-      if (!applied && view.phase === "probe" && view.step.probe) {
+      if (!applied && latest.phase === "probe" && latest.step.probe) {
         const v = await api.playerConfused(sessionId);
         setView(v);
         setMood("encourage", 1200);
@@ -290,7 +309,7 @@ export default function Player({ sessionId }: { sessionId: string }) {
                 {view.step.probe && (
                   <>
                     <Markdown text={view.step.probe.prompt_md} />
-                    {view.step.probe.frames.map((frame, i) => (
+                    {view.step.probe.frames.filter((frame) => frame && typeof frame.type === "string").map((frame, i) => (
                       <Frame key={i} frame={frame} />
                     ))}
 
@@ -332,8 +351,20 @@ export default function Player({ sessionId }: { sessionId: string }) {
               </section>
               )}
 
-              {view.phase === "probe" && !view.step.probe && view.card_mode !== "worked_example" && (
-                <section className="probe card">
+              {/* Continue stays after teach / explain / worked — probe steps included (HESI fractions P0). */}
+              {view.phase === "probe" && (view.card_mode === "worked_example" || !view.step.probe) && (
+                <section className="probe card teach-advance" data-testid="player.teach-advance">
+                  {view.card_mode === "worked_example" && view.can_go_back && (
+                    <button
+                      className="btn small"
+                      onClick={() => void adaptBack()}
+                      disabled={busy}
+                      data-track="player.back"
+                      data-testid="player.worked-example-back"
+                    >
+                      Back
+                    </button>
+                  )}
                   <button
                     className="btn primary"
                     onClick={next}

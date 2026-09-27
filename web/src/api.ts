@@ -84,12 +84,19 @@ export type BoxIndexFrame = {
 };
 
 export type MermaidFlowFrame = {
-  type: "mermaid_flow";
+  type: "mermaid_flow" | "mermaid";
   caption?: string;
   direction?: "TD" | "LR";
   source: string;
   revealed_nodes?: string[];
   zoom_pan?: boolean;
+};
+
+export type CodeBlockFrame = {
+  type: "code_block";
+  caption?: string;
+  language?: string;
+  source: string;
 };
 
 export type CodeTreeNode = {
@@ -120,7 +127,31 @@ export type GrowthTableFrame = {
   series_multi?: GrowthTableSeries[] | null;
 };
 
-export type Frame = FractionBarFrame | BoxIndexFrame | MermaidFlowFrame | CodeTreeFrame | GrowthTableFrame;
+export type GrowthWorkersFrame = {
+  type: "growth_workers";
+  caption?: string;
+  n_values: number[];
+  role_label?: string;
+  highlight_n?: number | null;
+};
+
+export type GrowthCurveFrame = {
+  type: "growth_curve";
+  caption?: string;
+  n_values: number[];
+  series?: GrowthTableSeries | null;
+  series_multi?: GrowthTableSeries[] | null;
+};
+
+export type Frame =
+  | FractionBarFrame
+  | BoxIndexFrame
+  | MermaidFlowFrame
+  | CodeTreeFrame
+  | CodeBlockFrame
+  | GrowthTableFrame
+  | GrowthWorkersFrame
+  | GrowthCurveFrame;
 
 export type Probe = {
   prompt_md: string;
@@ -376,7 +407,7 @@ export const api = {
   playerConfused: (id: string) => post<PlayerView>(`/api/player/sessions/${id}/confused`),
   playerNext: (id: string) => post<PlayerView>(`/api/player/sessions/${id}/next`),
   tutor: (id: string, message: string) => post<TutorReply>(`/api/player/sessions/${id}/tutor`, { message }),
-  adapt: (id: string, kind: "example" | "easier" | "harder" | "back" | "step_back", step_index?: number) =>
+  adapt: (id: string, kind: "example" | "easier" | "harder" | "back" | "step_back" | "reexplain", step_index?: number) =>
     post<PlayerView>(`/api/player/sessions/${id}/adapt`, { kind, step_index }),
   feedback: (body: FeedbackBody) => post<{ ok: boolean; feedback_id: string }>("/api/feedback", body),
   adminFeedback: () => get<AdminFeedback>("/api/admin/feedback"),

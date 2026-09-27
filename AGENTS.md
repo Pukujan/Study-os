@@ -36,6 +36,14 @@ Read these files before making substantive changes:
 
 See `PROJECT_MANIFEST.yaml` for machine-readable state.
 
+## Pet / mascot animation (A22a)
+
+In-app pet uses **slow JS held-pose spritesheets** (idle + cute ball), Japanese limited 2D, low fps — not CSS keyframe jitter and not Live2D. See [`docs/ops/A22A_HELD_POSE_PET.md`](docs/ops/A22A_HELD_POSE_PET.md). A22b Live2D is a separate comparison slice.
+
+## Plain-human lesson copy
+
+Learner-visible teach / explain-again / worked-example / pack-decomposition markdown goes through a mandatory post-gen rewrite (`src/study_os/web/player/human_rewrite.py`). See [`docs/ops/PLAIN_HUMAN_REWRITE.md`](docs/ops/PLAIN_HUMAN_REWRITE.md). Do not ship walls of AI-blog prose on those surfaces.
+
 ## Multi-agent authority
 
 For cross-agent task claims and verdicts, follow [`docs/AUTHORITY.md`](docs/AUTHORITY.md). `grok-bot@study-os` is the sole arbiter; Claude Code + InferHub sessions are claimable workers and must not self-arbitrate or merge to `main`.
@@ -202,6 +210,45 @@ A substantive PR should state:
 - known limitations;
 - whether manifest/handoff changed.
 
+## Frontend QA mandate (mandatory)
+
+**Ultrafast-first (local/scout), then Playwright.** Never claim a frontend change works — or open/merge a UI PR as “FE done” — without a **local Ultrafast pass**, then Playwright.
+
+Full policy: [`docs/AGENT_FRONTEND_QA.md`](docs/AGENT_FRONTEND_QA.md).
+
+Non-negotiable summary:
+
+1. **Ultrafast FIRST** — local scout against live `https://study.design-bakery.com` or the PR preview (Teresa-Pujan: `tools/ux-defect/Run-UltrafastScout.ps1`; Linux/box: `./tools/frontend_qa/run_ultrafast_scout.sh`).
+2. **Then Playwright** UX / vision (local and/or CI).
+3. **CI stays Playwright + vision only.** Ultrafast is **not** a required GitHub Actions job — do not add an `ultrafast-ux` (or similar) Actions workflow.
+4. Any **P0/P1** fail → claim fails **regardless of confidence**. Fix or file and block; never re-label pass.
+5. **Low confidence** → manually re-check why; do not skip. Record confidence; it does **not** waive P0/P1.
+6. **Ultrafast is reliable.** Do not call it flaky. OpenRouter Decisions misconfig / missing `OPENROUTER_API_KEY` / HTTP 400 from the Decisions API is an **env/config problem**, not an Ultrafast flake.
+7. **No Jev / OpenRouter Decisions on product code.** Ultrafast is a QA harness only.
+
+Runners (order matters):
+
+```bash
+# 1) Local Ultrafast scout (REQUIRED for FE claims — not CI)
+./tools/frontend_qa/run_ultrafast_scout.sh https://study.design-bakery.com   # or PR preview URL
+python tools/gate_ux_defect_report.py artifacts/ux-defect-ultrafast/<stamp>/summary.json
+
+# 2) Playwright UX + vision
+./tools/frontend_qa/run_playwright_ux.sh
+```
+
+Windows / Teresa-Pujan (preferred host for Ultrafast):
+
+```powershell
+powershell -File tools/ux-defect/Run-UltrafastScout.ps1   # uses D:\claude\jev-ultrafast or $env:JEV_ULTRAFAST_ROOT
+powershell -File tools/ux-defect/Run-PlaywrightDefectPass.ps1
+```
+
+See `docs/UX_DEFECT_LOCAL_AND_CI.md` (local Ultrafast = agent FE claim gate; CI merge gate = Playwright + vision only).
+
+Ultrafast lives at [`Pukujan/jev-ultrafast`](https://github.com/Pukujan/jev-ultrafast) (Teresa-Pujan default `D:\claude\jev-ultrafast`). Playwright specs: `web/e2e/` (incl. `ux-defect-controls.spec.ts`). Required CI job for UI: `playwright` in `.github/workflows/ci.yml` — **not** Ultrafast.
+
+
 ## Explicitly deferred
 
 Until Research Gate R0 passes, do not prioritize:
@@ -212,3 +259,7 @@ Until Research Gate R0 passes, do not prioritize:
 - video/image generation pipelines;
 - generalized learner recommendation models;
 - universal learning claims.
+
+## Teach visuals
+
+- Big O step-1 diagrams: [`docs/ops/TEACH_VISUAL_V1.md`](docs/ops/TEACH_VISUAL_V1.md) (`STUDY_OS_TEACH_VISUAL_V1=0` restores legacy table).

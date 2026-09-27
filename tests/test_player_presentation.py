@@ -43,13 +43,24 @@ class PresentationTests(unittest.TestCase):
             ({"teach_md": "Fine.", "frame_indices": [True]}, "INVALID_PRESENTATION"),
             ({"teach_md": "Try ```code``` here.", "frame_indices": [0]}, "INVALID_PRESENTATION"),
             ({"teach_md": "You have mastered this.", "frame_indices": [0]}, "MASTERY_CLAIM"),
-            ({"teach_md": "word " * 200, "frame_indices": [0]}, "WORD_BUDGET"),
         ]
         for proposal, expected in cases:
             with self.subTest(proposal=proposal):
                 content, codes = presentation.validate_proposal(proposal, self.lesson, self.state, ())
                 self.assertIsNone(content)
                 self.assertIn(expected, codes)
+
+    def test_long_teach_wall_is_trimmed_not_rejected(self) -> None:
+        content, codes = presentation.validate_proposal(
+            {"teach_md": "word " * 200, "frame_indices": [0]},
+            self.lesson,
+            self.state,
+            (),
+        )
+        self.assertEqual(codes, ())
+        assert content is not None
+        from study_os.web.player import human_rewrite
+        self.assertLessEqual(human_rewrite._content_words(content["teach_md"]), 42)
 
     def test_no_proposal_is_not_a_defect(self) -> None:
         self.assertEqual(presentation.validate_proposal(None, self.lesson, self.state, ()), (None, ()))
@@ -109,7 +120,7 @@ class PresentationTests(unittest.TestCase):
 
         moved = dict(self.state, step_index=0, variant_index=0)
         self.assertIsNone(presentation.current(self.lesson, moved))
-        self.assertEqual(presentation.effective(self.lesson, moved)[0], "old")
+        self.assertEqual(presentation.effective(self.lesson, moved)[0], "Old.")
 
     def test_versions_advance_monotonically_from_the_persisted_state(self) -> None:
         first = presentation.apply(self.lesson, self.state, {"teach_md": "One.", "teach_frames": []}, {"prompt_version": "tutor.v3"})

@@ -7,6 +7,7 @@ sessions/**/raw/*
 .study-os-private/
 
 # Common local artifacts
+artifacts/
 __pycache__/
 *.pyc
 .venv/

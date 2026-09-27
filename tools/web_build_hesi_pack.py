@@ -14,6 +14,8 @@ import json
 import re
 from pathlib import Path
 
+from study_os.web.player import human_rewrite
+
 ROOT = Path(__file__).resolve().parents[1]
 CONTENT = ROOT / "src/study_os/web/content"
 
@@ -54,7 +56,7 @@ def main() -> int:
                 "stem": it["stem"].strip(),
                 "options": [o.strip() for o in it["options"]],
                 "correct_index": int(it["correct_index"]),
-                "rationale": it["rationale"].strip(),
+                "rationale": human_rewrite.rewrite(it["rationale"].strip(), kind="rationale"),
                 "distractor_rationales": it.get("distractor_rationales", []),
                 "misconception_tags": [t for t in it.get("misconception_tags", []) if re.fullmatch(r"[a-z0-9_]{3,60}", t)],
                 "source_id": it.get("source_id", "original"),
@@ -65,7 +67,9 @@ def main() -> int:
             })
         topics[tid] = {
             "title": titles[tid],
-            "intro_markdown": _learner_neutral(raw["intro_markdown"].strip()),
+            "intro_markdown": human_rewrite.rewrite(
+                _learner_neutral(raw["intro_markdown"].strip()), kind="decomposition"
+            ),
             "key_points": raw.get("key_points", []),
             "generator_model": raw.get("generator_model"),
             "review_status": "unreviewed",

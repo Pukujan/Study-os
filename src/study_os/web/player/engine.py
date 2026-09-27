@@ -9,7 +9,24 @@ from __future__ import annotations
 from typing import Any
 
 from .grading import grade
-from . import presentation
+from . import human_rewrite, presentation
+from . import teach_visual
+
+
+def _learner_explain(probe: dict[str, Any] | None) -> str:
+    """Plain-human rewrite of probe explain_md (empty when missing)."""
+
+    if not probe:
+        return ""
+    raw = str(probe.get("explain_md") or "").strip()
+    return human_rewrite.rewrite(raw, kind="explain") if raw else ""
+
+
+def _learner_correct(probe: dict[str, Any] | None) -> str:
+    if not probe:
+        return ""
+    raw = str(probe.get("correct_md") or "").strip()
+    return human_rewrite.rewrite(raw, kind="correct") if raw else ""
 
 
 _MAX_MISSES = 3
@@ -101,7 +118,7 @@ def _public_worked_example(example: Any) -> dict[str, Any] | None:
     public: dict[str, Any] = {}
     solution_md = example.get("solution_md")
     if isinstance(solution_md, str) and solution_md.strip():
-        public["md"] = solution_md
+        public["md"] = human_rewrite.rewrite(solution_md, kind="worked_example")
     frames = example.get("frames")
     if isinstance(frames, list):
         public["frames"] = _strip_server_only(frames)
@@ -283,8 +300,8 @@ def attempt(
 
     if outcome == "correct":
         # Build correct feedback: correct_md + why (explain).
-        correct_text = probe.get("correct_md", "Correct!")
-        explain = probe.get("explain_md", "")
+        correct_text = _learner_correct(probe) or probe.get("correct_md", "Correct!")
+        explain = _learner_explain(probe)
         message = correct_text
         if explain:
             message += "\n\n" + explain
@@ -365,7 +382,7 @@ def attempt(
         state["status_by_step"][step_id] = "needs_review"
         message = (
             f"The right answer is **{probe.get('accept', ['?'])[0]}**.\n\n"
-            f"{probe.get('explain_md', '')}\n\n"
+            f"{_learner_explain(probe)}\n\n"
             "That's okay — this one trips people up. We'll come back to it later."
         )
         feedback = _build_feedback(
@@ -385,7 +402,7 @@ def attempt(
     right = probe.get("accept", ["?"])[0]
     message = (
         f"The right answer is **{right}**.\n\n"
-        f"{probe.get('explain_md', '')}\n\n"
+        f"{_learner_explain(probe)}\n\n"
         "That's okay — this one trips people up."
     )
     if note:
@@ -437,7 +454,7 @@ def confused(lesson: dict[str, Any], state: dict[str, Any]) -> tuple[dict[str, A
 
     feedback = _build_feedback(
         "incorrect",
-        f"Let's look at this again.\n\n{probe.get('explain_md', '')}",
+        f"Let's look at this again.\n\n{_learner_explain(probe)}",
         list(probe.get("explain_frames", [])),
         "retry",
         sticker="reassure",
@@ -449,6 +466,17 @@ def confused(lesson: dict[str, Any], state: dict[str, Any]) -> tuple[dict[str, A
 
 def next(lesson: dict[str, Any], state: dict[str, Any]) -> dict[str, Any]:  # noqa: A001
     """Acknowledge any pending feedback and move to the next probe or step."""
+
+    # Worked-example Continue must never no-op: leave the example, then advance
+    # when the step has no probe (teach-only). Probe steps return to answering.
+    if state.get("card_mode") == "worked_example" and state.get("phase") == "probe":
+        state["card_mode"] = "probe"
+        state["worked_example"] = None
+        state["variant_tag"] = None
+        state["hint_open"] = False
+        if _current_probe(lesson, state) is None:
+            return _advance(lesson, state)
+        return state
 
     if state["phase"] == "probe" and _current_probe(lesson, state) is None:
         return _advance(lesson, state)
@@ -559,40 +587,95 @@ def _worked_example_payload(
 ) -> tuple[dict[str, Any], str]:
     """Build a learner-visible worked-example card for the current step.
 
-    Primary content prefers the probe solution; teach text is the fallback when
-    the step has no probe. A second request (``alternate=True``) rotates to
-    explain/correct copy or a clearly labeled "Another look" so the teach-panel
-    Worked example chip is never a silent no-op after resume (#126 Ultrafast D004).
+    Prefer an authored ``worked_example`` / ``worked_example_alt`` walk-through so
+    the card is never a duplicate of the teach panel. Probe solution/explain is
+    next; teach text is last-resort fallback. A second request (``alternate=True``)
+    rotates content and frames so the chip is never a silent no-op (#126 D004).
     """
 
     step = _current_step(lesson, state)
     teach = step.get("teach") or {}
-    teach_md = str(teach.get("md") or "").strip()
-    teach_frames = list(teach.get("frames") or [])
+    resolved_md, resolved_frames = teach_visual.resolve_teach(teach)
+    teach_md = str(resolved_md or "").strip()
+    teach_frames = list(resolved_frames or [])
+    authored_pool = teach_visual.authored_frames(teach) or teach_frames
     probe = _current_probe(lesson, state)
+
+    authored = step.get("worked_example") if isinstance(step.get("worked_example"), dict) else None
+    authored_alt = step.get("worked_example_alt") if isinstance(step.get("worked_example_alt"), dict) else None
 
     primary_md = teach_md
     primary_frames = teach_frames
     alt_md = ""
     alt_frames: list[Any] = []
-    if probe:
+
+    if authored:
+        primary_md = str(authored.get("md") or authored.get("solution_md") or "").strip() or teach_md
+        primary_frames = list(authored.get("frames") or teach_frames)
+    elif probe:
         primary_md = str(probe.get("solution_md") or "").strip() or teach_md
         primary_frames = list(probe.get("frames") or teach_frames)
+    elif teach_frames:
+        # Teach-only: use explain-frame metaphor + non-clone copy (never duplicate teach).
+        explain_idx = teach_visual.explain_frame_indices(teach)
+        primary_frames = teach_visual.select_frames(teach, explain_idx) or (
+            authored_pool[1:] if len(authored_pool) > 1 else list(authored_pool)
+        )
+        we_md = str(teach.get("worked_example_md") or "").strip()
+        if we_md:
+            primary_md = we_md
+        else:
+            cap = ""
+            if primary_frames and isinstance(primary_frames[0], dict):
+                cap = str(primary_frames[0].get("caption") or "").strip()
+            first = (cap.split("\n")[0] if cap else "").lstrip("0123456789) .-").strip()
+            primary_md = (
+                f"Worked look at this step. {first}"
+                if first
+                else "Worked look at this step. Watch how the picture changes as n grows."
+            )
+
+    if authored_alt:
+        alt_md = str(authored_alt.get("md") or authored_alt.get("solution_md") or "").strip()
+        alt_frames = list(authored_alt.get("frames") or [])
+    elif probe:
         alt_md = str(probe.get("explain_md") or probe.get("correct_md") or "").strip()
         alt_frames = list(probe.get("explain_frames") or primary_frames)
+    elif authored_pool and len(authored_pool) > 1:
+        alt_indices = teach_visual.default_frame_indices(teach)
+        alt_frames = teach_visual.select_frames(teach, alt_indices) or teach_frames[:1]
+        alt_md = str(teach.get("worked_example_alt_md") or "").strip() or f"Another look. {teach_md}"
+
+    # Never ship a worked example that is identical to the visible teach card.
+    visible_md, visible_frames = teach_visual.resolve_teach(teach)
+    visible_md = str(visible_md or "").strip()
+    if primary_md.strip() == visible_md and list(primary_frames) == list(visible_frames):
+        if probe:
+            primary_md = str(probe.get("solution_md") or "").strip() or primary_md
+            primary_frames = list(probe.get("frames") or primary_frames)
+        if primary_md.strip() == visible_md:
+            primary_md = f"Worked look. {primary_md}" if primary_md else "Worked look at this step."
+        if list(primary_frames) == list(visible_frames) and len(teach_visual.authored_frames(teach)) > 1:
+            primary_frames = teach_visual.select_frames(
+                teach, teach_visual.explain_frame_indices(teach)
+            ) or primary_frames
+
+    def _we(md: str) -> str:
+        return human_rewrite.rewrite(md, kind="worked_example") if md else ""
 
     if alternate:
-        if alt_md and alt_md != primary_md:
-            return {"solution_md": alt_md, "frames": alt_frames}, "example_alt"
+        if alt_md and (alt_md != primary_md or alt_frames != primary_frames):
+            return {"solution_md": _we(alt_md), "frames": alt_frames or primary_frames}, "example_alt"
         if primary_md:
-            return {
-                "solution_md": f"Another look: {primary_md}",
-                "frames": primary_frames,
-            }, "example_alt"
+            rotated = alt_frames or primary_frames
+            if rotated == primary_frames and len(teach_frames) > 1:
+                rotated = teach_visual.select_frames(teach, teach_visual.explain_frame_indices(teach)) or teach_frames[1:2]
+            prefix = "" if primary_md.lower().startswith("another look") else "Another look: "
+            return {"solution_md": _we(f"{prefix}{primary_md}"), "frames": rotated}, "example_alt"
         if teach_md:
-            return {"solution_md": f"Another look: {teach_md}", "frames": teach_frames}, "example_alt"
+            return {"solution_md": _we(f"Another look: {teach_md}"), "frames": teach_frames}, "example_alt"
 
-    return {"solution_md": primary_md, "frames": primary_frames}, "example"
+    return {"solution_md": _we(primary_md), "frames": primary_frames}, "example"
 
 
 def adapt(lesson: dict[str, Any], state: dict[str, Any], kind: str) -> tuple[dict[str, Any], dict[str, Any]]:
@@ -612,6 +695,24 @@ def adapt(lesson: dict[str, Any], state: dict[str, Any], kind: str) -> tuple[dic
         # Worked examples stay available so teach chips are never dead (#126 D004).
         if lesson.get("mode") == "assessment" and state.get("phase") == "probe":
             return state, {"refused": True}
+
+    if kind == "reexplain":
+        # Deterministic Explain again: swap teach diagram type/frames, not prose-only.
+        content, codes = presentation.authored_reserve(lesson, state, ())
+        if content is not None:
+            _push_adapt(state)
+            presentation.apply(
+                lesson,
+                state,
+                content,
+                {"source": "adapt_reexplain", "codes": list(codes)},
+            )
+            return state, {
+                "variant_tag": "reexplain",
+                "frames_changed": True,
+                "can_go_back": True,
+            }
+        return state, {"refused": True, "variant_tag": "reexplain"}
 
     if kind == "example":
         already = state.get("card_mode") == "worked_example"

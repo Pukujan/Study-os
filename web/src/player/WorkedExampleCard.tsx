@@ -18,13 +18,13 @@ export default function WorkedExampleCard({ example }: { example: WorkedExample 
     <div className="worked-example" data-testid="worked-example">
       {md && <Markdown text={md} />}
       {!md && steps.length > 0 && (
-        <ol>
+        <div className="worked-steps" data-testid="worked-steps">
           {steps.map((step, i) => (
-            <li key={i}>
+            <div key={i} className="worked-step">
               <Markdown text={step} />
-            </li>
+            </div>
           ))}
-        </ol>
+        </div>
       )}
       {frames.length > 0 && <FrameStepper frames={frames} label="Worked example frames" />}
       {empty && (

@@ -30,6 +30,7 @@ LESSON = {
 }
 STATE = {"step_index": 0, "variant_index": -1, "phase": "probe", "scaffold": 0, "card_mode": "probe"}
 RENDER_MD = "Count from the left edge."
+EXPECTED_TEACH_MD = "Count from the left edge."
 
 
 def settings() -> SimpleNamespace:
@@ -105,7 +106,7 @@ class TutorRegenerationContractTests(unittest.TestCase):
         self.assertEqual(llm.calls, ["tutor_reply", "tutor_reply", "regenerate_presentation"])
         self.assertEqual(result.served, "generated")
         self.assertEqual(result.reply_md, "Look at the left column.")
-        self.assertEqual(result.regenerate_presentation["teach_md"], RENDER_MD)
+        self.assertEqual(result.regenerate_presentation["teach_md"], EXPECTED_TEACH_MD)
 
     def test_both_attempts_failing_still_falls_back_cleanly(self) -> None:
         from study_os.web.player import tutor
@@ -132,7 +133,7 @@ class TutorRegenerationContractTests(unittest.TestCase):
         result = tutor.reply(llm, settings(), LESSON, STATE, "show me another way")
         self.assertEqual(llm.calls, ["tutor_reply", "regenerate_presentation"])
         self.assertEqual(result.served, "generated")
-        self.assertEqual(result.regenerate_presentation["teach_md"], RENDER_MD)
+        self.assertEqual(result.regenerate_presentation["teach_md"], EXPECTED_TEACH_MD)
         self.assertEqual(result.regenerate_presentation["teach_frames"], LESSON["steps"][0]["teach"]["frames"])
 
     def test_no_render_is_requested_when_regeneration_is_not_allowed(self) -> None:
@@ -165,7 +166,7 @@ class TutorRegenerationContractTests(unittest.TestCase):
         result = tutor.reply(llm, settings(), LESSON, STATE, "show me another way")
         self.assertEqual(llm.calls, ["tutor_reply", "regenerate_presentation"])
         self.assertIn("ANSWER_REVEAL_FORBIDDEN", result.validation_codes)
-        self.assertEqual(result.regenerate_presentation["teach_md"], RENDER_MD)
+        self.assertEqual(result.regenerate_presentation["teach_md"], EXPECTED_TEACH_MD)
 
     def test_an_identical_authored_card_is_not_re_published_as_a_new_version(self) -> None:
         from study_os.web.player import tutor
