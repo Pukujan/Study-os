@@ -6,6 +6,7 @@ from copy import deepcopy
 from typing import Any
 
 from ..validator import validate_generated
+from . import human_rewrite
 
 SCHEMA_VERSION = "study-os.player-presentation.v1"
 
@@ -54,7 +55,10 @@ def effective(lesson: dict[str, Any], state: dict[str, Any]) -> tuple[str | None
 
     update = current(lesson, state)
     if update:
-        return update["teach_md"], list(update["teach_frames"])
+        md = human_rewrite.rewrite(update["teach_md"], kind="teach")
+        return md, list(update["teach_frames"])
+    if teach_md:
+        teach_md = human_rewrite.rewrite(teach_md, kind="teach")
     return teach_md, teach_frames
 
 
@@ -69,6 +73,8 @@ def validate_proposal(
     if not isinstance(proposal, dict) or set(proposal) != {"teach_md", "frame_indices"}:
         return None, ("INVALID_PRESENTATION",)
     md, indices = proposal["teach_md"], proposal["frame_indices"]
+    if isinstance(md, str):
+        md = human_rewrite.rewrite(md, kind="teach")
     frames = step.get("teach", {}).get("frames", [])
     if (not isinstance(md, str) or not isinstance(indices, list) or len(indices) > len(frames)
             or any(type(i) is not int or i < 0 or i >= len(frames) for i in indices)
@@ -101,7 +107,8 @@ def authored_reserve(
     if not md:
         return None, ("NO_AUTHORED_CARD",)
     current_md, current_frames = effective(lesson, state)
-    if md == (current_md or "") and frames == list(current_frames):
+    rewritten = human_rewrite.rewrite(md, kind="teach") if md else ""
+    if rewritten == (current_md or "") and frames == list(current_frames):
         return None, ("RENDER_UNAVAILABLE",)
     return validate_proposal(
         {"teach_md": md, "frame_indices": list(range(len(frames)))}, lesson, state, forbidden
