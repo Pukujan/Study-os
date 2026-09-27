@@ -8,10 +8,19 @@ function seriesList(frame: GrowthTableFrame): GrowthTableSeries[] {
   return out;
 }
 
+/** One-line hint when the scoreboard has n values but no counts yet (Refs #178). */
+export function emptyGrowthTableHint(frame: GrowthTableFrame): string {
+  const custom = frame.empty_hint?.trim();
+  if (custom) return custom;
+  return "Estimate how the step count changes as n grows.";
+}
+
 export function describeGrowthTable(frame: GrowthTableFrame): string {
   const n = frame.n_values;
   const series = seriesList(frame);
-  if (series.length === 0) return `Growth table for n = ${n.join(", ")}`;
+  if (series.length === 0) {
+    return `Growth table for n = ${n.join(", ")}; ${emptyGrowthTableHint(frame)}`;
+  }
   const parts = series.map((s) => `${s.label}: ${s.values.join(", ")}`);
   return `Growth table for n = ${n.join(", ")}; ${parts.join("; ")}`;
 }
@@ -26,22 +35,18 @@ export default function GrowthTable({ frame, scoped = false }: Props) {
   const rootClass = scoped ? styles.scoreboard : "growth-table";
 
   if (series.length === 0) {
+    // Probe empty tables: hide the fake empty scoreboard; keep n context + one clear hint (#178).
+    const hint = emptyGrowthTableHint(frame);
     return (
       <div
-        className={scoped ? undefined : "growth-table growth-table--empty"}
+        className={scoped ? styles.emptyProbe : "growth-table growth-table--empty"}
         role="img"
         aria-label={describeGrowthTable(frame)}
+        data-testid="growth-table-empty"
       >
-        <div className={scoped ? styles.chips : "growth-scoreboard-chips"}>
-          <span className={scoped ? styles.chipLabel : "growth-scoreboard-chip growth-scoreboard-chip--label"}>n</span>
-          {nValues.map((value, i) => (
-            <span key={`n-${i}`} className={scoped ? styles.chip : "growth-scoreboard-chip"}>
-              {value}
-            </span>
-          ))}
-        </div>
-        <p className={scoped ? styles.emptyNote : "muted small growth-table-empty-note"}>
-          Counts arrive in the next steps.
+        <p className={scoped ? styles.emptyNote : "muted small growth-table-empty-note"}>{hint}</p>
+        <p className={scoped ? styles.emptyN : "muted small growth-table-empty-n"}>
+          n = {nValues.join(", ")}
         </p>
       </div>
     );

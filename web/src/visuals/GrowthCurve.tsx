@@ -25,21 +25,38 @@ const COLORS = [
   "var(--chart-4, var(--gold))",
 ];
 
-/** SVG growth chart — series colors from design tokens (Refs #165). */
+/** SVG growth chart — end-of-line labels + color legend (Refs #179 #165). */
 export default function GrowthCurve({ frame }: { frame: GrowthCurveFrame }) {
   const nValues = frame.n_values;
   const series = seriesList(frame);
   // A step teaches one class: emphasise that line and dim the rest (#161).
   const highlight = frame.highlight_label ?? null;
-  const w = 320;
-  const h = 160;
-  const pad = { l: 36, r: 12, t: 12, b: 28 };
+  const w = 360;
+  const h = 168;
+  // Extra right pad so end-of-line labels fit without clipping.
+  const pad = { l: 36, r: 56, t: 14, b: 28 };
   const maxY = Math.max(1, ...series.flatMap((s) => s.values));
   const innerW = w - pad.l - pad.r;
   const innerH = h - pad.t - pad.b;
 
   const xAt = (i: number) => pad.l + (nValues.length <= 1 ? innerW / 2 : (i / (nValues.length - 1)) * innerW);
   const yAt = (v: number) => pad.t + innerH - (v / maxY) * innerH;
+
+  // Stack end labels that would collide (same y).
+  const endLabelY = (() => {
+    const raw = series.map((s) => yAt(s.values[nValues.length - 1] ?? 0));
+    const sorted = raw.map((y, i) => ({ y, i })).sort((a, b) => a.y - b.y);
+    const placed = [...raw];
+    const minGap = 12;
+    for (let k = 1; k < sorted.length; k++) {
+      const prev = sorted[k - 1]!;
+      const cur = sorted[k]!;
+      if (placed[cur.i]! - placed[prev.i]! < minGap) {
+        placed[cur.i] = placed[prev.i]! + minGap;
+      }
+    }
+    return placed;
+  })();
 
   return (
     <div className="growth-curve" role="img" aria-label={describeGrowthCurve(frame)}>
@@ -52,6 +69,9 @@ export default function GrowthCurve({ frame }: { frame: GrowthCurveFrame }) {
             .join(" ");
           const isHighlight = highlight !== null && s.label === highlight;
           const dimmed = highlight !== null && !isHighlight;
+          const lastI = Math.max(0, nValues.length - 1);
+          const endX = xAt(lastI);
+          const endY = endLabelY[si] ?? yAt(s.values[lastI] ?? 0);
           return (
             <g key={s.label} opacity={dimmed ? 0.35 : 1}>
               <polyline
@@ -69,6 +89,17 @@ export default function GrowthCurve({ frame }: { frame: GrowthCurveFrame }) {
                   fill={COLORS[si % COLORS.length]}
                 />
               ))}
+              <text
+                className="growth-curve-end-label"
+                data-series-label={s.label}
+                x={endX + 6}
+                y={endY + 4}
+                fontSize={11}
+                fill={COLORS[si % COLORS.length]}
+                fontWeight={isHighlight ? 700 : 600}
+              >
+                {s.label}
+              </text>
             </g>
           );
         })}
@@ -77,20 +108,28 @@ export default function GrowthCurve({ frame }: { frame: GrowthCurveFrame }) {
             {n}
           </text>
         ))}
-        {series.map((s, si) => (
-          <text
-            key={`leg-${s.label}`}
-            x={pad.l + 8}
-            y={pad.t + 12 + si * 14}
-            fontSize={11}
-            fill={COLORS[si % COLORS.length]}
-            fontWeight={highlight !== null && s.label === highlight ? 700 : 400}
-            opacity={highlight !== null && s.label !== highlight ? 0.5 : 1}
-          >
-            {s.label}
-          </text>
-        ))}
       </svg>
+      {series.length > 0 && (
+        <ul className="growth-curve-legend" aria-hidden="true">
+          {series.map((s, si) => {
+            const isHighlight = highlight !== null && s.label === highlight;
+            const dimmed = highlight !== null && !isHighlight;
+            return (
+              <li
+                key={`leg-${s.label}`}
+                className="growth-curve-legend-item"
+                style={{ opacity: dimmed ? 0.5 : 1, fontWeight: isHighlight ? 700 : 400 }}
+              >
+                <span
+                  className="growth-curve-legend-swatch"
+                  style={{ background: COLORS[si % COLORS.length] }}
+                />
+                {s.label}
+              </li>
+            );
+          })}
+        </ul>
+      )}
     </div>
   );
 }

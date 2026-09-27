@@ -122,6 +122,8 @@ export type GrowthTableSeries = {
 export type GrowthTableFrame = {
   type: "growth_table";
   caption?: string;
+  /** Shown when series are empty (probe before counts). Refs #178. */
+  empty_hint?: string;
   n_values: number[];
   series?: GrowthTableSeries | null;
   series_multi?: GrowthTableSeries[] | null;
