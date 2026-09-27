@@ -41,8 +41,10 @@ class BigOWhyVisualTests(unittest.TestCase):
         self.assertEqual(frames[0]["n_values"], [2, 4, 8, 16])
         labels = [s["label"] for s in frames[0]["series_multi"]]
         self.assertEqual(labels, ["O(1)", "O(log n)", "O(n)", "O(n²)"])
-        self.assertIn("input size", md.lower())
-        self.assertRegex(md.lower(), r"\bwork\b|\bsteps\b")
+        # n / work glossary lives in expandable + middle-frame captions (#195), not a teach wall.
+        self.assertRegex(md.lower(), r"\bn\b")
+        self.assertRegex(md.lower(), r"\bwork\b|\bgrows\b")
+        self.assertNotIn("Explain again", md)
 
     def test_flag_off_restores_raw_table_without_data_loss(self):
         raw = self.teach["presentation_raw"]
@@ -108,7 +110,8 @@ class BigOWhyVisualTests(unittest.TestCase):
     def test_why_care_expandable_hint_defines_growth(self):
         hint = self.teach.get("expandable_hint")
         self.assertIsInstance(hint, dict)
-        self.assertIn("work grows", hint["summary"].lower())
+        self.assertIn("n", hint["summary"].lower())
+        self.assertIn("input size", hint["md"].lower())
         self.assertIn("O(1)", hint["md"])
         self.assertIn("O(n²)", hint["md"])
         view = engine.view(self.lesson, self.state)
@@ -125,8 +128,22 @@ class BigOWhyVisualTests(unittest.TestCase):
         self.assertEqual(len(default), 3)
         self.assertTrue(all(f["type"] == "growth_curve" for f in default))
         self.assertEqual(explain[0]["type"], "sticks_boxes_complexity")
-        self.assertIn("input size", self.teach["md"].lower())
-        self.assertIn("Explain again", self.teach["md"])
+        # Surround density: default teach has no Explain-again meta; n defs not dumped on explain.
+        self.assertNotIn("Explain again", self.teach["md"])
+        self.assertNotIn("caption", explain[0])
+        explain_md = self.teach.get("explain_md") or ""
+        self.assertLessEqual(len(explain_md.split()), 14)
+        self.assertIn("computer", explain_md.lower())
+
+    def test_why_care_reexplain_uses_short_explain_md(self):
+        """#195: interactive Explain card gets one short teach line, not the n glossary wall."""
+        state, info = engine.adapt(self.lesson, self.state, "reexplain")
+        self.assertTrue(info.get("frames_changed"))
+        md, frames = presentation.effective(self.lesson, state)
+        self.assertEqual(frames[0]["type"], "sticks_boxes_complexity")
+        self.assertEqual(md, self.teach["explain_md"])
+        self.assertNotIn("input size", (md or "").lower())
+        self.assertNotIn("Explain again", md or "")
 
 
 if __name__ == "__main__":

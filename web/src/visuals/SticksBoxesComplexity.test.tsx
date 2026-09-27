@@ -62,6 +62,22 @@ describe("SticksBoxesComplexity UI", () => {
     expect(html).toContain("Feel linear work.");
   });
 
+  it("golden density: no intro paragraph or long dropdown essays", () => {
+    const { container, cleanup } = render(
+      <SticksBoxesComplexity
+        frame={{ type: "sticks_boxes_complexity", initial_complexity: "O(1)", initial_n: 2 }}
+      />,
+    );
+    const html = container.innerHTML;
+    expect(html).not.toContain("You are the computer");
+    expect(html).not.toContain("Put 1 stick in first box");
+    expect(html).not.toContain("Algorithm Complexity");
+    expect(html).not.toContain("Number of Boxes");
+    const select = container.querySelector('[data-testid="sticks-complexity-select"]') as HTMLSelectElement;
+    expect(select.options[0].textContent).toBe("O(1)");
+    cleanup();
+  });
+
   it("O(1) places one stick then shows Finished", () => {
     const { container, cleanup } = render(
       <SticksBoxesComplexity
@@ -70,7 +86,7 @@ describe("SticksBoxesComplexity UI", () => {
     );
     const root = () => container.querySelector('[data-testid="sticks-boxes-complexity"]') as HTMLElement;
     expect(root().getAttribute("data-placed")).toBe("0");
-    expect(container.querySelector('[data-testid="sticks-stat-work"]')!.textContent).toContain("1 steps");
+    expect(container.querySelector('[data-testid="sticks-stat-work"]')!.textContent).toContain("1");
 
     const btn = container.querySelector('[data-testid="sticks-primary-btn"]') as HTMLButtonElement;
     act(() => {
@@ -89,7 +105,7 @@ describe("SticksBoxesComplexity UI", () => {
         frame={{ type: "sticks_boxes_complexity", initial_complexity: "O(n)", initial_n: 3 }}
       />,
     );
-    expect(container.querySelector('[data-testid="sticks-stat-work"]')!.textContent).toContain("3 steps");
+    expect(container.querySelector('[data-testid="sticks-stat-work"]')!.textContent).toContain("3");
     const btn = container.querySelector('[data-testid="sticks-primary-btn"]') as HTMLButtonElement;
     for (let i = 0; i < 3; i++) {
       act(() => {
@@ -111,25 +127,25 @@ describe("SticksBoxesComplexity UI", () => {
       />,
     );
     const cue = () => container.querySelector('[data-testid="sticks-step-cue"]')!.textContent || "";
-    expect(cue()).toContain("Cross-Pairing Box 0 × Box 0");
-    expect(container.querySelector('[data-testid="sticks-stat-work"]')!.textContent).toContain("4 steps");
+    expect(cue()).toContain("Box 0 × Box 0");
+    expect(container.querySelector('[data-testid="sticks-stat-work"]')!.textContent).toContain("4");
 
     const btn = container.querySelector('[data-testid="sticks-primary-btn"]') as HTMLButtonElement;
     act(() => {
       btn.click();
     });
-    expect(cue()).toContain("Cross-Pairing Box 0 × Box 1");
+    expect(cue()).toContain("Box 0 × Box 1");
     expect(container.querySelector('[data-testid="sticks-stat-placed"]')!.textContent).toContain("1 / 4");
 
     act(() => {
       btn.click();
     });
-    expect(cue()).toContain("Cross-Pairing Box 1 × Box 0");
+    expect(cue()).toContain("Box 1 × Box 0");
 
     act(() => {
       btn.click();
     });
-    expect(cue()).toContain("Cross-Pairing Box 1 × Box 1");
+    expect(cue()).toContain("Box 1 × Box 1");
 
     act(() => {
       btn.click();

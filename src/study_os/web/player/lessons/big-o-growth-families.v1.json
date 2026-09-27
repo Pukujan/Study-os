@@ -1,7 +1,7 @@
 {
   "schema_version": "study-os.player-lesson.v1",
   "lesson_id": "big-o-growth-families",
-  "revision": "big-o-growth-families.v1.ops-to-steps-193",
+  "revision": "big-o-growth-families.v1.sticks-golden-density-195",
   "lane": "dsa",
   "title": "Big O: how work grows",
   "summary": "Feel O(1), O(log n), O(n), O(n log n), and O(n^2) with workers, boxes, and tiny concrete counts before arrays and windows.",
@@ -16,7 +16,7 @@
       "skippable": false,
       "confirm": false,
       "teach": {
-        "md": "**n** is the input size — how many items, or how big the problem is. Work is how many steps the computer takes; Big O names how that work grows as n grows. Explain again opens sticks-and-boxes.",
+        "md": "Two correct solutions can feel totally different as **n** grows. Big O names how that work grows.",
         "frames": [
           {
             "type": "growth_curve",
@@ -165,7 +165,6 @@
           },
           {
             "type": "sticks_boxes_complexity",
-            "caption": "You place the sticks. Try O(1), O(n), and O(n²) and watch how many steps change with n.",
             "initial_complexity": "O(1)",
             "initial_n": 2,
             "n_min": 2,
@@ -198,9 +197,10 @@
           ]
         },
         "expandable_hint": {
-          "summary": "How work grows as n grows",
-          "md": "Point at the four curves: O(1) stays flat, O(log n) rises slowly, O(n) climbs with n, and O(n²) shoots up fastest."
-        }
+          "summary": "What n and work mean",
+          "md": "**n** is input size (how many items). Work is steps the computer takes. Curves: O(1) flat, O(log n) slow, O(n) with n, O(n²) fastest."
+        },
+        "explain_md": "You are the computer — put sticks and watch steps grow."
       },
       "probe": null,
       "variants": [],
@@ -1658,7 +1658,6 @@
           },
           {
             "type": "sticks_boxes_complexity",
-            "caption": "Feel O(n²): cross-pair every box with every box and count the sticks.",
             "initial_complexity": "O(n²)",
             "initial_n": 2,
             "n_min": 2,
@@ -1674,7 +1673,8 @@
           "explain_frame_indices": [
             3
           ]
-        }
+        },
+        "explain_md": "Feel O(n²) — cross-pair boxes and watch steps explode."
       },
       "probe": {
         "prompt_md": "A pair-check does 64 steps at n = 8. About how many steps at n = 16?",

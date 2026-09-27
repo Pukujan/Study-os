@@ -19,3 +19,8 @@ Bars / TeachRenderBox lead. Explain again + Worked must swap/alter the diagram.
 ```bash
 PYTHONPATH=src python -m unittest tests.test_human_rewrite -v
 ```
+
+## Interactive-filled steps (#195)
+
+When an interactive teach visual (e.g. sticks-and-boxes) **fills** the Explain card, authored `explain_md` should be **one short line or empty** — do not stack glossary paragraphs, captions that restate the UI, or in-component intro essays on top of the game. Surround copy must match golden density.
+

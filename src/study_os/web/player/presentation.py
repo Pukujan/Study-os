@@ -123,7 +123,17 @@ def authored_reserve(
     if not indices:
         indices = list(range(len(frames)))
     candidate_frames = [frames[i] for i in indices if 0 <= i < len(frames)]
-    candidate_md = md or (current_md or "")
+    # When interactive fills the explain card, prefer short explain_md (#195 golden density).
+    explain_idx = teach_visual.explain_frame_indices(teach)
+    interactive = {"sticks_boxes_complexity", "interactive_ops_boxes"}
+    uses_explain = indices == explain_idx or (
+        candidate_frames and candidate_frames[0].get("type") in interactive
+    )
+    explain_md = str(teach.get("explain_md") or "").strip()
+    if uses_explain and explain_md:
+        candidate_md = explain_md
+    else:
+        candidate_md = md or (current_md or "")
     rewritten = human_rewrite.rewrite(candidate_md, kind="teach") if candidate_md else ""
     if rewritten == (current_md or "") and candidate_frames == list(current_frames):
         return None, ("RENDER_UNAVAILABLE",)
