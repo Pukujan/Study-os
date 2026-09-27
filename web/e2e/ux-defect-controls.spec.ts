@@ -137,4 +137,21 @@ test.describe("UX defect P0/P1 controls (stub server)", () => {
     await page.locator("a.brand").first().click();
     await expect(page).not.toHaveURL(/\/play\//);
   });
+
+  test("Explain again ×3 never ErrorBoundary on .type (Refs #163)", async ({ page }) => {
+    await openFractionsPlayer(page);
+    const explain = page.getByTestId("player.step.regen-reexplain");
+    await expect(explain).toBeVisible();
+    await expect(explain).toBeEnabled({ timeout: 15_000 });
+    // Done-when: 3+ Explain again must not crash (Ultrafast/Playwright).
+    for (let i = 0; i < 3; i++) {
+      await explain.click();
+      await page.waitForTimeout(800);
+      await expect(page.getByText("Something broke on this screen")).toHaveCount(0);
+      await expect(page.getByTestId("render-error")).toHaveCount(0);
+    }
+    // Teach surface still mounted with a diagram or prose.
+    await expect(page.locator(".teach, [data-testid='teach-render-box']").first()).toBeVisible();
+  });
+
 });

@@ -13,6 +13,9 @@ export function render(ui: ReactElement) {
   act(() => root.render(ui));
   return {
     container,
+    rerender: (next: ReactElement) => {
+      act(() => root.render(next));
+    },
     cleanup: () => {
       act(() => root.unmount());
       document.body.removeChild(container);
