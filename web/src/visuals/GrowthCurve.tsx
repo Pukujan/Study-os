@@ -13,9 +13,14 @@ export function describeGrowthCurve(frame: GrowthCurveFrame): string {
   return `Growth chart for n = ${frame.n_values.join(", ")}; ${series.map((s) => s.label).join(", ")}`;
 }
 
-const COLORS = ["var(--primary, #3b82f6)", "var(--danger, #ef4444)", "#10b981", "#f59e0b"];
+const COLORS = [
+  "var(--chart-1, var(--primary))",
+  "var(--chart-2, var(--bad))",
+  "var(--chart-3, var(--ok))",
+  "var(--chart-4, var(--gold))",
+];
 
-/** Light SVG growth chart (Pixi/canvas-friendly later; SVG now). */
+/** SVG growth chart — series colors from design tokens (Refs #165). */
 export default function GrowthCurve({ frame }: { frame: GrowthCurveFrame }) {
   const nValues = frame.n_values;
   const series = seriesList(frame);

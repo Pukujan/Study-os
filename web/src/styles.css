@@ -1,28 +1,5 @@
-:root {
-  --ink: #111B4D;
-  --violet: #8F7CFF;
-  --cyan: #63D9FF;
-  --coral: #FF8A70;
-  --cream: #F4F1FF;
-  --mint: #94E3CB;
-  --gold: #FFD28A;
-  --paper: var(--cream);
-  --primary: var(--violet);
-  --accent: var(--cyan);
-  --warm: var(--coral);
-  --ok: #2a9d8f;
-  --bad: var(--coral);
-  --muted: #6b6f8a;
-  --fg: var(--ink);
-  --bg: var(--paper);
-  --card: #ffffff;
-  --line: #d7d4e8;
-  --shadow: rgba(17, 27, 77, 0.08);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-  font-size: 16px;
-  color: var(--fg);
-  background: var(--bg);
-}
+/* Component styles. Token values live in theme/tokens.css (Refs #165). */
+@import "./theme/tokens.css";
 
 * { box-sizing: border-box; }
 body { margin: 0; }
@@ -40,16 +17,16 @@ body { margin: 0; }
 }
 
 .brand { font-weight: 700; color: var(--primary); text-decoration: none; font-size: 1.1rem; }
-.who { display: flex; gap: 0.75rem; align-items: center; color: var(--muted); }
+.who { display: flex; gap: 0.75rem; align-items: center; color: var(--muted); flex-wrap: wrap; justify-content: flex-end; }
 
-.shell { max-width: 720px; margin: 0 auto; padding: 1.25rem; }
+.shell { max-width: 720px; margin: 0 auto; padding: calc(var(--space-unit) * 1.25); }
 
 .card {
   background: var(--card);
   border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 1.25rem;
-  margin-bottom: 1rem;
+  border-radius: var(--radius);
+  padding: calc(var(--space-unit) * 1.25);
+  margin-bottom: var(--space-unit);
 }
 
 .narrow { max-width: 420px; margin: 2rem auto; }
@@ -86,7 +63,7 @@ input, textarea, select {
   transition: background 150ms ease, transform 150ms ease, box-shadow 150ms ease;
 }
 
-.btn.primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+.btn.primary { background: var(--primary); color: var(--on-primary, #fff); border-color: var(--primary); }
 .btn.small { font-size: 0.85rem; padding: 0.35rem 0.7rem; }
 .btn.google { width: 100%; text-align: center; }
 .btn:disabled { opacity: 0.5; cursor: default; }
@@ -105,7 +82,7 @@ input, textarea, select {
 .muted { color: var(--muted); } .small { font-size: 0.8rem; } .fine { color: var(--muted); font-size: 0.8rem; }
 .error { color: var(--bad); }
 .or { text-align: center; color: var(--muted); font-size: 0.85rem; }
-.banner { background: #fff7e0; border: 1px solid #f0d890; padding: 0.6rem 0.8rem; border-radius: 8px; font-size: 0.9rem; }
+.banner { background: var(--banner-bg); border: 1px solid var(--banner-line); padding: 0.6rem 0.8rem; border-radius: var(--radius); font-size: 0.9rem; }
 
 .topics { list-style: none; padding: 0; margin: 0 0 0.5rem; }
 .topic-btn {
@@ -135,7 +112,7 @@ input, textarea, select {
 .turn.outcome-correct.kind-explain { border-left: 4px solid var(--primary); }
 .turn.generated { border-style: dashed; }
 .md p { margin: 0.4rem 0; line-height: 1.5; }
-pre.chart { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; background: #f1f0ea; padding: 0.7rem; border-radius: 8px; overflow-x: auto; line-height: 1.35; font-size: 0.9rem; }
+pre.chart { font-family: var(--font-mono); background: var(--surface-subtle); padding: 0.7rem; border-radius: calc(var(--radius) - 4px); overflow-x: auto; line-height: 1.35; font-size: 0.9rem; color: var(--ink); }
 .answer-box { position: sticky; bottom: 0; background: var(--bg); padding: 0.75rem 0; }
 .choices { display: grid; gap: 0.5rem; }
 .letter { display: inline-block; width: 1.6rem; font-weight: 700; color: var(--primary); }
@@ -143,7 +120,7 @@ pre.chart { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monosp
 .hints { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.5rem; }
 .reactions { display: flex; gap: 0.4rem; margin-top: 0.5rem; }
 .chip { border: 1px solid var(--line); background: none; border-radius: 999px; padding: 0.2rem 0.6rem; font-size: 0.8rem; cursor: pointer; color: var(--ink); }
-.chip.on { background: var(--primary); color: #fff; }
+.chip.on { background: var(--primary); color: var(--on-primary, #fff); }
 .transcript { padding-bottom: 0.5rem; }
 .lesson-actions { margin: 1rem 0 2rem; text-align: center; }
 .big { font-size: 1.3rem; font-weight: 600; }
@@ -207,12 +184,12 @@ pre.chart { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monosp
 }
 .lesson-map-chip.is-done {
   color: var(--ink);
-  background: rgba(143, 124, 255, 0.08);
-  border-color: rgba(143, 124, 255, 0.35);
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+  border-color: color-mix(in srgb, var(--primary) 35%, transparent);
 }
 .lesson-map-chip.is-current {
-  color: #fff;
-  background: var(--primary, #8F7CFF);
+  color: var(--on-primary, #fff);
+  background: var(--primary);
   border-color: transparent;
 }
 .lesson-map-chip-index {
@@ -223,7 +200,7 @@ pre.chart { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monosp
   align-items: center;
   justify-content: center;
   font-size: 0.65rem;
-  background: rgba(17, 27, 77, 0.08);
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
 }
 .lesson-map-chip.is-current .lesson-map-chip-index {
   background: rgba(255, 255, 255, 0.25);
@@ -239,16 +216,17 @@ pre.chart { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monosp
 
 .code-tree { margin: 0.75rem 0; }
 .code-tree-code {
-  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
-  background: #f7f6ff;
+  font-family: var(--font-mono);
+  background: var(--surface-subtle);
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: calc(var(--radius) - 4px);
   padding: 0.75rem;
   overflow-x: auto;
+  color: var(--ink);
 }
 .code-tree-code code { display: block; }
 .code-tree-line { line-height: 1.6; padding: 0 0.25rem; }
-.code-tree-line.highlighted { background: rgba(143, 124, 255, 0.15); }
+.code-tree-line.highlighted { background: color-mix(in srgb, var(--primary) 18%, transparent); }
 .code-tree-underline-wrapper {
   position: relative;
   display: inline-block;
@@ -584,7 +562,7 @@ pre.chart { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monosp
 
 .companion-bubble.learner {
   background: var(--primary);
-  color: #fff;
+  color: var(--on-primary, #fff);
   margin-left: auto;
 }
 
@@ -704,7 +682,7 @@ pre.chart { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monosp
   flex-direction: column;
   justify-content: center;
   padding: 1.5rem;
-  background: linear-gradient(to right, rgba(244, 241, 255, 0.95), rgba(244, 241, 255, 0.7));
+  background: linear-gradient(to right, color-mix(in srgb, var(--bg) 95%, transparent), color-mix(in srgb, var(--bg) 70%, transparent));
 }
 .try-hero-content h1 { margin-bottom: 0.5rem; }
 .try-hero-btn { width: fit-content; margin-top: 0.75rem; }

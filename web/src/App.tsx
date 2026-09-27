@@ -10,6 +10,7 @@ import TryPage from "./pages/Try";
 import Player from "./pages/Player";
 import AdminFeedback from "./pages/AdminFeedback";
 import ErrorBoundary from "./ErrorBoundary";
+import { ThemeProvider, ThemeToggle } from "./theme";
 
 export default function App() {
   const path = usePath();
@@ -38,8 +39,6 @@ export default function App() {
     }
   }, [checked, me, route.name]);
 
-  if (!checked) return <main className="shell"><p className="muted">Loading…</p></main>;
-
   const logout = async () => {
     await api.logout().catch(() => undefined);
     setMe(null);
@@ -48,12 +47,22 @@ export default function App() {
 
   const isGuest = !!me && (me.role === "guest" || me.handle.startsWith("guest-"));
 
+  if (!checked) {
+    return (
+      <ThemeProvider>
+        <main className="shell"><p className="muted">Loading…</p></main>
+      </ThemeProvider>
+    );
+  }
+
   return (
+    <ThemeProvider>
     <div className="app">
       <header className="top">
         <a href="/" onClick={(e) => { e.preventDefault(); navigate("/"); }} className="brand" data-track="nav.home">Study OS</a>
         {me ? (
           <span className="who">
+            <ThemeToggle />
             {isGuest && (
               <button className="link" onClick={() => navigate("/")} data-track="nav.claim">Save progress</button>
             )}
@@ -62,6 +71,7 @@ export default function App() {
           </span>
         ) : (
           <span className="who">
+            <ThemeToggle />
             <button className="link" onClick={() => navigate("/login")} data-track="nav.signin">Sign in</button>
           </span>
         )}
@@ -80,5 +90,6 @@ export default function App() {
         </ErrorBoundary>
       </main>
     </div>
+    </ThemeProvider>
   );
 }

@@ -13,6 +13,17 @@ Live pet looked like it was *jizzling / shaking in place*: CSS `@keyframes` back
 3. **Asset** — `web/public/mascot/pet-ball.webp` letterboxed from `duo-starplay` into the pet 144×176 frame so size does not jump.
 4. **No Live2D** in this slice.
 
+## Relationship to SOS-0014 locomotion
+
+A22a (held poses) and SOS-0014 (#121/#173, real walk/turn) are **complementary, not alternatives** — they fix the same live jitter from two directions and now ship together:
+
+| | A22a | SOS-0014 |
+| --- | --- | --- |
+| `Sprite.tsx` | replaces CSS `@keyframes` with a JS timer | adds `cols`/`frame`/`mirrored` for multi-row sheets |
+| `Pet.tsx` | low-fps mood loops, `transition: none` | pure locomotion FSM (`locomotion.ts`) owns the clock |
+
+The merged `Sprite` steps discrete poses itself, and accepts an explicit `frame` when the caller owns the clock — which multi-row walk/turn sheets require, since a background-position keyframe can only walk one axis. The float shell carries `transition: none` so the FSM's `translate3d` writes never tween.
+
 ## Verify
 
 ```bash
@@ -23,6 +34,7 @@ cd web && npx playwright test e2e/ux-defect-controls.spec.ts -g 'held-pose'
 
 ## Out of scope
 
-- Full walk/turn locomotion (#121 / S4)
 - A22b Live2D Cubism
 - Pixi runtime (kept CSS background-image + JS holds; Pixi optional later)
+
+Walk/turn locomotion was out of scope for A22a itself and has since landed as SOS-0014 (#173) — see the relationship table above.
