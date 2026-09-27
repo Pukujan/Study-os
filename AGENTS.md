@@ -222,7 +222,17 @@ Runners:
 ./tools/frontend_qa/run_playwright_ux.sh                                    # wraps web/ e2e + vision gate
 ```
 
-Ultrafast lives at [`Pukujan/jev-ultrafast`](https://github.com/Pukujan/jev-ultrafast) (Alex host path `D:\claude\jev-ultrafast`). Playwright specs: `web/e2e/`. CI job: `playwright` in `.github/workflows/ci.yml`.
+Windows PowerShell live scouts (schema-shaped `artifacts/ux-defect-*/`):
+
+```powershell
+powershell -File tools/ux-defect/Run-UltrafastScout.ps1
+powershell -File tools/ux-defect/Run-PlaywrightDefectPass.ps1
+```
+
+See also `docs/UX_DEFECT_LOCAL_AND_CI.md` (local = scout; CI = merge gate).
+
+Ultrafast lives at [`Pukujan/jev-ultrafast`](https://github.com/Pukujan/jev-ultrafast) (Alex host path `D:\claude\jev-ultrafast`). Playwright specs: `web/e2e/` (incl. `ux-defect-controls.spec.ts`). CI job: `playwright` in `.github/workflows/ci.yml`.
+
 
 ## Explicitly deferred
 

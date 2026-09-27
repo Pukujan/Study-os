@@ -11,8 +11,23 @@ echo "Mandate: docs/AGENT_FRONTEND_QA.md"
 echo "Target: ${TARGET_URL}"
 echo "Contract: docs/PDD_UX_DEFECT_EXPLORATION.md + docs/schemas/ux-defect-report.v1.json"
 
-# Prefer in-repo crawl runner when Ultrafast-CI / local-runner lands it.
+# Prefer in-repo scout / crawl runners (local-scout PR + Ultrafast-CI).
+SCOUT="${ROOT}/tools/ux-defect/run_ultrafast_scout.py"
 IN_REPO="${ROOT}/tools/run_jev_ultrafast_ux_crawl.py"
+if [[ -f "${SCOUT}" ]]; then
+  echo "Using in-repo scout: tools/ux-defect/run_ultrafast_scout.py"
+  export BASE_URL="${TARGET_URL}"
+  export ART_DIR="${ART_DIR:-${ROOT}/artifacts/ux-defect-ultrafast/$(date -u +%Y%m%d-%H%M%S)}"
+  mkdir -p "${ART_DIR}/screenshots"
+  # Resolve Ultrafast root for imports
+  if [[ -z "${JEV_ULTRAFAST_ROOT:-}" ]]; then
+    for c in "${ROOT}/../jev-ultrafast" "/workspace/jev-ultrafast" "D:/claude/jev-ultrafast"; do
+      [[ -d "$c" ]] && export JEV_ULTRAFAST_ROOT="$c" && break
+    done
+  fi
+  cd "${ROOT}"
+  exec python3 "${SCOUT}"
+fi
 if [[ -f "${IN_REPO}" ]]; then
   echo "Using in-repo runner: tools/run_jev_ultrafast_ux_crawl.py"
   cd "${ROOT}"

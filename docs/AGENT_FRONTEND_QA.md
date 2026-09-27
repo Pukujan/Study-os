@@ -36,6 +36,13 @@ Oracle (product truth): click → observable change within 3s, else defect. Blan
 
 ### Ultrafast scout (local)
 
+Windows (preferred on Teresa-Pujan):
+
+```powershell
+powershell -File tools/ux-defect/Run-UltrafastScout.ps1
+```
+
+
 Checkout / install: **[`Pukujan/jev-ultrafast`](https://github.com/Pukujan/jev-ultrafast)** — on Alex’s Windows box typically `D:\claude\jev-ultrafast`.
 
 ```bash
@@ -48,6 +55,13 @@ Checkout / install: **[`Pukujan/jev-ultrafast`](https://github.com/Pukujan/jev-u
 Stub resolves `JEV_ULTRAFAST_ROOT` (default: sibling `../jev-ultrafast`, or `D:/claude/jev-ultrafast` when present) and prints the one-line invocation expected by that harness. Artifacts should land under Ultrafast’s `artifacts/` **and** (when recording a durable crawl) be copied into `docs/benchmarks/ux-defect-jev-ultrafast/<date>/` per the benchmark README.
 
 ### Playwright UX + vision pass (local)
+
+Windows live defect pass:
+
+```powershell
+powershell -File tools/ux-defect/Run-PlaywrightDefectPass.ps1
+```
+
 
 Specs live under `web/e2e/` (SOS-0017 vision gate: `web/e2e/player-vision-gate.spec.ts`). npm script: `web` → `npm run test:e2e`.
 
