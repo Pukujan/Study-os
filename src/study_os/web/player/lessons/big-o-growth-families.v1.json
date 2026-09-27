@@ -1,10 +1,10 @@
 {
   "schema_version": "study-os.player-lesson.v1",
   "lesson_id": "big-o-growth-families",
-  "revision": "big-o-growth-families.v1",
+  "revision": "big-o-growth-families.v1.teach-visual-v1",
   "lane": "dsa",
   "title": "Big O: how work grows",
-  "summary": "Feel O(1), O(log n), O(n), O(n log n), and O(n^2) with tiny concrete counts before arrays and windows.",
+  "summary": "Feel O(1), O(log n), O(n), O(n log n), and O(n^2) with workers, boxes, and tiny concrete counts before arrays and windows.",
   "representation": "growth_table",
   "golden_ref": null,
   "prerequisites": [],
@@ -16,22 +16,127 @@
       "skippable": false,
       "confirm": false,
       "teach": {
-        "md": "Two correct solutions can feel totally different as n grows. Before arrays or windows, we need Big O: a shared language for how work grows.",
+        "md": "1) Two correct programs can feel totally different as n grows.\n2) Picture workers carrying number-boxes: more n means more boxes.\n3) Big O names how that work grows.",
         "frames": [
           {
-            "type": "growth_table",
+            "type": "growth_workers",
             "n_values": [
               2,
               4,
               8,
               16
             ],
-            "caption": "We will watch how counts change as n doubles."
+            "caption": "1) Each column is one pile of boxes for size n.\n2) As n doubles, the workers carry more boxes.",
+            "role_label": "workers"
+          },
+          {
+            "type": "growth_curve",
+            "n_values": [
+              2,
+              4,
+              8,
+              16
+            ],
+            "series_multi": [
+              {
+                "label": "slow growth",
+                "values": [
+                  1,
+                  2,
+                  3,
+                  4
+                ]
+              },
+              {
+                "label": "fast growth",
+                "values": [
+                  4,
+                  16,
+                  64,
+                  256
+                ]
+              }
+            ],
+            "caption": "1) Same n values on the bottom.\n2) The steep line is the program that blows up as n doubles."
+          }
+        ],
+        "presentation_raw": {
+          "md": "Two correct solutions can feel totally different as n grows. Before arrays or windows, we need Big O: a shared language for how work grows.",
+          "frames": [
+            {
+              "type": "growth_table",
+              "n_values": [
+                2,
+                4,
+                8,
+                16
+              ],
+              "caption": "We will watch how counts change as n doubles."
+            }
+          ]
+        },
+        "teach_visual_v1": {
+          "default_frame_indices": [
+            0
+          ],
+          "explain_frame_indices": [
+            1
+          ]
+        }
+      },
+      "probe": null,
+      "variants": [],
+      "worked_example": {
+        "md": "1) Worked look: n grows 2 → 4 → 8 → 16.\n2) The slow line barely rises; the steep line shoots up.\n3) Same answers, very different work as n grows.",
+        "frames": [
+          {
+            "type": "growth_curve",
+            "n_values": [
+              2,
+              4,
+              8,
+              16
+            ],
+            "series_multi": [
+              {
+                "label": "slow growth",
+                "values": [
+                  1,
+                  2,
+                  3,
+                  4
+                ]
+              },
+              {
+                "label": "fast growth",
+                "values": [
+                  4,
+                  16,
+                  64,
+                  256
+                ]
+              }
+            ],
+            "caption": "1) Same n values on the bottom.\n2) The steep line is the program that blows up as n doubles."
           }
         ]
       },
-      "probe": null,
-      "variants": []
+      "worked_example_alt": {
+        "md": "1) Another look at the worker piles.\n2) At n=16 the pile is much taller than at n=2.\n3) That height gap is why we care about Big O.",
+        "frames": [
+          {
+            "type": "growth_workers",
+            "n_values": [
+              2,
+              4,
+              8,
+              16
+            ],
+            "caption": "1) Each column is one pile of boxes for size n.\n2) As n doubles, the workers carry more boxes.",
+            "role_label": "workers"
+          }
+        ]
+      }
     },
     {
       "step_id": "o1_constant",

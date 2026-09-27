@@ -268,12 +268,47 @@ pre.chart { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monosp
 .code-tree-root, .code-tree-children { list-style: none; padding-left: 0; margin: 0.5rem 0; }
 .code-tree-summary { cursor: pointer; color: var(--primary); font-weight: 600; }
 .code-tree-leaf { color: var(--ink); }
-.growth-table { overflow-x: auto; }
-.growth-table-grid { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
-.growth-table-grid th, .growth-table-grid td { padding: 0.35rem 0.6rem; text-align: left; border-bottom: 1px solid var(--line, rgba(0, 0, 0, 0.1)); }
+.growth-table { overflow-x: auto; max-width: 100%; }
+.growth-table-grid {
+  border-collapse: collapse;
+  width: max-content;
+  max-width: 100%;
+  table-layout: auto;
+  font-variant-numeric: tabular-nums;
+}
+.growth-table-grid th, .growth-table-grid td {
+  padding: 0.25rem 0.4rem;
+  text-align: center;
+  border-bottom: 1px solid var(--line, rgba(0, 0, 0, 0.1));
+  white-space: nowrap;
+}
+.growth-table-grid th:first-child, .growth-table-grid td:first-child {
+  text-align: left;
+  padding-right: 0.55rem;
+}
 .growth-table-grid thead th { color: var(--muted); font-weight: 600; }
-.growth-table-value { display: inline-block; min-width: 2.5rem; }
-.growth-table-bar { display: inline-block; height: 0.5rem; border-radius: 999px; background: var(--primary); vertical-align: middle; }
+.growth-table-value { display: inline-block; min-width: 1.25rem; }
+.growth-table-bar {
+  display: inline-block;
+  height: 0.4rem;
+  max-width: 2.75rem;
+  border-radius: 999px;
+  background: var(--primary);
+  vertical-align: middle;
+  margin-left: 0.25rem;
+}
+.growth-workers, .growth-curve { color: var(--ink); max-width: 28rem; }
+.growth-workers-svg, .growth-curve-svg { display: block; margin: 0 auto; }
+.teach-advance { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+.teach .md ol, .worked-example .md ol, .frame-caption {
+  white-space: normal;
+  max-width: 36rem;
+}
+.teach .md ol li, .worked-example .md ol li {
+  margin: 0.25rem 0;
+  line-height: 1.45;
+}
+.frame-caption { white-space: pre-line; text-align: left; }
 .frame-figure { margin: 0.5rem 0; }
 .frame-caption { text-align: center; font-size: 0.9rem; color: var(--muted); margin-top: 0.25rem; }
 .frame-stepper-controls {

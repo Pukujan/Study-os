@@ -7,6 +7,7 @@ import MermaidDiagram from "./MermaidDiagram";
 import LessonMap from "./LessonMap";
 import CodeTree from "./CodeTree";
 import GrowthTable from "./GrowthTable";
+import GrowthWorkers from "./GrowthWorkers";
 
 describe("visuals", () => {
   it("FractionBar renders the right aria-label and shaded parts", () => {
@@ -156,4 +157,40 @@ describe("visuals", () => {
     expect(html).toContain("S.append(num");
     expect(html).toContain("same expression");
   });
+
+
+  it("GrowthWorkers draws hikers and n labels", () => {
+    const frame = {
+      type: "growth_workers" as const,
+      n_values: [2, 4, 8, 16],
+      role_label: "workers",
+      caption: "boxes grow",
+    };
+    const html = renderToStaticMarkup(<GrowthWorkers frame={frame} />);
+    expect(html).toContain("growth-workers");
+    expect(html).toContain("n=2");
+    expect(html).toContain("n=16");
+    expect(html).toContain("workers carrying boxes");
+  });
+
+  it("Frame dispatches growth_workers and growth_curve", () => {
+    const workers = renderToStaticMarkup(
+      <Frame frame={{ type: "growth_workers", n_values: [2, 4], role_label: "workers" }} />,
+    );
+    expect(workers).toContain("growth-workers");
+    const curve = renderToStaticMarkup(
+      <Frame
+        frame={{
+          type: "growth_curve",
+          n_values: [2, 4],
+          series_multi: [
+            { label: "slow", values: [1, 2] },
+            { label: "fast", values: [4, 16] },
+          ],
+        }}
+      />,
+    );
+    expect(curve).toContain("growth-curve");
+  });
+
 });
