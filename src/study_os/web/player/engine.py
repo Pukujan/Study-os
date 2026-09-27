@@ -81,6 +81,21 @@ def start(lesson: dict[str, Any]) -> dict[str, Any]:
     return _new_state(lesson)
 
 
+
+def _public_expandable_hint(step: dict[str, Any]) -> dict[str, str] | None:
+    """Learner-visible optional teach disclosure (summary + md)."""
+
+    teach = step.get("teach") or {}
+    raw = teach.get("expandable_hint")
+    if not isinstance(raw, dict):
+        return None
+    summary = str(raw.get("summary") or "").strip()
+    md = str(raw.get("md") or "").strip()
+    if not summary or not md:
+        return None
+    return {"summary": summary, "md": human_rewrite.rewrite(md, kind="teach")}
+
+
 def _public_probe(probe: dict[str, Any] | None) -> dict[str, Any] | None:
     """Strip server-only fields from a probe before returning it to the client."""
 
@@ -166,6 +181,7 @@ def view(lesson: dict[str, Any], state: dict[str, Any]) -> dict[str, Any]:
             "index": state["step_index"],
             "teach_md": teach_md,
             "teach_frames": teach_frames,
+            "teach_expandable_hint": _public_expandable_hint(step),
             "teach_collapsed": teach_md is None and not teach_frames,
             "probe": public_probe,
             "variant": state["variant_index"],

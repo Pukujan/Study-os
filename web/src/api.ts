@@ -204,6 +204,7 @@ export type PlayerView = {
     index: number;
     teach_md: string;
     teach_frames: Frame[];
+    teach_expandable_hint?: { summary: string; md: string } | null;
     teach_collapsed: boolean;
     probe: Probe | null;
     variant: number;
