@@ -1,0 +1,490 @@
+{
+  "schema_version": "study-os.teach-visual-step-map.v1",
+  "updated": "2026-09-27",
+  "issue": "https://github.com/Pukujan/Study-os/issues/161",
+  "parent_issue": "https://github.com/Pukujan/Study-os/issues/126",
+  "automation": {
+    "checker": "tools/teach_visual_catalog_check.py",
+    "rule": "Every player lesson step MUST have a map entry. Big O + fractions packs are illustrative examples that seed the pipeline \u2014 do not lock one Big O widget for all steps."
+  },
+  "entries": [
+    {
+      "lesson_id": "big-o-growth-families",
+      "step_id": "why_care",
+      "kc": "big-o.motivation",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "simple_four_class_growth_curve",
+      "asset_ids": [
+        "big-o.growth-simple-4class"
+      ],
+      "status": "landed",
+      "research_cites": [
+        "farghally2017",
+        "bigocheatsheet",
+        "opendsa",
+        "opendsa-analintro",
+        "moore-thompson-2015"
+      ],
+      "notes": "TEACH DEFAULT: four-class SVG (O(1)/log n/n/n\u00b2) via big-o.growth-simple-4class. Full Cmglee comparison is optional_reference only (Alex: multi-class too complex). Constructivist cite: Moore & Thompson emergent shape thinking.",
+      "exercise_affordance": "read_multiclass_chart",
+      "optional_reference_asset_ids": [
+        "big-o.comparison-computational-complexity"
+      ]
+    },
+    {
+      "lesson_id": "big-o-growth-families",
+      "step_id": "o1_constant",
+      "kc": "big-o.o1",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "simple_four_class_growth_curve",
+      "asset_ids": [
+        "big-o.growth-simple-4class"
+      ],
+      "status": "landed",
+      "research_cites": [
+        "farghally2017",
+        "bigocheatsheet",
+        "opendsa",
+        "opendsa-analintro",
+        "moore-thompson-2015"
+      ],
+      "notes": "TEACH DEFAULT: four-class SVG (O(1)/log n/n/n\u00b2) via big-o.growth-simple-4class. Full Cmglee comparison is optional_reference only (Alex: multi-class too complex). Constructivist cite: Moore & Thompson emergent shape thinking.",
+      "exercise_affordance": "highlight_flat_series",
+      "optional_reference_asset_ids": [
+        "big-o.comparison-computational-complexity"
+      ]
+    },
+    {
+      "lesson_id": "big-o-growth-families",
+      "step_id": "ologn",
+      "kc": "big-o.ologn",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "simple_four_class_growth_curve",
+      "asset_ids": [
+        "big-o.growth-simple-4class"
+      ],
+      "status": "landed",
+      "research_cites": [
+        "farghally2017",
+        "bigocheatsheet",
+        "opendsa",
+        "opendsa-analintro",
+        "moore-thompson-2015"
+      ],
+      "notes": "TEACH DEFAULT: four-class SVG (O(1)/log n/n/n\u00b2) via big-o.growth-simple-4class. Full Cmglee comparison is optional_reference only (Alex: multi-class too complex). Constructivist cite: Moore & Thompson emergent shape thinking.",
+      "exercise_affordance": "highlight_log_series",
+      "optional_reference_asset_ids": [
+        "big-o.comparison-computational-complexity"
+      ]
+    },
+    {
+      "lesson_id": "big-o-growth-families",
+      "step_id": "on_linear",
+      "kc": "big-o.on",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "simple_four_class_growth_curve",
+      "asset_ids": [
+        "big-o.growth-simple-4class"
+      ],
+      "status": "landed",
+      "research_cites": [
+        "farghally2017",
+        "bigocheatsheet",
+        "opendsa",
+        "opendsa-analintro",
+        "moore-thompson-2015"
+      ],
+      "notes": "TEACH DEFAULT: four-class SVG (O(1)/log n/n/n\u00b2) via big-o.growth-simple-4class. Full Cmglee comparison is optional_reference only (Alex: multi-class too complex). Constructivist cite: Moore & Thompson emergent shape thinking.",
+      "exercise_affordance": "highlight_linear_series",
+      "optional_reference_asset_ids": [
+        "big-o.comparison-computational-complexity"
+      ]
+    },
+    {
+      "lesson_id": "big-o-growth-families",
+      "step_id": "onlogn",
+      "kc": "big-o.onlogn",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "simple_four_class_growth_curve",
+      "asset_ids": [
+        "big-o.growth-simple-4class"
+      ],
+      "status": "landed",
+      "research_cites": [
+        "farghally2017",
+        "bigocheatsheet",
+        "opendsa",
+        "opendsa-analintro",
+        "moore-thompson-2015"
+      ],
+      "notes": "TEACH DEFAULT: four-class SVG (O(1)/log n/n/n\u00b2) via big-o.growth-simple-4class. Full Cmglee comparison is optional_reference only (Alex: multi-class too complex). Constructivist cite: Moore & Thompson emergent shape thinking.",
+      "exercise_affordance": "highlight_nlogn_series",
+      "optional_reference_asset_ids": [
+        "big-o.comparison-computational-complexity"
+      ]
+    },
+    {
+      "lesson_id": "big-o-growth-families",
+      "step_id": "on2_quadratic",
+      "kc": "big-o.on2",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "simple_four_class_growth_curve",
+      "asset_ids": [
+        "big-o.growth-simple-4class"
+      ],
+      "status": "landed",
+      "research_cites": [
+        "farghally2017",
+        "bigocheatsheet",
+        "opendsa",
+        "opendsa-analintro",
+        "moore-thompson-2015"
+      ],
+      "notes": "TEACH DEFAULT: four-class SVG (O(1)/log n/n/n\u00b2) via big-o.growth-simple-4class. Full Cmglee comparison is optional_reference only (Alex: multi-class too complex). Constructivist cite: Moore & Thompson emergent shape thinking.",
+      "exercise_affordance": "highlight_quadratic_series",
+      "optional_reference_asset_ids": [
+        "big-o.comparison-computational-complexity"
+      ]
+    },
+    {
+      "lesson_id": "big-o-growth-families",
+      "step_id": "compare_families",
+      "kc": "big-o.compare",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "simple_four_class_growth_curve",
+      "asset_ids": [
+        "big-o.growth-simple-4class"
+      ],
+      "status": "landed",
+      "research_cites": [
+        "farghally2017",
+        "bigocheatsheet",
+        "opendsa",
+        "opendsa-analintro",
+        "moore-thompson-2015"
+      ],
+      "notes": "TEACH DEFAULT: four-class SVG (O(1)/log n/n/n\u00b2) via big-o.growth-simple-4class. Full Cmglee comparison is optional_reference only (Alex: multi-class too complex). Constructivist cite: Moore & Thompson emergent shape thinking.",
+      "exercise_affordance": "compare_families",
+      "optional_reference_asset_ids": [
+        "big-o.comparison-computational-complexity"
+      ]
+    },
+    {
+      "lesson_id": "fractions-compare",
+      "step_id": "problem",
+      "kc": "fractions.compare.problem",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "fraction_number_line",
+      "asset_ids": [
+        "fractions-3-4-fraction",
+        "fractions-algebra1-03-fig022a-rettafraz",
+        "fractions-algebra1-03-fig022b-rettafraz",
+        "fractions-algebra1-frac-numberline-a",
+        "fractions-algebra1-frac-numberline-b",
+        "fractions-fraccion-propia-en-la-recta"
+      ],
+      "status": "landed",
+      "research_cites": [
+        "hamdan-gunderson",
+        "ies-tft",
+        "siegler2011",
+        "hamdan-gunderson-2017",
+        "fuchs-five-rcts",
+        "ies-fractions-toolkit"
+      ],
+      "notes": "Number-line-first per Hamdan/Gunderson + IES Module 1; area optional.",
+      "exercise_affordance": "place_or_compare_on_number_line"
+    },
+    {
+      "lesson_id": "fractions-compare",
+      "step_id": "denominator",
+      "kc": "fractions.denominator",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "fraction_number_line",
+      "asset_ids": [
+        "fractions-3-4-fraction",
+        "fractions-algebra1-03-fig022a-rettafraz",
+        "fractions-algebra1-03-fig022b-rettafraz",
+        "fractions-algebra1-frac-numberline-a",
+        "fractions-algebra1-frac-numberline-b",
+        "fractions-fraccion-propia-en-la-recta"
+      ],
+      "status": "landed",
+      "research_cites": [
+        "hamdan-gunderson",
+        "ies-tft",
+        "siegler2011",
+        "hamdan-gunderson-2017",
+        "fuchs-five-rcts",
+        "ies-fractions-toolkit"
+      ],
+      "notes": "Number-line-first per Hamdan/Gunderson + IES Module 1; area optional.",
+      "exercise_affordance": "place_or_compare_on_number_line"
+    },
+    {
+      "lesson_id": "fractions-compare",
+      "step_id": "numerator",
+      "kc": "fractions.numerator",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "fraction_number_line",
+      "asset_ids": [
+        "fractions-3-4-fraction",
+        "fractions-algebra1-03-fig022a-rettafraz",
+        "fractions-algebra1-03-fig022b-rettafraz",
+        "fractions-algebra1-frac-numberline-a",
+        "fractions-algebra1-frac-numberline-b",
+        "fractions-fraccion-propia-en-la-recta"
+      ],
+      "status": "landed",
+      "research_cites": [
+        "hamdan-gunderson",
+        "ies-tft",
+        "siegler2011",
+        "hamdan-gunderson-2017",
+        "fuchs-five-rcts",
+        "ies-fractions-toolkit"
+      ],
+      "notes": "Number-line-first per Hamdan/Gunderson + IES Module 1; area optional.",
+      "exercise_affordance": "place_or_compare_on_number_line"
+    },
+    {
+      "lesson_id": "fractions-compare",
+      "step_id": "same-denominator",
+      "kc": "fractions.same-denominator",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "fraction_number_line",
+      "asset_ids": [
+        "fractions-3-4-fraction",
+        "fractions-algebra1-03-fig022a-rettafraz",
+        "fractions-algebra1-03-fig022b-rettafraz",
+        "fractions-algebra1-frac-numberline-a",
+        "fractions-algebra1-frac-numberline-b",
+        "fractions-fraccion-propia-en-la-recta"
+      ],
+      "status": "landed",
+      "research_cites": [
+        "hamdan-gunderson",
+        "ies-tft",
+        "siegler2011",
+        "hamdan-gunderson-2017",
+        "fuchs-five-rcts",
+        "ies-fractions-toolkit"
+      ],
+      "notes": "Number-line-first per Hamdan/Gunderson + IES Module 1; area optional.",
+      "exercise_affordance": "place_or_compare_on_number_line"
+    },
+    {
+      "lesson_id": "fractions-compare",
+      "step_id": "same-whole-different-parts",
+      "kc": "fractions.same-whole-different-parts",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "fraction_number_line",
+      "asset_ids": [
+        "fractions-3-4-fraction",
+        "fractions-algebra1-03-fig022a-rettafraz",
+        "fractions-algebra1-03-fig022b-rettafraz",
+        "fractions-algebra1-frac-numberline-a",
+        "fractions-algebra1-frac-numberline-b",
+        "fractions-fraccion-propia-en-la-recta"
+      ],
+      "status": "landed",
+      "research_cites": [
+        "hamdan-gunderson",
+        "ies-tft",
+        "siegler2011",
+        "hamdan-gunderson-2017",
+        "fuchs-five-rcts",
+        "ies-fractions-toolkit"
+      ],
+      "notes": "Number-line-first per Hamdan/Gunderson + IES Module 1; area optional.",
+      "exercise_affordance": "place_or_compare_on_number_line"
+    },
+    {
+      "lesson_id": "fractions-compare",
+      "step_id": "compare-3-4-vs-2-3",
+      "kc": "fractions.compare.different-denominators",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "fraction_number_line",
+      "asset_ids": [
+        "fractions-3-4-fraction",
+        "fractions-algebra1-03-fig022a-rettafraz",
+        "fractions-algebra1-03-fig022b-rettafraz",
+        "fractions-algebra1-frac-numberline-a",
+        "fractions-algebra1-frac-numberline-b",
+        "fractions-fraccion-propia-en-la-recta"
+      ],
+      "status": "landed",
+      "research_cites": [
+        "hamdan-gunderson",
+        "ies-tft",
+        "siegler2011",
+        "hamdan-gunderson-2017",
+        "fuchs-five-rcts",
+        "ies-fractions-toolkit"
+      ],
+      "notes": "Number-line-first per Hamdan/Gunderson + IES Module 1; area optional.",
+      "exercise_affordance": "place_or_compare_on_number_line"
+    },
+    {
+      "lesson_id": "sliding-window-box",
+      "step_id": "problem",
+      "kc": "sliding-window.problem",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "box_index_array",
+      "asset_ids": [],
+      "status": "queued",
+      "research_cites": [
+        "opendsa"
+      ],
+      "notes": "Deterministic box_index; OSS stills queued. Map row required by automation.",
+      "exercise_affordance": "slide_window_on_array"
+    },
+    {
+      "lesson_id": "sliding-window-box",
+      "step_id": "position",
+      "kc": "sliding-window.position",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "box_index_array",
+      "asset_ids": [],
+      "status": "queued",
+      "research_cites": [
+        "opendsa"
+      ],
+      "notes": "Deterministic box_index; OSS stills queued. Map row required by automation.",
+      "exercise_affordance": "slide_window_on_array"
+    },
+    {
+      "lesson_id": "sliding-window-box",
+      "step_id": "index",
+      "kc": "sliding-window.index",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "box_index_array",
+      "asset_ids": [],
+      "status": "queued",
+      "research_cites": [
+        "opendsa"
+      ],
+      "notes": "Deterministic box_index; OSS stills queued. Map row required by automation.",
+      "exercise_affordance": "slide_window_on_array"
+    },
+    {
+      "lesson_id": "sliding-window-box",
+      "step_id": "box-size",
+      "kc": "sliding-window.box-size",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "box_index_array",
+      "asset_ids": [],
+      "status": "queued",
+      "research_cites": [
+        "opendsa"
+      ],
+      "notes": "Deterministic box_index; OSS stills queued. Map row required by automation.",
+      "exercise_affordance": "slide_window_on_array"
+    },
+    {
+      "lesson_id": "sliding-window-box",
+      "step_id": "box-start",
+      "kc": "sliding-window.box-start",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "box_index_array",
+      "asset_ids": [],
+      "status": "queued",
+      "research_cites": [
+        "opendsa"
+      ],
+      "notes": "Deterministic box_index; OSS stills queued. Map row required by automation.",
+      "exercise_affordance": "slide_window_on_array"
+    },
+    {
+      "lesson_id": "sliding-window-box",
+      "step_id": "window-sum",
+      "kc": "sliding-window.window-sum",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "box_index_array",
+      "asset_ids": [],
+      "status": "queued",
+      "research_cites": [
+        "opendsa"
+      ],
+      "notes": "Deterministic box_index; OSS stills queued. Map row required by automation.",
+      "exercise_affordance": "slide_window_on_array"
+    }
+  ],
+  "policy_note": "Alex 2026-09-27: teach Big O with O(1)/O(log n)/O(n)/O(n\u00b2) only. Full Cmglee/cheatsheet overlays with n!/2^n/\u221an are optional_reference."
+}

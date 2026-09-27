@@ -24,6 +24,7 @@ import type {
   CodeTreeFrame,
   FractionBarFrame,
   Frame as FrameType,
+  CuratedDiagramFrame,
   GrowthCurveFrame,
   GrowthTableFrame,
   GrowthWorkersFrame,
@@ -37,6 +38,7 @@ import CodeTree, { describeCodeTree } from "./CodeTree";
 import GrowthTable, { describeGrowthTable } from "./GrowthTable";
 import GrowthWorkers, { describeGrowthWorkers } from "./GrowthWorkers";
 import GrowthCurve, { describeGrowthCurve } from "./GrowthCurve";
+import CuratedDiagram, { describeCuratedDiagram } from "./CuratedDiagram";
 import styles from "./TeachRenderBox.module.css";
 import islandCss from "./TeachRenderBox.module.css?inline";
 import {
@@ -225,6 +227,11 @@ function registerDefaults() {
     types: ["code_tree"],
     describe: (f) => describeCodeTree(f as CodeTreeFrame),
     render: (f) => <CodeTree frame={f as CodeTreeFrame} />,
+  });
+  registerTeachRender({
+    types: ["curated_diagram"],
+    describe: (f) => describeCuratedDiagram(f as CuratedDiagramFrame),
+    render: (f) => <CuratedDiagram frame={f as CuratedDiagramFrame} />,
   });
 }
 
