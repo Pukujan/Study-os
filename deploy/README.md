@@ -2,17 +2,12 @@
 
 Pushes to `main` trigger GitHub Actions workflow **CD** (`.github/workflows/cd.yml`).
 
-- Runner: self-hosted `teresa-study-os-cd` on Teresa (labels `self-hosted,study-os-cd`), which SSHs to `gravebuster` over Tailscale.
+- Runner: isolated Podman container `study-os-cd-runner` on **gravebuster** (labels `self-hosted,study-os-cd,Linux,gravebuster,podman`). Image `myoung34/github-runner`; mounts `/var/run/docker.sock` and `/srv/study-os` only.
 - Steps: `git reset --hard` to the merged SHA in `/srv/study-os/app`, refresh `docker-compose.yml`, `docker compose up -d --build`, health-check localhost + https://study.design-bakery.com/api/health.
 - Manual / emergency: `workflow_dispatch` on the CD workflow, or the steps below.
 
-Cloud-hosted runners cannot reach Tailscale-only gravebuster; do not switch this job to `ubuntu-latest` without a Tailscale Action + auth key (or a public path).
+Do not run CD on Teresa or GitHub-hosted runners; deploy must execute on gravebuster next to Docker.
 
-# Deploying Study OS on gravebuster (D018)
-
-Everything runs on gravebuster and is served at **https://study.design-bakery.com**:
-the frontend at `/` and the API at `/api` from one container, plus Postgres 16, a
-Cloudflare named tunnel, and a nightly `pg_dump` job. No Vercel and no PostHog.
 
 ## Layout on the host
 

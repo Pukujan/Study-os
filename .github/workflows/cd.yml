@@ -12,24 +12,21 @@ concurrency:
 jobs:
   deploy:
     name: Deploy gravebuster
-    runs-on: [self-hosted, study-os-cd]
+    # Isolated Podman runner on gravebuster (labels: study-os-cd,linux,gravebuster,podman)
+    runs-on: [self-hosted, study-os-cd, Linux, gravebuster, podman]
     timeout-minutes: 45
     steps:
-      - name: Deploy SHA to gravebuster
-        shell: powershell
+      - name: Deploy SHA locally on gravebuster
         env:
           DEPLOY_SHA: ${{ github.sha }}
         run: |
-          $ErrorActionPreference = 'Stop'
-          $sha = $env:DEPLOY_SHA
-          if (-not $sha) { throw 'DEPLOY_SHA missing' }
-          Write-Host "Deploying $sha to gravebuster..."
-          $remote = @"
           set -eu
+          sha="$DEPLOY_SHA"
+          echo "Deploying $sha on gravebuster (in-pod runner)..."
           cd /srv/study-os/app
           git fetch --prune origin
           git checkout --force main
-          git reset --hard $sha
+          git reset --hard "$sha"
           cd /srv/study-os
           cp -f app/deploy/docker-compose.yml docker-compose.yml
           docker compose up -d --build
@@ -41,9 +38,4 @@ jobs:
           echo
           curl -fsS https://study.design-bakery.com/api/health
           echo
-          echo DEPLOYED=`$(git -C /srv/study-os/app rev-parse HEAD)
-          "@
-          $remote = (($remote -replace "`r","" -split "`n") | ForEach-Object { $_.TrimStart() } | Where-Object { $_ -ne '' }) -join "`n"
-          $remote | & ssh -o BatchMode=yes -o ConnectTimeout=30 gravebuster "bash -s"
-          if ($LASTEXITCODE -ne 0) { throw "ssh deploy failed exit=$LASTEXITCODE" }
-          Write-Host "CD ok for $sha"
+          echo "DEPLOYED=$(git -C /srv/study-os/app rev-parse HEAD)"
