@@ -84,6 +84,35 @@ test.describe("UX defect P0/P1 controls (stub server)", () => {
     await expect(reply.first()).toBeVisible({ timeout: CHAT_TIMEOUT_MS });
   });
 
+  test("Chat ack survives a slow tutor (no silent drop while in flight)", async ({ page }) => {
+    // The stub tutor answers instantly, which makes the 3s ack assertion in the
+    // test above trivially true — the reply *is* the ack. This test delays the
+    // tutor by 10s so the ack must stand on its own, which is the live defect
+    // condition (tutor measured 9–23s on study.design-bakery.com).
+    await page.route("**/api/player/sessions/*/tutor", async (route) => {
+      await new Promise((r) => setTimeout(r, 10_000));
+      await route.continue();
+    });
+
+    await openFractionsPlayer(page);
+    await openCompanion(page);
+    const panel = page.locator(".companion-panel");
+    const input = panel.locator('[aria-label="Message"]');
+    await expect(input).toBeVisible();
+    await input.fill("What should I notice on this step?");
+    await panel.locator('[data-track="companion.send"]').click();
+
+    // Must be observable within 3s even though the reply is still 7s out.
+    const ack = panel.locator(".thinking-label, .companion-bubble.system, .companion-bubble.tutor:not(.thinking-bubble)");
+    await expect(ack.first()).toBeVisible({ timeout: 3_000 });
+    const ackText = (await ack.first().innerText()).trim();
+    expect(ackText.length, "ack must carry visible text, not just a sprite").toBeGreaterThan(0);
+
+    // And the real reply still lands once the tutor responds.
+    const reply = panel.locator(".companion-bubble.tutor:not(.thinking-bubble), .companion-bubble.system");
+    await expect(reply.first()).toBeVisible({ timeout: CHAT_TIMEOUT_MS });
+  });
+
   test("Read aloud / Voice input / Open Message affordances are present", async ({ page }, testInfo) => {
     await openFractionsPlayer(page);
     // Voice controls on the player teach surface
