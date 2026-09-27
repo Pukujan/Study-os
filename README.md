@@ -1,269 +1,108 @@
 # Study OS
 
-Study OS is a learning control system that sits between **course/source material** and a **longitudinal learner record**.
+> **Stuck on a lesson because of how it was written — not because the idea is impossible?** Study OS is a live web player that adapts the representation while a deterministic controller keeps curriculum authority.
 
-Its core problem is the learner ↔ course representation mismatch: a learner may be blocked not only by the target concept, but by the author's terminology, variable names, notation, control flow, decomposition, amount of context, or representation.
+<p align="center">
+  <img src="web/public/art/onboarding.webp" alt="The learner opens her laptop at a window seat in blue-violet evening light while her robot helper waves hello." width="100%">
+</p>
 
-Study OS uses AI to adapt those representations while deterministic code/state controls what is being learned, what assistance is allowed, when the learner may advance, and how evidence is interpreted.
+**Live product:** [study.design-bakery.com](https://study.design-bakery.com) · UX ship hub: [#126](https://github.com/Pukujan/Study-os/issues/126)
 
-> Current phase: **P4 — deterministic learning controller + versioned representation engine + operational improvement loop.** See Issue #63.
+## Why this exists
 
-## Product thesis
+A learner can fail a step because the author’s **terminology, variable names, notation, or decomposition** got in the way — not because the target concept is out of reach. Generic AI chat often jumps to working answers before the learner can explain, trace, or rebuild the idea alone.
 
-The goal is not a generic AI tutor.
+Study OS exists to **reduce extraneous representation friction** while preserving productive difficulty, then fade assistance so the learner is not dependent on simplification.
 
-The intended differentiated capability is a **learner-specific intermediate representation layer**:
+Concrete example from early use (subject-level, not a population claim): on a dictionaries / Two Sum path, the identifier `seen` conflicted with a prior “set” association; a neutral `box` framing was self-reported as clearer and a later lookup was answered correctly. That episode motivates treating **small representation dimensions** (even one name) as first-class — it does not prove renaming alone caused the improvement.
 
-```text
-COURSE / SOURCE MATERIAL
-        ↓
-CANONICAL COURSE GRAPH
-        ↓
-DETERMINISTIC COURSE STATE
-        ↓
-DETERMINISTIC LEARNING CONTROLLER
-        ↓ authorized operation
-AI / REPRESENTATION ENGINE
-        ↓
-LEARNER
-        ↓
-DURABLE OPERATIONAL EVIDENCE
-        ↓
-LEARNER + CONTROLLER STATE
-        ↺
-```
+## What this project is
 
-Study OS should preserve **productive target difficulty** while reducing **extraneous representation difficulty** during acquisition, then fade assistance and restore authentic/source representations so the learner does not become dependent on simplification.
+Study OS is a **web learning player** plus a research harness for representation-aware tutoring.
 
-## Authority boundary
+| Audience | What they get |
+| --- | --- |
+| New visitors | Guest Start / Resume on live lessons without an account |
+| Learners | HESI A2 and DSA lanes with teach → probe steps, companion help, typed step review |
+| Collaborators / agents | Deterministic controller contracts, evidence classes, and CI-gated deploys |
 
-Study OS code/state controls:
+It is **not** a generic chatbot tutor, not a “Study OS GPT app” product surface anymore, and not a claim that one learner’s trajectory proves population efficacy.
 
-- active course node and prerequisites;
-- learner-control state;
-- allowed next pedagogical operations;
-- assistance ceiling;
-- advancement/blocking rules;
-- assistance fading;
-- source-representation restoration;
-- transfer/retention requirements where applicable;
-- evidence/provenance semantics;
-- module-version provenance.
+## What you can make or use
 
-AI may:
+On the live site you can:
 
-- propose diagnosis hypotheses;
-- generate a realization of an authorized operation;
-- transform terminology, representation, examples, traces, pseudocode, or explanations under explicit constraints.
+- **Start or resume as a guest** — progress attaches to a guest session; claim later if you want a durable identity.
+- **Pick a lane** — **HESI A2** (e.g. comparing fractions) and **Algorithms (DSA)** (Big O growth-families first / `catalog_order` 1, then sliding-window and related lessons). The classic DSA PIR path stays available in the stack but is **hidden on home**.
+- **Learn in teach, then prove in probe** — teach cards explain; probes check understanding without spoiling answers.
+- **Ask for help without losing the step** — **Explain again** and **Worked example** re-render the current step in place.
+- **Open the companion / teacher pet** — study-buddy chat (InferHub-backed) sits beside the card.
+- **Leave a 1–5 typed review** on a step — required “why” text; self-reported UX feedback, not mastery evidence.
 
-AI does **not** silently own curriculum progression or mastery.
+<p align="center">
+  <img src="web/public/art/lane-dsa.webp" alt="The learner sketches Big O growth curves in a notebook while her robot helper points at the steepest curve." width="720">
+</p>
 
-## Current learner-facing surface
+## How it works
 
-The current product surface is the Study OS GPT app.
+Reader-sized loop:
 
-A dedicated frontend remains useful later, but GPT currently provides the fastest coherent interface for real learning while the deterministic control/data layer develops underneath it.
-
-The canonical live learner store is local Study OS:
+1. **Course / lesson content** declares steps, knowledge components, and allowed presentations.
+2. A **deterministic controller** authorizes the next pedagogical operation (advance, probe, adapt, fade, block).
+3. An **AI representation engine** realizes only that authorized op — wording, frames, worked examples — under versioned prompts.
+4. The **web player** shows teach vs probe, companion chips, and optional step review.
+5. **Durable evidence** keeps observed behavior, self-report, and derived claims separate.
 
 ```text
-SQLite + private evidence store
+course / lesson
+    → deterministic course state
+    → controller authorizes one operation
+    → AI realizes the representation
+    → learner acts in the web player
+    → evidence + next state
 ```
 
-GitHub stores architecture, schemas, decisions, tests, public-safe evidence, and project lineage. It is not the live learner database.
+AI may diagnose and generate under constraints. It does **not** silently own curriculum progression or mastery labels.
 
-## Durable evidence
+## Evidence and boundaries
 
-Live source-turn capture and cross-chat continuity are implemented and accepted for the current Study OS GPT path.
+| Claim | Status | Supports | Does not establish |
+| --- | --- | --- | --- |
+| Live surface is the web player at study.design-bakery.com | shipped | Deploy docs + CD on `main` → gravebuster | Completeness of every planned lane |
+| Guest Start/Resume and HESI + DSA player lessons exist | shipped | `web/`, player lessons, home lane tests (tip ~`d9ae5a0`) | All lanes fully stocked |
+| Explain again / Worked example keep step identity | shipped | Player + tutor adapt path (#126 / A12) | Universal teaching quality |
+| Step reviews are 1–5 + typed why | shipped | `FeedbackBar` + `/api/feedback` | Mastery or learning gains |
+| Representation mismatch is the product thesis | shipped (thesis) | Charter / brief / early Two Sum episode | Population efficacy |
 
-The core durability invariant is:
+**Boundaries:** no population learning-efficacy claims from subject-001 data; self-report ≠ mastery; no fixed “learning styles”; generative media is not canonical algorithm state; private transcripts stay out of the public repo; FOSSIL is optional export, not runtime authority.
 
-> **No silent learner-evidence loss.**
+## Image generation and use
 
-Every locally received learner-facing turn should be durably committed before acknowledgement. Failures must remain visible/recoverable, and remote turns missed before local receipt must be reconcilable from source evidence rather than invented.
+Committed player/marketing art lives under `web/public/art/` with provenance in [`.content-system/asset-manifest.json`](.content-system/asset-manifest.json). Character refs and prompts are under `.content-system/characters/`. Helper method: CGM [`docs/IMAGE_GUIDE.md`](https://github.com/Pukujan/content-generation-modules/blob/9874b26dc46499137bf22e1ca163874ef2dd5e7a/docs/IMAGE_GUIDE.md) at pin `0.5.1`.
 
-Evidence hierarchy:
+## Templates and guides
 
-```text
-RAW / SOURCE EVIDENCE
-        ↓
-NORMALIZED OPERATIONAL RECORDS
-        ↓
-DERIVED LEARNER + SYSTEM STATE
-```
+| File | Role |
+| --- | --- |
+| [`.content-system/`](.content-system/) | CGM adapter (brief, brand, visual, assets, rubric) |
+| [`docs/HANDOFF.md`](docs/HANDOFF.md) | Current operational handoff |
+| [`docs/AUTHORITY.md`](docs/AUTHORITY.md) | Multi-agent arbiter rules |
+| [`docs/CURRENT_STATE.md`](docs/CURRENT_STATE.md) | Historical P4 state snapshot (may lag the live web track) |
+| [`deploy/README.md`](deploy/README.md) | Gravebuster / Cloudflare deploy |
+| [`AGENTS.md`](AGENTS.md) | Agent contract + helper pins |
 
-Transcript language never silently becomes mastery.
+## Prior work and references
 
-Raw learner evidence is private by default. A specific historical recovery transcript was explicitly authorized for public recovery transport; that exception does not change the default privacy boundary.
+- CGM writing-direction + README contract at helper **0.5.1** (`9874b26dc46499137bf22e1ca163874ef2dd5e7a`) — this README follows scan-first selective bold; **do not** apply HSW bold restraints here.
+- Early representation episodes and P4 controller design remain in `docs/` and historical issues (#63 research/runtime track).
+- Continuity overlays use PCM (see `AGENTS.md`); content method uses CGM via `.content-system/`.
 
-## Operational learning loop
+## Try it
 
-Normal Study OS use is also the primary product-development data stream.
+**Learners:** open [https://study.design-bakery.com](https://study.design-bakery.com) → Guest start → pick **HESI A2** or **Algorithms (DSA)**.
 
-For meaningful learning trajectories, preserve:
+**Developers:** see [`deploy/README.md`](deploy/README.md). Pushes to `main` run CD on **gravebuster** and publish to study.design-bakery.com. Never commit straight to `main` — branch → PR → squash merge when required CI is green.
 
-```text
-course node/version
-→ learner state before
-→ source representation
-→ learner attempt
-→ observed/self-reported difficulty
-→ diagnosis hypothesis
-→ authorized pedagogical operation
-→ exact representation/intervention version
-→ assistance level
-→ next learner behavior
-→ fade/source-restoration result
-→ transfer/retention when required
-```
+### Scan test
 
-This lets Study OS improve from real longitudinal use without rewriting history.
-
-## First-class pedagogical operations
-
-Initial operation families include:
-
-- `try_unaided`
-- `explain`
-- `rename_terms`
-- `change_representation`
-- `smaller_step`
-- `remove_context`
-- `expand_detail`
-- `compress_detail`
-- `show_trace`
-- `explain_invariant`
-- `give_hint`
-- `show_worked_example`
-- `restore_original`
-- `transfer_probe`
-- `retention_probe`
-
-An intervention can contain multiple operations. Study OS should not attribute improvement to one variable when several things changed together.
-
-## Early operational evidence
-
-Historical real use exposed an important product-discovery sequence around LeetCode Two Sum and dictionary semantics:
-
-```text
-seen
-→ still confusing because of prior set association
-index_by_num
-→ still confusing
-box
-→ learner reports clearer representation
-→ subsequent dictionary lookup answered correctly
-```
-
-This supports a **candidate representation-interference hypothesis**, not a universal rule and not proof that renaming alone caused the improvement. The intervention also reduced task complexity/context, so representation and decomposition must remain separate variables.
-
-The broader design implication is that Study OS must be able to adapt very small representation dimensions—such as one identifier—not only switch between large modalities like prose and diagrams.
-
-## Deterministic learning control
-
-The target conceptual state machine is:
-
-```text
-INTRODUCE
-  ↓
-AWAIT_UNAIDED_ATTEMPT
-  ↓
-DIAGNOSE
-  ↓
-AUTHORIZE_OPERATION
-  ↓
-AWAIT_REATTEMPT
-  ↓
-FADE_ASSISTANCE
-  ↓
-RESTORE_SOURCE_REPRESENTATION
-  ↓
-TRANSFER / RETENTION WHEN REQUIRED
-  ↓
-ADVANCE_OR_BLOCK
-```
-
-Course-node progression requirements live in machine-readable policy rather than tutor intuition.
-
-## Modular versioning
-
-Study OS should version independently where practical:
-
-- course graph;
-- controller/policy;
-- operation taxonomy;
-- diagnosis module;
-- representation engine;
-- prompt/template;
-- retrieval/ranking;
-- assessment;
-- learner-state derivation;
-- model/provider adapter.
-
-Every operational decision should be reconstructable from the module versions that produced it.
-
-Historical evidence remains immutable. New module versions can be replayed against old inputs as **counterfactual evaluation**, but replay outputs are never treated as learner outcomes that actually occurred.
-
-## Longitudinal development path
-
-Study OS should be used continuously while the learner progresses through increasingly difficult material:
-
-```text
-Python/DSA foundations
-→ LeetCode-style problems
-→ complex DSA
-→ system design
-→ AI-system reasoning / debugging
-```
-
-The growing operational transcript becomes a versioned evaluation corpus for discovering controller/representation successes and failures.
-
-Once the contracts are stable and repeated real trajectories exist, authenticated/beta users can test which mechanisms generalize and which require personalization. Subject 001 longitudinal evidence remains subject-level evidence until broader replication exists.
-
-## Long-horizon cost/distribution direction
-
-This is not a current implementation priority, but the architecture should permit replacing large-LLM work with cheaper components when the product behavior is understood.
-
-Possible future representation/diagnosis implementations include:
-
-- parser / AST / compiler transforms;
-- deterministic traces and static analysis;
-- identifier/terminology rewriting;
-- templates;
-- retrieval/cached validated representations;
-- sentence embeddings / sentence transformers;
-- small classifiers or task-specific models;
-- IR-to-IR and language/notation converters;
-- constrained LLM fallback for ambiguous/generative work.
-
-The controller contract should remain stable regardless of which implementation fulfills an authorized operation.
-
-## Architecture and planning authority
-
-Start here:
-
-- [`docs/P4_DETERMINISTIC_LEARNING_CONTROLLER_PDD.md`](docs/P4_DETERMINISTIC_LEARNING_CONTROLLER_PDD.md)
-- [`docs/P4_DETERMINISTIC_LEARNING_CONTROLLER_SDD.md`](docs/P4_DETERMINISTIC_LEARNING_CONTROLLER_SDD.md)
-- [`docs/ROADMAP.md`](docs/ROADMAP.md)
-- [`docs/CURRENT_STATE.md`](docs/CURRENT_STATE.md)
-- [`docs/DECISIONS.md`](docs/DECISIONS.md)
-- [`docs/HANDOFF.md`](docs/HANDOFF.md)
-
-P3 durability/reconciliation specifications remain supporting infrastructure and historical design authority for evidence capture.
-
-## Repository boundary
-
-Study OS owns:
-
-- learner/session source evidence;
-- operational learning events and episodes;
-- course/control state;
-- learner-state derivations;
-- representation definitions/versions;
-- intervention decisions/outcomes;
-- assessment, transfer, and retention evidence;
-- module-version provenance and replay evaluation.
-
-FOSSIL remains optional downstream lineage/research promotion, not runtime learner-state authority.
-
-Implementation code is replaceable. The durable assets are the architecture, data semantics, provenance, control contracts, representations, curriculum structure, and longitudinal evidence.
+Headings + bold anchors should recover: **representation friction** → **web learning player** → **controller authorizes / AI realizes** → **evidence boundaries** → **try the live site**.
