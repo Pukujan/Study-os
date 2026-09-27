@@ -15,6 +15,8 @@ from web_testkit import ApiClient, make_settings, requires_db, temp_database  # 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
+from study_os.web.config import TUTOR_PROMPT_VERSION  # noqa: E402
+
 
 class _PlayerDbCase(unittest.TestCase):
     """One throwaway database + app per test class, with a StubLLM for the tutor."""
@@ -167,14 +169,23 @@ class PlayerSessionTests(_PlayerDbCase):
         )
         self.assertEqual(len(events), 1)
 
-    def test_confused_returns_new_variant(self) -> None:
+    def test_confused_queues_new_variant_on_same_step(self) -> None:
         c = self.client()
         c.signup(self.email())
-        sid, _ = self._start_on_probe(c)
+        sid, before = self._start_on_probe(c)
         r = c.c.post(f"/api/player/sessions/{sid}/confused", json={}, headers=c.headers)
         self.assertEqual(r.status_code, 200)
-        self.assertNotEqual(r.json()["step"]["variant"], -1)
-        self.assertIn("feedback", r.json())
+        body = r.json()
+        self.assertIn("feedback", body)
+        # Re-explain keeps the step and queues the next variant; the variant is
+        # applied only when the learner acknowledges the feedback.
+        self.assertEqual(body["step"]["step_id"], before["step"]["step_id"])
+        self.assertEqual(body["phase"], "feedback")
+        self.assertEqual(body["feedback"]["next_action"], "retry")
+        after = c.c.post(f"/api/player/sessions/{sid}/next", json={}, headers=c.headers).json()
+        self.assertEqual(after["step"]["step_id"], before["step"]["step_id"])
+        self.assertNotEqual(after["step"]["variant"], -1)
+        self.assertEqual(after["phase"], "probe")
 
     def test_next_advances(self) -> None:
         c = self.client()
@@ -207,12 +218,12 @@ class PlayerTutorTests(_PlayerDbCase):
         body = r.json()
         self.assertIn("reply_md", body)
         self.assertEqual(body["served"], "generated")
-        self.assertEqual(body["prompt_version"], "tutor.v2")
+        self.assertEqual(body["prompt_version"], TUTOR_PROMPT_VERSION)
         self.assertTrue(body["message_id"])
         rows = self.sql("SELECT * FROM learn.llm_interaction WHERE session_id = %s", (sid,))
         self.assertEqual(len(rows), 1)
         self.assertEqual(rows[0]["served"], "generated")
-        self.assertEqual(rows[0]["prompt_version"], "tutor.v2")
+        self.assertEqual(rows[0]["prompt_version"], TUTOR_PROMPT_VERSION)
 
     def test_tutor_leak_is_repaired_or_fallback(self) -> None:
         from contextlib import ExitStack
@@ -260,26 +271,114 @@ class PlayerTutorTests(_PlayerDbCase):
 
 
 @requires_db
+class PlayerRegeneratePresentationTests(_PlayerDbCase):
+    """Chat-triggered current-step re-render (#126)."""
+
+    @staticmethod
+    def _policy(render):
+        def _llm(name: str, _messages: list[dict[str, str]]) -> dict[str, Any] | None:
+            if name != "tutor_reply":
+                return None
+            return {"reply_md": "Look at the same box again. What changed?", "suggested_action": None, "regenerate_presentation": render}
+        return _llm
+
+    def _app_with(self, render) -> Any:
+        from fastapi.testclient import TestClient
+        from study_os.web.api import create_app
+        from study_os.web.models import StubLLM
+
+        return create_app(make_settings(self.db_url, llm_enabled=True), jev=None, llm=StubLLM(self._policy(render)), use_env_models=False), TestClient
+
+    def _run(self, render) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
+        app, TestClient = self._app_with(render)
+        with TestClient(app) as tc:
+            c = ApiClient(tc)
+            c.signup(self.email())
+            sid, before = self._start_on_probe(c, "sliding-window-box")
+            reply = c.c.post(f"/api/player/sessions/{sid}/tutor", json={"message": "show me this another way"}, headers=c.headers)
+            self.assertEqual(reply.status_code, 200, reply.text)
+            body = reply.json()
+            after = c.c.get(f"/api/player/sessions/{sid}", headers=c.headers).json()
+            return before, body, after
+
+    def test_valid_regeneration_is_applied_in_place_without_advancing(self) -> None:
+        before, body, after = self._run({"teach_md": "Same box, read from its left edge.", "frame_indices": [0]})
+        update = body["regenerate_presentation"]
+        self.assertEqual(update["schema_version"], "study-os.player-presentation.v1")
+        self.assertEqual(update["operation"], "regenerate_presentation")
+        self.assertEqual((update["previous_version"], update["version"]), (0, 1))
+        self.assertEqual(update["provenance"]["prompt_version"], "tutor.v3")
+        # Same step identity, and the served view adopted the new presentation.
+        self.assertEqual(after["step"]["step_id"], before["step"]["step_id"])
+        self.assertEqual(after["step"]["concept_id"], before["step"]["concept_id"])
+        self.assertEqual(after["presentation_version"], 1)
+        self.assertEqual(after["step"]["teach_md"], "Same box, read from its left edge.")
+        self.assertEqual(after["step"]["teach_frames"], update["teach_frames"])
+        # Nothing else moved.
+        self.assertEqual(after["phase"], before["phase"])
+        self.assertEqual(after["step"]["variant"], before["step"]["variant"])
+        self.assertEqual(after["step"]["probe"], before["step"]["probe"])
+        self.assertEqual(after["progress"], before["progress"])
+
+    def test_regeneration_survives_reload_and_bumps_the_version(self) -> None:
+        app, TestClient = self._app_with({"teach_md": "Same box, read from its left edge.", "frame_indices": [0]})
+        with TestClient(app) as tc:
+            c = ApiClient(tc)
+            c.signup(self.email())
+            sid, _ = self._start_on_probe(c, "sliding-window-box")
+            first = c.c.post(f"/api/player/sessions/{sid}/tutor", json={"message": "again"}, headers=c.headers).json()["regenerate_presentation"]
+            resumed = c.c.post("/api/player/sessions", json={"lesson_id": "sliding-window-box"}, headers=c.headers).json()
+            self.assertEqual(resumed["presentation_version"], first["version"])
+            self.assertEqual(resumed["step"]["teach_md"], first["teach_md"])
+            second = c.c.post(f"/api/player/sessions/{sid}/tutor", json={"message": "again"}, headers=c.headers).json()["regenerate_presentation"]
+            self.assertEqual((second["previous_version"], second["version"]), (1, 2))
+
+    def test_rejected_regeneration_leaves_the_session_untouched(self) -> None:
+        # The probe answer is 4; a proposal that leaks it must be refused.
+        before, body, after = self._run({"teach_md": "The position is 4.", "frame_indices": [0]})
+        self.assertIsNone(body["regenerate_presentation"])
+        self.assertEqual(after["presentation_version"], 0)
+        self.assertEqual(after["step"]["teach_md"], before["step"]["teach_md"])
+        self.assertNotIn("4", after["step"]["teach_md"])
+
+    def test_out_of_range_frames_are_refused(self) -> None:
+        before, body, after = self._run({"teach_md": "Another look at the same box.", "frame_indices": [7]})
+        self.assertIsNone(body["regenerate_presentation"])
+        self.assertEqual(after["presentation_version"], 0)
+        self.assertEqual(after["step"]["teach_frames"], before["step"]["teach_frames"])
+
+    def test_absent_regeneration_is_still_a_normal_reply(self) -> None:
+        before, body, after = self._run(None)
+        self.assertIsNone(body["regenerate_presentation"])
+        self.assertEqual(body["served"], "generated")
+        self.assertEqual(after["presentation_version"], 0)
+
+
+@requires_db
 class PlayerFeedbackTests(_PlayerDbCase):
     def test_feedback_stored_for_step(self) -> None:
         c = self.client()
         c.signup(self.email())
         view = c.c.post("/api/player/sessions", json={"lesson_id": "fractions-compare"}, headers=c.headers).json()
         sid = view["session_id"]
+        # A step review is a 1-5 rating plus a typed why (SOS-0016, #126); the
+        # old like/dislike step payload is intentionally no longer accepted.
         r = c.c.post("/api/feedback", json={
             "session_id": sid,
             "step_id": view["step"]["step_id"],
             "target_kind": "step",
-            "target_id": "step-1",
-            "rating": "dislike",
-            "reasons": ["too_easy"],
+            "target_id": f"{view['step']['step_id']}:{view['step']['variant']}",
+            "presentation_version": view["presentation_version"],
+            "rating": 2,
             "free_text": "I already knew this, my email is a@b.com",
+            "idempotency_key": str(uuid.uuid4()),
         }, headers=c.headers)
         self.assertEqual(r.status_code, 200)
         self.assertTrue(r.json()["ok"])
         rows = self.sql("SELECT * FROM ux.feedback WHERE session_id = %s", (sid,))
         self.assertEqual(len(rows), 1)
         self.assertNotIn("@", rows[0]["free_text_scrubbed"])
+        self.assertEqual(rows[0]["rating"], "2")
 
     def test_feedback_for_tutor_message_looks_up_model(self) -> None:
         c = self.client()

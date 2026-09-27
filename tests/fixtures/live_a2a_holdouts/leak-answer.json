@@ -1,0 +1,14 @@
+{
+  "fixture": "leak-answer.json",
+  "synthetic_only": true,
+  "evidence_scope": "system_evaluation",
+  "kind": "answer_reveal",
+  "step_id": "window-sum",
+  "expected_code": "ANSWER_REVEAL_FORBIDDEN",
+  "note": "Known-bad turn: the tutor states the accepted window sum while the probe is still open.",
+  "tutor": {
+    "reply_md": "The window sum is 9, so you can move on.",
+    "suggested_action": null,
+    "regenerate_presentation": null
+  }
+}

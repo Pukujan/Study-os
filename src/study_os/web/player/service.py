@@ -15,6 +15,7 @@ from study_os.web.service import DbGate, ServiceError
 from . import content
 from . import engine
 from . import tutor as tutor_module
+from . import presentation
 
 
 class PlayerService:
@@ -140,13 +141,16 @@ class PlayerService:
         response = (response or "")[:2000]
         lesson, state = self._load(principal, session_id)
         with self.db.tx() as conn:
-            self._session_row(conn, principal, session_id, lock=True)
+            row = self._session_row(conn, principal, session_id, lock=True)
+            state = dict(row["state"])
             prior = conn.execute(
                 "SELECT id FROM learn.player_event WHERE session_id = %s AND idempotency_key = %s",
                 (session_id, f"{principal.subject_id}:{idempotency_key}"),
             ).fetchone()
             if prior is not None:
                 return self._view(lesson, state, principal, session_id)
+            if state["phase"] != "probe":
+                raise ServiceError("probe_not_open")
             state, feedback = engine.attempt(lesson, state, response, modality)
             self._update_session_state(conn, session_id, state)
             self._log_event(
@@ -165,7 +169,10 @@ class PlayerService:
     def confused(self, principal: Any, session_id: str) -> dict[str, Any]:
         lesson, state = self._load(principal, session_id)
         with self.db.tx() as conn:
-            self._session_row(conn, principal, session_id, lock=True)
+            row = self._session_row(conn, principal, session_id, lock=True)
+            state = dict(row["state"])
+            if state["phase"] != "probe":
+                raise ServiceError("probe_not_open")
             state, feedback = engine.confused(lesson, state)
             self._update_session_state(conn, session_id, state)
             self._log_event(
@@ -180,7 +187,8 @@ class PlayerService:
     def next(self, principal: Any, session_id: str) -> dict[str, Any]:
         lesson, state = self._load(principal, session_id)
         with self.db.tx() as conn:
-            self._session_row(conn, principal, session_id, lock=True)
+            row = self._session_row(conn, principal, session_id, lock=True)
+            state = dict(row["state"])
             state = engine.next(lesson, state)
             self._update_session_state(conn, session_id, state)
             self._log_event(
@@ -222,8 +230,20 @@ class PlayerService:
             gate=gate,
             llm_enabled=self.settings.llm_enabled,
         )
+        applied_update = None
         with self.db.tx() as conn:
-            self._session_row(conn, principal, session_id, lock=True)
+            row = self._session_row(conn, principal, session_id, lock=True)
+            locked_state = dict(row["state"])
+            if (result.regenerate_presentation is not None
+                    and presentation.context(lesson, locked_state) == presentation.context(lesson, state)):
+                applied_update = presentation.apply(lesson, locked_state, result.regenerate_presentation, {
+                    "prompt_version": result.prompt_version,
+                    "model": result.model,
+                    "route": result.route,
+                    "served": result.served,
+                })
+                self._update_session_state(conn, session_id, locked_state)
+                state = locked_state
             llm_id = str(uuid.uuid4())
             conn.execute(
                 "INSERT INTO learn.llm_interaction (id, session_id, step_id, operation, prompt_id, "
@@ -258,6 +278,7 @@ class PlayerService:
                     "prompt_version": result.prompt_version,
                     "route": result.route,
                     "model": result.model,
+                    "regenerate_presentation": applied_update,
                 },
             )
         return {
@@ -267,11 +288,17 @@ class PlayerService:
             "prompt_version": result.prompt_version,
             "model": result.model,
             "served": result.served,
+            "regenerate_presentation": applied_update,
         }
 
     def feedback(self, principal: Any, body: Any) -> dict[str, Any]:
-        if body.target_kind not in ("step", "tutor_message"):
-            raise ServiceError("invalid_target_kind")
+        if body.target_kind == "step":
+            return self._step_review(principal, body)
+        if body.target_kind == "tutor_message":
+            return self._tutor_message_feedback(principal, body)
+        raise ServiceError("invalid_target_kind")
+
+    def _tutor_message_feedback(self, principal: Any, body: Any) -> dict[str, Any]:
         if body.rating not in ("like", "dislike"):
             raise ServiceError("invalid_rating")
         allowed_reasons = {"confusing", "too_long", "too_easy", "wrong", "not_helpful", "other"}
@@ -284,7 +311,7 @@ class PlayerService:
         model: str | None = None
         llm_id: str | None = None
         session_id: str | None = body.session_id
-        if body.target_kind == "tutor_message" and body.target_id:
+        if body.target_id:
             with self.db.tx() as conn:
                 row = conn.execute(
                     "SELECT id, session_id, prompt_version, model FROM learn.llm_interaction WHERE id = %s",
@@ -320,16 +347,107 @@ class PlayerService:
             )
         return {"ok": True, "feedback_id": feedback_id}
 
+    def _step_review(self, principal: Any, body: Any) -> dict[str, Any]:
+        """Append-only 1-5 step review bound to the served step/variant/version.
+
+        The committed ``ux.feedback`` row is the decision record: no ``learn.*``
+        event is written and a review never advances the learner path.
+        """
+
+        rating = body.rating
+        if type(rating) is not int or not 1 <= rating <= 5:
+            raise ServiceError("invalid_rating")
+        why = (body.free_text or "").strip()
+        if not why:
+            raise ServiceError("why_required")
+        if not body.session_id or not body.step_id or not body.target_id:
+            raise ServiceError("review_target_required")
+        key = (body.idempotency_key or "").strip()
+        if not key:
+            raise ServiceError("idempotency_key_required")
+        if body.presentation_version is None:
+            raise ServiceError("presentation_version_required")
+        if body.reasons:
+            raise ServiceError("invalid_reason")
+        free = scrub(why)
+        with self.db.tx() as conn:
+            row = self._session_row(conn, principal, body.session_id, lock=True)
+            state = dict(row["state"])
+            lesson = content.load_lesson(row["lesson_id"])
+            step = lesson["steps"][state["step_index"]]
+            if (body.step_id != step["step_id"]
+                    or body.target_id != f"{step['step_id']}:{state['variant_index']}"
+                    or body.presentation_version != int(state.get("presentation_version", 0))):
+                raise ServiceError("stale_review_target", 409)
+            existing = self._review_by_key(conn, principal.subject_id, key)
+            if existing is not None:
+                return self._review_receipt(existing, body, free)
+            feedback_id = str(uuid.uuid4())
+            inserted = conn.execute(
+                "INSERT INTO ux.feedback (feedback_id, subject_id, session_id, step_id, target_kind, "
+                "target_id, rating, free_text_scrubbed, presentation_version, idempotency_key) "
+                "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) "
+                "ON CONFLICT (subject_id, idempotency_key) WHERE idempotency_key IS NOT NULL DO NOTHING "
+                "RETURNING feedback_id",
+                (
+                    feedback_id,
+                    principal.subject_id,
+                    body.session_id,
+                    body.step_id,
+                    "step",
+                    body.target_id,
+                    str(rating),
+                    free,
+                    body.presentation_version,
+                    key,
+                ),
+            ).fetchone()
+            if inserted is None:
+                existing = self._review_by_key(conn, principal.subject_id, key)
+                if existing is None:
+                    raise ServiceError("review_conflict", 409)
+                return self._review_receipt(existing, body, free)
+        return {"ok": True, "feedback_id": feedback_id}
+
+    @staticmethod
+    def _review_by_key(conn: Conn, subject_id: str, key: str) -> dict[str, Any] | None:
+        return conn.execute(
+            "SELECT * FROM ux.feedback WHERE subject_id = %s AND idempotency_key = %s",
+            (subject_id, key),
+        ).fetchone()
+
+    @staticmethod
+    def _review_receipt(row: dict[str, Any], body: Any, free: str) -> dict[str, Any]:
+        same = (
+            str(row["session_id"]) == body.session_id
+            and row["step_id"] == body.step_id
+            and row["target_id"] == body.target_id
+            and row["rating"] == str(body.rating)
+            and (row["free_text_scrubbed"] or "") == free
+            and row["presentation_version"] == body.presentation_version
+        )
+        if not same:
+            raise ServiceError("review_conflict", 409)
+        return {"ok": True, "feedback_id": str(row["feedback_id"])}
+
     def admin_feedback(self, principal: Any) -> dict[str, Any]:
         if principal.role != "admin":
             raise ServiceError("forbidden", 403)
         with self.db.tx() as conn:
             rows = conn.execute(
-                "SELECT * FROM analytics.v_feedback ORDER BY created_at DESC LIMIT 200"
+                "SELECT feedback_id, created_at, subject_id, session_id, step_id, target_kind, target_id, "
+                "rating, reasons, free_text_scrubbed, prompt_version, model, presentation_version "
+                "FROM analytics.v_feedback ORDER BY created_at DESC LIMIT 200"
             ).fetchall()
             stats = conn.execute(
                 "SELECT prompt_version, rating, count(*) AS n FROM ux.feedback "
-                "WHERE prompt_version IS NOT NULL GROUP BY prompt_version, rating"
+                "WHERE prompt_version IS NOT NULL AND rating IN ('like', 'dislike') "
+                "GROUP BY prompt_version, rating"
+            ).fetchall()
+            review_stats = conn.execute(
+                "SELECT presentation_version, rating, count(*) AS n FROM ux.feedback "
+                "WHERE rating IN ('1', '2', '3', '4', '5') "
+                "GROUP BY presentation_version, rating ORDER BY presentation_version"
             ).fetchall()
         by_version: dict[str, dict[str, Any]] = {}
         for row in stats:
@@ -340,6 +458,10 @@ class PlayerService:
                 by_version[pv]["likes"] += int(row["n"])
             else:
                 by_version[pv]["dislikes"] += int(row["n"])
+        reviews_by_version: dict[Any, dict[str, int]] = {}
+        for row in review_stats:
+            bucket = reviews_by_version.setdefault(row["presentation_version"], {})
+            bucket[row["rating"]] = int(row["n"])
         return {
             "rows": [dict(r) for r in rows],
             "by_prompt_version": [
@@ -350,6 +472,17 @@ class PlayerService:
                     "top_reasons": data["top_reasons"],
                 }
                 for pv, data in by_version.items()
+            ],
+            # Ordinal 1-5 step reviews, kept separate from historical thumbs.
+            "step_reviews": [
+                {
+                    "presentation_version": version,
+                    "counts": {str(score): counts.get(str(score), 0) for score in range(1, 6)},
+                    "total": sum(counts.values()),
+                }
+                for version, counts in sorted(
+                    reviews_by_version.items(), key=lambda item: (item[0] is None, item[0])
+                )
             ],
         }
 

@@ -53,14 +53,11 @@ export default function App() {
         <a href="/" onClick={(e) => { e.preventDefault(); navigate("/"); }} className="brand" data-track="nav.home">Study OS</a>
         {me ? (
           <span className="who">
-            {isGuest ? (
+            {isGuest && (
               <button className="link" onClick={() => navigate("/")} data-track="nav.claim">Save progress</button>
-            ) : (
-              <>
-                {me.display_name || me.handle}
-                <button className="link" onClick={logout} data-track="nav.logout">Sign out</button>
-              </>
             )}
+            {!isGuest && (me.display_name || me.handle)}
+            <button className="link" onClick={logout} data-track="nav.logout">Sign out</button>
           </span>
         ) : (
           <span className="who">

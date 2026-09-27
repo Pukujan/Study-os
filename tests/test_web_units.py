@@ -95,10 +95,12 @@ class ConfigTests(unittest.TestCase):
             os.environ["ALLOWED_ORIGINS"] = "https://a.example, https://b.example"
             os.environ["COOKIE_SECURE"] = "0"
             os.environ["GLOBAL_DAILY_SPEND_USD"] = "1.5"
+            os.environ["RATE_SIGNUP_PER_HOUR"] = "500"
             s = load_settings()
             self.assertEqual(s.allowed_origins, ("https://a.example", "https://b.example"))
             self.assertFalse(s.cookie_secure)
             self.assertEqual(s.global_daily_spend_usd, 1.5)
+            self.assertEqual(s.rate_signup_per_hour, 500)
             self.assertEqual(s.jev_model, "typesafe/jev-1.13")
         finally:
             os.environ.clear()
@@ -232,6 +234,25 @@ class ModelTransportTests(unittest.TestCase):
         with mock.patch("study_os.web.models.httpx.post", side_effect=[httpx.ReadTimeout("x"), self._resp(200, no_tool)]):
             with self.assertRaises(ModelUnavailable):
                 llm.complete(("a", "b"), [], tool)
+
+    def test_inferhub_distinguishes_a_dropped_tool_call_from_truncated_arguments(self) -> None:
+        from unittest import mock
+
+        from study_os.web.models import InferHubLLM, ModelUnavailable, _tool_arguments
+
+        self.assertEqual(_tool_arguments({"choices": [{"message": {"content": "plain"}}]}), (None, "no_tool_call"))
+        self.assertEqual(_tool_arguments({}), (None, "no_tool_call"))
+        truncated = {"choices": [{"message": {"tool_calls": [{"function": {"arguments": '{"reply_md": "half'}}]}}]}
+        self.assertEqual(_tool_arguments(truncated), (None, "invalid_tool_arguments"))
+        usable = {"choices": [{"message": {"tool_calls": [{"function": {"arguments": '{"reply_md": "ok"}'}}]}}]}
+        self.assertEqual(_tool_arguments(usable), ({"reply_md": "ok"}, ""))
+
+        llm = InferHubLLM("k", "https://example.invalid/v1")
+        tool = {"type": "function", "function": {"name": "emit_turn", "parameters": {}}}
+        with mock.patch("study_os.web.models.httpx.post", return_value=self._resp(200, truncated)):
+            with self.assertRaises(ModelUnavailable) as caught:
+                llm.complete(("cb/glm-5.3",), [{"role": "user", "content": "x"}], tool)
+        self.assertIn("invalid_tool_arguments", caught.exception.reason)
 
 
 if __name__ == "__main__":

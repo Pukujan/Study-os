@@ -23,5 +23,10 @@ dist/
 .coverage
 web/node_modules/
 web/dist/
+# SOS-0017/SOS-0018 gate run outputs: a committed receipt or screenshot would be
+# fabricated evidence, so these are never tracked.
+web/e2e/.artifacts/
+web/playwright-report/
+evals/out/
 !.env.example
 *.tsbuildinfo

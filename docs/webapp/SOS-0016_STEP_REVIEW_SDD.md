@@ -1,0 +1,19 @@
+# SOS-0016 learner step review: system design (A8)
+
+Status: implemented contract; issue #126, PR #127. See [PDD](SOS-0016_STEP_REVIEW_PDD.md) and [TDD](SOS-0016_STEP_REVIEW_TDD.md).
+
+## Contract
+
+The existing `POST /api/feedback` is the write path. For `target_kind: "step"`, the submitted JSON has `session_id`, `step_id`, `target_id: "<step_id>:<variant>"`, integer `rating` in 1..5, `free_text` (typed why, 1..500 characters after trim), and `idempotency_key` (one client-generated UUID for one Submit intent). `presentation_version` is the version the learner reviewed, from the served view. The response is `{ok: true, feedback_id: <uuid>}`; exact replay returns the same ID. Existing tutor-message feedback may retain its older contract for this atomic. Do not reinterpret old `like`/`dislike` rows.
+
+Server validation is authoritative: authenticate and check CSRF; load the session for that subject; verify the current step ID, variant-derived target ID, and presentation version from authoritative state; reject unknown or stale session/step/variant/version without insertion. Reject bool, float, numeric string, 0, 6, missing rating, and missing/blank typed why. Trim and scrub text using existing privacy rules. Do not reject a short but meaningful rationale via a word-count heuristic. Reject unknown step target IDs even if a client displays them. Validation failures have zero writes. Report stable error codes; exact HTTP 4xx choice can follow existing API convention.
+
+`ux.feedback` stays the source. Add an additive migration for replay key and presentation version, with a unique scope sufficient to prevent duplicate submitted intents for the same subject/session; historical rows can have null key/version. Preserve `rating` storage compatibility if necessary (canonical new values `"1"`..`"5"` in the current text column), while the API remains numeric. The row is the decision log: subject, session, step, target, rating, scrubbed why, version, key, timestamp. Add a database-enforced append-only guard for `ux.feedback` if not already present; no UPDATE/DELETE/TRUNCATE in normal review flows. A changed payload under an existing key is a conflict, not a second review. Serialize/constrain concurrent same-key submissions at the database layer; client busy state alone is insufficient. A fresh key intentionally appends another row. Receipts must not claim an existing row for a different subject.
+
+The player form owns a draft `{rating, why, key}` for a step/variant. Choosing a score or typing does not call the API. Submit is disabled until both fields are valid and while a request is pending. A failed request keeps the draft and key for retry; confirmed success can show a compact receipt and start a new draft on explicit re-review. Regeneration of the same step/variant keeps the draft but updates the presentation version it is about; changing step or variant discards it. The UI never renders a synthetic review as a learner rating.
+
+For read models, admin analytics must distinguish numeric reviews from historical thumbs. Do not cast historical `like`/`dislike` to 1/5 or fold them into a misleading aggregate. A2A roleplay may read the throwaway test DB to verify a committed row; its scorecard and transcript remain synthetic artifacts under `evals/out/`, outside `learn.*`.
+
+## Decision and uncertainty
+
+Requiring text is an owner requirement, with a real response-burden risk. Observe completion and qualitative usefulness before changing it. Numeric scores are ordinal self-report; neither arithmetic averaging nor a text classifier should enter learner-state decisions without a separate research decision. This preserves the existing observed/self-reported/derived boundary and does not change manifest schema versions until the executor actually adds a migration. The PDD/SDD/TDD are the decision record for the A8 proposal; issue #126 and a later implementation PR record acceptance.

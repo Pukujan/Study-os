@@ -298,3 +298,20 @@ Decision:
 - **HESI:** the second learner (Alex's wife) consents and is the target learner. The HESI track becomes a checkpointed, topic-based program: a topic graph with prerequisites and section checkpoints mapped from the public HESI A2 sections (math, reading, vocabulary, grammar, anatomy and physiology, biology, chemistry) with HESI Exit content areas scaffolded. Topics are compiled into PIR teaching assets and served by the same deterministic controller as the sliding-window lesson. Content is original and cites openly licensed sources (OpenStax, Open RN, CDC); no commercial prep questions are copied. Every item carries an LLM review pass and stays `unreviewed` until Alex reviews it.
 
 Unchanged: ADR-0016 deterministic control, the evidence invariants, and "synthetic evaluation is never learner evidence".
+
+## D019 proposal - learner step review as append-only self-report
+
+Status: accepted for issue #126 on 2026-09-25. Proposed by A8; implemented and verified by the InferHub A8-exec slice on branch `task/SOS-frontend-lesson-ship-2026-09-25` (PR #127). Migration `0003_step_review.sql` adds `presentation_version` and a unique `idempotency_key` scope plus the `ux.feedback` append-only trigger; `POST /api/feedback` for `target_kind: "step"` enforces the contract below. Acceptance of the learner-facing slice still depends on the issue/PR record and the deferred Playwright/vision and live A2A gates.
+
+The learner player step review uses an intentional Submit of a 1-5 usefulness rating and nonblank typed why. The committed `ux.feedback` row is the review decision record, with step/variant/presentation context and an idempotency key. Exact retries return one receipt; a distinct review intent appends a new row. A re-render preserves step identity. Historical thumbs remain historical and decomposer review is a separate surface. Numeric opinion and rationale are self-report, never mastery evidence or `learn.*` review events. See `docs/webapp/SOS-0016_STEP_REVIEW_PDD.md`, `SOS-0016_STEP_REVIEW_SDD.md`, and `SOS-0016_STEP_REVIEW_TDD.md` for rationale, boundaries, and tests. Research Gate R0 and FOSSIL policy are unchanged.
+
+## D020 - Step review stays visible after Submit; guest-create rate limit is configurable
+
+Status: accepted for issue #126 on 2026-09-26. Found and fixed by the InferHub A9-exec slice (SOS-0017 Playwright + cheap-vision gate) on branch `task/SOS-frontend-lesson-ship-2026-09-25` (PR #127).
+
+Two product defects surfaced only once a real browser gate ran, and neither is visible to the API/DB/jsdom contracts:
+
+1. The saved-review receipt replaced the review form, so after Submit the step-review surface (1-5 + why + Submit) was no longer rendered. The SOS-0017 vision checkpoint V2 requires the post-submit surface to be a rendered review surface. Submit now keeps the `player.review.submitted` receipt **and** hands the learner a fresh draft, so one stable panel always holds a review surface for the current step. This matches `SOS-0016_STEP_REVIEW_SDD.md` ("confirmed success can show a compact receipt and start a new draft on explicit re-review") while making the surface continuously verifiable. Exact-replay/idempotency semantics are unchanged: a fresh draft has a fresh key, and a second Submit is a distinct review intent, exactly as D019 already states.
+2. Guest account creation (`POST /api/try`) and local signup shared a hard-coded `10/hour` per-IP bucket, unlike the other two rate knobs which read the environment. A branch-local gate that starts many guest lessons in one process was throttled into a false `rate_limited` failure. The bucket size is now `Settings.rate_signup_per_hour` (`RATE_SIGNUP_PER_HOUR`, default `10`), so production behavior is unchanged and a gate run can raise it explicitly.
+
+Neither change relaxes an evidence invariant, a schema version, a research gate, or the append-only/self-report boundary of D019. Numeric opinion and rationale remain self-report, never mastery evidence.

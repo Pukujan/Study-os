@@ -91,6 +91,30 @@ class OpenRouterJev:
         )
 
 
+def _tool_arguments(body: Any) -> tuple[dict[str, Any] | None, str]:
+    """Return the first usable tool-call arguments, plus an error code when absent.
+
+    A provider can answer with prose (no tool call) or with tool-call arguments
+    that a token cap truncated mid-JSON. Both leave the caller without arguments,
+    but they are different defects, so the recorded attempt distinguishes them.
+    """
+
+    try:
+        calls = body["choices"][0]["message"].get("tool_calls") or []
+    except (KeyError, IndexError, TypeError):
+        return None, "no_tool_call"
+    if not calls:
+        return None, "no_tool_call"
+    for call in calls:
+        try:
+            args = json.loads(call["function"]["arguments"])
+        except (KeyError, TypeError, ValueError):
+            continue
+        if isinstance(args, dict):
+            return args, ""
+    return None, "invalid_tool_arguments"
+
+
 class InferHubLLM:
     def __init__(self, api_key: str, base_url: str, timeout: float = 25.0) -> None:
         self._key = api_key
@@ -133,15 +157,9 @@ class InferHubLLM:
             if cost is None:
                 pin, pout = ROUTE_PRICES.get(route, (0.3, 1.0))
                 cost = (tin * pin + tout * pout) / 1_000_000
-            args = None
-            try:
-                calls = body["choices"][0]["message"].get("tool_calls") or []
-                if calls:
-                    args = json.loads(calls[0]["function"]["arguments"])
-            except (KeyError, IndexError, ValueError, TypeError):
-                args = None
+            args, tool_error = _tool_arguments(body)
             if args is None:
-                attempts.append({"route": route, "error": "no_tool_call", "latency_ms": latency})
+                attempts.append({"route": route, "error": tool_error, "latency_ms": latency})
                 continue
             attempts.append({"route": route, "ok": True, "latency_ms": latency})
             return LLMResponse(route, args, tin, tout, float(cost), latency, attempts)

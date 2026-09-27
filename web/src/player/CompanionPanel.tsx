@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { api, type PlayerView, type TutorReply } from "../api";
 import { Markdown } from "../markdown";
 import FeedbackBar from "./FeedbackBar";
+import { applyPresentation } from "./presentation";
 import Sprite from "../mascot/Sprite";
 
 type ChatItem =
@@ -14,6 +15,7 @@ type ChatItem =
       prompt_version: string;
       model: string;
       suggested_action?: string | null;
+      regenerate_presentation?: TutorReply["regenerate_presentation"];
     }
   | { id: string; role: "system"; text: string };
 
@@ -172,6 +174,7 @@ export default function CompanionPanel({
     prompt_version: reply.prompt_version,
     model: reply.model,
     suggested_action: (reply as { suggested_action?: string | null }).suggested_action,
+    regenerate_presentation: reply.regenerate_presentation,
   });
 
   const send = async () => {
@@ -184,6 +187,8 @@ export default function CompanionPanel({
       const reply = await api.tutor(sessionId, text);
       const item = tutorReplyToItem(reply);
       setHistory((h) => [...h, item]);
+      const nextView = applyPresentation(view, reply.regenerate_presentation);
+      if (nextView !== view) onViewChange(nextView);
       if (speakerOn) speakLatest(item.text);
     } catch {
       setHistory((h) => [

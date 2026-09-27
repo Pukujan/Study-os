@@ -1,0 +1,28 @@
+{
+  "schema": "study_os.e2e.vision_gate_holdout/v0.1",
+  "purpose": "Development adversary, committed and visible, never a hidden evaluation. Each case is judged with the identical prompt and identical model as the real checkpoints, in the same run. A case that returns VISION_PASS sets holdout.result = HOLDOUT_BROKEN and voids the whole run (no partial credit), because a judge that passes a blank or off-target canvas has not looked at the image.",
+  "judged_with": "the frozen prompt in web/e2e/vision/prompt.ts and the pinned models in web/e2e/vision/judge.ts",
+  "cases": [
+    {
+      "id": "holdout-blank-canvas",
+      "kind": "static",
+      "image": "blank-canvas.png",
+      "expect": "VISION_FAIL_BLANK",
+      "description": "A solid white canvas with no interface. A judge that has not actually looked can still emit a confident pass; this is the informativeness-bias false positive the gate exists to catch."
+    },
+    {
+      "id": "holdout-review-panel-hidden",
+      "kind": "derived",
+      "derived": "review-panel-hidden",
+      "expect": "VISION_FAIL_PARTIAL",
+      "description": "The real player at the gate viewport with the review panel hidden at runtime. The page is otherwise healthy, so this is the load-bearing control: it separates 'the app renders' from 'the review surface renders'."
+    },
+    {
+      "id": "holdout-unrelated-screen",
+      "kind": "static",
+      "image": "unrelated-screen.png",
+      "expect": "VISION_FAIL_WRONG_TARGET",
+      "description": "A rendered interface that is not the step-review surface (a billing table). A judge scoring the prompt wording rather than the pixels can pass this; it must not."
+    }
+  ]
+}
