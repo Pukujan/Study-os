@@ -119,6 +119,40 @@ def _render_fraction_bar(frame: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
+
+def _render_growth_table(frame: dict[str, Any]) -> str:
+    """Render a ``growth_table`` frame as compact ASCII.
+
+    Example output::
+
+        counts as n doubles
+        n:            2  4  8
+        O(n):         2  4  8
+    """
+
+    lines: list[str] = []
+    caption = frame.get("caption")
+    if caption:
+        lines.append(caption)
+
+    n_values = [str(v) for v in frame.get("n_values", [])]
+    series: list[dict[str, Any]] = []
+    if frame.get("series"):
+        series.append(frame["series"])
+    series.extend(frame.get("series_multi") or [])
+
+    if n_values:
+        lines.append("n:            " + "  ".join(n_values))
+    for entry in series:
+        label = str(entry.get("label", ""))
+        values = [str(v) for v in entry.get("values", [])]
+        lines.append(f"{label + ':':<14}" + "  ".join(values))
+    if not series:
+        lines.append("counts arrive in the next steps")
+
+    return "\n".join(lines)
+
+
 def _render_mermaid_flow(frame: dict[str, Any]) -> str:
     """Render a ``mermaid_flow`` frame as a compact note."""
 
@@ -177,9 +211,10 @@ def _render_code_tree(frame: dict[str, Any]) -> str:
 def frame_to_text(frame: dict[str, Any]) -> str:
     """Return a compact ASCII rendering of a single frame.
 
-    Supports the ``box_index`` and ``fraction_bar`` representations used by the
-    player.  Frames that cannot be dispatched are rendered as a JSON-ish
-    string so tutors still have something to ground on.
+    Supports the ``box_index``, ``fraction_bar``, ``growth_table``,
+    ``mermaid_flow``, and ``code_tree`` representations used by the player.
+    Frames that cannot be dispatched are rendered as a JSON-ish string so
+    tutors still have something to ground on.
     """
 
     frame_type = frame.get("type")
@@ -187,6 +222,8 @@ def frame_to_text(frame: dict[str, Any]) -> str:
         return _render_box_index(frame)
     if frame_type == "fraction_bar":
         return _render_fraction_bar(frame)
+    if frame_type == "growth_table":
+        return _render_growth_table(frame)
     if frame_type == "mermaid_flow":
         return _render_mermaid_flow(frame)
     if frame_type == "code_tree":

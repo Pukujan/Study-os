@@ -107,7 +107,20 @@ export type CodeTreeFrame = {
   tree?: { label: string; children: CodeTreeNode[] } | null;
 };
 
-export type Frame = FractionBarFrame | BoxIndexFrame | MermaidFlowFrame | CodeTreeFrame;
+export type GrowthTableSeries = {
+  label: string;
+  values: number[];
+};
+
+export type GrowthTableFrame = {
+  type: "growth_table";
+  caption?: string;
+  n_values: number[];
+  series?: GrowthTableSeries | null;
+  series_multi?: GrowthTableSeries[] | null;
+};
+
+export type Frame = FractionBarFrame | BoxIndexFrame | MermaidFlowFrame | CodeTreeFrame | GrowthTableFrame;
 
 export type Probe = {
   prompt_md: string;
@@ -134,7 +147,7 @@ export type PlayerView = {
     revision: string;
     title: string;
     lane: string;
-    representation: "fraction_bar" | "box_index";
+    representation: "fraction_bar" | "box_index" | "growth_table";
     total_steps: number;
   };
   step: {

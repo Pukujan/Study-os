@@ -6,6 +6,7 @@ import Frame from "./Frame";
 import MermaidDiagram from "./MermaidDiagram";
 import LessonMap from "./LessonMap";
 import CodeTree from "./CodeTree";
+import GrowthTable from "./GrowthTable";
 
 describe("visuals", () => {
   it("FractionBar renders the right aria-label and shaded parts", () => {
@@ -72,6 +73,37 @@ describe("visuals", () => {
     );
     expect(html).toContain("Loading diagram");
     expect(html).toContain("role=\"img\"");
+  });
+
+  it("GrowthTable renders n columns, labels and bars", () => {
+    const frame = {
+      type: "growth_table" as const,
+      n_values: [2, 4, 8],
+      series: { label: "O(n)", values: [2, 4, 8] },
+      caption: "linear",
+    };
+    const html = renderToStaticMarkup(<GrowthTable frame={frame} />);
+    expect(html).toContain("growth-table");
+    expect(html).toContain("O(n)");
+    expect(html).toContain("growth-table-bar");
+    expect(html).toContain('aria-label="Growth table for n = 2, 4, 8; O(n): 2, 4, 8"');
+  });
+
+  it("Frame dispatches growth_table frames", () => {
+    const frame = {
+      type: "growth_table" as const,
+      n_values: [16],
+      series_multi: [
+        { label: "O(1)", values: [1] },
+        { label: "O(n²)", values: [256] },
+      ],
+      caption: "Side-by-side at n = 16.",
+    };
+    const html = renderToStaticMarkup(<Frame frame={frame} />);
+    expect(html).toContain("O(n²)");
+    expect(html).toContain("256");
+    expect(html).toContain("Side-by-side at n = 16.");
+    expect(html).toContain("frame-caption");
   });
 
   it("LessonMap renders compact step chips", () => {

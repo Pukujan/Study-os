@@ -544,6 +544,15 @@ class LanesTests(unittest.TestCase):
         self.assertEqual(payload["continue"]["lesson_id"], "sliding-window-box")
         self.assertEqual(payload["continue"]["session_id"], "sess-123")
 
+    def test_dsa_lane_orders_big_o_before_sliding_window(self):
+        from study_os.web.player import lanes as lanes_module
+
+        payload = lanes_module.lanes_payload({}, {})
+        dsa = next(lane for lane in payload["lanes"] if lane["lane_id"] == "dsa")
+        lesson_ids = [lesson["lesson_id"] for lesson in dsa["lessons"]]
+        self.assertEqual(lesson_ids, ["big-o-growth-families", "sliding-window-box"])
+        self.assertEqual(payload["continue"]["lesson_id"], "big-o-growth-families")
+
     def test_continue_falls_back_to_first_not_started(self):
         from study_os.web.player import lanes as lanes_module
 
@@ -551,7 +560,21 @@ class LanesTests(unittest.TestCase):
         self.assertIsNotNone(payload["continue"])
         # DSA lane has a lesson, so it should be first not-started target.
         self.assertEqual(payload["continue"]["lane"], "dsa")
+        self.assertEqual(payload["continue"]["lesson_id"], "big-o-growth-families")
         self.assertEqual(payload["continue"]["label"], "Start")
+
+
+
+    def test_big_o_lesson_loads_with_seven_steps(self):
+        from study_os.web.player.content import load_lesson
+
+        lesson = load_lesson("big-o-growth-families")
+        self.assertEqual(lesson["catalog_order"], 1)
+        self.assertEqual(lesson["representation"], "growth_table")
+        self.assertEqual(len(lesson["steps"]), 7)
+        self.assertEqual(lesson["steps"][0]["step_id"], "why_care")
+        self.assertIsNone(lesson["steps"][0].get("probe"))
+        self.assertEqual(lesson["steps"][4]["step_id"], "onlogn")
 
 
 class RenderTextTests(unittest.TestCase):
@@ -569,6 +592,44 @@ class RenderTextTests(unittest.TestCase):
         self.assertIn("positions(p)", text)
         self.assertIn("index(i)", text)
         self.assertIn("4", text)
+
+
+    def test_growth_table_frame_text(self):
+        from study_os.web.player.render_text import frame_to_text
+
+        frame = {
+            "type": "growth_table",
+            "n_values": [2, 4, 8],
+            "series": {"label": "O(n)", "values": [2, 4, 8]},
+            "caption": "linear",
+        }
+        text = frame_to_text(frame)
+        self.assertIn("linear", text)
+        self.assertIn("O(n)", text)
+        self.assertIn("2  4  8", text)
+
+    def test_growth_table_frame_text_with_multiple_series(self):
+        from study_os.web.player.render_text import frame_to_text
+
+        frame = {
+            "type": "growth_table",
+            "n_values": [16],
+            "series_multi": [
+                {"label": "O(1)", "values": [1]},
+                {"label": "O(n^2)", "values": [256]},
+            ],
+        }
+        text = frame_to_text(frame)
+        self.assertIn("O(1)", text)
+        self.assertIn("O(n^2)", text)
+        self.assertIn("256", text)
+
+    def test_growth_table_frame_text_without_series(self):
+        from study_os.web.player.render_text import frame_to_text
+
+        text = frame_to_text({"type": "growth_table", "n_values": [2, 4]})
+        self.assertIn("n:", text)
+        self.assertIn("counts arrive", text)
 
     def test_fraction_bar_frame_text(self):
         from study_os.web.player.render_text import frame_to_text

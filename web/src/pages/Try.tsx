@@ -4,6 +4,7 @@ import { navigate } from "../router";
 
 const LESSONS = [
   { lesson_id: "fractions-compare", title: "Comparing fractions", lane: "HESI A2 prep" },
+  { lesson_id: "big-o-growth-families", title: "Big O: how work grows", lane: "Algorithms (DSA)" },
   { lesson_id: "sliding-window-box", title: "Sliding window: the box", lane: "Algorithms (DSA)" },
 ];
 
