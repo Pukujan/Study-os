@@ -1,0 +1,5 @@
+title=File:Ejemplo de doble inecuación 1 e.png
+license=CC BY-SA 4.0
+mime=image/png
+size=5481
+url=https://upload.wikimedia.org/wikipedia/commons/a/a5/Ejemplo_de_doble_inecuaci%C3%B3n_1_e.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original

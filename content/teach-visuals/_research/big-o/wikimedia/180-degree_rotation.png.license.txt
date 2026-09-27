@@ -1,0 +1,5 @@
+title=File:180-degree rotation.png
+license=CC BY-SA 3.0
+mime=image/png
+size=7047
+url=https://upload.wikimedia.org/wikipedia/commons/0/04/180-degree_rotation.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original

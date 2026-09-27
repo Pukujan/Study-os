@@ -1,0 +1,459 @@
+{
+  "schema_version": "study-os.teach-visual-step-map.v1",
+  "updated": "2026-09-27",
+  "issue": "https://github.com/Pukujan/Study-os/issues/161",
+  "parent_issue": "https://github.com/Pukujan/Study-os/issues/126",
+  "automation": {
+    "checker": "tools/teach_visual_catalog_check.py",
+    "rule": "Every player lesson step MUST have a map entry. Big O + fractions packs are illustrative examples \u2014 do not lock one Big O widget for all steps."
+  },
+  "entries": [
+    {
+      "lesson_id": "big-o-growth-families",
+      "step_id": "why_care",
+      "kc": "big-o.motivation",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "multi_class_growth_curve",
+      "asset_ids": [
+        "big-o-big-o-cheatsheet",
+        "big-o-comparison-computational-complexity-from-upload",
+        "big-o-comparison-computational-complexity",
+        "datasets-growth-ops-c1-n1-64"
+      ],
+      "status": "landed",
+      "research_cites": [
+        "farghally2017",
+        "bigocheatsheet",
+        "opendsa"
+      ],
+      "notes": "Multi-class overview; CSV-driven \u2014 illustrative seed not one locked widget.",
+      "exercise_affordance": "read_multiclass_chart"
+    },
+    {
+      "lesson_id": "big-o-growth-families",
+      "step_id": "o1_constant",
+      "kc": "big-o.o1",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "flat_growth_curve",
+      "asset_ids": [
+        "big-o-comparison-computational-complexity-from-upload",
+        "big-o-comparison-computational-complexity",
+        "big-o-linear-function",
+        "datasets-growth-ops-c1-n1-64"
+      ],
+      "status": "landed",
+      "research_cites": [
+        "farghally2017",
+        "bigocheatsheet",
+        "opendsa"
+      ],
+      "notes": "FLAT O(1) series highlight. Person+boxes only if curated research asset exists.",
+      "exercise_affordance": "highlight_flat_series"
+    },
+    {
+      "lesson_id": "big-o-growth-families",
+      "step_id": "ologn",
+      "kc": "big-o.ologn",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "log_growth_curve",
+      "asset_ids": [
+        "big-o-comparison-computational-complexity-from-upload",
+        "big-o-comparison-computational-complexity",
+        "big-o-function-growth",
+        "datasets-growth-ops-c1-n1-64"
+      ],
+      "status": "landed",
+      "research_cites": [
+        "farghally2017",
+        "bigocheatsheet",
+        "opendsa"
+      ],
+      "notes": "Highlight O(log n).",
+      "exercise_affordance": "highlight_log_series"
+    },
+    {
+      "lesson_id": "big-o-growth-families",
+      "step_id": "on_linear",
+      "kc": "big-o.on",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "linear_growth_curve",
+      "asset_ids": [
+        "big-o-comparison-computational-complexity-from-upload",
+        "big-o-comparison-computational-complexity",
+        "big-o-linear-function",
+        "datasets-growth-ops-c1-n1-64"
+      ],
+      "status": "landed",
+      "research_cites": [
+        "farghally2017",
+        "bigocheatsheet",
+        "opendsa"
+      ],
+      "notes": "Highlight O(n).",
+      "exercise_affordance": "highlight_linear_series"
+    },
+    {
+      "lesson_id": "big-o-growth-families",
+      "step_id": "onlogn",
+      "kc": "big-o.onlogn",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "linearithmic_growth_curve",
+      "asset_ids": [
+        "big-o-comparison-computational-complexity-from-upload",
+        "big-o-comparison-computational-complexity",
+        "big-o-merge-sort-animation",
+        "datasets-growth-ops-c1-n1-64"
+      ],
+      "status": "landed",
+      "research_cites": [
+        "farghally2017",
+        "bigocheatsheet",
+        "opendsa"
+      ],
+      "notes": "O(n log n)+merge-sort ref.",
+      "exercise_affordance": "highlight_nlogn_series"
+    },
+    {
+      "lesson_id": "big-o-growth-families",
+      "step_id": "on2_quadratic",
+      "kc": "big-o.on2",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "quadratic_growth_curve",
+      "asset_ids": [
+        "big-o-comparison-computational-complexity-from-upload",
+        "big-o-comparison-computational-complexity",
+        "big-o-quadratic-function",
+        "datasets-growth-ops-c1-n1-64"
+      ],
+      "status": "landed",
+      "research_cites": [
+        "farghally2017",
+        "bigocheatsheet",
+        "opendsa"
+      ],
+      "notes": "Highlight O(n\u00b2).",
+      "exercise_affordance": "highlight_quadratic_series"
+    },
+    {
+      "lesson_id": "big-o-growth-families",
+      "step_id": "compare_families",
+      "kc": "big-o.compare",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "multi_class_growth_curve",
+      "asset_ids": [
+        "big-o-big-o-cheatsheet",
+        "big-o-big-o",
+        "big-o-comparison-computational-complexity-from-upload",
+        "big-o-comparison-computational-complexity",
+        "datasets-growth-ops-c1-n1-64",
+        "datasets-growth-ops-cheatsheet-sizes"
+      ],
+      "status": "landed",
+      "research_cites": [
+        "farghally2017",
+        "bigocheatsheet",
+        "opendsa"
+      ],
+      "notes": "Full family compare.",
+      "exercise_affordance": "compare_families"
+    },
+    {
+      "lesson_id": "fractions-compare",
+      "step_id": "problem",
+      "kc": "fractions.compare.problem",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "fraction_number_line",
+      "asset_ids": [
+        "fractions-3-4-fraction",
+        "fractions-absolute-value-number-line",
+        "fractions-algebra1-03-fig022a-rettafraz",
+        "fractions-algebra1-03-fig022b-rettafraz",
+        "fractions-bijection-between-vectors-and-points-on-number-line",
+        "fractions-fraccion-propia-en-la-recta"
+      ],
+      "status": "landed",
+      "research_cites": [
+        "hamdan-gunderson",
+        "ies-tft",
+        "siegler2011"
+      ],
+      "notes": "Number-line-first (Hamdan/Gunderson; IES Mod1).",
+      "exercise_affordance": "place_or_compare_on_number_line"
+    },
+    {
+      "lesson_id": "fractions-compare",
+      "step_id": "denominator",
+      "kc": "fractions.denominator",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "fraction_number_line",
+      "asset_ids": [
+        "fractions-3-4-fraction",
+        "fractions-absolute-value-number-line",
+        "fractions-algebra1-03-fig022a-rettafraz",
+        "fractions-algebra1-03-fig022b-rettafraz",
+        "fractions-bijection-between-vectors-and-points-on-number-line",
+        "fractions-fraccion-propia-en-la-recta"
+      ],
+      "status": "landed",
+      "research_cites": [
+        "hamdan-gunderson",
+        "ies-tft",
+        "siegler2011"
+      ],
+      "notes": "Number-line-first (Hamdan/Gunderson; IES Mod1).",
+      "exercise_affordance": "place_or_compare_on_number_line"
+    },
+    {
+      "lesson_id": "fractions-compare",
+      "step_id": "numerator",
+      "kc": "fractions.numerator",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "fraction_number_line",
+      "asset_ids": [
+        "fractions-3-4-fraction",
+        "fractions-absolute-value-number-line",
+        "fractions-algebra1-03-fig022a-rettafraz",
+        "fractions-algebra1-03-fig022b-rettafraz",
+        "fractions-bijection-between-vectors-and-points-on-number-line",
+        "fractions-fraccion-propia-en-la-recta"
+      ],
+      "status": "landed",
+      "research_cites": [
+        "hamdan-gunderson",
+        "ies-tft",
+        "siegler2011"
+      ],
+      "notes": "Number-line-first (Hamdan/Gunderson; IES Mod1).",
+      "exercise_affordance": "place_or_compare_on_number_line"
+    },
+    {
+      "lesson_id": "fractions-compare",
+      "step_id": "same-denominator",
+      "kc": "fractions.same-denominator",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "fraction_number_line",
+      "asset_ids": [
+        "fractions-3-4-fraction",
+        "fractions-absolute-value-number-line",
+        "fractions-algebra1-03-fig022a-rettafraz",
+        "fractions-algebra1-03-fig022b-rettafraz",
+        "fractions-bijection-between-vectors-and-points-on-number-line",
+        "fractions-fraccion-propia-en-la-recta"
+      ],
+      "status": "landed",
+      "research_cites": [
+        "hamdan-gunderson",
+        "ies-tft",
+        "siegler2011"
+      ],
+      "notes": "Number-line-first (Hamdan/Gunderson; IES Mod1).",
+      "exercise_affordance": "place_or_compare_on_number_line"
+    },
+    {
+      "lesson_id": "fractions-compare",
+      "step_id": "same-whole-different-parts",
+      "kc": "fractions.same-whole-different-parts",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "fraction_number_line",
+      "asset_ids": [
+        "fractions-3-4-fraction",
+        "fractions-absolute-value-number-line",
+        "fractions-algebra1-03-fig022a-rettafraz",
+        "fractions-algebra1-03-fig022b-rettafraz",
+        "fractions-bijection-between-vectors-and-points-on-number-line",
+        "fractions-fraccion-propia-en-la-recta"
+      ],
+      "status": "landed",
+      "research_cites": [
+        "hamdan-gunderson",
+        "ies-tft",
+        "siegler2011"
+      ],
+      "notes": "Number-line-first (Hamdan/Gunderson; IES Mod1).",
+      "exercise_affordance": "place_or_compare_on_number_line"
+    },
+    {
+      "lesson_id": "fractions-compare",
+      "step_id": "compare-3-4-vs-2-3",
+      "kc": "fractions.compare.different-denominators",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "fraction_number_line",
+      "asset_ids": [
+        "fractions-3-4-fraction",
+        "fractions-absolute-value-number-line",
+        "fractions-algebra1-03-fig022a-rettafraz",
+        "fractions-algebra1-03-fig022b-rettafraz",
+        "fractions-bijection-between-vectors-and-points-on-number-line",
+        "fractions-fraccion-propia-en-la-recta"
+      ],
+      "status": "landed",
+      "research_cites": [
+        "hamdan-gunderson",
+        "ies-tft",
+        "siegler2011"
+      ],
+      "notes": "Number-line-first (Hamdan/Gunderson; IES Mod1).",
+      "exercise_affordance": "place_or_compare_on_number_line"
+    },
+    {
+      "lesson_id": "sliding-window-box",
+      "step_id": "problem",
+      "kc": "sliding-window.problem",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "box_index_array",
+      "asset_ids": [],
+      "status": "queued",
+      "research_cites": [
+        "opendsa"
+      ],
+      "notes": "Deterministic box_index; OSS stills queued.",
+      "exercise_affordance": "slide_window_on_array"
+    },
+    {
+      "lesson_id": "sliding-window-box",
+      "step_id": "position",
+      "kc": "sliding-window.position",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "box_index_array",
+      "asset_ids": [],
+      "status": "queued",
+      "research_cites": [
+        "opendsa"
+      ],
+      "notes": "Deterministic box_index; OSS stills queued.",
+      "exercise_affordance": "slide_window_on_array"
+    },
+    {
+      "lesson_id": "sliding-window-box",
+      "step_id": "index",
+      "kc": "sliding-window.index",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "box_index_array",
+      "asset_ids": [],
+      "status": "queued",
+      "research_cites": [
+        "opendsa"
+      ],
+      "notes": "Deterministic box_index; OSS stills queued.",
+      "exercise_affordance": "slide_window_on_array"
+    },
+    {
+      "lesson_id": "sliding-window-box",
+      "step_id": "box-size",
+      "kc": "sliding-window.box-size",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "box_index_array",
+      "asset_ids": [],
+      "status": "queued",
+      "research_cites": [
+        "opendsa"
+      ],
+      "notes": "Deterministic box_index; OSS stills queued.",
+      "exercise_affordance": "slide_window_on_array"
+    },
+    {
+      "lesson_id": "sliding-window-box",
+      "step_id": "box-start",
+      "kc": "sliding-window.box-start",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "box_index_array",
+      "asset_ids": [],
+      "status": "queued",
+      "research_cites": [
+        "opendsa"
+      ],
+      "notes": "Deterministic box_index; OSS stills queued.",
+      "exercise_affordance": "slide_window_on_array"
+    },
+    {
+      "lesson_id": "sliding-window-box",
+      "step_id": "window-sum",
+      "kc": "sliding-window.window-sum",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "box_index_array",
+      "asset_ids": [],
+      "status": "queued",
+      "research_cites": [
+        "opendsa"
+      ],
+      "notes": "Deterministic box_index; OSS stills queued.",
+      "exercise_affordance": "slide_window_on_array"
+    }
+  ]
+}

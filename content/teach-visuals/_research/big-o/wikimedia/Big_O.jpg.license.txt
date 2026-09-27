@@ -1,0 +1,5 @@
+title=File:Big O.jpg
+license=CC BY 2.0
+mime=image/jpeg
+size=955039
+url=https://upload.wikimedia.org/wikipedia/commons/0/06/Big_O.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original

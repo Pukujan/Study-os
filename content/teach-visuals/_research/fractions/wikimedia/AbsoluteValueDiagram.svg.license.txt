@@ -1,0 +1,5 @@
+title=File:AbsoluteValueDiagram.svg
+license=CC BY-SA 4.0
+mime=image/svg+xml
+size=7647
+url=https://upload.wikimedia.org/wikipedia/commons/f/f1/AbsoluteValueDiagram.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original

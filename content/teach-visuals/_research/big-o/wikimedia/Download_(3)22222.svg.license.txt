@@ -1,0 +1,5 @@
+title=File:Download (3)22222.svg
+license=CC BY-SA 4.0
+mime=image/svg+xml
+size=35225
+url=https://upload.wikimedia.org/wikipedia/commons/a/aa/Download_%283%2922222.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original

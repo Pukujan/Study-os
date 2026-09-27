@@ -1,0 +1,5 @@
+title=File:Algebra1 01 fig004 sotdivii.svg
+license=CC BY 3.0
+mime=image/svg+xml
+size=18881
+url=https://upload.wikimedia.org/wikipedia/commons/9/92/Algebra1_01_fig004_sotdivii.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original

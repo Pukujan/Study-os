@@ -1,0 +1,6 @@
+title=File:Complexity classes.svg
+license=Public domain
+mime=image/svg+xml
+size=6144
+url=https://upload.wikimedia.org/wikipedia/commons/b/bc/Complexity_classes.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original
+author_html=<a href="//commons.wikimedia.org/wiki/User:Booyabazooka" class="mw-redirect" title="User:Booyabazooka">Booyabazooka</a>

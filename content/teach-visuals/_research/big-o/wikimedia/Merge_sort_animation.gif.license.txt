@@ -1,0 +1,5 @@
+title=File:Merge sort animation.gif
+license=CC BY-SA 2.5
+mime=image/gif
+size=125470
+url=https://upload.wikimedia.org/wikipedia/commons/8/8e/Merge_sort_animation.gif?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original

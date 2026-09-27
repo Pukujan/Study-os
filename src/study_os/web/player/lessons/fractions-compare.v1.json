@@ -1,7 +1,7 @@
 {
   "schema_version": "study-os.player-lesson.v1",
   "lesson_id": "fractions-compare",
-  "revision": "fractions-compare.v1",
+  "revision": "fractions-compare.v1.curated-number-line",
   "lane": "hesi",
   "title": "Comparing fractions",
   "summary": "Compare fractions using equal parts, same whole, and a fraction bar.",
@@ -40,7 +40,20 @@
                 ]
               }
             ],
-            "number_line": null
+            "number_line": {
+              "max": 1,
+              "ticks": 12,
+              "marks": [
+                {
+                  "at": "3/4",
+                  "label": "3/4"
+                },
+                {
+                  "at": "2/3",
+                  "label": "2/3"
+                }
+              ]
+            }
           },
           {
             "type": "fraction_bar",
@@ -118,6 +131,13 @@
                 }
               ]
             }
+          },
+          {
+            "type": "curated_diagram",
+            "asset_id": "fractions.propia-en-recta",
+            "src": "/teach-visuals/fractions/fraccion-propia-en-la-recta.png",
+            "alt": "Reference: proper fractions placed on number lines (CC BY-SA 4.0).",
+            "caption": "Curated number-line reference for fraction magnitude."
           }
         ],
         "teach_visual_v1": {
@@ -126,6 +146,10 @@
           ],
           "explain_frame_indices": [
             1
+          ],
+          "provenance_asset_ids": [
+            "fractions.propia-en-recta",
+            "fractions.number-line"
           ]
         }
       },
@@ -435,7 +459,20 @@
                 ]
               }
             ],
-            "number_line": null
+            "number_line": {
+              "max": 1,
+              "ticks": 12,
+              "marks": [
+                {
+                  "at": "9/12",
+                  "label": "9/12"
+                },
+                {
+                  "at": "8/12",
+                  "label": "8/12"
+                }
+              ]
+            }
           }
         ]
       },
@@ -503,7 +540,16 @@
                 "highlight": []
               }
             ],
-            "number_line": null
+            "number_line": {
+              "max": 1,
+              "ticks": 12,
+              "marks": [
+                {
+                  "at": "0/5",
+                  "label": "0/5"
+                }
+              ]
+            }
           },
           {
             "type": "fraction_bar",
@@ -524,6 +570,13 @@
               }
             ],
             "number_line": null
+          },
+          {
+            "type": "curated_diagram",
+            "asset_id": "fractions.propia-en-recta",
+            "src": "/teach-visuals/fractions/fraccion-propia-en-la-recta.png",
+            "alt": "Reference: proper fractions placed on number lines (CC BY-SA 4.0).",
+            "caption": "Curated number-line reference for fraction magnitude."
           }
         ],
         "teach_visual_v1": {
@@ -531,7 +584,11 @@
             0
           ],
           "explain_frame_indices": [
-            1
+            2
+          ],
+          "provenance_asset_ids": [
+            "fractions.propia-en-recta",
+            "fractions.number-line"
           ]
         }
       },
@@ -731,7 +788,16 @@
                 ]
               }
             ],
-            "number_line": null
+            "number_line": {
+              "max": 1,
+              "ticks": 12,
+              "marks": [
+                {
+                  "at": "0/4",
+                  "label": "0/4"
+                }
+              ]
+            }
           }
         ]
       },
@@ -776,7 +842,16 @@
                 ]
               }
             ],
-            "number_line": null
+            "number_line": {
+              "max": 1,
+              "ticks": 12,
+              "marks": [
+                {
+                  "at": "2/5",
+                  "label": "2/5"
+                }
+              ]
+            }
           },
           {
             "type": "fraction_bar",
@@ -793,6 +868,13 @@
               }
             ],
             "number_line": null
+          },
+          {
+            "type": "curated_diagram",
+            "asset_id": "fractions.propia-en-recta",
+            "src": "/teach-visuals/fractions/fraccion-propia-en-la-recta.png",
+            "alt": "Reference: proper fractions placed on number lines (CC BY-SA 4.0).",
+            "caption": "Curated number-line reference for fraction magnitude."
           }
         ],
         "teach_visual_v1": {
@@ -800,7 +882,11 @@
             0
           ],
           "explain_frame_indices": [
-            1
+            2
+          ],
+          "provenance_asset_ids": [
+            "fractions.propia-en-recta",
+            "fractions.number-line"
           ]
         }
       },
@@ -1017,7 +1103,16 @@
                 ]
               }
             ],
-            "number_line": null
+            "number_line": {
+              "max": 1,
+              "ticks": 12,
+              "marks": [
+                {
+                  "at": "3/4",
+                  "label": "3/4"
+                }
+              ]
+            }
           }
         ]
       },
@@ -1065,7 +1160,20 @@
                 "highlight": []
               }
             ],
-            "number_line": null
+            "number_line": {
+              "max": 1,
+              "ticks": 12,
+              "marks": [
+                {
+                  "at": "2/5",
+                  "label": "2/5"
+                },
+                {
+                  "at": "4/5",
+                  "label": "4/5"
+                }
+              ]
+            }
           },
           {
             "type": "fraction_bar",
@@ -1092,6 +1200,13 @@
               }
             ],
             "number_line": null
+          },
+          {
+            "type": "curated_diagram",
+            "asset_id": "fractions.propia-en-recta",
+            "src": "/teach-visuals/fractions/fraccion-propia-en-la-recta.png",
+            "alt": "Reference: proper fractions placed on number lines (CC BY-SA 4.0).",
+            "caption": "Curated number-line reference for fraction magnitude."
           }
         ],
         "teach_visual_v1": {
@@ -1099,7 +1214,11 @@
             0
           ],
           "explain_frame_indices": [
-            1
+            2
+          ],
+          "provenance_asset_ids": [
+            "fractions.propia-en-recta",
+            "fractions.number-line"
           ]
         }
       },
@@ -1369,7 +1488,20 @@
                 ]
               }
             ],
-            "number_line": null
+            "number_line": {
+              "max": 1,
+              "ticks": 12,
+              "marks": [
+                {
+                  "at": "2/4",
+                  "label": "2/4"
+                },
+                {
+                  "at": "3/4",
+                  "label": "3/4"
+                }
+              ]
+            }
           }
         ]
       },
@@ -1423,7 +1555,20 @@
                 "highlight": []
               }
             ],
-            "number_line": null
+            "number_line": {
+              "max": 1,
+              "ticks": 12,
+              "marks": [
+                {
+                  "at": "1/2",
+                  "label": "1/2"
+                },
+                {
+                  "at": "1/4",
+                  "label": "1/4"
+                }
+              ]
+            }
           },
           {
             "type": "fraction_bar",
@@ -1447,6 +1592,13 @@
               }
             ],
             "number_line": null
+          },
+          {
+            "type": "curated_diagram",
+            "asset_id": "fractions.propia-en-recta",
+            "src": "/teach-visuals/fractions/fraccion-propia-en-la-recta.png",
+            "alt": "Reference: proper fractions placed on number lines (CC BY-SA 4.0).",
+            "caption": "Curated number-line reference for fraction magnitude."
           }
         ],
         "teach_visual_v1": {
@@ -1454,7 +1606,11 @@
             0
           ],
           "explain_frame_indices": [
-            1
+            2
+          ],
+          "provenance_asset_ids": [
+            "fractions.propia-en-recta",
+            "fractions.number-line"
           ]
         }
       },
@@ -1712,7 +1868,20 @@
                 ]
               }
             ],
-            "number_line": null
+            "number_line": {
+              "max": 1,
+              "ticks": 12,
+              "marks": [
+                {
+                  "at": "1/2",
+                  "label": "1/2"
+                },
+                {
+                  "at": "1/4",
+                  "label": "1/4"
+                }
+              ]
+            }
           }
         ]
       },
@@ -1818,6 +1987,13 @@
               }
             ],
             "number_line": null
+          },
+          {
+            "type": "curated_diagram",
+            "asset_id": "fractions.propia-en-recta",
+            "src": "/teach-visuals/fractions/fraccion-propia-en-la-recta.png",
+            "alt": "Reference: proper fractions placed on number lines (CC BY-SA 4.0).",
+            "caption": "Curated number-line reference for fraction magnitude."
           }
         ],
         "teach_visual_v1": {
@@ -1825,7 +2001,11 @@
             0
           ],
           "explain_frame_indices": [
-            1
+            2
+          ],
+          "provenance_asset_ids": [
+            "fractions.propia-en-recta",
+            "fractions.number-line"
           ]
         }
       },
@@ -2144,7 +2324,20 @@
                 ]
               }
             ],
-            "number_line": null
+            "number_line": {
+              "max": 1,
+              "ticks": 12,
+              "marks": [
+                {
+                  "at": "9/12",
+                  "label": "9/12"
+                },
+                {
+                  "at": "8/12",
+                  "label": "8/12"
+                }
+              ]
+            }
           }
         ]
       },

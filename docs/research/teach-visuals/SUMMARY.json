@@ -1,0 +1,66 @@
+{
+  "updated": "2026-09-27T03:31:00-04:00",
+  "issue": "https://github.com/Pukujan/Study-os/issues/161",
+  "parent_issue": "https://github.com/Pukujan/Study-os/issues/126",
+  "teach_default_big_o": {
+    "asset": "big-o/growth-simple-4class.svg",
+    "public_url": "/teach-visuals/big-o/growth-simple-4class.svg",
+    "classes": [
+      "O(1)",
+      "O(log n)",
+      "O(n)",
+      "O(n\u00b2)"
+    ],
+    "note": "Alex 2026-09-27: no n!/2^n/\u221an clutter in teach frames"
+  },
+  "optional_reference_big_o": {
+    "asset": "big-o/comparison-computational-complexity.svg",
+    "public_url": "/teach-visuals/big-o/comparison-computational-complexity.svg",
+    "archive": "content/teach-visuals/_research/big-o/reference-full-cheatsheets/"
+  },
+  "fraction_number_lines_public": [
+    "/teach-visuals/fractions/number-line.svg",
+    "/teach-visuals/fractions/real-number-line.svg",
+    "/teach-visuals/fractions/fraccion-propia-en-la-recta.png",
+    "/teach-visuals/fractions/algebra1-frac-numberline-a.svg",
+    "/teach-visuals/fractions/algebra1-frac-numberline-b.svg",
+    "/teach-visuals/fractions/3-4-fraction.svg"
+  ],
+  "papers_json": "docs/research/teach-visuals/papers-constructivist-and-fractions.v1.json",
+  "box_mirror": "/workspace/study-os-visual-research/",
+  "box_mirror_counts": {
+    "total_files": 151,
+    "by_role": {
+      "dataset": 2,
+      "optional_reference": 6,
+      "paper": 13,
+      "visual": 130
+    },
+    "teach_default": 10,
+    "svg": 69,
+    "png": 47,
+    "pdf": 22,
+    "csv": 4
+  },
+  "player_provenance_counts": {
+    "vendored_player_assets": 13,
+    "teach_default": 5,
+    "optional_reference": 3,
+    "research_archive_files_in_repo": 247,
+    "box_mirror": {
+      "total_files": 151,
+      "by_role": {
+        "dataset": 2,
+        "optional_reference": 6,
+        "paper": 13,
+        "visual": 130
+      },
+      "teach_default": 10,
+      "svg": 69,
+      "png": 47,
+      "pdf": 22,
+      "csv": 4
+    },
+    "papers_catalogued": 12
+  }
+}

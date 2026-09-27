@@ -1,0 +1,6 @@
+title=File:Number line with multiplication of -0.5 with 2.svg
+license=CC BY 3.0
+mime=image/svg+xml
+size=15686
+url=https://upload.wikimedia.org/wikipedia/commons/4/41/Number_line_with_multiplication_of_-0.5_with_2.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original
+artist=<a rel="nofollow" class="external text" href="http://kulla.me/">Stephan Kulla</a> (<a href="//commons.wikimedia.org/wiki

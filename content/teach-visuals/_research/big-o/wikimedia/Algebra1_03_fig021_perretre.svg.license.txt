@@ -1,0 +1,5 @@
+title=File:Algebra1 03 fig021 perretre.svg
+license=CC BY 3.0
+mime=image/svg+xml
+size=4458
+url=https://upload.wikimedia.org/wikipedia/commons/5/5a/Algebra1_03_fig021_perretre.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original

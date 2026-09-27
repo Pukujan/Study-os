@@ -1,0 +1,5 @@
+title=File:Algebra1 01 fig003 sotdivi.svg
+license=CC BY 3.0
+mime=image/svg+xml
+size=17667
+url=https://upload.wikimedia.org/wikipedia/commons/d/d7/Algebra1_01_fig003_sotdivi.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original

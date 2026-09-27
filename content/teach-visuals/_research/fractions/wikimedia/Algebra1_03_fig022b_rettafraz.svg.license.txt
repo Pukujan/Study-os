@@ -1,0 +1,6 @@
+title=File:Algebra1 03 fig022b rettafraz.svg
+license=CC BY 3.0
+mime=image/svg+xml
+size=13918
+url=https://upload.wikimedia.org/wikipedia/commons/e/e7/Algebra1_03_fig022b_rettafraz.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original
+artist=Dimitrios Vrettos

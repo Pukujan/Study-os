@@ -1,0 +1,6 @@
+title=File:Comparison computational complexity.svg
+license=CC BY-SA 4.0
+mime=image/svg+xml
+size=13668
+url=https://upload.wikimedia.org/wikipedia/commons/7/7e/Comparison_computational_complexity.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original
+artist=<a href="//commons.wikimedia.org/wiki/User:Cmglee" title="User:Cmglee">Cmglee</a>

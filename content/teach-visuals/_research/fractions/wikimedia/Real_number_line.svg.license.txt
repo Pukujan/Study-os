@@ -1,0 +1,6 @@
+title=File:Real number line.svg
+license=Public domain
+mime=image/svg+xml
+size=18736
+url=https://upload.wikimedia.org/wikipedia/commons/d/d7/Real_number_line.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original
+artist=<a href="//commons.wikimedia.org/wiki/User:Phrood~commonswiki" title="User:Phrood~commonswiki">User:Phrood~commonswiki</

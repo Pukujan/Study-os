@@ -1,0 +1,5 @@
+title=File:Algebra1 fnz fig011 ret.svg
+license=CC BY 3.0
+mime=image/svg+xml
+size=19535
+url=https://upload.wikimedia.org/wikipedia/commons/7/77/Algebra1_fnz_fig011_ret.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original

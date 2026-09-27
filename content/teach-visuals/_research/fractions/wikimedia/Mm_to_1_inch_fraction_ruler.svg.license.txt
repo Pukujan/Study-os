@@ -1,0 +1,6 @@
+title=File:Mm to 1 inch fraction ruler.svg
+license=CC BY-SA 3.0
+mime=image/svg+xml
+size=41062
+url=https://upload.wikimedia.org/wikipedia/commons/c/cc/Mm_to_1_inch_fraction_ruler.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original
+author_html=<a href="//commons.wikimedia.org/w/index.php?title=User:Whyso&amp;action=edit&amp;redlink=1" class="new" title="User:Whyso (page does not exist)">Whyso</a>

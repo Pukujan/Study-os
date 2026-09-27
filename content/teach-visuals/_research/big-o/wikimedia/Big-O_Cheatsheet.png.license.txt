@@ -1,0 +1,4 @@
+source_file=File:Big-O Cheatsheet.png
+license=Public domain
+url=https://upload.wikimedia.org/wikipedia/commons/4/4e/Big-O_Cheatsheet.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original
+thumb=https://upload.wikimedia.org/wikipedia/commons/4/4e/Big-O_Cheatsheet.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled

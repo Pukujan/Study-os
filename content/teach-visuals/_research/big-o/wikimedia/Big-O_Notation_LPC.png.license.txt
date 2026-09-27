@@ -1,0 +1,5 @@
+title=File:Big-O Notation LPC.png
+license=CC BY-SA 3.0
+mime=image/png
+size=86180
+url=https://upload.wikimedia.org/wikipedia/commons/e/ec/Big-O_Notation_LPC.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original
