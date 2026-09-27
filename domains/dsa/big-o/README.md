@@ -20,7 +20,7 @@ step, n-log-n, or explosively.
 ## Representation boundary
 
 The counts in the lesson are small, deterministic, and hand-checkable. The
-`growth_table` frame renders those counts; it is a teaching picture, not a
+`growth_curve` frames render those counts; they are a teaching picture, not a
 benchmark and not canonical algorithm state.
 
 ## Promotion boundary
@@ -35,5 +35,10 @@ mirrored here. This directory holds curriculum structure only.
 
 ## Teach visual v1
 
-Step 1 defaults to workers + boxes (`growth_workers`). Set `STUDY_OS_TEACH_VISUAL_V1=0` to restore the legacy empty `growth_table` from `presentation_raw`. See `docs/ops/TEACH_VISUAL_V1.md`.
+Every step defaults to one `growth_curve` frame: a 4-class `series_multi` plot
+(O(1), O(log n), O(n), O(n²)) whose `highlight_label` names the class that step
+teaches. Explain-again and the worked example rotate to a second card over the
+same four curves. `growth_workers` is no longer on the default teach path. Set
+`STUDY_OS_TEACH_VISUAL_V1=0` to restore the legacy empty `growth_table` from
+`presentation_raw`. See `docs/ops/TEACH_VISUAL_V1.md`.
 

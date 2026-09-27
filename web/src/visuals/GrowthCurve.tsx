@@ -10,7 +10,12 @@ function seriesList(frame: GrowthCurveFrame): GrowthTableSeries[] {
 export function describeGrowthCurve(frame: GrowthCurveFrame): string {
   const series = seriesList(frame);
   if (!series.length) return `Growth chart for n = ${frame.n_values.join(", ")}`;
-  return `Growth chart for n = ${frame.n_values.join(", ")}; ${series.map((s) => s.label).join(", ")}`;
+  const base = `Growth chart for n = ${frame.n_values.join(", ")}; ${series.map((s) => s.label).join(", ")}`;
+  const highlight = frame.highlight_label;
+  if (highlight && series.some((s) => s.label === highlight)) {
+    return `${base}; highlighting ${highlight}`;
+  }
+  return base;
 }
 
 const COLORS = [
@@ -24,6 +29,8 @@ const COLORS = [
 export default function GrowthCurve({ frame }: { frame: GrowthCurveFrame }) {
   const nValues = frame.n_values;
   const series = seriesList(frame);
+  // A step teaches one class: emphasise that line and dim the rest (#161).
+  const highlight = frame.highlight_label ?? null;
   const w = 320;
   const h = 160;
   const pad = { l: 36, r: 12, t: 12, b: 28 };
@@ -43,15 +50,22 @@ export default function GrowthCurve({ frame }: { frame: GrowthCurveFrame }) {
           const pts = nValues
             .map((_, i) => `${xAt(i)},${yAt(s.values[i] ?? 0)}`)
             .join(" ");
+          const isHighlight = highlight !== null && s.label === highlight;
+          const dimmed = highlight !== null && !isHighlight;
           return (
-            <g key={s.label}>
-              <polyline fill="none" stroke={COLORS[si % COLORS.length]} strokeWidth={2.5} points={pts} />
+            <g key={s.label} opacity={dimmed ? 0.35 : 1}>
+              <polyline
+                fill="none"
+                stroke={COLORS[si % COLORS.length]}
+                strokeWidth={isHighlight ? 3.5 : 2.5}
+                points={pts}
+              />
               {nValues.map((_, i) => (
                 <circle
                   key={`${s.label}-${i}`}
                   cx={xAt(i)}
                   cy={yAt(s.values[i] ?? 0)}
-                  r={3}
+                  r={isHighlight ? 4 : 3}
                   fill={COLORS[si % COLORS.length]}
                 />
               ))}
@@ -70,6 +84,8 @@ export default function GrowthCurve({ frame }: { frame: GrowthCurveFrame }) {
             y={pad.t + 12 + si * 14}
             fontSize={11}
             fill={COLORS[si % COLORS.length]}
+            fontWeight={highlight !== null && s.label === highlight ? 700 : 400}
+            opacity={highlight !== null && s.label !== highlight ? 0.5 : 1}
           >
             {s.label}
           </text>

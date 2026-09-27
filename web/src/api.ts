@@ -141,6 +141,8 @@ export type GrowthCurveFrame = {
   n_values: number[];
   series?: GrowthTableSeries | null;
   series_multi?: GrowthTableSeries[] | null;
+  /** Series label the step is teaching; emphasised on the plot (#161). */
+  highlight_label?: string | null;
 };
 
 export type Frame =
