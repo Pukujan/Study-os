@@ -76,12 +76,44 @@
               16
             ],
             "series_multi": [
-              { "label": "O(1)", "values": [1, 1, 1, 1] },
-              { "label": "O(log n)", "values": [1, 2, 3, 4] },
-              { "label": "O(n)", "values": [2, 4, 8, 16] },
-              { "label": "O(n²)", "values": [4, 16, 64, 256] }
+              {
+                "label": "O(1)",
+                "values": [
+                  1,
+                  1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "label": "O(log n)",
+                "values": [
+                  1,
+                  2,
+                  3,
+                  4
+                ]
+              },
+              {
+                "label": "O(n)",
+                "values": [
+                  2,
+                  4,
+                  8,
+                  16
+                ]
+              },
+              {
+                "label": "O(n²)",
+                "values": [
+                  4,
+                  16,
+                  64,
+                  256
+                ]
+              }
             ],
-            "caption": "Same four curves with O(n²) called out. Doubling n roughly quadruples the work there.",
+            "caption": "Four labeled curves. The steep O(n²) line is called out — doubling n roughly quadruples that work.",
             "series": null,
             "highlight_label": "O(n²)"
           }
@@ -124,10 +156,42 @@
               16
             ],
             "series_multi": [
-              { "label": "O(1)", "values": [1, 1, 1, 1] },
-              { "label": "O(log n)", "values": [1, 2, 3, 4] },
-              { "label": "O(n)", "values": [2, 4, 8, 16] },
-              { "label": "O(n²)", "values": [4, 16, 64, 256] }
+              {
+                "label": "O(1)",
+                "values": [
+                  1,
+                  1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "label": "O(log n)",
+                "values": [
+                  1,
+                  2,
+                  3,
+                  4
+                ]
+              },
+              {
+                "label": "O(n)",
+                "values": [
+                  2,
+                  4,
+                  8,
+                  16
+                ]
+              },
+              {
+                "label": "O(n²)",
+                "values": [
+                  4,
+                  16,
+                  64,
+                  256
+                ]
+              }
             ],
             "caption": "At n = 16 the four families are far apart. O(n) is the middle line.",
             "series": null,
@@ -207,12 +271,44 @@
               16
             ],
             "series_multi": [
-              { "label": "O(1)", "values": [1, 1, 1, 1] },
-              { "label": "O(log n)", "values": [1, 2, 3, 4] },
-              { "label": "O(n)", "values": [2, 4, 8, 16] },
-              { "label": "O(n²)", "values": [4, 16, 64, 256] }
+              {
+                "label": "O(1)",
+                "values": [
+                  1,
+                  1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "label": "O(log n)",
+                "values": [
+                  1,
+                  2,
+                  3,
+                  4
+                ]
+              },
+              {
+                "label": "O(n)",
+                "values": [
+                  2,
+                  4,
+                  8,
+                  16
+                ]
+              },
+              {
+                "label": "O(n²)",
+                "values": [
+                  4,
+                  16,
+                  64,
+                  256
+                ]
+              }
             ],
-            "caption": "Same four curves. The flat O(1) line is called out.",
+            "caption": "Each curve is labeled at the end. The flat O(1) line is called out.",
             "series": null,
             "highlight_label": "O(1)"
           },
@@ -237,8 +333,12 @@
           }
         ],
         "teach_visual_v1": {
-          "default_frame_indices": [0],
-          "explain_frame_indices": [1]
+          "default_frame_indices": [
+            0
+          ],
+          "explain_frame_indices": [
+            1
+          ]
         }
       },
       "probe": {
@@ -250,7 +350,8 @@
               4,
               1000
             ],
-            "caption": "The array gets much longer. What happens to the count?"
+            "caption": "n jumps from small to huge. For a[0], does the step count stay 1?",
+            "empty_hint": "Reading a[0] is one lookup. Does that stay 1 when n grows?"
           }
         ],
         "answer_kind": "integer",
@@ -304,7 +405,8 @@
                   10,
                   10000
                 ],
-                "caption": "Huge n. Same question."
+                "caption": "Still reading a[0]. Does a much larger n change the step count?",
+                "empty_hint": "Reading a[0] is one lookup. Does that stay 1 when n grows?"
               }
             ],
             "answer_kind": "integer",
@@ -358,7 +460,8 @@
                   2,
                   64
                 ],
-                "caption": "Constant family."
+                "caption": "Constant family.",
+                "empty_hint": "Reading a[0] is one lookup. Does that stay 1 when n grows?"
               }
             ],
             "answer_kind": "integer",
@@ -419,12 +522,44 @@
               16
             ],
             "series_multi": [
-              { "label": "O(1)", "values": [1, 1, 1, 1] },
-              { "label": "O(log n)", "values": [1, 2, 3, 4] },
-              { "label": "O(n)", "values": [2, 4, 8, 16] },
-              { "label": "O(n²)", "values": [4, 16, 64, 256] }
+              {
+                "label": "O(1)",
+                "values": [
+                  1,
+                  1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "label": "O(log n)",
+                "values": [
+                  1,
+                  2,
+                  3,
+                  4
+                ]
+              },
+              {
+                "label": "O(n)",
+                "values": [
+                  2,
+                  4,
+                  8,
+                  16
+                ]
+              },
+              {
+                "label": "O(n²)",
+                "values": [
+                  4,
+                  16,
+                  64,
+                  256
+                ]
+              }
             ],
-            "caption": "Same four curves. O(log n) is the slow riser.",
+            "caption": "Each curve is labeled at the end. O(log n) is the slow riser.",
             "series": null,
             "highlight_label": "O(log n)"
           },
@@ -449,8 +584,12 @@
           }
         ],
         "teach_visual_v1": {
-          "default_frame_indices": [0],
-          "explain_frame_indices": [1]
+          "default_frame_indices": [
+            0
+          ],
+          "explain_frame_indices": [
+            1
+          ]
         }
       },
       "probe": {
@@ -630,12 +769,44 @@
               16
             ],
             "series_multi": [
-              { "label": "O(1)", "values": [1, 1, 1, 1] },
-              { "label": "O(log n)", "values": [1, 2, 3, 4] },
-              { "label": "O(n)", "values": [2, 4, 8, 16] },
-              { "label": "O(n²)", "values": [4, 16, 64, 256] }
+              {
+                "label": "O(1)",
+                "values": [
+                  1,
+                  1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "label": "O(log n)",
+                "values": [
+                  1,
+                  2,
+                  3,
+                  4
+                ]
+              },
+              {
+                "label": "O(n)",
+                "values": [
+                  2,
+                  4,
+                  8,
+                  16
+                ]
+              },
+              {
+                "label": "O(n²)",
+                "values": [
+                  4,
+                  16,
+                  64,
+                  256
+                ]
+              }
             ],
-            "caption": "Same four curves. O(n) climbs in step with n.",
+            "caption": "Each curve is labeled at the end. O(n) climbs in step with n.",
             "series": null,
             "highlight_label": "O(n)"
           },
@@ -660,8 +831,12 @@
           }
         ],
         "teach_visual_v1": {
-          "default_frame_indices": [0],
-          "explain_frame_indices": [1]
+          "default_frame_indices": [
+            0
+          ],
+          "explain_frame_indices": [
+            1
+          ]
         }
       },
       "probe": {
@@ -861,12 +1036,44 @@
               16
             ],
             "series_multi": [
-              { "label": "O(1)", "values": [1, 1, 1, 1] },
-              { "label": "O(log n)", "values": [1, 2, 3, 4] },
-              { "label": "O(n)", "values": [2, 4, 8, 16] },
-              { "label": "O(n²)", "values": [4, 16, 64, 256] }
+              {
+                "label": "O(1)",
+                "values": [
+                  1,
+                  1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "label": "O(log n)",
+                "values": [
+                  1,
+                  2,
+                  3,
+                  4
+                ]
+              },
+              {
+                "label": "O(n)",
+                "values": [
+                  2,
+                  4,
+                  8,
+                  16
+                ]
+              },
+              {
+                "label": "O(n²)",
+                "values": [
+                  4,
+                  16,
+                  64,
+                  256
+                ]
+              }
             ],
-            "caption": "Same four curves. O(n log n) sits between O(n) and O(n²).",
+            "caption": "Each curve is labeled at the end. O(n log n) sits between O(n) and O(n²).",
             "series": null,
             "highlight_label": null
           },
@@ -891,8 +1098,12 @@
           }
         ],
         "teach_visual_v1": {
-          "default_frame_indices": [0],
-          "explain_frame_indices": [1]
+          "default_frame_indices": [
+            0
+          ],
+          "explain_frame_indices": [
+            1
+          ]
         }
       },
       "probe": {
@@ -1085,12 +1296,44 @@
               16
             ],
             "series_multi": [
-              { "label": "O(1)", "values": [1, 1, 1, 1] },
-              { "label": "O(log n)", "values": [1, 2, 3, 4] },
-              { "label": "O(n)", "values": [2, 4, 8, 16] },
-              { "label": "O(n²)", "values": [4, 16, 64, 256] }
+              {
+                "label": "O(1)",
+                "values": [
+                  1,
+                  1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "label": "O(log n)",
+                "values": [
+                  1,
+                  2,
+                  3,
+                  4
+                ]
+              },
+              {
+                "label": "O(n)",
+                "values": [
+                  2,
+                  4,
+                  8,
+                  16
+                ]
+              },
+              {
+                "label": "O(n²)",
+                "values": [
+                  4,
+                  16,
+                  64,
+                  256
+                ]
+              }
             ],
-            "caption": "Same four curves. O(n²) is the steepest.",
+            "caption": "Each curve is labeled at the end. O(n²) is the steepest.",
             "series": null,
             "highlight_label": "O(n²)"
           },
@@ -1115,8 +1358,12 @@
           }
         ],
         "teach_visual_v1": {
-          "default_frame_indices": [0],
-          "explain_frame_indices": [1]
+          "default_frame_indices": [
+            0
+          ],
+          "explain_frame_indices": [
+            1
+          ]
         }
       },
       "probe": {
@@ -1306,10 +1553,42 @@
               16
             ],
             "series_multi": [
-              { "label": "O(1)", "values": [1, 1, 1, 1] },
-              { "label": "O(log n)", "values": [1, 2, 3, 4] },
-              { "label": "O(n)", "values": [2, 4, 8, 16] },
-              { "label": "O(n²)", "values": [4, 16, 64, 256] }
+              {
+                "label": "O(1)",
+                "values": [
+                  1,
+                  1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "label": "O(log n)",
+                "values": [
+                  1,
+                  2,
+                  3,
+                  4
+                ]
+              },
+              {
+                "label": "O(n)",
+                "values": [
+                  2,
+                  4,
+                  8,
+                  16
+                ]
+              },
+              {
+                "label": "O(n²)",
+                "values": [
+                  4,
+                  16,
+                  64,
+                  256
+                ]
+              }
             ],
             "caption": "The four families on one plot. O(n log n) sits between O(n) and O(n²).",
             "series": null,
@@ -1324,10 +1603,42 @@
               16
             ],
             "series_multi": [
-              { "label": "O(1)", "values": [1, 1, 1, 1] },
-              { "label": "O(log n)", "values": [1, 2, 3, 4] },
-              { "label": "O(n)", "values": [2, 4, 8, 16] },
-              { "label": "O(n²)", "values": [4, 16, 64, 256] }
+              {
+                "label": "O(1)",
+                "values": [
+                  1,
+                  1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "label": "O(log n)",
+                "values": [
+                  1,
+                  2,
+                  3,
+                  4
+                ]
+              },
+              {
+                "label": "O(n)",
+                "values": [
+                  2,
+                  4,
+                  8,
+                  16
+                ]
+              },
+              {
+                "label": "O(n²)",
+                "values": [
+                  4,
+                  16,
+                  64,
+                  256
+                ]
+              }
             ],
             "caption": "Called out: O(n²) is the steepest line here.",
             "series": null,
@@ -1335,8 +1646,12 @@
           }
         ],
         "teach_visual_v1": {
-          "default_frame_indices": [0],
-          "explain_frame_indices": [1]
+          "default_frame_indices": [
+            0
+          ],
+          "explain_frame_indices": [
+            1
+          ]
         }
       },
       "probe": {

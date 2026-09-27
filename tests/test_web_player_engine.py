@@ -629,7 +629,21 @@ class RenderTextTests(unittest.TestCase):
 
         text = frame_to_text({"type": "growth_table", "n_values": [2, 4]})
         self.assertIn("n:", text)
-        self.assertIn("counts arrive", text)
+        self.assertNotIn("counts arrive", text)
+        self.assertIn("Estimate how the step count changes as n grows.", text)
+
+    def test_growth_table_frame_text_empty_hint(self):
+        from study_os.web.player.render_text import frame_to_text
+
+        text = frame_to_text(
+            {
+                "type": "growth_table",
+                "n_values": [4, 1000],
+                "empty_hint": "Reading a[0] is one lookup. Does that stay 1 when n grows?",
+            }
+        )
+        self.assertIn("Reading a[0] is one lookup", text)
+        self.assertNotIn("counts arrive", text)
 
     def test_fraction_bar_frame_text(self):
         from study_os.web.player.render_text import frame_to_text

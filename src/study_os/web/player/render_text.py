@@ -148,7 +148,10 @@ def _render_growth_table(frame: dict[str, Any]) -> str:
         values = [str(v) for v in entry.get("values", [])]
         lines.append(f"{label + ':':<14}" + "  ".join(values))
     if not series:
-        lines.append("counts arrive in the next steps")
+        hint = (frame.get("empty_hint") or "").strip()
+        if not hint:
+            hint = "Estimate how the step count changes as n grows."
+        lines.append(hint)
 
     return "\n".join(lines)
 
