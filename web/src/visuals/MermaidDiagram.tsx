@@ -1,23 +1,43 @@
 import { useEffect, useRef, useState } from "react";
 import mermaid from "mermaid";
 
-let mermaidReady = false;
+function cssVar(name: string, fallback: string): string {
+  if (typeof window === "undefined" || !window.getComputedStyle) return fallback;
+  const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  return v || fallback;
+}
+
+function mermaidThemeVariables() {
+  const dark =
+    typeof document !== "undefined" &&
+    document.documentElement.dataset.themeAppearance === "dark";
+  return {
+    fontSize: "16px",
+    primaryColor: cssVar("--card", dark ? "#1a1f2b" : "#ffffff"),
+    primaryTextColor: cssVar("--ink", dark ? "#e8eaf2" : "#111B4D"),
+    primaryBorderColor: cssVar("--primary", dark ? "#94a3b8" : "#8F7CFF"),
+    lineColor: cssVar("--ink", dark ? "#e8eaf2" : "#111B4D"),
+    secondaryColor: cssVar("--surface-subtle", dark ? "#243044" : "#f7f6ff"),
+    tertiaryColor: cssVar("--bg", dark ? "#0f1219" : "#F4F1FF"),
+    background: cssVar("--card", dark ? "#1a1f2b" : "#ffffff"),
+    mainBkg: cssVar("--card", dark ? "#1a1f2b" : "#ffffff"),
+    nodeBorder: cssVar("--line", dark ? "#334155" : "#d7d4e8"),
+    clusterBkg: cssVar("--surface-subtle", dark ? "#243044" : "#f7f6ff"),
+    titleColor: cssVar("--ink", dark ? "#e8eaf2" : "#111B4D"),
+    edgeLabelBackground: cssVar("--card", dark ? "#1a1f2b" : "#ffffff"),
+  };
+}
 
 function initMermaid() {
-  if (mermaidReady) return;
+  const dark =
+    typeof document !== "undefined" &&
+    document.documentElement.dataset.themeAppearance === "dark";
   mermaid.initialize({
     startOnLoad: false,
-    theme: "default",
+    theme: dark ? "dark" : "default",
     securityLevel: "loose",
-    themeVariables: {
-      fontSize: "16px",
-      primaryColor: "#F4F1FF",
-      primaryTextColor: "#111B4D",
-      primaryBorderColor: "#8F7CFF",
-      lineColor: "#111B4D",
-    },
+    themeVariables: mermaidThemeVariables(),
   });
-  mermaidReady = true;
 }
 
 function getEffectiveDirection(direction: "TD" | "LR" | undefined, narrow: boolean): "TD" | "LR" {
@@ -105,6 +125,9 @@ export default function MermaidDiagram({
   const [dragging, setDragging] = useState(false);
   const dragRef = useRef({ startX: 0, startY: 0, panX: 0, panY: 0 });
   const [narrow, setNarrow] = useState(false);
+  const [themeAppearance, setThemeAppearance] = useState(
+    () => (typeof document !== "undefined" ? document.documentElement.dataset.themeAppearance || "dark" : "dark"),
+  );
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -115,11 +138,18 @@ export default function MermaidDiagram({
   }, []);
 
   useEffect(() => {
-    initMermaid();
+    if (typeof document === "undefined") return;
+    const el = document.documentElement;
+    const sync = () => setThemeAppearance(el.dataset.themeAppearance || "dark");
+    sync();
+    const mo = new MutationObserver(sync);
+    mo.observe(el, { attributes: true, attributeFilter: ["data-theme-appearance", "data-theme-palette"] });
+    return () => mo.disconnect();
   }, []);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+    initMermaid();
     const effectiveDir = getEffectiveDirection(direction, narrow);
     const filtered = filterSource(rewriteDirection(source, effectiveDir), revealedNodes);
     const id = `mmd-${Math.random().toString(36).slice(2, 11)}`;
@@ -140,7 +170,7 @@ export default function MermaidDiagram({
     return () => {
       cancelled = true;
     };
-  }, [source, revealedNodes, direction, narrow]);
+  }, [source, revealedNodes, direction, narrow, themeAppearance]);
 
   const handlePointerDown = (e: React.PointerEvent) => {
     if (!zoomPan) return;
