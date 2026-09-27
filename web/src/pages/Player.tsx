@@ -133,17 +133,40 @@ export default function Player({ sessionId }: { sessionId: string }) {
     }
   };
 
-  // Chat-path presentation regeneration: asking the tutor for another render of
-  // the same step/concept, then adopting the versioned update it returns. The
-  // step, variant, phase and progress are untouched (see player/presentation.ts).
+  // Teach-panel regen chips must always do something useful.
+  // Prefer deterministic adapt / confused paths so a silent tutor no-op cannot
+  // leave Explain again / Worked example looking dead (#126 A12).
   const regenerate = async (kind: RegenKind) => {
     if (busy || !view) return;
     setBusy(true);
     setError(null);
     try {
-      const reply = await api.tutor(sessionId, REGEN_PROMPTS[kind]);
-      const next = applyPresentation(view, reply.regenerate_presentation);
-      if (next !== view) setView(next);
+      if (kind === "example") {
+        const v = await api.adapt(sessionId, "example");
+        setView(v);
+        setMood("encourage", 1200);
+        return;
+      }
+
+      // Explain again: try a tutor re-render first; fall back to confused /
+      // re-show teach so the button is never a silent no-op.
+      setShowTeach(true);
+      let applied = false;
+      try {
+        const reply = await api.tutor(sessionId, REGEN_PROMPTS.reexplain);
+        const next = applyPresentation(view, reply.regenerate_presentation);
+        if (next !== view) {
+          setView(next);
+          applied = true;
+        }
+      } catch {
+        // Fall through to the deterministic path below.
+      }
+      if (!applied && view.phase === "probe" && view.step.probe) {
+        const v = await api.playerConfused(sessionId);
+        setView(v);
+        setMood("encourage", 1200);
+      }
     } catch (e) {
       setError(e instanceof ApiError ? e.code : "error");
     } finally {

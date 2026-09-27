@@ -59,9 +59,9 @@ export default function BoxIndex({ frame, onSelectIndex }: BoxIndexProps) {
   const numbersY = y + 16;
   y += rowGap;
 
-  // Up arrows below numbers row.
+  // Up arrows sit fully BELOW the number cells (tip never crosses glyphs).
   const arrowUpY = upArrows.length > 0 ? y + 4 : y;
-  if (upArrows.length > 0) y += 18;
+  if (upArrows.length > 0) y += 32;
 
   const box = frame.box;
   const braceTop = y;
@@ -155,38 +155,6 @@ export default function BoxIndex({ frame, onSelectIndex }: BoxIndexProps) {
         />
       ))}
 
-      {/* Numbers row */}
-      <text x={10} y={numbersY} style={{ fill: "var(--muted)", fontSize: 12, fontWeight: 600, fontFamily: "ui-monospace, monospace" }}>
-        numbers(a)
-      </text>
-      {frame.array.map((v, i) => (
-        <text
-          key={`num-${i}`}
-          x={cx(i)}
-          y={numbersY + 2}
-          textAnchor="middle"
-          style={{ fill: "var(--ink)", fontSize: 16, fontWeight: 700, fontFamily: "ui-monospace, monospace" }}
-        >
-          {v}
-        </text>
-      ))}
-
-      {/* Circles around cell values */}
-      {frame.circles?.map((i) =>
-        i >= 0 && i < n ? (
-          <ellipse
-            key={`circle-${i}`}
-            cx={cx(i)}
-            cy={numbersY - 4}
-            rx={Math.max(10, cellW * 0.4)}
-            ry={14}
-            fill="none"
-            stroke="var(--accent)"
-            strokeWidth={2}
-          />
-        ) : null
-      )}
-
       {/* Interactive cell buttons */}
       {frame.interactive &&
         frame.array.map((_, i) => (
@@ -229,12 +197,13 @@ export default function BoxIndex({ frame, onSelectIndex }: BoxIndexProps) {
         );
       })}
 
-      {/* Up arrows (from below, pointing up) */}
+      {/* Up arrows (from below, pointing up). Tip stays below cell bottom so digits stay readable. */}
       {upArrows.map((arrow, i) => {
         const x = cx(arrow.at);
-        const startY = numbersY + 10;
-        const tipY = numbersY - 4;
-        const labelY = arrowUpY + 18;
+        // Cell chrome spans roughly [numbersY-18, numbersY+10]; keep tip below that band.
+        const tipY = numbersY + 14;
+        const startY = tipY + 16;
+        const labelY = arrowUpY + 22;
         return (
           <g key={`up-${i}`}>
             <line x1={x} y1={startY} x2={x} y2={tipY} stroke="var(--accent)" strokeWidth={2} markerEnd="url(#arrowhead-up)" />
@@ -249,6 +218,38 @@ export default function BoxIndex({ frame, onSelectIndex }: BoxIndexProps) {
           </g>
         );
       })}
+
+      {/* Numbers row */}
+      <text x={10} y={numbersY} style={{ fill: "var(--muted)", fontSize: 12, fontWeight: 600, fontFamily: "ui-monospace, monospace" }}>
+        numbers(a)
+      </text>
+      {frame.array.map((v, i) => (
+        <text
+          key={`num-${i}`}
+          x={cx(i)}
+          y={numbersY + 2}
+          textAnchor="middle"
+          style={{ fill: "var(--ink)", fontSize: 16, fontWeight: 700, fontFamily: "ui-monospace, monospace" }}
+        >
+          {v}
+        </text>
+      ))}
+
+      {/* Circles around cell values */}
+      {frame.circles?.map((i) =>
+        i >= 0 && i < n ? (
+          <ellipse
+            key={`circle-${i}`}
+            cx={cx(i)}
+            cy={numbersY - 4}
+            rx={Math.max(10, cellW * 0.4)}
+            ry={14}
+            fill="none"
+            stroke="var(--accent)"
+            strokeWidth={2}
+          />
+        ) : null
+      )}
 
       {/* Box brace */}
       {box && (
