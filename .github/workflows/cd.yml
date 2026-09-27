@@ -43,7 +43,7 @@ jobs:
           echo
           echo DEPLOYED=`$(git -C /srv/study-os/app rev-parse HEAD)
           "@
-          $remote = (($remote -split "`r?`n") | ForEach-Object { $_.TrimStart() } | Where-Object { $_ -ne '' }) -join "`n"
+          $remote = (($remote -replace "`r","" -split "`n") | ForEach-Object { $_.TrimStart() } | Where-Object { $_ -ne '' }) -join "`n"
           $remote | & ssh -o BatchMode=yes -o ConnectTimeout=30 gravebuster "bash -s"
           if ($LASTEXITCODE -ne 0) { throw "ssh deploy failed exit=$LASTEXITCODE" }
           Write-Host "CD ok for $sha"
