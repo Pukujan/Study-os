@@ -1,3 +1,13 @@
+## Continuous deploy (primary)
+
+Pushes to `main` trigger GitHub Actions workflow **CD** (`.github/workflows/cd.yml`).
+
+- Runner: self-hosted `teresa-study-os-cd` on Teresa (labels `self-hosted,study-os-cd`), which SSHs to `gravebuster` over Tailscale.
+- Steps: `git reset --hard` to the merged SHA in `/srv/study-os/app`, refresh `docker-compose.yml`, `docker compose up -d --build`, health-check localhost + https://study.design-bakery.com/api/health.
+- Manual / emergency: `workflow_dispatch` on the CD workflow, or the steps below.
+
+Cloud-hosted runners cannot reach Tailscale-only gravebuster; do not switch this job to `ubuntu-latest` without a Tailscale Action + auth key (or a public path).
+
 # Deploying Study OS on gravebuster (D018)
 
 Everything runs on gravebuster and is served at **https://study.design-bakery.com**:
