@@ -17,7 +17,9 @@ export type TeachRenderType =
   | "growth_table"
   | "fraction_bar"
   | "box_index"
-  | "code_tree";
+  | "code_tree"
+  | "curated_diagram"
+  | "interactive_visual";
 
 export type TeachRenderer = {
   /** Canonical kind + aliases that share this renderer. */

@@ -51,3 +51,16 @@ Use InferHub vision against Playwright screenshots with the curated reference `s
 4. Register any new render type via `registerTeachRender`.
 5. Unit + vitest + (when key present) vision gate.
 6. PR Refs #161 and #126.
+
+
+## Catalog interactive generator
+
+`src/study_os/web/player/interactive_exercise.py` maps every `step-visual-map` entry through
+`exercise-templates.v1.json` into `interactive_visual` (or `box_index`) frames.
+
+Alex's 3-graph Big O pick/draw is the **example pattern** for `multi_class_growth_curve` —
+not a one-off probe. Same pipeline emits `place_number_line` for fractions and `tap_boxes` for arrays.
+
+```bash
+PYTHONPATH=src python -c "from study_os.web.player.interactive_exercise import generate_all; print(len(generate_all()))"
+```

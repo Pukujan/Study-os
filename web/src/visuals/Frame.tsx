@@ -6,6 +6,7 @@ import { describeCodeTree } from "./CodeTree";
 import { describeGrowthTable } from "./GrowthTable";
 import { describeGrowthWorkers } from "./GrowthWorkers";
 import { describeGrowthCurve } from "./GrowthCurve";
+import { describeInteractiveVisual } from "./InteractiveVisual";
 import { describeCuratedDiagram } from "./CuratedDiagram";
 
 export function describeFrame(frame: FrameType): string {
@@ -16,6 +17,7 @@ export function describeFrame(frame: FrameType): string {
   if (frame.type === "growth_table") return describeGrowthTable(frame);
   if (frame.type === "growth_workers") return describeGrowthWorkers(frame);
   if (frame.type === "growth_curve") return describeGrowthCurve(frame);
+  if (frame.type === "interactive_visual") return describeInteractiveVisual(frame);
   if (frame.type === "curated_diagram") return describeCuratedDiagram(frame);
   return "Frame";
 }

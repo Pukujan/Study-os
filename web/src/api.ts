@@ -151,6 +151,31 @@ export type GrowthCurveFrame = {
 
 
 
+
+export type GrowthMatchPanel = {
+  id: string;
+  shape: "flat" | "linear" | "steep";
+};
+
+export type InteractiveVisualFrame = {
+  type: "interactive_visual";
+  exercise_kind: "match_curves" | "plot_curve" | "place_number_line" | "tap_boxes" | string;
+  prompt?: string;
+  caption?: string;
+  n_values?: number[];
+  panels?: GrowthMatchPanel[];
+  labels?: string[];
+  axis_numbers_only?: boolean | null;
+  target_shape?: string | null;
+  line_max?: number | null;
+  ticks?: number[] | null;
+  target?: number | null;
+  tolerance?: number | null;
+  asset_id?: string | null;
+  asset_src?: string | null;
+  provenance?: Record<string, unknown> | null;
+};
+
 export type CuratedDiagramFrame = {
   type: "curated_diagram";
   asset_id: string;
@@ -168,7 +193,8 @@ export type Frame =
   | GrowthTableFrame
   | GrowthWorkersFrame
   | GrowthCurveFrame
-  | CuratedDiagramFrame;
+  | CuratedDiagramFrame
+  | InteractiveVisualFrame;
 
 export type Probe = {
   prompt_md: string;

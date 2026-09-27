@@ -276,13 +276,29 @@ pre.chart { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monosp
 .growth-workers, .growth-curve { color: var(--ink); max-width: 28rem; width: fit-content; }
 .growth-workers-svg, .growth-curve-svg { display: block; margin: 0; max-width: 100%; }
 .teach-advance { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
-.teach .md ol, .worked-example .md ol, .frame-caption {
-  white-space: normal;
+.teach .md ol,
+.worked-example .md ol,
+.worked-example ol,
+.frame-caption ol {
+  list-style: none;
+  padding-left: 0;
+  margin: 0.25rem 0;
   max-width: 36rem;
+  white-space: normal;
 }
-.teach .md ol li, .worked-example .md ol li {
+.teach .md ol li,
+.worked-example .md ol li,
+.worked-example ol li {
+  list-style: none;
   margin: 0.25rem 0;
   line-height: 1.45;
+  padding-left: 0;
+}
+.teach .md ol li::marker,
+.worked-example .md ol li::marker,
+.worked-example ol li::marker {
+  content: none;
+  color: transparent;
 }
 .frame-caption { white-space: pre-line; text-align: left; }
 .frame-figure { margin: 0.5rem 0; }
@@ -342,7 +358,8 @@ pre.chart { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monosp
 .variant-tag { background: var(--mint); color: var(--ink); }
 .card-back { margin-top: 0.75rem; }
 .worked-example { margin: 0.5rem 0; }
-.worked-example ol { padding-left: 1.25rem; }
+.worked-steps { display: flex; flex-direction: column; gap: 0.35rem; }
+.worked-step { margin: 0; }
 
 /* Mascot: pet + robot */
 

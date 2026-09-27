@@ -305,6 +305,10 @@ def frame_to_text(frame: dict[str, Any]) -> str:
         return _render_growth_workers(frame)
     if frame_type == "growth_curve":
         return _render_growth_curve(frame)
+    if frame_type == "interactive_visual":
+        return _render_interactive_visual(frame)
+    if frame_type == "curated_diagram":
+        return _render_curated_diagram(frame)
     if frame_type == "curated_diagram":
         return _render_curated_diagram(frame)
     if frame_type in ("mermaid_flow", "mermaid"):

@@ -28,6 +28,7 @@ import type {
   GrowthCurveFrame,
   GrowthTableFrame,
   GrowthWorkersFrame,
+  InteractiveVisualFrame,
   MermaidFlowFrame,
 } from "../api";
 import FractionBar, { describeFractionBar } from "./FractionBar";
@@ -38,6 +39,7 @@ import CodeTree, { describeCodeTree } from "./CodeTree";
 import GrowthTable, { describeGrowthTable } from "./GrowthTable";
 import GrowthWorkers, { describeGrowthWorkers } from "./GrowthWorkers";
 import GrowthCurve, { describeGrowthCurve } from "./GrowthCurve";
+import InteractiveVisual, { describeInteractiveVisual } from "./InteractiveVisual";
 import CuratedDiagram, { describeCuratedDiagram } from "./CuratedDiagram";
 import styles from "./TeachRenderBox.module.css";
 import islandCss from "./TeachRenderBox.module.css?inline";
@@ -232,6 +234,11 @@ function registerDefaults() {
     types: ["curated_diagram"],
     describe: (f) => describeCuratedDiagram(f as CuratedDiagramFrame),
     render: (f) => <CuratedDiagram frame={f as CuratedDiagramFrame} />,
+  });
+  registerTeachRender({
+    types: ["interactive_visual"],
+    describe: (f) => describeInteractiveVisual(f as InteractiveVisualFrame),
+    render: (f) => <InteractiveVisual frame={f as InteractiveVisualFrame} />,
   });
 }
 
