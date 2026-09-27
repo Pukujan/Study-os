@@ -30,7 +30,7 @@ LESSON = {
 }
 STATE = {"step_index": 0, "variant_index": -1, "phase": "probe", "scaffold": 0, "card_mode": "probe"}
 RENDER_MD = "Count from the left edge."
-EXPECTED_TEACH_MD = "1) Count from the left edge."
+EXPECTED_TEACH_MD = "Count from the left edge."
 
 
 def settings() -> SimpleNamespace:

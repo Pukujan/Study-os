@@ -271,6 +271,7 @@ pre.chart { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monosp
 /* growth_* compact layout lives in TeachRenderBox (Shadow DOM island).
    Legacy class hooks kept for non-island / unit-test fallbacks. */
 /* growth_* layout: TeachRenderBox.module.css (PresentationIsland). Legacy hooks only. */
+/* growth_* layout: TeachRenderBox.module.css (PresentationIsland). Legacy hooks only. */
 .growth-table { width: fit-content; max-width: 100%; }
 .growth-workers, .growth-curve { color: var(--ink); max-width: 28rem; width: fit-content; }
 .growth-workers-svg, .growth-curve-svg { display: block; margin: 0; max-width: 100%; }

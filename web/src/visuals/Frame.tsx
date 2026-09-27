@@ -6,14 +6,12 @@ import { describeCodeTree } from "./CodeTree";
 import { describeGrowthTable } from "./GrowthTable";
 import { describeGrowthWorkers } from "./GrowthWorkers";
 import { describeGrowthCurve } from "./GrowthCurve";
-import { describeCodeBlock } from "./TeachRenderBox";
 
 export function describeFrame(frame: FrameType): string {
   if (frame.type === "fraction_bar") return describeFractionBar(frame);
   if (frame.type === "box_index") return describeBoxIndex(frame);
-  if (frame.type === "mermaid_flow" || frame.type === "mermaid") return frame.caption || "Mermaid diagram";
+  if (frame.type === "mermaid_flow") return frame.caption || "Mermaid diagram";
   if (frame.type === "code_tree") return describeCodeTree(frame);
-  if (frame.type === "code_block") return describeCodeBlock(frame);
   if (frame.type === "growth_table") return describeGrowthTable(frame);
   if (frame.type === "growth_workers") return describeGrowthWorkers(frame);
   if (frame.type === "growth_curve") return describeGrowthCurve(frame);

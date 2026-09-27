@@ -723,7 +723,7 @@ class AdaptTests(unittest.TestCase):
         self.assertEqual(info["card_mode"], "worked_example")
         self.assertTrue(info["can_go_back"])
         self.assertEqual(state["card_mode"], "worked_example")
-        self.assertEqual(state["worked_example"]["solution_md"], "1) Main solution: 1 + 2 = 3.")
+        self.assertEqual(state["worked_example"]["solution_md"], "Main solution: 1 + 2 = 3.")
         view = engine.view(lesson, state)
         self.assertEqual(view["card_mode"], "worked_example")
         self.assertIsNotNone(view["worked_example"])
@@ -740,7 +740,7 @@ class AdaptTests(unittest.TestCase):
         view = engine.view(lesson, state)
         example = view["worked_example"]
         self.assertIsInstance(example, dict)
-        self.assertEqual(example["md"], "1) Main solution: 1 + 2 = 3.")
+        self.assertEqual(example["md"], "Main solution: 1 + 2 = 3.")
         self.assertIsInstance(example.get("frames"), list)
         self.assertNotIn("solution_md", json.dumps(view))
 
@@ -813,7 +813,7 @@ class AdaptTests(unittest.TestCase):
         self.assertEqual(info["card_mode"], "worked_example")
         self.assertEqual(state["card_mode"], "worked_example")
         view = engine.view(lesson, state)
-        self.assertEqual(view["worked_example"]["md"], "1) Main solution: 1 + 2 = 3.")
+        self.assertEqual(view["worked_example"]["md"], "Main solution: 1 + 2 = 3.")
 
     def test_worked_example_second_click_rotates_visible_content(self):
         """Re-clicking Worked example must change visible card text (#126 D004)."""
@@ -831,7 +831,7 @@ class AdaptTests(unittest.TestCase):
         self.assertEqual(info2["variant_tag"], "example_alt")
         second = engine.view(lesson, state)["worked_example"]["md"]
         self.assertNotEqual(first, second)
-        self.assertEqual(second, "1) Count on: 1 then 2 makes 3.")
+        self.assertEqual(second, "Count on: 1 then 2 makes 3.")
 
     def test_fractions_worked_example_second_click_changes_content(self):
         """fractions-compare teach chip must change content on re-click / resume."""

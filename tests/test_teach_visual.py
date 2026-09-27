@@ -32,7 +32,7 @@ class BigOWhyVisualTests(unittest.TestCase):
     def test_default_shows_workers_not_empty_table(self):
         with mock.patch.dict(os.environ, {teach_visual.FLAG_ENV: "1"}):
             md, frames = presentation.effective(self.lesson, self.state)
-        self.assertIn("1)", md)
+        self.assertNotRegex(md, r"(?m)^\s*\d+[.)]\s")
         self.assertEqual(len(frames), 1)
         self.assertEqual(frames[0]["type"], "growth_workers")
         self.assertEqual(frames[0]["n_values"], [2, 4, 8, 16])
@@ -47,7 +47,7 @@ class BigOWhyVisualTests(unittest.TestCase):
         self.assertEqual(resolved_frames[0]["type"], "growth_table")
         # Flag restores the table; plain-human rewrite still numbers serve-time copy.
         self.assertIn("Big O", md)
-        self.assertIn("1)", md)
+        self.assertNotRegex(md, r"(?m)^\s*\d+[.)]\s")
         self.assertIn("how work grows", md.lower())
         self.assertEqual(frames[0]["type"], "growth_table")
         self.assertEqual(frames[0]["n_values"], [2, 4, 8, 16])
@@ -60,7 +60,7 @@ class BigOWhyVisualTests(unittest.TestCase):
         payload = state["worked_example"]
         teach_md = self.teach["md"]
         self.assertNotEqual(payload["solution_md"].strip(), teach_md.strip())
-        self.assertIn("1)", payload["solution_md"])
+        self.assertNotRegex(payload["solution_md"], r"(?m)^\s*\d+[.)]\s")
         # Distinct diagram from the default teach workers pile.
         self.assertEqual(payload["frames"][0]["type"], "growth_curve")
 

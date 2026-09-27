@@ -1,34 +1,11 @@
 /**
- * TeachRenderBox / PresentationIsland — ChatGPT-style visual island.
+ * Isolated teach-render island (PresentationIsland / TeachRenderBox).
  *
- * Isolation: open Shadow DOM when available (global app CSS cannot pierce
- * into tables / pre / svg). Falls back to CSS-module scoped light DOM for SSR
- * and environments without attachShadow. Island styles ship as a CSS module
- * and are injected into the shadow root as text.
- *
- * New render types: registerTeachRender({ types, describe, render }) then
- * add the Frame union member in api.ts.
+ * Scoped CSS modules own layout so global page flex cannot stretch scoreboards.
+ * growth_* frames mount here; ascii/code/mermaid/fraction/box also typed slots.
  */
-import {
-  useCallback,
-  useLayoutEffect,
-  useRef,
-  useState,
-  type CSSProperties,
-  type ReactNode,
-} from "react";
-import { createPortal } from "react-dom";
-import type {
-  BoxIndexFrame,
-  CodeBlockFrame,
-  CodeTreeFrame,
-  FractionBarFrame,
-  Frame as FrameType,
-  GrowthCurveFrame,
-  GrowthTableFrame,
-  GrowthWorkersFrame,
-  MermaidFlowFrame,
-} from "../api";
+import type { CSSProperties, ReactNode } from "react";
+import type { Frame as FrameType } from "../api";
 import FractionBar, { describeFractionBar } from "./FractionBar";
 import NumberLine from "./NumberLine";
 import BoxIndex, { describeBoxIndex } from "./BoxIndex";
@@ -38,20 +15,21 @@ import GrowthTable, { describeGrowthTable } from "./GrowthTable";
 import GrowthWorkers, { describeGrowthWorkers } from "./GrowthWorkers";
 import GrowthCurve, { describeGrowthCurve } from "./GrowthCurve";
 import styles from "./TeachRenderBox.module.css";
-import islandCss from "./TeachRenderBox.module.css?inline";
-import {
-  canonicalTeachRenderType,
-  getTeachRenderer,
-  registerTeachRender,
-  listTeachRenderTypes,
-  type TeachRenderType,
-} from "./teachRenderRegistry";
 
-export type { TeachRenderType };
-export { registerTeachRender, getTeachRenderer, listTeachRenderTypes };
+export type TeachRenderKind =
+  | "growth_table"
+  | "growth_workers"
+  | "growth_curve"
+  | "fraction_bar"
+  | "box_index"
+  | "mermaid_flow"
+  | "code_tree"
+  | "ascii"
+  | "code"
+  | "svg";
 
 type IslandProps = {
-  kind: TeachRenderType | string;
+  kind: TeachRenderKind | string;
   label?: string;
   children: ReactNode;
   caption?: string | null;
@@ -59,194 +37,113 @@ type IslandProps = {
   style?: CSSProperties;
 };
 
-function IslandBody({
-  kind,
-  children,
-  caption,
-  className,
-}: {
-  kind: string;
-  children: ReactNode;
-  caption?: string | null;
-  className?: string;
-}) {
+/** Shadow-like scoped shell for any teach visual. */
+export function PresentationIsland({ kind, label, children, caption, className, style }: IslandProps) {
   const cls = [styles.island, className].filter(Boolean).join(" ");
   return (
-    <div className={cls} data-teach-kind={kind}>
-      {children}
-      {caption ? <figcaption className={styles.caption}>{caption}</figcaption> : null}
-    </div>
-  );
-}
-
-/**
- * Scoped shell. Prefer Shadow DOM; CSS modules still apply inside the island
- * (and as the SSR / no-shadow fallback).
- */
-export function PresentationIsland({ kind, label, children, caption, className, style }: IslandProps) {
-  const hostRef = useRef<HTMLDivElement | null>(null);
-  const [shadowMount, setShadowMount] = useState<HTMLElement | null>(null);
-
-  const attach = useCallback((node: HTMLDivElement | null) => {
-    hostRef.current = node;
-    if (!node) {
-      setShadowMount(null);
-      return;
-    }
-    if (typeof node.attachShadow !== "function") {
-      setShadowMount(null);
-      return;
-    }
-    const shadow = node.shadowRoot ?? node.attachShadow({ mode: "open" });
-    if (!shadow.querySelector("style[data-teach-island]")) {
-      const styleEl = document.createElement("style");
-      styleEl.setAttribute("data-teach-island", "");
-      styleEl.textContent = islandCss;
-      shadow.appendChild(styleEl);
-    }
-    let root = shadow.querySelector("[data-island-root]") as HTMLElement | null;
-    if (!root) {
-      root = document.createElement("div");
-      root.setAttribute("data-island-root", "");
-      shadow.appendChild(root);
-    }
-    setShadowMount(root);
-  }, []);
-
-  useLayoutEffect(() => {
-    if (hostRef.current && !shadowMount) attach(hostRef.current);
-  }, [attach, shadowMount]);
-
-  const body = (
-    <IslandBody kind={kind} caption={caption} className={className}>
-      {children}
-    </IslandBody>
-  );
-
-  const isolation = shadowMount ? "shadow-dom" : "css-module";
-
-  // Host must be a shadow-capable element (div). <figure> cannot attachShadow in browsers/jsdom.
-  return (
-    <div
-      ref={attach}
-      role="figure"
-      className={shadowMount ? undefined : styles.fallbackHost}
+    <figure
+      className={cls}
       data-teach-render={kind}
       data-testid="teach-render-box"
-      data-isolation={isolation}
       aria-label={label || undefined}
       style={style}
     >
-      {shadowMount ? createPortal(body, shadowMount) : body}
-    </div>
+      {children}
+      {caption ? <figcaption className={styles.caption}>{caption}</figcaption> : null}
+    </figure>
   );
 }
-
-function CodeBlockView({ frame }: { frame: CodeBlockFrame }) {
-  return (
-    <pre className={styles.codeBlock} data-language={frame.language || undefined}>
-      {frame.source}
-    </pre>
-  );
-}
-
-export function describeCodeBlock(frame: CodeBlockFrame): string {
-  return frame.caption || (frame.language ? `${frame.language} code` : "Code block");
-}
-
-function registerDefaults() {
-  if (getTeachRenderer("growth_table")) return;
-
-  registerTeachRender({
-    types: ["growth_table"],
-    describe: (f) => describeGrowthTable(f as GrowthTableFrame),
-    render: (f) => <GrowthTable frame={f as GrowthTableFrame} scoped />,
-  });
-  registerTeachRender({
-    types: ["growth_workers"],
-    describe: (f) => describeGrowthWorkers(f as GrowthWorkersFrame),
-    render: (f) => (
-      <div className={styles.workers}>
-        <GrowthWorkers frame={f as GrowthWorkersFrame} />
-      </div>
-    ),
-  });
-  registerTeachRender({
-    types: ["growth_curve"],
-    describe: (f) => describeGrowthCurve(f as GrowthCurveFrame),
-    render: (f) => (
-      <div className={styles.curve}>
-        <GrowthCurve frame={f as GrowthCurveFrame} />
-      </div>
-    ),
-  });
-  registerTeachRender({
-    types: ["mermaid", "mermaid_flow"],
-    describe: (f) => (f as MermaidFlowFrame).caption || "Mermaid diagram",
-    render: (f) => {
-      const mf = f as MermaidFlowFrame;
-      return (
-        <MermaidDiagram
-          source={mf.source}
-          revealedNodes={mf.revealed_nodes}
-          direction={mf.direction}
-          zoomPan={mf.zoom_pan}
-          caption={mf.caption}
-        />
-      );
-    },
-  });
-  registerTeachRender({
-    types: ["code_block"],
-    describe: (f) => describeCodeBlock(f as CodeBlockFrame),
-    render: (f) => <CodeBlockView frame={f as CodeBlockFrame} />,
-  });
-  registerTeachRender({
-    types: ["fraction_bar"],
-    describe: (f) => describeFractionBar(f as FractionBarFrame),
-    render: (f) => {
-      const fb = f as FractionBarFrame;
-      return (
-        <>
-          <FractionBar frame={fb} />
-          {fb.number_line && (
-            <NumberLine max={fb.number_line.max} ticks={fb.number_line.ticks} marks={fb.number_line.marks} />
-          )}
-        </>
-      );
-    },
-  });
-  registerTeachRender({
-    types: ["box_index"],
-    describe: (f) => describeBoxIndex(f as BoxIndexFrame),
-    render: (f) => <BoxIndex frame={f as BoxIndexFrame} />,
-  });
-  registerTeachRender({
-    types: ["code_tree"],
-    describe: (f) => describeCodeTree(f as CodeTreeFrame),
-    render: (f) => <CodeTree frame={f as CodeTreeFrame} />,
-  });
-}
-
-registerDefaults();
 
 /** Frame → typed render inside the isolated island. */
 export default function TeachRenderBox({ frame }: { frame: FrameType }) {
-  const kind = canonicalTeachRenderType(frame.type);
-  const entry = getTeachRenderer(kind) || getTeachRenderer(frame.type);
-  if (!entry) return null;
-  const caption = "caption" in frame ? frame.caption : undefined;
-  const className =
-    kind === "growth_table"
-      ? styles.scoreboard
-      : kind === "growth_workers"
-        ? styles.workers
-        : kind === "growth_curve"
-          ? styles.curve
-          : undefined;
+  if (frame.type === "growth_table") {
+    return (
+      <PresentationIsland
+        kind="growth_table"
+        label={describeGrowthTable(frame)}
+        caption={frame.caption}
+        className={styles.scoreboard}
+      >
+        <GrowthTable frame={frame} scoped />
+      </PresentationIsland>
+    );
+  }
+  if (frame.type === "growth_workers") {
+    return (
+      <PresentationIsland
+        kind="growth_workers"
+        label={describeGrowthWorkers(frame)}
+        caption={frame.caption}
+        className={styles.workers}
+      >
+        <GrowthWorkers frame={frame} />
+      </PresentationIsland>
+    );
+  }
+  if (frame.type === "growth_curve") {
+    return (
+      <PresentationIsland
+        kind="growth_curve"
+        label={describeGrowthCurve(frame)}
+        caption={frame.caption}
+        className={styles.curve}
+      >
+        <GrowthCurve frame={frame} />
+      </PresentationIsland>
+    );
+  }
+  if (frame.type === "fraction_bar") {
+    return (
+      <PresentationIsland kind="fraction_bar" label={describeFractionBar(frame)} caption={frame.caption}>
+        <FractionBar frame={frame} />
+        {frame.number_line && (
+          <NumberLine max={frame.number_line.max} ticks={frame.number_line.ticks} marks={frame.number_line.marks} />
+        )}
+      </PresentationIsland>
+    );
+  }
+  if (frame.type === "box_index") {
+    return (
+      <PresentationIsland kind="box_index" label={describeBoxIndex(frame)} caption={frame.caption}>
+        <BoxIndex frame={frame} />
+      </PresentationIsland>
+    );
+  }
+  if (frame.type === "mermaid_flow") {
+    return (
+      <PresentationIsland kind="mermaid_flow" label={frame.caption || "Mermaid diagram"} caption={frame.caption}>
+        <MermaidDiagram
+          source={frame.source}
+          revealedNodes={frame.revealed_nodes}
+          direction={frame.direction}
+          zoomPan={frame.zoom_pan}
+          caption={frame.caption}
+        />
+      </PresentationIsland>
+    );
+  }
+  if (frame.type === "code_tree") {
+    return (
+      <PresentationIsland kind="code_tree" label={describeCodeTree(frame)} caption={frame.caption}>
+        <CodeTree frame={frame} />
+      </PresentationIsland>
+    );
+  }
+  return null;
+}
+
+export function AsciiRender({ text, caption }: { text: string; caption?: string }) {
   return (
-    <PresentationIsland kind={kind} label={entry.describe(frame)} caption={caption} className={className}>
-      {entry.render(frame)}
+    <PresentationIsland kind="ascii" label={caption || "ASCII diagram"} caption={caption}>
+      <pre className={styles.ascii}>{text}</pre>
+    </PresentationIsland>
+  );
+}
+
+export function CodeRender({ text, caption }: { text: string; caption?: string }) {
+  return (
+    <PresentationIsland kind="code" label={caption || "Code"} caption={caption}>
+      <pre className={styles.code}>{text}</pre>
     </PresentationIsland>
   );
 }
