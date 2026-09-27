@@ -33,8 +33,29 @@
             "arrows": [],
             "sum_label": null,
             "caption": "The array we will search with a sliding window of size 3."
+          },
+          {
+            "type": "code_block",
+            "language": "python",
+            "caption": "The same task written as algebra: a window of 3 slots, and the biggest total wins.",
+            "source": "a = [4, 7, 2, 6, 1, 9]\nk = 3\n\n# answer = the largest of\n#   sum(a[0:3]), sum(a[1:4]), sum(a[2:5]), sum(a[3:6])\n"
+          },
+          {
+            "type": "mermaid_flow",
+            "direction": "TD",
+            "caption": "The path this lesson walks: position, then index, then the box, then the sum.",
+            "source": "graph TD\n  A[\"array a\"] --> B[\"position p starts at 1\"]\n  B --> C[\"index i = p - 1\"]\n  C --> D[\"box at i, 3 slots wide\"]\n  D --> E[\"add 3 numbers in a row\"]\n  E --> F[\"keep the largest total\"]\n"
           }
-        ]
+        ],
+        "teach_visual_v1": {
+          "default_frame_indices": [
+            0
+          ],
+          "explain_frame_indices": [
+            1,
+            2
+          ]
+        }
       },
       "probe": null,
       "variants": []
@@ -69,8 +90,29 @@
               }
             ],
             "sum_label": null
+          },
+          {
+            "type": "code_block",
+            "language": "python",
+            "caption": "Position counts from 1, so the first slot is position 1, not 0.",
+            "source": "a = [4, 7, 2, 6, 1, 9]\n\np = 1            # the first slot is position 1\np = 4            # number 6 sits in the 4th slot\na[p - 1] == 6    # index is p - 1, so a[3] == 6\n"
+          },
+          {
+            "type": "mermaid_flow",
+            "direction": "TD",
+            "caption": "Counting slots from the left until we reach the number we want.",
+            "source": "graph TD\n  P[\"position p starts at 1\"] --> C[\"slot 1 holds 4\"]\n  C --> D[\"slot 4 holds 6\"]\n  D --> E[\"so 6 has p = 4\"]\n"
           }
-        ]
+        ],
+        "teach_visual_v1": {
+          "default_frame_indices": [
+            0
+          ],
+          "explain_frame_indices": [
+            1,
+            2
+          ]
+        }
       },
       "probe": {
         "prompt_md": "What is the position p of number 6?",
@@ -319,8 +361,29 @@
             "circles": [
               2
             ]
+          },
+          {
+            "type": "code_block",
+            "language": "python",
+            "caption": "The invariant in code: position counts from 1, index counts from 0.",
+            "source": "a = [4, 7, 2, 6, 1, 9]\np = 3            # position of the number 2\ni = p - 1        # index of the same number\na[i] == a[2]     # 2\n"
+          },
+          {
+            "type": "mermaid_flow",
+            "direction": "LR",
+            "caption": "How a position becomes an index, and then becomes a value.",
+            "source": "graph LR\n  P[\"p = 3, count from 1\"] --> I[\"i = p - 1\"]\n  I --> V[\"a[i] = 2\"]\n"
           }
-        ]
+        ],
+        "teach_visual_v1": {
+          "default_frame_indices": [
+            0
+          ],
+          "explain_frame_indices": [
+            1,
+            2
+          ]
+        }
       },
       "probe": {
         "prompt_md": "What is the index i of number 6?",
@@ -582,8 +645,29 @@
               }
             ],
             "sum_label": null
+          },
+          {
+            "type": "code_block",
+            "language": "python",
+            "caption": "k is the width of the box: it always covers 3 slots, never 4.",
+            "source": "a = [4, 7, 2, 6, 1, 9]\nk = 3            # the box covers 3 slots\n\n# a box that starts at i covers:\n#   i, i + 1, i + 2\n# never i + 3\n"
+          },
+          {
+            "type": "mermaid_flow",
+            "direction": "TD",
+            "caption": "The box keeps its width as it moves.",
+            "source": "graph TD\n  K[\"k = 3 slots\"] --> C[\"covers i, i+1, i+2\"]\n  C --> N[\"next box starts at i+1\"]\n"
           }
-        ]
+        ],
+        "teach_visual_v1": {
+          "default_frame_indices": [
+            0
+          ],
+          "explain_frame_indices": [
+            1,
+            2
+          ]
+        }
       },
       "probe": {
         "prompt_md": "What numbers are inside the box?",
@@ -902,8 +986,29 @@
               }
             ],
             "sum_label": null
+          },
+          {
+            "type": "mermaid_flow",
+            "direction": "TD",
+            "caption": "The start index decides which slots sit inside the box.",
+            "source": "graph TD\n  I[\"i says where box starts\"] --> S[\"box spans k slots\"]\n  S --> M[\"moving i slides the box\"]\n"
+          },
+          {
+            "type": "code_block",
+            "language": "python",
+            "caption": "Slicing the array is the same box, written in one line.",
+            "source": "a = [4, 7, 2, 6, 1, 9]\nk = 3\ni = 0\n\nbox = a[i:i + k]   # a[0:3] = [4, 7, 2]\ni = 1\nbox = a[i:i + k]   # a[1:4] = [7, 2, 6]\n"
           }
-        ]
+        ],
+        "teach_visual_v1": {
+          "default_frame_indices": [
+            0
+          ],
+          "explain_frame_indices": [
+            1,
+            2
+          ]
+        }
       },
       "probe": {
         "prompt_md": "The box starts at i = 1 and k = 3. What numbers are inside?",
@@ -1205,8 +1310,30 @@
               }
             ],
             "sum_label": "sum[i=0] = 13"
+          },
+          {
+            "type": "code_block",
+            "language": "python",
+            "caption": "The sum of a k = 3 box that starts at index i.",
+            "source": "a = [4, 7, 2, 6, 1, 9]\nk = 3\n\ndef window_sum(i):\n    # sum[i] = a[i] + a[i+1] + a[i+2]\n    return a[i] + a[i + 1] + a[i + 2]\n\nwindow_sum(0)   # 4 + 7 + 2 = 13\nwindow_sum(2)   # 2 + 6 + 1 = 9\n"
+          },
+          {
+            "type": "mermaid_flow",
+            "direction": "TD",
+            "caption": "From the box start index to the number the box adds up to.",
+            "source": "graph TD\n  I[\"i = 0, box start\"] --> B[\"box covers i, i+1, i+2\"]\n  B --> S[\"add 4 + 7 + 2\"]\n  S --> T[\"sum[0] = 13\"]\n"
           }
-        ]
+        ],
+        "teach_visual_v1": {
+          "default_frame_indices": [
+            0,
+            1
+          ],
+          "explain_frame_indices": [
+            2,
+            3
+          ]
+        }
       },
       "probe": {
         "prompt_md": "What is sum[i=2] for k = 3?",
