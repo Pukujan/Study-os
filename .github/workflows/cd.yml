@@ -23,6 +23,7 @@ jobs:
           set -eu
           sha="$DEPLOY_SHA"
           echo "Deploying $sha on gravebuster (in-pod runner)..."
+          git config --global --add safe.directory /srv/study-os/app
           cd /srv/study-os/app
           git fetch --prune origin
           git checkout --force main
