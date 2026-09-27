@@ -217,7 +217,7 @@ describe("visuals", () => {
       />,
     );
     expect(highlighted).toContain("highlighting O(n²)");
-    // Only the taught class keeps full opacity on the plot and legend.
+    // Only the taught class keeps full opacity on the plot.
     expect(highlighted.match(/opacity="0.35"/g)?.length).toBe(3);
     expect(highlighted).toContain('stroke-width="3.5"');
 
@@ -291,7 +291,7 @@ describe("visuals", () => {
     expect(island).not.toContain("Counts arrive");
   });
 
-  it("GrowthCurve shows end-of-line labels and a color legend (#179)", () => {
+  it("GrowthCurve shows textbook end-of-line labels in curve color, no swatch legend (#179)", () => {
     const fourClass = [
       { label: "O(1)", values: [1, 1, 1, 1] },
       { label: "O(log n)", values: [1, 2, 3, 4] },
@@ -301,12 +301,24 @@ describe("visuals", () => {
     const html = renderToStaticMarkup(
       <GrowthCurve frame={{ type: "growth_curve", n_values: [2, 4, 8, 16], series_multi: fourClass }} />,
     );
-    expect(html).toContain("growth-curve-legend");
+    // On-plot end labels are enough — drop the separate swatch legend that made learners hunt.
+    expect(html).not.toContain("growth-curve-legend");
+    expect(html).not.toContain("growth-curve-legend-swatch");
     expect(html).toContain('data-series-label="O(1)"');
     expect(html).toContain('data-series-label="O(log n)"');
     expect(html).toContain('data-series-label="O(n)"');
     expect(html).toContain('data-series-label="O(n²)"');
     expect(html).toContain("growth-curve-end-label");
+    // Clean axes (textbook Input size / Time).
+    expect(html).toContain("growth-curve-axis-x");
+    expect(html).toContain("growth-curve-axis-y");
+    expect(html).toContain("Input size");
+    expect(html).toContain("Time");
+    // Labels use the same token colors as their curves (O(1)=chart-3, log=chart-4, n=chart-1, n²=chart-2).
+    expect(html).toMatch(/data-series-label="O\(1\)"[^>]*fill="var\(--chart-3/);
+    expect(html).toMatch(/data-series-label="O\(log n\)"[^>]*fill="var\(--chart-4/);
+    expect(html).toMatch(/data-series-label="O\(n\)"[^>]*fill="var\(--chart-1/);
+    expect(html).toMatch(/data-series-label="O\(n²\)"[^>]*fill="var\(--chart-2/);
   });
 
   it("Frame mounts growth frames inside TeachRenderBox island", () => {
