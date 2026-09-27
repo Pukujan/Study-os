@@ -18,7 +18,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 
-PCM_COMMIT = "0b3be9ca80da816de4621ac4e85612990084216e"
+PCM_COMMIT = "c18bfd6064d1249996bc00c45dbbc6721ec5dfd9"
 CGM_COMMIT = "f85e88bc00362c53061d95ac7811bd9c6ada8e32"
 PROTOCOL_VERSION = "0.1.0-draft"
 
@@ -80,8 +80,13 @@ class PcmOverlayTests(unittest.TestCase):
 
     def test_protocol_schemas_are_exact_pinned_copy(self) -> None:
         schema_dir = ROOT / "schemas" / "v1"
+        # Hash the canonical LF form. The pinned helper schemas are LF, and CI
+        # re-checks byte identity against a fresh PCM checkout with `diff -r`.
+        # Hashing raw working-tree bytes would fail on a checkout with
+        # core.autocrlf=true even when the committed blobs are unchanged.
         actual = {
-            path.name: hashlib.sha256(path.read_bytes()).hexdigest() for path in sorted(schema_dir.glob("*"))
+            path.name: hashlib.sha256(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
+            for path in sorted(schema_dir.glob("*"))
         }
         self.assertEqual(actual, PCM_SCHEMA_SHA256)
 
