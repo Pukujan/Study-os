@@ -61,8 +61,6 @@ def sha256_file(path: Path) -> str:
 
 def chroma_key_despill(rgba, alpha_threshold: int):
     """Key out chroma green with despill; returns RGBA image."""
-    from PIL import Image
-
     px = rgba.load()
     w, h = rgba.size
     for y in range(h):
@@ -88,8 +86,8 @@ def opaque_count(img, alpha_threshold: int) -> int:
     return sum(1 for a in alpha.getdata() if a >= alpha_threshold)
 
 
-def process_sheet(raw_path: Path, frames: int, cols: int) -> bytes:
-    """Chroma-key + grid-split + union-bbox align; returns strip PNG bytes."""
+def process_sheet(raw_path: Path, frames: int, cols: int):
+    """Chroma-key + grid-split + union-bbox align; returns the composed canvas."""
     from PIL import Image
 
     rows = (frames + cols - 1) // cols
@@ -119,7 +117,7 @@ def process_sheet(raw_path: Path, frames: int, cols: int) -> bytes:
         ox = col * FRAME_W + (FRAME_W - f.width) // 2
         oy = row * FRAME_H + (FRAME_H - f.height) - 2  # ground-aligned bottom
         canvas.paste(f, (ox, oy))
-    return canvas.tobytes(), canvas
+    return canvas
 
 
 def build_webp_bytes(canvas) -> bytes:
@@ -131,9 +129,6 @@ def build_webp_bytes(canvas) -> bytes:
 
 
 def validate_frames(canvas, frames: int, cols: int, alpha_threshold: int, min_opaque: int) -> None:
-    from PIL import Image
-
-    rows = (frames + cols - 1) // cols
     failures = []
     for idx in range(frames):
         col, row = idx % cols, idx // cols
@@ -167,14 +162,12 @@ def main(argv=None) -> int:
     ap.add_argument("--source-sheet-hash", default=None, help="sha256 of the raw sheet; computed if omitted")
     args = ap.parse_args(argv)
 
-    from PIL import Image  # hard requirement for the postprocess pipeline
-
     manifest_path = REPO_ROOT / args.manifest if not args.manifest.is_absolute() else args.manifest
     out_path = REPO_ROOT / args.out if not args.out.is_absolute() else args.out
     raw_path = args.raw_sheet if args.raw_sheet.is_absolute() else REPO_ROOT / args.raw_sheet
     prompt_path = args.prompt if args.prompt.is_absolute() else REPO_ROOT / args.prompt
 
-    _, canvas = process_sheet(raw_path, args.frames, args.cols)
+    canvas = process_sheet(raw_path, args.frames, args.cols)
     validate_frames(canvas, args.frames, args.cols, args.alpha_threshold, args.min_opaque_pixels)
     webp = build_webp_bytes(canvas)
     new_hash = sha256_bytes(webp)

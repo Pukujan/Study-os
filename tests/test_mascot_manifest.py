@@ -18,7 +18,6 @@ which runs it at generation time.
 
 import hashlib
 import json
-import sys
 import unittest
 from pathlib import Path
 
