@@ -38,6 +38,8 @@ describe("HomeLanes", () => {
     expect(continueButtons.length).toBe(1);
     expect(continueButtons[0].textContent).toBe("Continue: Comparing fractions");
 
+    expect(container.querySelector('[data-track="home.dsa.classic"]')).toBeNull();
+
     cleanup();
   });
 });
