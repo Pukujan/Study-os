@@ -7,9 +7,13 @@
 
 Reversible versioned teach visuals for DSA (starting with Big O `why_care`):
 
-- Default metaphor: `growth_workers` (stick-figure code workers + number boxes)
-- Alternate: `growth_curve` (SVG growth lines)
+- Default teach metaphor: `growth_curve` — one 4-class `series_multi` plot
+  (O(1), O(log n), O(n), O(n²)) with `highlight_label` naming the class the step
+  teaches (#161)
+- Alternate card: the same class drawn alone (single-series `growth_curve`)
 - Raw empty `growth_table` kept under `presentation_raw` for rollback
+- `growth_workers` (stick-figure code workers + number boxes) is no longer on the
+  default teach path; invent-first metaphors were rejected (#161)
 
 ## Product fixes bundled here
 

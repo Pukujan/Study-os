@@ -68,15 +68,22 @@
             "series": null
           },
           {
-            "type": "growth_workers",
+            "type": "growth_curve",
             "n_values": [
               2,
               4,
               8,
               16
             ],
-            "caption": "Each column is one pile of boxes for size n. As n doubles, the pile grows.",
-            "role_label": "workers"
+            "series_multi": [
+              { "label": "O(1)", "values": [1, 1, 1, 1] },
+              { "label": "O(log n)", "values": [1, 2, 3, 4] },
+              { "label": "O(n)", "values": [2, 4, 8, 16] },
+              { "label": "O(n²)", "values": [4, 16, 64, 256] }
+            ],
+            "caption": "Same four curves with O(n²) called out. Doubling n roughly quadruples the work there.",
+            "series": null,
+            "highlight_label": "O(n²)"
           }
         ],
         "presentation_raw": {
@@ -109,15 +116,22 @@
         "md": "At n=16, O(1) is still 1, O(n) is 16, and O(n²) is 256. Same n, very different work.",
         "frames": [
           {
-            "type": "growth_workers",
+            "type": "growth_curve",
             "n_values": [
               2,
               4,
               8,
               16
             ],
-            "caption": "Each column is one pile of boxes for size n. As n doubles, the pile grows.",
-            "role_label": "workers"
+            "series_multi": [
+              { "label": "O(1)", "values": [1, 1, 1, 1] },
+              { "label": "O(log n)", "values": [1, 2, 3, 4] },
+              { "label": "O(n)", "values": [2, 4, 8, 16] },
+              { "label": "O(n²)", "values": [4, 16, 64, 256] }
+            ],
+            "caption": "At n = 16 the four families are far apart. O(n) is the middle line.",
+            "series": null,
+            "highlight_label": "O(n)"
           }
         ]
       },
@@ -182,10 +196,28 @@
       "skippable": false,
       "confirm": false,
       "teach": {
-        "md": "**O(1)** stays about the same when n grows. Reading `a[0]` is one lookup. The table stays flat.",
+        "md": "**O(1)** stays about the same when n grows. Reading `a[0]` is one lookup. The line stays flat.",
         "frames": [
           {
-            "type": "growth_table",
+            "type": "growth_curve",
+            "n_values": [
+              2,
+              4,
+              8,
+              16
+            ],
+            "series_multi": [
+              { "label": "O(1)", "values": [1, 1, 1, 1] },
+              { "label": "O(log n)", "values": [1, 2, 3, 4] },
+              { "label": "O(n)", "values": [2, 4, 8, 16] },
+              { "label": "O(n²)", "values": [4, 16, 64, 256] }
+            ],
+            "caption": "Same four curves. The flat O(1) line is called out.",
+            "series": null,
+            "highlight_label": "O(1)"
+          },
+          {
+            "type": "growth_curve",
             "n_values": [
               2,
               4,
@@ -201,9 +233,13 @@
                 1
               ]
             },
-            "caption": "Constant work: a flat line."
+            "caption": "Only O(1) on the axes: the line does not move."
           }
-        ]
+        ],
+        "teach_visual_v1": {
+          "default_frame_indices": [0],
+          "explain_frame_indices": [1]
+        }
       },
       "probe": {
         "prompt_md": "Reading `a[0]` takes 1 step when n = 4. About how many steps when n = 1000?",
@@ -375,7 +411,25 @@
         "md": "**O(log n)** grows slowly. Each step can cut the space in half. When n doubles, add about one step.",
         "frames": [
           {
-            "type": "growth_table",
+            "type": "growth_curve",
+            "n_values": [
+              2,
+              4,
+              8,
+              16
+            ],
+            "series_multi": [
+              { "label": "O(1)", "values": [1, 1, 1, 1] },
+              { "label": "O(log n)", "values": [1, 2, 3, 4] },
+              { "label": "O(n)", "values": [2, 4, 8, 16] },
+              { "label": "O(n²)", "values": [4, 16, 64, 256] }
+            ],
+            "caption": "Same four curves. O(log n) is the slow riser.",
+            "series": null,
+            "highlight_label": "O(log n)"
+          },
+          {
+            "type": "growth_curve",
             "n_values": [
               2,
               4,
@@ -391,9 +445,13 @@
                 4
               ]
             },
-            "caption": "Log growth: +1 step when n doubles."
+            "caption": "Only O(log n): each doubling of n adds about one step."
           }
-        ]
+        ],
+        "teach_visual_v1": {
+          "default_frame_indices": [0],
+          "explain_frame_indices": [1]
+        }
       },
       "probe": {
         "prompt_md": "O(log n) takes 3 steps at n = 8. About how many steps at n = 16?",
@@ -564,7 +622,25 @@
         "md": "**O(n)** grows with n. One full pass visits every item. When n doubles, work about doubles.",
         "frames": [
           {
-            "type": "growth_table",
+            "type": "growth_curve",
+            "n_values": [
+              2,
+              4,
+              8,
+              16
+            ],
+            "series_multi": [
+              { "label": "O(1)", "values": [1, 1, 1, 1] },
+              { "label": "O(log n)", "values": [1, 2, 3, 4] },
+              { "label": "O(n)", "values": [2, 4, 8, 16] },
+              { "label": "O(n²)", "values": [4, 16, 64, 256] }
+            ],
+            "caption": "Same four curves. O(n) climbs in step with n.",
+            "series": null,
+            "highlight_label": "O(n)"
+          },
+          {
+            "type": "growth_curve",
             "n_values": [
               2,
               4,
@@ -580,9 +656,13 @@
                 16
               ]
             },
-            "caption": "Linear: the count tracks n."
+            "caption": "Only O(n): double n, double the work."
           }
-        ]
+        ],
+        "teach_visual_v1": {
+          "default_frame_indices": [0],
+          "explain_frame_indices": [1]
+        }
       },
       "probe": {
         "prompt_md": "A single loop does 8 steps when n = 8. About how many steps when n = 16?",
@@ -773,7 +853,25 @@
         "md": "**O(n log n)** sits between linear and quadratic. Think: log-cost work for each of n items. Doubling n grows a bit more than 2×.",
         "frames": [
           {
-            "type": "growth_table",
+            "type": "growth_curve",
+            "n_values": [
+              2,
+              4,
+              8,
+              16
+            ],
+            "series_multi": [
+              { "label": "O(1)", "values": [1, 1, 1, 1] },
+              { "label": "O(log n)", "values": [1, 2, 3, 4] },
+              { "label": "O(n)", "values": [2, 4, 8, 16] },
+              { "label": "O(n²)", "values": [4, 16, 64, 256] }
+            ],
+            "caption": "Same four curves. O(n log n) sits between O(n) and O(n²).",
+            "series": null,
+            "highlight_label": null
+          },
+          {
+            "type": "growth_curve",
             "n_values": [
               2,
               4,
@@ -789,9 +887,13 @@
                 64
               ]
             },
-            "caption": "n log n: faster than linear, slower than n²."
+            "caption": "Only O(n log n): a bit more than double when n doubles."
           }
-        ]
+        ],
+        "teach_visual_v1": {
+          "default_frame_indices": [0],
+          "explain_frame_indices": [1]
+        }
       },
       "probe": {
         "prompt_md": "At n = 8, an O(n log n) count is 24. About how many at n = 16? Use n · log₂ n.",
@@ -975,7 +1077,25 @@
         "md": "**O(n²)** grows fast. Nested pair loops do much more work as n grows. When n doubles, work grows about 4×.",
         "frames": [
           {
-            "type": "growth_table",
+            "type": "growth_curve",
+            "n_values": [
+              2,
+              4,
+              8,
+              16
+            ],
+            "series_multi": [
+              { "label": "O(1)", "values": [1, 1, 1, 1] },
+              { "label": "O(log n)", "values": [1, 2, 3, 4] },
+              { "label": "O(n)", "values": [2, 4, 8, 16] },
+              { "label": "O(n²)", "values": [4, 16, 64, 256] }
+            ],
+            "caption": "Same four curves. O(n²) is the steepest.",
+            "series": null,
+            "highlight_label": "O(n²)"
+          },
+          {
+            "type": "growth_curve",
             "n_values": [
               2,
               4,
@@ -991,9 +1111,13 @@
                 256
               ]
             },
-            "caption": "Quadratic: the count explodes as n grows."
+            "caption": "Only O(n²): the count explodes as n grows."
           }
-        ]
+        ],
+        "teach_visual_v1": {
+          "default_frame_indices": [0],
+          "explain_frame_indices": [1]
+        }
       },
       "probe": {
         "prompt_md": "A pair-check does 64 steps at n = 8. About how many steps at n = 16?",
@@ -1174,45 +1298,46 @@
         "md": "At n=16: O(1)≈1, O(log n)≈4, O(n)≈16, O(n log n)≈64, O(n²)≈256. Later patterns move work down this ladder.",
         "frames": [
           {
-            "type": "growth_table",
+            "type": "growth_curve",
             "n_values": [
+              2,
+              4,
+              8,
               16
             ],
             "series_multi": [
-              {
-                "label": "O(1)",
-                "values": [
-                  1
-                ]
-              },
-              {
-                "label": "O(log n)",
-                "values": [
-                  4
-                ]
-              },
-              {
-                "label": "O(n)",
-                "values": [
-                  16
-                ]
-              },
-              {
-                "label": "O(n log n)",
-                "values": [
-                  64
-                ]
-              },
-              {
-                "label": "O(n²)",
-                "values": [
-                  256
-                ]
-              }
+              { "label": "O(1)", "values": [1, 1, 1, 1] },
+              { "label": "O(log n)", "values": [1, 2, 3, 4] },
+              { "label": "O(n)", "values": [2, 4, 8, 16] },
+              { "label": "O(n²)", "values": [4, 16, 64, 256] }
             ],
-            "caption": "Side-by-side at n = 16."
+            "caption": "The four families on one plot. O(n log n) sits between O(n) and O(n²).",
+            "series": null,
+            "highlight_label": null
+          },
+          {
+            "type": "growth_curve",
+            "n_values": [
+              2,
+              4,
+              8,
+              16
+            ],
+            "series_multi": [
+              { "label": "O(1)", "values": [1, 1, 1, 1] },
+              { "label": "O(log n)", "values": [1, 2, 3, 4] },
+              { "label": "O(n)", "values": [2, 4, 8, 16] },
+              { "label": "O(n²)", "values": [4, 16, 64, 256] }
+            ],
+            "caption": "Called out: O(n²) is the steepest line here.",
+            "series": null,
+            "highlight_label": "O(n²)"
           }
-        ]
+        ],
+        "teach_visual_v1": {
+          "default_frame_indices": [0],
+          "explain_frame_indices": [1]
+        }
       },
       "probe": {
         "prompt_md": "Which family grows fastest as n increases: O(1), O(log n), O(n), O(n log n), or O(n²)?",

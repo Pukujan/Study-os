@@ -29,8 +29,21 @@ class BigOWorkedExampleTests(unittest.TestCase):
         assert example is not None
         self.assertNotEqual(example["md"], teach_md)
         self.assertNotRegex(example["md"], r"(?m)^\s*\d+[.)]\s")
-        example_types = [f["type"] for f in example["frames"]]
-        self.assertNotEqual(example_types, teach_types)
+        # Worked example must not be a silent clone of the teach card (#161):
+        # same curve component is fine, the rendered card must still differ.
+        def _card_signature(frames):
+            return [
+                (
+                    f["type"],
+                    f.get("highlight_label"),
+                    tuple(s["label"] for s in (f.get("series_multi") or [])),
+                    f.get("caption"),
+                )
+                for f in frames
+            ]
+
+        self.assertNotEqual(_card_signature(example["frames"]), _card_signature(view["step"]["teach_frames"]))
+        self.assertTrue(teach_types)
         # Teach-only steps remain in probe phase so Continue stays available.
         self.assertEqual(view2["phase"], "probe")
         self.assertIsNone(view2["step"]["probe"])

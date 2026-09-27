@@ -198,6 +198,38 @@ describe("visuals", () => {
     expect(curve).toContain("growth-curve");
   });
 
+  it("GrowthCurve emphasises the class named by highlight_label (#161)", () => {
+    const fourClass = [
+      { label: "O(1)", values: [1, 1, 1, 1] },
+      { label: "O(log n)", values: [1, 2, 3, 4] },
+      { label: "O(n)", values: [2, 4, 8, 16] },
+      { label: "O(n²)", values: [4, 16, 64, 256] },
+    ];
+    const highlighted = renderToStaticMarkup(
+      <Frame
+        frame={{
+          type: "growth_curve",
+          n_values: [2, 4, 8, 16],
+          series_multi: fourClass,
+          highlight_label: "O(n²)",
+        }}
+      />,
+    );
+    expect(highlighted).toContain("highlighting O(n²)");
+    // Only the taught class keeps full opacity on the plot and legend.
+    expect(highlighted.match(/opacity="0.35"/g)?.length).toBe(3);
+    expect(highlighted).toContain('stroke-width="3.5"');
+
+    const unhighlighted = renderToStaticMarkup(
+      <Frame
+        frame={{ type: "growth_curve", n_values: [2, 4, 8, 16], series_multi: fourClass }}
+      />,
+    );
+    expect(unhighlighted).not.toContain("highlighting");
+    expect(unhighlighted).not.toContain('opacity="0.35"');
+    expect(unhighlighted).not.toContain('stroke-width="3.5"');
+  });
+
   it("GrowthTable empty series uses compact chips not a stretched row", () => {
     const html = renderToStaticMarkup(
       <GrowthTable frame={{ type: "growth_table", n_values: [2, 4, 8, 16] }} />,
