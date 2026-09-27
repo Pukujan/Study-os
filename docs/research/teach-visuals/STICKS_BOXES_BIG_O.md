@@ -4,7 +4,7 @@
 
 ## Intent
 
-Learner **is** the computer. Feeling “4 ops for n=2 under O(n²)” vs “2 ops under O(n)” vs “1 op under O(1)” is the learning event. Pair with the curated multi-class growth curve so the curve family is not orphaned.
+Learner **is** the computer. Feeling “4 steps for n=2 under O(n²)” vs “2 steps under O(n)” vs “1 step under O(1)” is the learning event. Pair with the curated multi-class growth curve so the curve family is not orphaned.
 
 ## UX class (not invent-cold)
 
@@ -19,13 +19,22 @@ Study-os matches the validated control grammar; it is not a pixel clone of Gemin
 | Put Next Stick | One op; dispenser → active box; stats tick |
 | Finished! | When sticks placed == target |
 | Reset | Clears sticks / step cue; keeps n + complexity |
-| Stats | Complexity · Sticks Placed x/y · Total Work ops |
+| Stats | Complexity · Sticks Placed x/y · Steps |
 
 ## Integration
 
 - Frame type: `sticks_boxes_complexity` (alias `interactive_ops_boxes`)
 - Component: `web/src/visuals/SticksBoxesComplexity.tsx`
 - Lesson `big-o-growth-families`: default teach stays `growth_curve`; **Explain again** on `why_care` and `on2_quadratic` opens the interactive
+
+## Plain-language glossary (#193)
+
+| Term | Meaning on first screens |
+| --- | --- |
+| **n** | how big the problem is (how many items) |
+| **work / steps** | how many steps the computer takes |
+
+Do not lead with `ops` or `Work (ops)`. Prefer **steps** / **how much work**. Stats label is **Steps**.
 
 ## Non-goals
 

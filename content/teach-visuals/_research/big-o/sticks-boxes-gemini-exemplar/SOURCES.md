@@ -39,3 +39,7 @@ Dropdown copy from exemplar:
 
 `sticks_boxes_complexity` (alias `interactive_ops_boxes`) under
 `web/src/visuals/SticksBoxesComplexity.tsx`.
+
+## Study-os learner wording (#193)
+
+The Gemini exemplar chrome says `Total Work` / `ops`. Study-os learner-facing copy uses **Steps** / **steps** (plain glossary: work = how many steps the computer takes). Screenshot rows above describe the exemplar, not live Study-os chrome.

@@ -207,9 +207,9 @@ export default function SticksBoxesComplexity({ frame }: { frame: SticksBoxesCom
           </span>
         </div>
         <div className={styles.stat}>
-          <span className={styles.statLabel}>Total Work</span>
+          <span className={styles.statLabel}>Steps</span>
           <span className={styles.statValue} data-testid="sticks-stat-work">
-            {target} ops
+            {target} steps
           </span>
         </div>
       </div>

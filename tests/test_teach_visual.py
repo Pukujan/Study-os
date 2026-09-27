@@ -42,7 +42,7 @@ class BigOWhyVisualTests(unittest.TestCase):
         labels = [s["label"] for s in frames[0]["series_multi"]]
         self.assertEqual(labels, ["O(1)", "O(log n)", "O(n)", "O(n²)"])
         self.assertIn("input size", md.lower())
-        self.assertRegex(md.lower(), r"\bwork\b|\bops\b")
+        self.assertRegex(md.lower(), r"\bwork\b|\bsteps\b")
 
     def test_flag_off_restores_raw_table_without_data_loss(self):
         raw = self.teach["presentation_raw"]
@@ -247,7 +247,7 @@ class BigOSticksBoxesInteractiveTests(unittest.TestCase):
         )
         self.assertIn("Feel the pairs.", text)
         self.assertIn("O(n²)", text)
-        self.assertIn("4 ops", text)
+        self.assertIn("4 steps", text)
         self.assertIn("cross-pair", text.lower())
 
 
