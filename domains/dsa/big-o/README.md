@@ -32,3 +32,8 @@ evidence and checkpoint promotion remain Study OS runtime responsibilities.
 
 No private study-log content, transcripts, or learner-identifying material is
 mirrored here. This directory holds curriculum structure only.
+
+## Teach visual v1
+
+Step 1 defaults to workers + boxes (`growth_workers`). Set `STUDY_OS_TEACH_VISUAL_V1=0` to restore the legacy empty `growth_table` from `presentation_raw`. See `docs/ops/TEACH_VISUAL_V1.md`.
+
