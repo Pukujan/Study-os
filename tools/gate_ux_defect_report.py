@@ -2,7 +2,7 @@
 """Gate a UX defect summary: fail on ANY P0 or P1.
 
 Fail policy (Alex, 2026-09-27 — ed-tech frontend must work):
-- ANY defect with severity P0 or P1 fails this job, regardless of confidence.
+- ANY defect with severity P0 or P1 fails the gate (local FE claim or any caller), regardless of confidence.
 - Confidence (when present on defects, decisions, or actions) is recorded for
   humans and agents: low confidence => investigate why the model was unsure;
   high confidence => ship the fix without re-litigating the finding.

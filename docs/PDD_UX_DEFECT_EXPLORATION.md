@@ -85,4 +85,14 @@ Catch-rate = `#defects found / #controls exercised` under identical section 3 or
 
 - [x] This PDD under `docs/PDD_UX_DEFECT_EXPLORATION.md`
 - [x] Schema at `docs/schemas/ux-defect-report.v1.json`
-- Follow-on: harness writes artifacts; CI validates `summary.json` against schema.
+- Follow-on: harness writes artifacts; local `gate_ux_defect_report.py` fails on any P0/P1; CI Playwright locks controls.
+
+## 9. Local Ultrafast vs CI (Alex clarification)
+
+| Arm | Where it runs | Required for FE claim? |
+| --- | --- | --- |
+| **Ultrafast exploratory** (`source: jev`) | **Local / scout only** (Teresa-Pujan or agent box with `JEV_ULTRAFAST_ROOT`) | **Yes — FIRST** before claiming FE done |
+| **Playwright deterministic + vision** (`source: playwright`) | Local and **GitHub Actions** job `playwright` | Yes — after Ultrafast; CI stays this arm only |
+
+Ultrafast is **not** a required Actions job. Do not add Ultrafast crawl workflows to CI. Ultrafast is reliable; OpenRouter Decisions misconfig ≠ Ultrafast flake. Any P0/P1 fails the agent claim regardless of confidence (`tools/gate_ux_defect_report.py`).
+

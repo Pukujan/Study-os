@@ -208,34 +208,41 @@ A substantive PR should state:
 
 ## Frontend QA mandate (mandatory)
 
-**Ultrafast + Playwright (and CI vision) are mandatory** before claiming a frontend change works or opening/merging a UI PR.
+**Ultrafast-first (local/scout), then Playwright.** Never claim a frontend change works — or open/merge a UI PR as “FE done” — without a **local Ultrafast pass**, then Playwright.
 
 Full policy: [`docs/AGENT_FRONTEND_QA.md`](docs/AGENT_FRONTEND_QA.md).
 
 Non-negotiable summary:
 
-- Run **local Ultrafast scout** and **Playwright UX / vision** against live or the PR preview; CI must also run Playwright+vision and Ultrafast crawl.
-- Any **P0/P1** fail → do not claim green; fix or file and block.
-- **Low confidence** → manually re-check why; do not skip. Record confidence; it does **not** waive P0/P1.
-- **No Jev / OpenRouter Decisions on product code.** Ultrafast is a QA harness only (OpenRouter Decisions).
+1. **Ultrafast FIRST** — local scout against live `https://study.design-bakery.com` or the PR preview (Teresa-Pujan: `tools/ux-defect/Run-UltrafastScout.ps1`; Linux/box: `./tools/frontend_qa/run_ultrafast_scout.sh`).
+2. **Then Playwright** UX / vision (local and/or CI).
+3. **CI stays Playwright + vision only.** Ultrafast is **not** a required GitHub Actions job — do not add an `ultrafast-ux` (or similar) Actions workflow.
+4. Any **P0/P1** fail → claim fails **regardless of confidence**. Fix or file and block; never re-label pass.
+5. **Low confidence** → manually re-check why; do not skip. Record confidence; it does **not** waive P0/P1.
+6. **Ultrafast is reliable.** Do not call it flaky. OpenRouter Decisions misconfig / missing `OPENROUTER_API_KEY` / HTTP 400 from the Decisions API is an **env/config problem**, not an Ultrafast flake.
+7. **No Jev / OpenRouter Decisions on product code.** Ultrafast is a QA harness only.
 
-Runners:
+Runners (order matters):
 
 ```bash
+# 1) Local Ultrafast scout (REQUIRED for FE claims — not CI)
 ./tools/frontend_qa/run_ultrafast_scout.sh https://study.design-bakery.com   # or PR preview URL
-./tools/frontend_qa/run_playwright_ux.sh                                    # wraps web/ e2e + vision gate
+python tools/gate_ux_defect_report.py artifacts/ux-defect-ultrafast/<stamp>/summary.json
+
+# 2) Playwright UX + vision
+./tools/frontend_qa/run_playwright_ux.sh
 ```
 
-Windows PowerShell live scouts (schema-shaped `artifacts/ux-defect-*/`):
+Windows / Teresa-Pujan (preferred host for Ultrafast):
 
 ```powershell
-powershell -File tools/ux-defect/Run-UltrafastScout.ps1
+powershell -File tools/ux-defect/Run-UltrafastScout.ps1   # uses D:\claude\jev-ultrafast or $env:JEV_ULTRAFAST_ROOT
 powershell -File tools/ux-defect/Run-PlaywrightDefectPass.ps1
 ```
 
-See also `docs/UX_DEFECT_LOCAL_AND_CI.md` (local = scout; CI = merge gate).
+See `docs/UX_DEFECT_LOCAL_AND_CI.md` (local Ultrafast = agent FE claim gate; CI merge gate = Playwright + vision only).
 
-Ultrafast lives at [`Pukujan/jev-ultrafast`](https://github.com/Pukujan/jev-ultrafast) (Alex host path `D:\claude\jev-ultrafast`). Playwright specs: `web/e2e/` (incl. `ux-defect-controls.spec.ts`). CI job: `playwright` in `.github/workflows/ci.yml`.
+Ultrafast lives at [`Pukujan/jev-ultrafast`](https://github.com/Pukujan/jev-ultrafast) (Teresa-Pujan default `D:\claude\jev-ultrafast`). Playwright specs: `web/e2e/` (incl. `ux-defect-controls.spec.ts`). Required CI job for UI: `playwright` in `.github/workflows/ci.yml` — **not** Ultrafast.
 
 
 ## Explicitly deferred
