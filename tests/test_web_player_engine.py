@@ -721,5 +721,95 @@ class AdaptTests(unittest.TestCase):
         self.assertEqual(len(state["adapt_stack"]), 5)
 
 
+class FractionsStepOneTests(unittest.TestCase):
+    """Step 1 of fractions-compare is a real choice probe (#126)."""
+
+    def _lesson(self):
+        from study_os.web.player.content import load_lesson
+
+        return load_lesson("fractions-compare")
+
+    def test_problem_step_is_choice_probe_with_two_variants(self):
+        from study_os.web.player import engine
+
+        lesson = self._lesson()
+        step = lesson["steps"][0]
+        self.assertEqual(step["step_id"], "problem")
+        self.assertEqual(step["probe"]["answer_kind"], "choice")
+        self.assertEqual(step["probe"]["choices"], ["3/4", "2/3"])
+        self.assertGreaterEqual(len(step["variants"]), 2)
+        self.assertEqual(engine.check_lesson(lesson), [])
+
+    def test_correct_choice_advances_to_denominator(self):
+        from study_os.web.player import engine
+
+        lesson = self._lesson()
+        state = engine.start(lesson)
+        state, feedback = engine.attempt(lesson, state, "3/4", "choice")
+        self.assertEqual(feedback["outcome"], "correct")
+        self.assertEqual(feedback["next_action"], "continue")
+        state = engine.next(lesson, state)
+        self.assertEqual(lesson["steps"][state["step_index"]]["step_id"], "denominator")
+        self.assertEqual(state["phase"], "probe")
+
+    def test_wrong_choice_matches_misconception(self):
+        from study_os.web.player import engine
+
+        lesson = self._lesson()
+        state = engine.start(lesson)
+        state, feedback = engine.attempt(lesson, state, "2/3", "choice")
+        self.assertEqual(feedback["outcome"], "incorrect")
+        self.assertIn("bigger denominator", feedback["message_md"].lower())
+
+    def test_view_never_exposes_choice_probe_server_fields(self):
+        from study_os.web.player import engine
+
+        lesson = self._lesson()
+        view = engine.view(lesson, engine.start(lesson))
+        self.assertEqual(view["step"]["probe"]["answer_kind"], "choice")
+        dumped = json.dumps(view)
+        for forbidden in ("accept", "solution_md", "hint_md", "misconceptions"):
+            self.assertNotIn(f'"{forbidden}"', dumped)
+
+    def test_revisit_returns_to_visited_step(self):
+        from study_os.web.player import engine
+
+        lesson = self._lesson()
+        state = engine.start(lesson)
+        state, _ = engine.attempt(lesson, state, "3/4", "choice")
+        state = engine.next(lesson, state)
+        self.assertEqual(lesson["steps"][state["step_index"]]["step_id"], "denominator")
+        self.assertTrue(engine.view(lesson, state)["can_revisit_step"])
+        state, info = engine.revisit(lesson, state)
+        self.assertEqual(info["revisited_step"], "problem")
+        self.assertEqual(lesson["steps"][state["step_index"]]["step_id"], "problem")
+        self.assertEqual(state["phase"], "probe")
+
+    def test_revisit_refuses_unvisited_step(self):
+        from study_os.web.player import engine
+
+        lesson = self._lesson()
+        state = engine.start(lesson)
+        self.assertFalse(engine.view(lesson, state)["can_revisit_step"])
+        state, info = engine.revisit(lesson, state, 3)
+        self.assertTrue(info["refused"])
+        self.assertEqual(state["step_index"], 0)
+
+
+class TeachOnlyStepTests(unittest.TestCase):
+    """A teach-only step must still be able to advance (#126)."""
+
+    def test_next_advances_past_probe_less_step(self):
+        from study_os.web.player import engine
+        from study_os.web.player.content import load_lesson
+
+        lesson = load_lesson("sliding-window-box")
+        state = engine.start(lesson)
+        self.assertIsNone(engine.view(lesson, state)["step"]["probe"])
+        state = engine.next(lesson, state)
+        self.assertEqual(state["step_index"], 1)
+        self.assertEqual(state["phase"], "probe")
+
+
 if __name__ == "__main__":
     unittest.main()

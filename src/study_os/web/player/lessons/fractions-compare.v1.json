@@ -24,8 +24,134 @@
           }
         ]
       },
-      "probe": null,
-      "variants": []
+      "probe": {
+        "prompt_md": "Which fraction is bigger, 3/4 or 2/3?",
+        "frames": [
+          {
+            "type": "fraction_bar",
+            "caption": null,
+            "bars": [
+              {"parts": 4, "shaded": 3, "label": "3/4", "highlight": []},
+              {"parts": 3, "shaded": 2, "label": "2/3", "highlight": []}
+            ],
+            "number_line": null
+          }
+        ],
+        "answer_kind": "choice",
+        "choices": ["3/4", "2/3"],
+        "accept": ["3/4"],
+        "partial": [],
+        "misconceptions": [
+          {
+            "id": "bigger-denominator-bigger",
+            "match": ["2/3"],
+            "note_md": "A bigger denominator means smaller parts. Compare the shaded amounts instead."
+          }
+        ],
+        "correct_md": "Correct \u2014 **3/4**.",
+        "explain_md": "3/4 and 2/3 share the same whole, and 3/4 shades more of it, so 3/4 is bigger.",
+        "explain_frames": [
+          {
+            "type": "fraction_bar",
+            "caption": "3/4 is farther right on the number line.",
+            "bars": [
+              {"parts": 4, "shaded": 3, "label": "3/4", "highlight": [0, 1, 2]},
+              {"parts": 3, "shaded": 2, "label": "2/3", "highlight": [0, 1]}
+            ],
+            "number_line": {"max": 1, "ticks": 12, "marks": [{"at": "2/3", "label": "2/3"}, {"at": "3/4", "label": "3/4"}]}
+          }
+        ],
+        "solution_md": "Use a common denominator of 12: 3/4 = 9/12 and 2/3 = 8/12, so 3/4 is bigger.",
+        "hint_md": "Line up the two bars and compare the shaded lengths."
+      },
+      "variants": [
+        {
+          "teach_frames": [],
+          "probe": {
+            "prompt_md": "Which fraction is bigger, 2/3 or 1/2?",
+            "frames": [
+              {
+                "type": "fraction_bar",
+                "caption": null,
+                "bars": [
+                  {"parts": 3, "shaded": 2, "label": "2/3", "highlight": []},
+                  {"parts": 2, "shaded": 1, "label": "1/2", "highlight": []}
+                ],
+                "number_line": null
+              }
+            ],
+            "answer_kind": "choice",
+            "choices": ["2/3", "1/2"],
+            "accept": ["2/3"],
+            "partial": [],
+            "misconceptions": [
+              {
+                "id": "bigger-denominator-bigger",
+                "match": ["1/2"],
+                "note_md": "A bigger denominator means smaller parts. Compare the shaded amounts instead."
+              }
+            ],
+            "correct_md": "Correct \u2014 **2/3**.",
+            "explain_md": "2/3 and 1/2 share the same whole, and 2/3 shades more of it, so 2/3 is bigger.",
+            "explain_frames": [
+              {
+                "type": "fraction_bar",
+                "caption": "2/3 is farther right on the number line.",
+                "bars": [
+                  {"parts": 3, "shaded": 2, "label": "2/3", "highlight": [0, 1]},
+                  {"parts": 2, "shaded": 1, "label": "1/2", "highlight": [0]}
+                ],
+                "number_line": {"max": 1, "ticks": 12, "marks": [{"at": "1/2", "label": "1/2"}, {"at": "2/3", "label": "2/3"}]}
+              }
+            ],
+            "solution_md": "Use a common denominator of 6: 2/3 = 4/6 and 1/2 = 3/6, so 2/3 is bigger.",
+            "hint_md": "Line up the two bars and compare the shaded lengths."
+          }
+        },
+        {
+          "teach_frames": [],
+          "probe": {
+            "prompt_md": "Which fraction is bigger, 3/5 or 2/4?",
+            "frames": [
+              {
+                "type": "fraction_bar",
+                "caption": null,
+                "bars": [
+                  {"parts": 5, "shaded": 3, "label": "3/5", "highlight": []},
+                  {"parts": 4, "shaded": 2, "label": "2/4", "highlight": []}
+                ],
+                "number_line": null
+              }
+            ],
+            "answer_kind": "choice",
+            "choices": ["3/5", "2/4"],
+            "accept": ["3/5"],
+            "partial": [],
+            "misconceptions": [
+              {
+                "id": "bigger-denominator-bigger",
+                "match": ["2/4"],
+                "note_md": "A bigger denominator means smaller parts. Compare the shaded amounts instead."
+              }
+            ],
+            "correct_md": "Correct \u2014 **3/5**.",
+            "explain_md": "3/5 and 2/4 share the same whole, and 3/5 shades more of it, so 3/5 is bigger.",
+            "explain_frames": [
+              {
+                "type": "fraction_bar",
+                "caption": "3/5 is farther right on the number line.",
+                "bars": [
+                  {"parts": 5, "shaded": 3, "label": "3/5", "highlight": [0, 1, 2]},
+                  {"parts": 4, "shaded": 2, "label": "2/4", "highlight": [0, 1]}
+                ],
+                "number_line": {"max": 1, "ticks": 20, "marks": [{"at": "2/4", "label": "2/4"}, {"at": "3/5", "label": "3/5"}]}
+              }
+            ],
+            "solution_md": "Use decimals: 3/5 = 0.6 and 2/4 = 0.5, so 3/5 is bigger.",
+            "hint_md": "Line up the two bars and compare the shaded lengths."
+          }
+        }
+      ]
     },
     {
       "step_id": "denominator",

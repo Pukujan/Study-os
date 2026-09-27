@@ -157,6 +157,7 @@ export type PlayerView = {
   card_mode?: "probe" | "worked_example";
   variant_tag?: string | null;
   can_go_back?: boolean;
+  can_revisit_step?: boolean;
   worked_example?: WorkedExample;
 };
 
@@ -362,8 +363,8 @@ export const api = {
   playerConfused: (id: string) => post<PlayerView>(`/api/player/sessions/${id}/confused`),
   playerNext: (id: string) => post<PlayerView>(`/api/player/sessions/${id}/next`),
   tutor: (id: string, message: string) => post<TutorReply>(`/api/player/sessions/${id}/tutor`, { message }),
-  adapt: (id: string, kind: "example" | "easier" | "harder" | "back") =>
-    post<PlayerView>(`/api/player/sessions/${id}/adapt`, { kind }),
+  adapt: (id: string, kind: "example" | "easier" | "harder" | "back" | "step_back", step_index?: number) =>
+    post<PlayerView>(`/api/player/sessions/${id}/adapt`, { kind, step_index }),
   feedback: (body: FeedbackBody) => post<{ ok: boolean; feedback_id: string }>("/api/feedback", body),
   adminFeedback: () => get<AdminFeedback>("/api/admin/feedback"),
 };

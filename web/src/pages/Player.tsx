@@ -175,6 +175,8 @@ export default function Player({ sessionId }: { sessionId: string }) {
             completedIds={getLessonSteps(view.lesson.lesson_id, view.lesson.total_steps)
               .slice(0, view.step.index)
               .map((s) => s.id)}
+            selectableCount={view.step.index}
+            onSelect={view.can_revisit_step ? (i) => void revisit(i) : undefined}
           />
           <div className="progress" aria-label={`Progress ${view.progress.done} of ${view.progress.total}`}>
             <div className="progress-bar" style={{ width: `${progressPct}%` }} />
@@ -275,6 +277,20 @@ export default function Player({ sessionId }: { sessionId: string }) {
                   </>
                 )}
               </section>
+              )}
+
+              {view.phase === "probe" && !view.step.probe && view.card_mode !== "worked_example" && (
+                <section className="probe card">
+                  <button
+                    className="btn primary"
+                    onClick={next}
+                    disabled={busy}
+                    data-track="player.next"
+                    data-testid="player.teach-continue"
+                  >
+                    Continue
+                  </button>
+                </section>
               )}
 
               {view.phase === "feedback" && view.feedback && (
@@ -383,6 +399,21 @@ export default function Player({ sessionId }: { sessionId: string }) {
     try {
       const v = await api.adapt(sessionId, "back");
       setView(v);
+    } catch (e) {
+      setError(e instanceof ApiError ? e.code : "error");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function revisit(index: number) {
+    setBusy(true);
+    setError(null);
+    try {
+      const v = await api.adapt(sessionId, "step_back", index);
+      setView(v);
+      setAnswer("");
+      setShowTeach(!v.step.teach_collapsed);
     } catch (e) {
       setError(e instanceof ApiError ? e.code : "error");
     } finally {

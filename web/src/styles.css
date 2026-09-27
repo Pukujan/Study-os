@@ -228,6 +228,13 @@ pre.chart { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monosp
 .lesson-map-chip.is-current .lesson-map-chip-index {
   background: rgba(255, 255, 255, 0.25);
 }
+.lesson-map-chip-button {
+  all: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+}
 
 
 .code-tree { margin: 0.75rem 0; }

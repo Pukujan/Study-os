@@ -200,20 +200,29 @@ class PlayerService:
             )
         return self._view(lesson, state, principal, session_id)
 
-    def adapt(self, principal: Any, session_id: str, kind: str) -> dict[str, Any]:
+    def adapt(
+        self,
+        principal: Any,
+        session_id: str,
+        kind: str,
+        step_index: int | None = None,
+    ) -> dict[str, Any]:
         lesson, state = self._load(principal, session_id)
-        if kind not in {"example", "easier", "harder", "back"}:
+        if kind not in {"example", "easier", "harder", "back", "step_back"}:
             raise ServiceError("invalid_adapt_kind")
         with self.db.tx() as conn:
             self._session_row(conn, principal, session_id, lock=True)
-            state, info = engine.adapt(lesson, state, kind)
+            if kind == "step_back":
+                state, info = engine.revisit(lesson, state, step_index)
+            else:
+                state, info = engine.adapt(lesson, state, kind)
             self._update_session_state(conn, session_id, state)
             self._log_event(
                 conn,
                 session_id,
                 engine._current_step(lesson, state)["step_id"],  # noqa: SLF001
                 "adapt",
-                payload={"kind": kind, "info": info},
+                payload={"kind": kind, "info": info, "step_index": step_index},
             )
         return self._view(lesson, state, principal, session_id)
 
