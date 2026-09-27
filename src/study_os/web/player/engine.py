@@ -9,7 +9,22 @@ from __future__ import annotations
 from typing import Any
 
 from .grading import grade
-from . import presentation
+from . import human_rewrite, presentation
+
+def _learner_explain(probe: dict[str, Any] | None) -> str:
+    """Plain-human rewrite of probe explain_md (empty when missing)."""
+
+    if not probe:
+        return ""
+    raw = str(probe.get("explain_md") or "").strip()
+    return human_rewrite.rewrite(raw, kind="explain") if raw else ""
+
+
+def _learner_correct(probe: dict[str, Any] | None) -> str:
+    if not probe:
+        return ""
+    raw = str(probe.get("correct_md") or "").strip()
+    return human_rewrite.rewrite(raw, kind="correct") if raw else ""
 
 
 _MAX_MISSES = 3
@@ -101,7 +116,7 @@ def _public_worked_example(example: Any) -> dict[str, Any] | None:
     public: dict[str, Any] = {}
     solution_md = example.get("solution_md")
     if isinstance(solution_md, str) and solution_md.strip():
-        public["md"] = solution_md
+        public["md"] = human_rewrite.rewrite(solution_md, kind="worked_example")
     frames = example.get("frames")
     if isinstance(frames, list):
         public["frames"] = _strip_server_only(frames)
@@ -283,8 +298,8 @@ def attempt(
 
     if outcome == "correct":
         # Build correct feedback: correct_md + why (explain).
-        correct_text = probe.get("correct_md", "Correct!")
-        explain = probe.get("explain_md", "")
+        correct_text = _learner_correct(probe) or probe.get("correct_md", "Correct!")
+        explain = _learner_explain(probe)
         message = correct_text
         if explain:
             message += "\n\n" + explain
@@ -365,7 +380,7 @@ def attempt(
         state["status_by_step"][step_id] = "needs_review"
         message = (
             f"The right answer is **{probe.get('accept', ['?'])[0]}**.\n\n"
-            f"{probe.get('explain_md', '')}\n\n"
+            f"{_learner_explain(probe)}\n\n"
             "That's okay — this one trips people up. We'll come back to it later."
         )
         feedback = _build_feedback(
@@ -385,7 +400,7 @@ def attempt(
     right = probe.get("accept", ["?"])[0]
     message = (
         f"The right answer is **{right}**.\n\n"
-        f"{probe.get('explain_md', '')}\n\n"
+        f"{_learner_explain(probe)}\n\n"
         "That's okay — this one trips people up."
     )
     if note:
@@ -437,7 +452,7 @@ def confused(lesson: dict[str, Any], state: dict[str, Any]) -> tuple[dict[str, A
 
     feedback = _build_feedback(
         "incorrect",
-        f"Let's look at this again.\n\n{probe.get('explain_md', '')}",
+        f"Let's look at this again.\n\n{_learner_explain(probe)}",
         list(probe.get("explain_frames", [])),
         "retry",
         sticker="reassure",
@@ -581,18 +596,21 @@ def _worked_example_payload(
         alt_md = str(probe.get("explain_md") or probe.get("correct_md") or "").strip()
         alt_frames = list(probe.get("explain_frames") or primary_frames)
 
+    def _we(md: str) -> str:
+        return human_rewrite.rewrite(md, kind="worked_example") if md else ""
+
     if alternate:
         if alt_md and alt_md != primary_md:
-            return {"solution_md": alt_md, "frames": alt_frames}, "example_alt"
+            return {"solution_md": _we(alt_md), "frames": alt_frames}, "example_alt"
         if primary_md:
             return {
-                "solution_md": f"Another look: {primary_md}",
+                "solution_md": _we(f"Another look: {primary_md}"),
                 "frames": primary_frames,
             }, "example_alt"
         if teach_md:
-            return {"solution_md": f"Another look: {teach_md}", "frames": teach_frames}, "example_alt"
+            return {"solution_md": _we(f"Another look: {teach_md}"), "frames": teach_frames}, "example_alt"
 
-    return {"solution_md": primary_md, "frames": primary_frames}, "example"
+    return {"solution_md": _we(primary_md), "frames": primary_frames}, "example"
 
 
 def adapt(lesson: dict[str, Any], state: dict[str, Any], kind: str) -> tuple[dict[str, Any], dict[str, Any]]:

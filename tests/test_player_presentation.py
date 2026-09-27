@@ -105,18 +105,18 @@ class PresentationTests(unittest.TestCase):
             {"teach_md": "A clearer view of the same position.", "frame_indices": [0]}, self.lesson, self.state, ()
         )
         presentation.apply(self.lesson, self.state, content or {}, {"prompt_version": "tutor.v3"})
-        self.assertEqual(presentation.effective(self.lesson, self.state)[0], "A clearer view of the same position.")
+        self.assertEqual(presentation.effective(self.lesson, self.state)[0], "1) A clearer view of the same position.")
 
         moved = dict(self.state, step_index=0, variant_index=0)
         self.assertIsNone(presentation.current(self.lesson, moved))
-        self.assertEqual(presentation.effective(self.lesson, moved)[0], "old")
+        self.assertEqual(presentation.effective(self.lesson, moved)[0], "1) Old.")
 
     def test_versions_advance_monotonically_from_the_persisted_state(self) -> None:
         first = presentation.apply(self.lesson, self.state, {"teach_md": "One.", "teach_frames": []}, {"prompt_version": "tutor.v3"})
         second = presentation.apply(self.lesson, self.state, {"teach_md": "Two.", "teach_frames": []}, {"prompt_version": "tutor.v3"})
         self.assertEqual((first["version"], first["previous_version"]), (1, 0))
         self.assertEqual((second["version"], second["previous_version"]), (2, 1))
-        self.assertEqual(presentation.effective(self.lesson, self.state)[0], "Two.")
+        self.assertEqual(presentation.effective(self.lesson, self.state)[0], "1) Two.")
         self.assertEqual(self.state["presentation_version"], 2)
 
 

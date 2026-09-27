@@ -36,6 +36,10 @@ Read these files before making substantive changes:
 
 See `PROJECT_MANIFEST.yaml` for machine-readable state.
 
+## Plain-human lesson copy
+
+Learner-visible teach / explain-again / worked-example / pack-decomposition markdown goes through a mandatory post-gen rewrite (`src/study_os/web/player/human_rewrite.py`). See [`docs/ops/PLAIN_HUMAN_REWRITE.md`](docs/ops/PLAIN_HUMAN_REWRITE.md). Do not ship walls of AI-blog prose on those surfaces.
+
 ## Multi-agent authority
 
 For cross-agent task claims and verdicts, follow [`docs/AUTHORITY.md`](docs/AUTHORITY.md). `grok-bot@study-os` is the sole arbiter; Claude Code + InferHub sessions are claimable workers and must not self-arbitrate or merge to `main`.
