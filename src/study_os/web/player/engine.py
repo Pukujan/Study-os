@@ -10,6 +10,8 @@ from typing import Any
 
 from .grading import grade
 from . import human_rewrite, presentation
+from . import teach_visual
+
 
 def _learner_explain(probe: dict[str, Any] | None) -> str:
     """Plain-human rewrite of probe explain_md (empty when missing)."""
@@ -574,39 +576,91 @@ def _worked_example_payload(
 ) -> tuple[dict[str, Any], str]:
     """Build a learner-visible worked-example card for the current step.
 
-    Primary content prefers the probe solution; teach text is the fallback when
-    the step has no probe. A second request (``alternate=True``) rotates to
-    explain/correct copy or a clearly labeled "Another look" so the teach-panel
-    Worked example chip is never a silent no-op after resume (#126 Ultrafast D004).
+    Prefer an authored ``worked_example`` / ``worked_example_alt`` walk-through so
+    the card is never a duplicate of the teach panel. Probe solution/explain is
+    next; teach text is last-resort fallback. A second request (``alternate=True``)
+    rotates content and frames so the chip is never a silent no-op (#126 D004).
     """
 
     step = _current_step(lesson, state)
     teach = step.get("teach") or {}
-    teach_md = str(teach.get("md") or "").strip()
-    teach_frames = list(teach.get("frames") or [])
+    resolved_md, resolved_frames = teach_visual.resolve_teach(teach)
+    teach_md = str(resolved_md or "").strip()
+    teach_frames = list(resolved_frames or [])
+    authored_pool = teach_visual.authored_frames(teach) or teach_frames
     probe = _current_probe(lesson, state)
+
+    authored = step.get("worked_example") if isinstance(step.get("worked_example"), dict) else None
+    authored_alt = step.get("worked_example_alt") if isinstance(step.get("worked_example_alt"), dict) else None
 
     primary_md = teach_md
     primary_frames = teach_frames
     alt_md = ""
     alt_frames: list[Any] = []
-    if probe:
+
+    if authored:
+        primary_md = str(authored.get("md") or authored.get("solution_md") or "").strip() or teach_md
+        primary_frames = list(authored.get("frames") or teach_frames)
+    elif probe:
         primary_md = str(probe.get("solution_md") or "").strip() or teach_md
         primary_frames = list(probe.get("frames") or teach_frames)
+    elif teach_frames:
+        # Teach-only: use explain-frame metaphor + non-clone copy (never duplicate teach).
+        explain_idx = teach_visual.explain_frame_indices(teach)
+        primary_frames = teach_visual.select_frames(teach, explain_idx) or (
+            authored_pool[1:] if len(authored_pool) > 1 else list(authored_pool)
+        )
+        we_md = str(teach.get("worked_example_md") or "").strip()
+        if we_md:
+            primary_md = we_md
+        else:
+            cap = ""
+            if primary_frames and isinstance(primary_frames[0], dict):
+                cap = str(primary_frames[0].get("caption") or "").strip()
+            first = (cap.split("\n")[0] if cap else "").lstrip("0123456789) .-").strip()
+            primary_md = (
+                f"1) Worked look at this step.\n2) {first}"
+                if first
+                else "1) Worked look at this step.\n2) Watch how the picture changes as n grows."
+            )
+
+    if authored_alt:
+        alt_md = str(authored_alt.get("md") or authored_alt.get("solution_md") or "").strip()
+        alt_frames = list(authored_alt.get("frames") or [])
+    elif probe:
         alt_md = str(probe.get("explain_md") or probe.get("correct_md") or "").strip()
         alt_frames = list(probe.get("explain_frames") or primary_frames)
+    elif authored_pool and len(authored_pool) > 1:
+        alt_indices = teach_visual.default_frame_indices(teach)
+        alt_frames = teach_visual.select_frames(teach, alt_indices) or teach_frames[:1]
+        alt_md = str(teach.get("worked_example_alt_md") or "").strip() or f"1) Another look.\n2) {teach_md}"
+
+    # Never ship a worked example that is identical to the visible teach card.
+    visible_md, visible_frames = teach_visual.resolve_teach(teach)
+    visible_md = str(visible_md or "").strip()
+    if primary_md.strip() == visible_md and list(primary_frames) == list(visible_frames):
+        if probe:
+            primary_md = str(probe.get("solution_md") or "").strip() or primary_md
+            primary_frames = list(probe.get("frames") or primary_frames)
+        if primary_md.strip() == visible_md:
+            primary_md = f"1) Worked look.\n2) {primary_md}" if primary_md else "1) Worked look at this step."
+        if list(primary_frames) == list(visible_frames) and len(teach_visual.authored_frames(teach)) > 1:
+            primary_frames = teach_visual.select_frames(
+                teach, teach_visual.explain_frame_indices(teach)
+            ) or primary_frames
 
     def _we(md: str) -> str:
         return human_rewrite.rewrite(md, kind="worked_example") if md else ""
 
     if alternate:
-        if alt_md and alt_md != primary_md:
-            return {"solution_md": _we(alt_md), "frames": alt_frames}, "example_alt"
+        if alt_md and (alt_md != primary_md or alt_frames != primary_frames):
+            return {"solution_md": _we(alt_md), "frames": alt_frames or primary_frames}, "example_alt"
         if primary_md:
-            return {
-                "solution_md": _we(f"Another look: {primary_md}"),
-                "frames": primary_frames,
-            }, "example_alt"
+            rotated = alt_frames or primary_frames
+            if rotated == primary_frames and len(teach_frames) > 1:
+                rotated = teach_visual.select_frames(teach, teach_visual.explain_frame_indices(teach)) or teach_frames[1:2]
+            prefix = "" if primary_md.lower().startswith("another look") else "Another look: "
+            return {"solution_md": _we(f"{prefix}{primary_md}"), "frames": rotated}, "example_alt"
         if teach_md:
             return {"solution_md": _we(f"Another look: {teach_md}"), "frames": teach_frames}, "example_alt"
 

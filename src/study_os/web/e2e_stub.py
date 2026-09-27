@@ -71,12 +71,22 @@ def policy(name: str, messages: list[dict[str, str]]) -> dict[str, Any] | None:
     if not _asked_to_regenerate(messages):
         return {"reply_md": REPLY_MD, "suggested_action": None, "regenerate_presentation": None}
 
-    frames = _context(messages).get("teach_frames") or []
+    ctx = _context(messages)
+    frames = ctx.get("teach_frames") or []
+    preferred = ctx.get("preferred_explain_frame_indices") or []
+    if preferred:
+        indices = [int(preferred[0])]
+    elif len(frames) > 1:
+        indices = [1]
+    elif frames:
+        indices = [0]
+    else:
+        indices = []
     return {
         "reply_md": REPLY_MD,
         "suggested_action": None,
         "regenerate_presentation": {
             "teach_md": REGEN_MD,
-            "frame_indices": [0] if frames else [],
+            "frame_indices": indices,
         },
     }
