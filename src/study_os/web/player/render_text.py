@@ -289,7 +289,7 @@ def _render_sticks_boxes_complexity(frame: dict[str, Any]) -> str:
     else:
         target = n * n
         rule = "cross-pair every box with every box"
-    lines.append(f"Sticks and boxes · {mode} · n={n} · {target} ops")
+    lines.append(f"Sticks and boxes · {mode} · n={n} · {target} steps")
     lines.append(f"Rule: {rule}")
     lines.append("Learner places sticks (Put Next Stick / Finished / Reset).")
     return "\n".join(lines)

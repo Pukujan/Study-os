@@ -70,7 +70,7 @@ describe("SticksBoxesComplexity UI", () => {
     );
     const root = () => container.querySelector('[data-testid="sticks-boxes-complexity"]') as HTMLElement;
     expect(root().getAttribute("data-placed")).toBe("0");
-    expect(container.querySelector('[data-testid="sticks-stat-work"]')!.textContent).toContain("1 ops");
+    expect(container.querySelector('[data-testid="sticks-stat-work"]')!.textContent).toContain("1 steps");
 
     const btn = container.querySelector('[data-testid="sticks-primary-btn"]') as HTMLButtonElement;
     act(() => {
@@ -83,13 +83,13 @@ describe("SticksBoxesComplexity UI", () => {
     cleanup();
   });
 
-  it("O(n) fills each box once and Total Work equals n", () => {
+  it("O(n) fills each box once and Steps equals n", () => {
     const { container, cleanup } = render(
       <SticksBoxesComplexity
         frame={{ type: "sticks_boxes_complexity", initial_complexity: "O(n)", initial_n: 3 }}
       />,
     );
-    expect(container.querySelector('[data-testid="sticks-stat-work"]')!.textContent).toContain("3 ops");
+    expect(container.querySelector('[data-testid="sticks-stat-work"]')!.textContent).toContain("3 steps");
     const btn = container.querySelector('[data-testid="sticks-primary-btn"]') as HTMLButtonElement;
     for (let i = 0; i < 3; i++) {
       act(() => {
@@ -112,7 +112,7 @@ describe("SticksBoxesComplexity UI", () => {
     );
     const cue = () => container.querySelector('[data-testid="sticks-step-cue"]')!.textContent || "";
     expect(cue()).toContain("Cross-Pairing Box 0 × Box 0");
-    expect(container.querySelector('[data-testid="sticks-stat-work"]')!.textContent).toContain("4 ops");
+    expect(container.querySelector('[data-testid="sticks-stat-work"]')!.textContent).toContain("4 steps");
 
     const btn = container.querySelector('[data-testid="sticks-primary-btn"]') as HTMLButtonElement;
     act(() => {
@@ -176,7 +176,7 @@ describe("SticksBoxesComplexity UI", () => {
     const root = container.querySelector('[data-testid="sticks-boxes-complexity"]') as HTMLElement;
     // jsdom may not wire React onChange via native Event; assert via direct property path if needed
     if (root.getAttribute("data-n") === "3") {
-      expect(container.querySelector('[data-testid="sticks-stat-work"]')!.textContent).toContain("9 ops");
+      expect(container.querySelector('[data-testid="sticks-stat-work"]')!.textContent).toContain("9 steps");
       expect(container.querySelectorAll('[data-testid^="sticks-box-"]').length).toBe(3);
     } else {
       // Fallback: call the same helper contract the slider uses.
