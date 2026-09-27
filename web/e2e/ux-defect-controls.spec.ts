@@ -74,9 +74,14 @@ test.describe("UX defect P0/P1 controls (stub server)", () => {
     await expect(input).toBeVisible();
     await input.fill("What should I notice on this step?");
     await panel.locator('[data-track="companion.send"]').click();
-    // Stub tutor always replies; thinking bubble or tutor/system bubble counts as ack.
-    const ack = panel.locator(".companion-bubble.tutor, .companion-bubble.system, .thinking-bubble");
-    await expect(ack.first()).toBeVisible({ timeout: CHAT_TIMEOUT_MS });
+    // Product truth (PDD section 2/3): an observable ack within 3s, no silent
+    // drop. The pending "Thinking..." label is the ack while the tutor call is
+    // in flight, so this must hold even when the reply is slow.
+    const ack = panel.locator(".thinking-label, .companion-bubble.system, .companion-bubble.tutor:not(.thinking-bubble)");
+    await expect(ack.first()).toBeVisible({ timeout: 3_000 });
+    // And the real reply still lands.
+    const reply = panel.locator(".companion-bubble.tutor:not(.thinking-bubble), .companion-bubble.system");
+    await expect(reply.first()).toBeVisible({ timeout: CHAT_TIMEOUT_MS });
   });
 
   test("Read aloud / Voice input / Open Message affordances are present", async ({ page }, testInfo) => {

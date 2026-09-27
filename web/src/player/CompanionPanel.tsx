@@ -357,7 +357,8 @@ export default function CompanionPanel({
           {busy && (
             <div className="companion-bubble tutor thinking-bubble">
               <Sprite src="/mascot/pet-thinking.webp" frames={6} frameW={144} frameH={176} height={32} loop alt="Thinking" />
-              <span className="typing-indicator" aria-label="Study buddy is typing">
+              <span className="thinking-label">Thinking…</span>
+              <span className="typing-indicator" aria-hidden="true">
                 <span />
                 <span />
                 <span />
