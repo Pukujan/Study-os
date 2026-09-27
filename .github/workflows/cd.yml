@@ -25,7 +25,7 @@ jobs:
           if (-not $sha) { throw 'DEPLOY_SHA missing' }
           Write-Host "Deploying $sha to gravebuster..."
           $remote = @"
-          set -euo pipefail
+          set -eu
           cd /srv/study-os/app
           git fetch --prune origin
           git checkout --force main
@@ -38,11 +38,12 @@ jobs:
             sleep 3
           done
           curl -fsS http://127.0.0.1:18400/api/health
+          echo
           curl -fsS https://study.design-bakery.com/api/health
           echo
           echo DEPLOYED=`$(git -C /srv/study-os/app rev-parse HEAD)
           "@
-          $remote = ($remote -split "`n" | ForEach-Object { $_.TrimStart() }) -join "`n"
-          ssh -o BatchMode=yes -o ConnectTimeout=30 gravebuster $remote
+          $remote = (($remote -replace "`r","" -split "`n") | ForEach-Object { $_.TrimStart() } | Where-Object { $_ -ne '' }) -join "`n"
+          $remote | & ssh -o BatchMode=yes -o ConnectTimeout=30 gravebuster "bash -s"
           if ($LASTEXITCODE -ne 0) { throw "ssh deploy failed exit=$LASTEXITCODE" }
           Write-Host "CD ok for $sha"
