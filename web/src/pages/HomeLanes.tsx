@@ -62,18 +62,6 @@ export default function HomeLanes({ me }: { me?: Me }) {
     }
   };
 
-  const startLegacyDsa = async () => {
-    setBusy(true);
-    try {
-      const view = await api.start({ track: "dsa" });
-      navigate(`/lesson/${view.session_id}`);
-    } catch (e) {
-      setError(e instanceof ApiError ? e.code : "error");
-    } finally {
-      setBusy(false);
-    }
-  };
-
   if (error) return <p className="error">Could not load lanes ({error}).</p>;
   if (!data) return <p className="muted">Loading…</p>;
 
@@ -126,11 +114,6 @@ export default function HomeLanes({ me }: { me?: Me }) {
                   </li>
                 ))}
               </ul>
-            )}
-            {lane.legacy?.kind === "dsa_pir" && (
-              <button className="btn small" onClick={startLegacyDsa} disabled={busy} data-track="home.dsa.classic">
-                {lane.legacy.label}
-              </button>
             )}
           </article>
         ))}
