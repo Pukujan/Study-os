@@ -206,6 +206,14 @@ A substantive PR should state:
 - known limitations;
 - whether manifest/handoff changed.
 
+## Human feedback calibration (mandatory before inventing UX)
+
+Before inventing or changing learner-visible UX, **append then read** Alex’s critiques:
+
+- Pack: [`content/human-feedback/`](content/human-feedback/) (`feedback.jsonl` + `assets/`)
+- Ops: [`docs/ops/HUMAN_FEEDBACK.md`](docs/ops/HUMAN_FEEDBACK.md) (Refs [#164](https://github.com/Pukujan/Study-os/issues/164))
+- **Reuse** Postgres `ux.feedback` and `ux.decomposer_review` for live in-app / decomposer ratings; reuse `sessions/` for verbatim calibration chats. **Do not** create a parallel feedback database.
+
 ## Frontend QA mandate (mandatory)
 
 **Ultrafast + Playwright (and CI vision) are mandatory** before claiming a frontend change works or opening/merging a UI PR.

@@ -1,0 +1,33 @@
+{
+  "session_id": "big-o-ux-calibration",
+  "date": "2026-09-27",
+  "subject_id": "subject-001",
+  "domain": "dsa",
+  "concept": "big-o-growth-families",
+  "purpose": "Preserve Alex’s 2026-09-27 live Big O / teach-visual / Explain-crash product critiques as calibration evidence. Git JSONL + screenshots live under content/human-feedback/; in-app reviews remain ux.feedback; decomposer ratings remain ux.decomposer_review.",
+  "source": {
+    "provider": "study-os-agent-chat",
+    "capture_scope": "product UX critiques + live player screenshots (not a full learner transcript)",
+    "integrity_note": "Scrubbed critique text and public screenshots only. No private study-log content."
+  },
+  "artifacts": {
+    "human_feedback_jsonl": "content/human-feedback/feedback.jsonl",
+    "human_feedback_schema": "content/human-feedback/schema.v1.json",
+    "assets": [
+      "content/human-feedback/assets/big-o-why-numbered-bullets.png",
+      "content/human-feedback/assets/big-o-o1-numbered-flat-table.png",
+      "content/human-feedback/assets/explain-crash-type-undefined.png",
+      "content/human-feedback/assets/big-o-multiclass-cheatsheet-pack.png"
+    ],
+    "derived": [
+      "derived/findings.md"
+    ],
+    "related_issues": [164, 163, 161, 126]
+  },
+  "stores": {
+    "git_jsonl": "content/human-feedback/feedback.jsonl",
+    "ux_feedback": "Postgres ux.feedback (live step review / thumbs — do not duplicate)",
+    "ux_decomposer_review": "Postgres ux.decomposer_review (pedagogy ratings — do not duplicate)"
+  },
+  "evidence_boundary": "Product-development calibration. Critique language is self_reported UX feedback, never mastery evidence or learn.* events."
+}
