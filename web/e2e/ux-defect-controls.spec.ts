@@ -143,6 +143,39 @@ test.describe("UX defect P0/P1 controls (stub server)", () => {
     });
   });
 
+  test("Pet uses slow held-pose spritesheet (idle / ball, A22a)", async ({ page }) => {
+    await page.addInitScript(() => {
+      try {
+        localStorage.setItem("sos.pet.hidden", "false");
+        sessionStorage.removeItem("sos.pet.tipSeen");
+      } catch {
+        /* ignore */
+      }
+    });
+    await openFractionsPlayer(page);
+    // Prefer testid; fall back to free-roam shell (may sit near viewport edge).
+    const pet = page.locator('[data-testid="mascot.pet"], [data-pet-float]').first();
+    await expect(pet).toBeAttached({ timeout: 15_000 });
+    // Bring into view if free-roam parked near the edge on narrow viewports.
+    await pet.evaluate((el) => {
+      (el as HTMLElement).style.transform = "translate3d(24px, 120px, 0)";
+    });
+    await expect(pet).toBeVisible({ timeout: 5_000 });
+    const sprite = pet.locator('[data-testid="mascot.sprite"], [data-anim="held-pose"]').first();
+    await expect(sprite).toBeVisible();
+    await expect(sprite).toHaveAttribute("data-anim", "held-pose");
+    const fps = Number(await sprite.getAttribute("data-fps"));
+    expect(fps, "A22a idle/react fps must stay low (JP limited)").toBeLessThanOrEqual(4);
+    const anim = await sprite.evaluate((el) => getComputedStyle(el).animationName);
+    expect(["none", "", "initial"].includes(anim) || anim === "none").toBeTruthy();
+    const mood = await pet.getAttribute("data-mood");
+    expect(["idle", "wave", "ball", "thinking", "talking", "celebrate", "encourage", null]).toContain(mood);
+    const bg = await sprite.evaluate((el) => getComputedStyle(el).backgroundImage);
+    // Any mascot sheet counts: with SOS-0014 locomotion the pet may legitimately
+    // be mid-walk/turn when this samples, and that is still a held-pose sheet.
+    expect(bg).toMatch(/pet-(idle|ball|wave|thinking|talking|celebrate|encourage|walk|turn)\.webp/);
+  });
+
   test("player.back or brand exit leaves no permanent blank play", async ({ page }) => {
     await openFractionsPlayer(page);
     // If Worked example enables back, exercise it; else brand exit.

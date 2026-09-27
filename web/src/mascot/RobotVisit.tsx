@@ -137,7 +137,7 @@ export default function RobotVisit({
           frameW={duo.frameW}
           frameH={duo.frameH}
           height={Math.round(120 * scale)}
-          fps={8}
+          fps={3}
           loop={false}
           alt="Robot visit"
         />
