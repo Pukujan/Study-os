@@ -3,7 +3,7 @@
 Status: **MANDATORY** for every agent working on Study-os frontend / UI  
 Parent: #126  
 Date: 2026-09-27  
-Related: [`docs/PDD_UX_DEFECT_EXPLORATION.md`](PDD_UX_DEFECT_EXPLORATION.md), [`docs/webapp/SOS-0017_E2E_VISION_GATE_PDD.md`](webapp/SOS-0017_E2E_VISION_GATE_PDD.md), [`docs/benchmarks/ux-defect-jev-ultrafast/README.md`](benchmarks/ux-defect-jev-ultrafast/README.md)
+Related: [`docs/PDD_UX_DEFECT_EXPLORATION.md`](PDD_UX_DEFECT_EXPLORATION.md), [`docs/webapp/SOS-0017_E2E_VISION_GATE_PDD.md`](webapp/SOS-0017_E2E_VISION_GATE_PDD.md), [`docs/benchmarks/ux-defect-jev-ultrafast/README.md`](benchmarks/ux-defect-jev-ultrafast/README.md), [`docs/webapp/DESIGN_SYSTEM.md`](webapp/DESIGN_SYSTEM.md) (#165)
 
 ## Mandate (Alex)
 
