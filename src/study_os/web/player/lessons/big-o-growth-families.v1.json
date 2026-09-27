@@ -1,0 +1,1370 @@
+{
+  "schema_version": "study-os.player-lesson.v1",
+  "lesson_id": "big-o-growth-families",
+  "revision": "big-o-growth-families.v1",
+  "lane": "dsa",
+  "title": "Big O: how work grows",
+  "summary": "Feel O(1), O(log n), O(n), O(n log n), and O(n^2) with tiny concrete counts before arrays and windows.",
+  "representation": "growth_table",
+  "golden_ref": null,
+  "prerequisites": [],
+  "catalog_order": 1,
+  "steps": [
+    {
+      "step_id": "why_care",
+      "kc": "big-o.motivation",
+      "skippable": false,
+      "confirm": false,
+      "teach": {
+        "md": "Two correct solutions can feel totally different as n grows. Before arrays or windows, we need Big O: a shared language for how work grows.",
+        "frames": [
+          {
+            "type": "growth_table",
+            "n_values": [
+              2,
+              4,
+              8,
+              16
+            ],
+            "caption": "We will watch how counts change as n doubles."
+          }
+        ]
+      },
+      "probe": null,
+      "variants": []
+    },
+    {
+      "step_id": "o1_constant",
+      "kc": "big-o.o1",
+      "skippable": false,
+      "confirm": false,
+      "teach": {
+        "md": "1) **O(1)** stays about the same when n grows. 2) Reading `a[0]` is one lookup. 3) The table stays flat.",
+        "frames": [
+          {
+            "type": "growth_table",
+            "n_values": [
+              2,
+              4,
+              8,
+              16
+            ],
+            "series": {
+              "label": "O(1)",
+              "values": [
+                1,
+                1,
+                1,
+                1
+              ]
+            },
+            "caption": "Constant work: a flat line."
+          }
+        ]
+      },
+      "probe": {
+        "prompt_md": "Reading `a[0]` takes 1 step when n = 4. About how many steps when n = 1000?",
+        "frames": [
+          {
+            "type": "growth_table",
+            "n_values": [
+              4,
+              1000
+            ],
+            "caption": "The array gets much longer. What happens to the count?"
+          }
+        ],
+        "answer_kind": "integer",
+        "accept": [
+          "1"
+        ],
+        "partial": [],
+        "misconceptions": [
+          {
+            "id": "scales-with-n",
+            "match": [
+              "1000",
+              "999",
+              "500",
+              "100"
+            ],
+            "note_md": "That would grow with n. O(1) stays flat — still one lookup."
+          }
+        ],
+        "correct_md": "Correct — still **1** step.",
+        "explain_md": "1) O(1) does not grow with n. 2) A longer array does not add lookups for `a[0]`.",
+        "explain_frames": [
+          {
+            "type": "growth_table",
+            "n_values": [
+              4,
+              1000
+            ],
+            "series": {
+              "label": "O(1)",
+              "values": [
+                1,
+                1
+              ]
+            },
+            "caption": "Still one lookup at any n."
+          }
+        ],
+        "solution_md": "O(1): reading a[0] is one lookup for any n.",
+        "hint_md": "Does the array get longer, or does the number of lookups change?"
+      },
+      "variants": [
+        {
+          "teach_frames": [],
+          "probe": {
+            "prompt_md": "Reading `a[0]` takes 1 step when n = 10. About how many steps when n = 10_000?",
+            "frames": [
+              {
+                "type": "growth_table",
+                "n_values": [
+                  10,
+                  10000
+                ],
+                "caption": "Huge n. Same question."
+              }
+            ],
+            "answer_kind": "integer",
+            "accept": [
+              "1"
+            ],
+            "partial": [],
+            "misconceptions": [
+              {
+                "id": "scales-with-n",
+                "match": [
+                  "10000",
+                  "10_000",
+                  "1000",
+                  "10"
+                ],
+                "note_md": "O(1) stays flat. Still one lookup."
+              }
+            ],
+            "correct_md": "Correct — still **1** step.",
+            "explain_md": "1) Constant work ignores n. 2) `a[0]` is still one read.",
+            "explain_frames": [
+              {
+                "type": "growth_table",
+                "n_values": [
+                  10,
+                  10000
+                ],
+                "series": {
+                  "label": "O(1)",
+                  "values": [
+                    1,
+                    1
+                  ]
+                },
+                "caption": "Flat at 1."
+              }
+            ],
+            "solution_md": "Still 1.",
+            "hint_md": "O(1) means flat."
+          }
+        },
+        {
+          "teach_frames": [],
+          "probe": {
+            "prompt_md": "If a constant-time check costs 1 step at n = 2, about how many at n = 64?",
+            "frames": [
+              {
+                "type": "growth_table",
+                "n_values": [
+                  2,
+                  64
+                ],
+                "caption": "Constant family."
+              }
+            ],
+            "answer_kind": "integer",
+            "accept": [
+              "1"
+            ],
+            "partial": [],
+            "misconceptions": [
+              {
+                "id": "scales-with-n",
+                "match": [
+                  "64",
+                  "32",
+                  "6"
+                ],
+                "note_md": "Constant means the count does not climb with n."
+              }
+            ],
+            "correct_md": "Correct — still **1**.",
+            "explain_md": "1) O(1) is a flat line. 2) n = 64 does not add steps here.",
+            "explain_frames": [
+              {
+                "type": "growth_table",
+                "n_values": [
+                  2,
+                  64
+                ],
+                "series": {
+                  "label": "O(1)",
+                  "values": [
+                    1,
+                    1
+                  ]
+                },
+                "caption": "Still 1."
+              }
+            ],
+            "solution_md": "Still 1.",
+            "hint_md": "Look for the flat family."
+          }
+        }
+      ]
+    },
+    {
+      "step_id": "ologn",
+      "kc": "big-o.ologn",
+      "skippable": false,
+      "confirm": false,
+      "teach": {
+        "md": "1) **O(log n)** grows slowly. 2) Each step can cut the space in half. 3) When n doubles, add about one step.",
+        "frames": [
+          {
+            "type": "growth_table",
+            "n_values": [
+              2,
+              4,
+              8,
+              16
+            ],
+            "series": {
+              "label": "O(log n)",
+              "values": [
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "caption": "Log growth: +1 step when n doubles."
+          }
+        ]
+      },
+      "probe": {
+        "prompt_md": "O(log n) takes 3 steps at n = 8. About how many steps at n = 16?",
+        "frames": [
+          {
+            "type": "growth_table",
+            "n_values": [
+              8,
+              16
+            ],
+            "caption": "n doubles once. How many steps now?"
+          }
+        ],
+        "answer_kind": "integer",
+        "accept": [
+          "4"
+        ],
+        "partial": [],
+        "misconceptions": [
+          {
+            "id": "doubles",
+            "match": [
+              "6",
+              "8",
+              "16",
+              "2"
+            ],
+            "note_md": "Doubling n adds about one log step (3 → 4), not a double."
+          }
+        ],
+        "correct_md": "Correct — about **4** steps.",
+        "explain_md": "1) Halving 16 needs one more step than 8. 2) So 3 becomes 4.",
+        "explain_frames": [
+          {
+            "type": "growth_table",
+            "n_values": [
+              8,
+              16
+            ],
+            "series": {
+              "label": "O(log n)",
+              "values": [
+                3,
+                4
+              ]
+            },
+            "caption": "One extra halving when n doubles."
+          }
+        ],
+        "solution_md": "O(log n): about +1 step when n doubles.",
+        "hint_md": "When n doubles, log work usually adds one step."
+      },
+      "variants": [
+        {
+          "teach_frames": [],
+          "probe": {
+            "prompt_md": "O(log n) takes 2 steps at n = 4. About how many at n = 8?",
+            "frames": [
+              {
+                "type": "growth_table",
+                "n_values": [
+                  4,
+                  8
+                ],
+                "caption": "Another doubling."
+              }
+            ],
+            "answer_kind": "integer",
+            "accept": [
+              "3"
+            ],
+            "partial": [],
+            "misconceptions": [
+              {
+                "id": "doubles",
+                "match": [
+                  "4",
+                  "8",
+                  "1"
+                ],
+                "note_md": "n doubled, but log work adds about one step: 2 → 3."
+              }
+            ],
+            "correct_md": "Correct — about **3**.",
+            "explain_md": "1) One more halving. 2) Count goes 2 → 3.",
+            "explain_frames": [
+              {
+                "type": "growth_table",
+                "n_values": [
+                  4,
+                  8
+                ],
+                "series": {
+                  "label": "O(log n)",
+                  "values": [
+                    2,
+                    3
+                  ]
+                },
+                "caption": "+1 step."
+              }
+            ],
+            "solution_md": "About 3.",
+            "hint_md": "Add roughly one step."
+          }
+        },
+        {
+          "teach_frames": [],
+          "probe": {
+            "prompt_md": "Binary search style: n goes 16 → 32. About how many extra O(log n) steps?",
+            "frames": [
+              {
+                "type": "growth_table",
+                "n_values": [
+                  16,
+                  32
+                ],
+                "caption": "One doubling."
+              }
+            ],
+            "answer_kind": "integer",
+            "accept": [
+              "1"
+            ],
+            "partial": [],
+            "misconceptions": [
+              {
+                "id": "doubles",
+                "match": [
+                  "16",
+                  "2",
+                  "32"
+                ],
+                "note_md": "Doubling n adds about one log step, not many."
+              }
+            ],
+            "correct_md": "Correct — about **1** extra step.",
+            "explain_md": "1) Each doubling adds one halving. 2) Extra work ≈ 1.",
+            "explain_frames": [
+              {
+                "type": "growth_table",
+                "n_values": [
+                  16,
+                  32
+                ],
+                "series": {
+                  "label": "O(log n)",
+                  "values": [
+                    4,
+                    5
+                  ]
+                },
+                "caption": "+1."
+              }
+            ],
+            "solution_md": "About +1.",
+            "hint_md": "Think: one more halving."
+          }
+        }
+      ]
+    },
+    {
+      "step_id": "on_linear",
+      "kc": "big-o.on",
+      "skippable": false,
+      "confirm": false,
+      "teach": {
+        "md": "1) **O(n)** grows with n. 2) One full pass visits every item. 3) When n doubles, work about doubles.",
+        "frames": [
+          {
+            "type": "growth_table",
+            "n_values": [
+              2,
+              4,
+              8,
+              16
+            ],
+            "series": {
+              "label": "O(n)",
+              "values": [
+                2,
+                4,
+                8,
+                16
+              ]
+            },
+            "caption": "Linear: the count tracks n."
+          }
+        ]
+      },
+      "probe": {
+        "prompt_md": "A single loop does 8 steps when n = 8. About how many steps when n = 16?",
+        "frames": [
+          {
+            "type": "growth_table",
+            "n_values": [
+              8,
+              16
+            ],
+            "caption": "One pass over every item."
+          }
+        ],
+        "answer_kind": "integer",
+        "accept": [
+          "16"
+        ],
+        "partial": [],
+        "misconceptions": [
+          {
+            "id": "constant",
+            "match": [
+              "8",
+              "1"
+            ],
+            "note_md": "A full pass visits new items too — O(n) doubles when n doubles."
+          },
+          {
+            "id": "quadratic",
+            "match": [
+              "64",
+              "256"
+            ],
+            "note_md": "That is closer to O(n²). One pass is O(n)."
+          }
+        ],
+        "correct_md": "Correct — about **16**.",
+        "explain_md": "1) One visit per element means work ≈ n. 2) Doubling n roughly doubles steps.",
+        "explain_frames": [
+          {
+            "type": "growth_table",
+            "n_values": [
+              8,
+              16
+            ],
+            "series": {
+              "label": "O(n)",
+              "values": [
+                8,
+                16
+              ]
+            },
+            "caption": "Linear work tracks n."
+          }
+        ],
+        "solution_md": "O(n): one pass → about n steps.",
+        "hint_md": "If you visit every item once, how does the count compare to n?"
+      },
+      "variants": [
+        {
+          "teach_frames": [],
+          "probe": {
+            "prompt_md": "A scan does 4 steps at n = 4. About how many at n = 8?",
+            "frames": [
+              {
+                "type": "growth_table",
+                "n_values": [
+                  4,
+                  8
+                ],
+                "caption": "Linear doubling."
+              }
+            ],
+            "answer_kind": "integer",
+            "accept": [
+              "8"
+            ],
+            "partial": [],
+            "misconceptions": [
+              {
+                "id": "constant",
+                "match": [
+                  "4",
+                  "1"
+                ],
+                "note_md": "Linear work grows with n."
+              },
+              {
+                "id": "quadratic",
+                "match": [
+                  "16",
+                  "32"
+                ],
+                "note_md": "One pass is O(n), not n²."
+              }
+            ],
+            "correct_md": "Correct — about **8**.",
+            "explain_md": "1) Work tracks n. 2) 4 → 8 when n doubles.",
+            "explain_frames": [
+              {
+                "type": "growth_table",
+                "n_values": [
+                  4,
+                  8
+                ],
+                "series": {
+                  "label": "O(n)",
+                  "values": [
+                    4,
+                    8
+                  ]
+                },
+                "caption": "Tracks n."
+              }
+            ],
+            "solution_md": "About 8.",
+            "hint_md": "Match n."
+          }
+        },
+        {
+          "teach_frames": [],
+          "probe": {
+            "prompt_md": "One pass over n = 5 items costs about 5 steps. About how many at n = 10?",
+            "frames": [
+              {
+                "type": "growth_table",
+                "n_values": [
+                  5,
+                  10
+                ],
+                "caption": "Another linear check."
+              }
+            ],
+            "answer_kind": "integer",
+            "accept": [
+              "10"
+            ],
+            "partial": [],
+            "misconceptions": [
+              {
+                "id": "constant",
+                "match": [
+                  "5",
+                  "1"
+                ],
+                "note_md": "O(n) scales with n."
+              },
+              {
+                "id": "quadratic",
+                "match": [
+                  "25",
+                  "100"
+                ],
+                "note_md": "That would be n² territory."
+              }
+            ],
+            "correct_md": "Correct — about **10**.",
+            "explain_md": "1) Linear means roughly n steps. 2) n = 10 → about 10.",
+            "explain_frames": [
+              {
+                "type": "growth_table",
+                "n_values": [
+                  5,
+                  10
+                ],
+                "series": {
+                  "label": "O(n)",
+                  "values": [
+                    5,
+                    10
+                  ]
+                },
+                "caption": "Tracks n."
+              }
+            ],
+            "solution_md": "About 10.",
+            "hint_md": "Stay linear."
+          }
+        }
+      ]
+    },
+    {
+      "step_id": "onlogn",
+      "kc": "big-o.onlogn",
+      "skippable": false,
+      "confirm": false,
+      "teach": {
+        "md": "1) **O(n log n)** sits between linear and quadratic. 2) Think: log-cost work for each of n items. 3) Doubling n grows a bit more than 2×.",
+        "frames": [
+          {
+            "type": "growth_table",
+            "n_values": [
+              2,
+              4,
+              8,
+              16
+            ],
+            "series": {
+              "label": "O(n log n)",
+              "values": [
+                2,
+                8,
+                24,
+                64
+              ]
+            },
+            "caption": "n log n: faster than linear, slower than n²."
+          }
+        ]
+      },
+      "probe": {
+        "prompt_md": "At n = 8, an O(n log n) count is 24. About how many at n = 16? Use n · log₂ n.",
+        "frames": [
+          {
+            "type": "growth_table",
+            "n_values": [
+              8,
+              16
+            ],
+            "caption": "16 · log₂(16) = 16 · 4."
+          }
+        ],
+        "answer_kind": "integer",
+        "accept": [
+          "64"
+        ],
+        "partial": [],
+        "misconceptions": [
+          {
+            "id": "linear-double",
+            "match": [
+              "48",
+              "32"
+            ],
+            "note_md": "Not just 2×. The log factor ticks up: 8·3=24, 16·4=64."
+          },
+          {
+            "id": "quadratic",
+            "match": [
+              "96",
+              "256"
+            ],
+            "note_md": "256 is n² at n=16. Here n · log₂ n = 64."
+          }
+        ],
+        "correct_md": "Correct — about **64**.",
+        "explain_md": "1) Use n · log₂ n. 2) 16 · 4 = 64. 3) More than 2×24, less than n².",
+        "explain_frames": [
+          {
+            "type": "growth_table",
+            "n_values": [
+              8,
+              16
+            ],
+            "series": {
+              "label": "O(n log n)",
+              "values": [
+                24,
+                64
+              ]
+            },
+            "caption": "Faster than n, slower than n²."
+          }
+        ],
+        "solution_md": "O(n log n) ≈ n · log₂ n → 16 · 4 = 64.",
+        "hint_md": "Compute 16 × log₂(16). log₂(16) = 4."
+      },
+      "variants": [
+        {
+          "teach_frames": [],
+          "probe": {
+            "prompt_md": "Using n · log₂ n, what is the count at n = 4?",
+            "frames": [
+              {
+                "type": "growth_table",
+                "n_values": [
+                  4
+                ],
+                "caption": "n · log₂ n at n = 4."
+              }
+            ],
+            "answer_kind": "integer",
+            "accept": [
+              "8"
+            ],
+            "partial": [],
+            "misconceptions": [
+              {
+                "id": "linear",
+                "match": [
+                  "4",
+                  "2"
+                ],
+                "note_md": "Include the log factor: 4 · 2 = 8."
+              },
+              {
+                "id": "quadratic",
+                "match": [
+                  "16"
+                ],
+                "note_md": "That is n². We want n · log₂ n = 8."
+              }
+            ],
+            "correct_md": "Correct — **8**.",
+            "explain_md": "1) log₂(4) = 2. 2) 4 · 2 = 8.",
+            "explain_frames": [
+              {
+                "type": "growth_table",
+                "n_values": [
+                  4
+                ],
+                "series": {
+                  "label": "O(n log n)",
+                  "values": [
+                    8
+                  ]
+                },
+                "caption": "4 · 2 = 8."
+              }
+            ],
+            "solution_md": "8.",
+            "hint_md": "log₂(4) = 2."
+          }
+        },
+        {
+          "teach_frames": [],
+          "probe": {
+            "prompt_md": "Using n · log₂ n, what is the count at n = 32?",
+            "frames": [
+              {
+                "type": "growth_table",
+                "n_values": [
+                  32
+                ],
+                "caption": "n · log₂ n at n = 32."
+              }
+            ],
+            "answer_kind": "integer",
+            "accept": [
+              "160"
+            ],
+            "partial": [],
+            "misconceptions": [
+              {
+                "id": "linear",
+                "match": [
+                  "32",
+                  "64"
+                ],
+                "note_md": "Include log₂(32) = 5 → 32 · 5 = 160."
+              },
+              {
+                "id": "quadratic",
+                "match": [
+                  "1024",
+                  "256"
+                ],
+                "note_md": "n² is bigger. Here 32 · 5 = 160."
+              }
+            ],
+            "correct_md": "Correct — **160**.",
+            "explain_md": "1) log₂(32) = 5. 2) 32 · 5 = 160.",
+            "explain_frames": [
+              {
+                "type": "growth_table",
+                "n_values": [
+                  32
+                ],
+                "series": {
+                  "label": "O(n log n)",
+                  "values": [
+                    160
+                  ]
+                },
+                "caption": "32 · 5 = 160."
+              }
+            ],
+            "solution_md": "160.",
+            "hint_md": "log₂(32) = 5."
+          }
+        }
+      ]
+    },
+    {
+      "step_id": "on2_quadratic",
+      "kc": "big-o.on2",
+      "skippable": false,
+      "confirm": false,
+      "teach": {
+        "md": "1) **O(n²)** grows fast. 2) Nested pair loops do much more work as n grows. 3) When n doubles, work grows about 4×.",
+        "frames": [
+          {
+            "type": "growth_table",
+            "n_values": [
+              2,
+              4,
+              8,
+              16
+            ],
+            "series": {
+              "label": "O(n²)",
+              "values": [
+                4,
+                16,
+                64,
+                256
+              ]
+            },
+            "caption": "Quadratic: the count explodes as n grows."
+          }
+        ]
+      },
+      "probe": {
+        "prompt_md": "A pair-check does 64 steps at n = 8. About how many steps at n = 16?",
+        "frames": [
+          {
+            "type": "growth_table",
+            "n_values": [
+              8,
+              16
+            ],
+            "caption": "n doubled. What happens to n²?"
+          }
+        ],
+        "answer_kind": "integer",
+        "accept": [
+          "256"
+        ],
+        "partial": [],
+        "misconceptions": [
+          {
+            "id": "linear",
+            "match": [
+              "128",
+              "16",
+              "32"
+            ],
+            "note_md": "n doubled, but n² means about 4× work: 64 → 256."
+          },
+          {
+            "id": "nlogn",
+            "match": [
+              "64",
+              "96"
+            ],
+            "note_md": "That undershoots. Quadratic at n=16 is 16² = 256."
+          }
+        ],
+        "correct_md": "Correct — about **256**.",
+        "explain_md": "1) 8² = 64 and 16² = 256. 2) Doubling n multiplies quadratic work by about 4.",
+        "explain_frames": [
+          {
+            "type": "growth_table",
+            "n_values": [
+              8,
+              16
+            ],
+            "series": {
+              "label": "O(n²)",
+              "values": [
+                64,
+                256
+              ]
+            },
+            "caption": "Quadratic jumps hard when n doubles."
+          }
+        ],
+        "solution_md": "O(n²): 16² = 256.",
+        "hint_md": "If work ≈ n², what is 16²?"
+      },
+      "variants": [
+        {
+          "teach_frames": [],
+          "probe": {
+            "prompt_md": "At n = 4, pair-checks do 16 steps. About how many at n = 8?",
+            "frames": [
+              {
+                "type": "growth_table",
+                "n_values": [
+                  4,
+                  8
+                ],
+                "caption": "Quadratic doubling."
+              }
+            ],
+            "answer_kind": "integer",
+            "accept": [
+              "64"
+            ],
+            "partial": [],
+            "misconceptions": [
+              {
+                "id": "linear",
+                "match": [
+                  "32",
+                  "8"
+                ],
+                "note_md": "n² grows about 4× when n doubles: 16 → 64."
+              }
+            ],
+            "correct_md": "Correct — about **64**.",
+            "explain_md": "1) 4² = 16. 2) 8² = 64.",
+            "explain_frames": [
+              {
+                "type": "growth_table",
+                "n_values": [
+                  4,
+                  8
+                ],
+                "series": {
+                  "label": "O(n²)",
+                  "values": [
+                    16,
+                    64
+                  ]
+                },
+                "caption": "4× jump."
+              }
+            ],
+            "solution_md": "64.",
+            "hint_md": "Compute 8²."
+          }
+        },
+        {
+          "teach_frames": [],
+          "probe": {
+            "prompt_md": "What is n² when n = 5?",
+            "frames": [
+              {
+                "type": "growth_table",
+                "n_values": [
+                  5
+                ],
+                "caption": "Square n."
+              }
+            ],
+            "answer_kind": "integer",
+            "accept": [
+              "25"
+            ],
+            "partial": [],
+            "misconceptions": [
+              {
+                "id": "linear",
+                "match": [
+                  "5",
+                  "10"
+                ],
+                "note_md": "Square it: 5 · 5 = 25."
+              },
+              {
+                "id": "nlogn",
+                "match": [
+                  "15",
+                  "20"
+                ],
+                "note_md": "n² means n times n."
+              }
+            ],
+            "correct_md": "Correct — **25**.",
+            "explain_md": "1) n² = n · n. 2) 5 · 5 = 25.",
+            "explain_frames": [
+              {
+                "type": "growth_table",
+                "n_values": [
+                  5
+                ],
+                "series": {
+                  "label": "O(n²)",
+                  "values": [
+                    25
+                  ]
+                },
+                "caption": "25."
+              }
+            ],
+            "solution_md": "25.",
+            "hint_md": "Multiply n by itself."
+          }
+        }
+      ]
+    },
+    {
+      "step_id": "compare_families",
+      "kc": "big-o.compare",
+      "skippable": false,
+      "confirm": false,
+      "teach": {
+        "md": "1) At n=16: O(1)≈1, O(log n)≈4, O(n)≈16, O(n log n)≈64, O(n²)≈256. 2) Later patterns move work down this ladder.",
+        "frames": [
+          {
+            "type": "growth_table",
+            "n_values": [
+              16
+            ],
+            "series_multi": [
+              {
+                "label": "O(1)",
+                "values": [
+                  1
+                ]
+              },
+              {
+                "label": "O(log n)",
+                "values": [
+                  4
+                ]
+              },
+              {
+                "label": "O(n)",
+                "values": [
+                  16
+                ]
+              },
+              {
+                "label": "O(n log n)",
+                "values": [
+                  64
+                ]
+              },
+              {
+                "label": "O(n²)",
+                "values": [
+                  256
+                ]
+              }
+            ],
+            "caption": "Side-by-side at n = 16."
+          }
+        ]
+      },
+      "probe": {
+        "prompt_md": "Which family grows fastest as n increases: O(1), O(log n), O(n), O(n log n), or O(n²)?",
+        "frames": [
+          {
+            "type": "growth_table",
+            "n_values": [
+              16
+            ],
+            "series_multi": [
+              {
+                "label": "O(1)",
+                "values": [
+                  1
+                ]
+              },
+              {
+                "label": "O(log n)",
+                "values": [
+                  4
+                ]
+              },
+              {
+                "label": "O(n)",
+                "values": [
+                  16
+                ]
+              },
+              {
+                "label": "O(n log n)",
+                "values": [
+                  64
+                ]
+              },
+              {
+                "label": "O(n²)",
+                "values": [
+                  256
+                ]
+              }
+            ],
+            "caption": "Pick the fastest-growing family."
+          }
+        ],
+        "answer_kind": "text",
+        "accept": [
+          "O(n^2)",
+          "O(n²)",
+          "n^2",
+          "n²",
+          "quadratic",
+          "O(n2)",
+          "n2"
+        ],
+        "partial": [],
+        "misconceptions": [
+          {
+            "id": "nlogn-fastest",
+            "match": [
+              "O(n log n)",
+              "n log n",
+              "nlogn"
+            ],
+            "note_md": "O(n log n) is quick, but O(n²) still grows faster."
+          },
+          {
+            "id": "linear-fastest",
+            "match": [
+              "O(n)",
+              "linear"
+            ],
+            "note_md": "O(n) grows, but O(n²) grows much faster."
+          }
+        ],
+        "correct_md": "Correct — **O(n²)** grows fastest among these.",
+        "explain_md": "1) Compare the n=16 column. 2) 256 dwarfs 64, 16, 4, and 1. 3) Quadratic dominates this set.",
+        "explain_frames": [
+          {
+            "type": "growth_table",
+            "n_values": [
+              16
+            ],
+            "series_multi": [
+              {
+                "label": "O(1)",
+                "values": [
+                  1
+                ]
+              },
+              {
+                "label": "O(log n)",
+                "values": [
+                  4
+                ]
+              },
+              {
+                "label": "O(n)",
+                "values": [
+                  16
+                ]
+              },
+              {
+                "label": "O(n log n)",
+                "values": [
+                  64
+                ]
+              },
+              {
+                "label": "O(n²)",
+                "values": [
+                  256
+                ]
+              }
+            ],
+            "caption": "O(n²) is the steepest climb here."
+          }
+        ],
+        "solution_md": "Fastest here: O(n²).",
+        "hint_md": "Look at which count is largest at the same n."
+      },
+      "variants": [
+        {
+          "teach_frames": [],
+          "probe": {
+            "prompt_md": "At the same n, which is larger: O(n) or O(n²)?",
+            "frames": [
+              {
+                "type": "growth_table",
+                "n_values": [
+                  16
+                ],
+                "series_multi": [
+                  {
+                    "label": "O(n)",
+                    "values": [
+                      16
+                    ]
+                  },
+                  {
+                    "label": "O(n²)",
+                    "values": [
+                      256
+                    ]
+                  }
+                ],
+                "caption": "Compare O(n) and O(n²)."
+              }
+            ],
+            "answer_kind": "text",
+            "accept": [
+              "O(n^2)",
+              "O(n²)",
+              "n^2",
+              "n²",
+              "quadratic",
+              "O(n2)",
+              "n2"
+            ],
+            "partial": [],
+            "misconceptions": [
+              {
+                "id": "linear",
+                "match": [
+                  "O(n)",
+                  "n",
+                  "linear"
+                ],
+                "note_md": "For large n, n² outgrows n."
+              }
+            ],
+            "correct_md": "Correct — **O(n²)**.",
+            "explain_md": "1) Same n. 2) n² climbs faster than n.",
+            "explain_frames": [
+              {
+                "type": "growth_table",
+                "n_values": [
+                  16
+                ],
+                "series_multi": [
+                  {
+                    "label": "O(n)",
+                    "values": [
+                      16
+                    ]
+                  },
+                  {
+                    "label": "O(n²)",
+                    "values": [
+                      256
+                    ]
+                  }
+                ],
+                "caption": "256 > 16."
+              }
+            ],
+            "solution_md": "O(n²).",
+            "hint_md": "Which count is bigger at n = 16?"
+          }
+        },
+        {
+          "teach_frames": [],
+          "probe": {
+            "prompt_md": "Name the slowest-growing family among O(1), O(n), and O(n²).",
+            "frames": [
+              {
+                "type": "growth_table",
+                "n_values": [
+                  16
+                ],
+                "series_multi": [
+                  {
+                    "label": "O(1)",
+                    "values": [
+                      1
+                    ]
+                  },
+                  {
+                    "label": "O(n)",
+                    "values": [
+                      16
+                    ]
+                  },
+                  {
+                    "label": "O(n²)",
+                    "values": [
+                      256
+                    ]
+                  }
+                ],
+                "caption": "Slowest climber."
+              }
+            ],
+            "answer_kind": "text",
+            "accept": [
+              "O(1)",
+              "1",
+              "constant"
+            ],
+            "partial": [],
+            "misconceptions": [
+              {
+                "id": "linear",
+                "match": [
+                  "O(n)",
+                  "n",
+                  "linear"
+                ],
+                "note_md": "O(n) grows; O(1) stays flat."
+              },
+              {
+                "id": "quad",
+                "match": [
+                  "O(n^2)",
+                  "O(n²)",
+                  "quadratic"
+                ],
+                "note_md": "Quadratic is the fastest here, not the slowest."
+              }
+            ],
+            "correct_md": "Correct — **O(1)**.",
+            "explain_md": "1) Flat beats slow growth. 2) O(1) is the lowest ladder rung.",
+            "explain_frames": [
+              {
+                "type": "growth_table",
+                "n_values": [
+                  16
+                ],
+                "series_multi": [
+                  {
+                    "label": "O(1)",
+                    "values": [
+                      1
+                    ]
+                  },
+                  {
+                    "label": "O(n)",
+                    "values": [
+                      16
+                    ]
+                  },
+                  {
+                    "label": "O(n²)",
+                    "values": [
+                      256
+                    ]
+                  }
+                ],
+                "caption": "O(1) stays put."
+              }
+            ],
+            "solution_md": "O(1).",
+            "hint_md": "Which count barely moves?"
+          }
+        }
+      ]
+    }
+  ]
+}

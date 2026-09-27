@@ -16,7 +16,7 @@ LANES: list[dict[str, Any]] = [
     {
         "lane_id": "dsa",
         "title": "Algorithms (DSA)",
-        "blurb": "Learn classic algorithms step by step.",
+        "blurb": "Start with Big O, then build toward arrays and windows.",
         "legacy": {"kind": "dsa_pir", "label": "DSA PIR"},
     },
     {
@@ -38,6 +38,19 @@ LANES: list[dict[str, Any]] = [
         "legacy": None,
     },
 ]
+
+
+
+def _catalog_order(lesson: dict[str, Any]) -> tuple[int, str]:
+    """Sort key for lane lesson lists.
+
+    Lessons declare ``catalog_order`` (1 = first in the lane). Lessons without
+    one sort after the declared ones, alphabetically by ``lesson_id``.
+    """
+
+    value = lesson.get("catalog_order")
+    order = value if isinstance(value, int) else 10**6
+    return (order, lesson.get("lesson_id", ""))
 
 
 def _lane_index(lane_id: str) -> int:
@@ -73,6 +86,11 @@ def lanes_payload(
         lane = lesson.get("lane")
         if lane in lessons_by_lane:
             lessons_by_lane[lane].append(lesson)
+
+    # Declared catalog order drives lane listing and the continue target, so a
+    # prerequisite lesson (e.g. Big O) is offered before the patterns that use it.
+    for lane_lessons in lessons_by_lane.values():
+        lane_lessons.sort(key=_catalog_order)
 
     lanes_out: list[dict[str, Any]] = []
     for lane in LANES:

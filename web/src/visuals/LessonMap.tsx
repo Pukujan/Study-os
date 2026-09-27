@@ -13,6 +13,7 @@ function slugId(label: string, fallback: string): string {
 export function getLessonSteps(lesson_id: string, total_steps: number): LessonMapStep[] {
   const known: Record<string, string[]> = {
     "sliding-window-box": ["Ready", "Position", "Index", "Box k", "Move i", "sum i"],
+    "big-o-growth-families": ["Why", "O(1)", "O(log n)", "O(n)", "O(n log n)", "O(n^2)", "Compare"],
   };
   const labels = known[lesson_id];
   if (labels) {

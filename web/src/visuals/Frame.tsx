@@ -4,12 +4,14 @@ import NumberLine from "./NumberLine";
 import BoxIndex, { describeBoxIndex } from "./BoxIndex";
 import MermaidDiagram from "./MermaidDiagram";
 import CodeTree, { describeCodeTree } from "./CodeTree";
+import GrowthTable, { describeGrowthTable } from "./GrowthTable";
 
 export function describeFrame(frame: FrameType): string {
   if (frame.type === "fraction_bar") return describeFractionBar(frame);
   if (frame.type === "box_index") return describeBoxIndex(frame);
   if (frame.type === "mermaid_flow") return frame.caption || "Mermaid diagram";
   if (frame.type === "code_tree") return describeCodeTree(frame);
+  if (frame.type === "growth_table") return describeGrowthTable(frame);
   return "Frame";
 }
 
@@ -45,6 +47,15 @@ export default function Frame({ frame }: { frame: FrameType }) {
           caption={mf.caption}
         />
         {mf.caption && <figcaption className="frame-caption">{mf.caption}</figcaption>}
+      </figure>
+    );
+  }
+  if (frame.type === "growth_table") {
+    const gt = frame;
+    return (
+      <figure className="frame-figure">
+        <GrowthTable frame={gt} />
+        {gt.caption && <figcaption className="frame-caption">{gt.caption}</figcaption>}
       </figure>
     );
   }
