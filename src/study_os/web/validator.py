@@ -50,8 +50,10 @@ def validate_generated(
     codes: list[str] = []
     text = markdown or ""
     prose = re.sub(r"```.*?```", " ", text, flags=re.S)
+    # Numbered teach lines ("1) …" / "2. …") are structure, not answer leaks.
+    prose_for_answers = re.sub(r"(?m)^\s*\d+[.)]\s+", "", prose)
     for pat in _answer_patterns(forbidden_answers):
-        if pat.search(prose):
+        if pat.search(prose_for_answers):
             codes.append("ANSWER_REVEAL_FORBIDDEN")
             break
     if any(re.search(p, text, re.IGNORECASE) for p in MASTERY_PATTERNS):
