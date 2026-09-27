@@ -19,6 +19,8 @@ describe("TeachRenderBox", () => {
       "growth_workers",
       "growth_curve",
       "growth_table",
+      "sticks_boxes_complexity",
+      "interactive_ops_boxes",
     ]) {
       expect(kinds).toContain(k);
       expect(getTeachRenderer(k)).toBeTruthy();
@@ -90,6 +92,20 @@ describe("TeachRenderBox", () => {
       />,
     );
     expect(curve).toContain('data-teach-render="growth_curve"');
+  });
+
+  it("sticks_boxes_complexity mounts as its own island kind", () => {
+    const html = renderToStaticMarkup(
+      <Frame
+        frame={{
+          type: "sticks_boxes_complexity",
+          initial_complexity: "O(1)",
+          initial_n: 2,
+        }}
+      />,
+    );
+    expect(html).toContain('data-teach-render="sticks_boxes_complexity"');
+    expect(html).toContain("Put Next Stick");
   });
 
   it("returns null for undefined / untyped frames (Explain-again harden)", () => {

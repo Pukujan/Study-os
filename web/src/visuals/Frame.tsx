@@ -6,6 +6,7 @@ import { describeCodeTree } from "./CodeTree";
 import { describeGrowthTable } from "./GrowthTable";
 import { describeGrowthWorkers } from "./GrowthWorkers";
 import { describeGrowthCurve } from "./GrowthCurve";
+import { describeSticksBoxesComplexity } from "./SticksBoxesComplexity";
 import { isRenderableFrame } from "./frames";
 
 export function describeFrame(frame: FrameType | null | undefined): string {
@@ -17,6 +18,9 @@ export function describeFrame(frame: FrameType | null | undefined): string {
   if (frame.type === "growth_table") return describeGrowthTable(frame);
   if (frame.type === "growth_workers") return describeGrowthWorkers(frame);
   if (frame.type === "growth_curve") return describeGrowthCurve(frame);
+  if (frame.type === "sticks_boxes_complexity" || frame.type === "interactive_ops_boxes") {
+    return describeSticksBoxesComplexity(frame);
+  }
   return "Frame";
 }
 

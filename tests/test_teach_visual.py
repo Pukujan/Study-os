@@ -88,8 +88,9 @@ class BigOWhyVisualTests(unittest.TestCase):
         self.assertEqual(codes, ())
         self.assertIsNotNone(content)
         assert content is not None
-        self.assertEqual(content["teach_frames"][0]["type"], "growth_curve")
-        self.assertEqual(content["teach_frames"][0].get("highlight_label"), "O(n²)")
+        # #185: Explain again opens the sticks-and-boxes interactive (complementary to the curve).
+        self.assertEqual(content["teach_frames"][0]["type"], "sticks_boxes_complexity")
+        self.assertEqual(content["teach_frames"][0].get("initial_complexity"), "O(1)")
 
     def test_render_text_four_class_curve_and_single_class_curve(self):
         curve = frame_to_text(self.teach["frames"][0])
@@ -107,7 +108,7 @@ if __name__ == "__main__":
 class AdaptReexplainFrameTypeSwapTests(unittest.TestCase):
     """Explain again must change the visible frame *type*, not only prose."""
 
-    def test_big_o_reexplain_swaps_to_the_alternate_curve(self):
+    def test_big_o_reexplain_swaps_to_sticks_boxes_interactive(self):
         lesson = load_lesson("big-o-growth-families")
         state = engine._new_state(lesson)
         before = teach_visual.resolve_teach(lesson["steps"][0]["teach"])[1]
@@ -116,8 +117,8 @@ class AdaptReexplainFrameTypeSwapTests(unittest.TestCase):
         state, info = engine.adapt(lesson, state, "reexplain")
         self.assertTrue(info.get("frames_changed"))
         after = presentation.effective(lesson, state)[1]
-        self.assertEqual(after[0]["type"], "growth_curve")
-        self.assertEqual(after[0].get("highlight_label"), "O(n²)")
+        self.assertEqual(after[0]["type"], "sticks_boxes_complexity")
+        self.assertIn(after[0].get("initial_complexity"), ("O(1)", "O(n)", "O(n²)"))
 
     def test_big_o_reexplain_twice_keeps_typed_frames(self):
         """Two+ Explain again clicks must never emit a frame missing .type."""
@@ -181,6 +182,45 @@ class BigOFourClassCurveTests(unittest.TestCase):
                 for key in ("worked_example", "worked_example_alt"):
                     for frame in ((step.get(key) or {}).get("frames") or []):
                         self.assertNotEqual(frame["type"], "growth_workers")
+
+
+
+
+class BigOSticksBoxesInteractiveTests(unittest.TestCase):
+    """#185 sticks-and-boxes interactive is wired as complementary Explain card."""
+
+    def setUp(self):
+        self.lesson = load_lesson("big-o-growth-families")
+
+    def test_why_care_and_on2_author_sticks_boxes_explain_card(self):
+        for step_id, complexity in (("why_care", "O(1)"), ("on2_quadratic", "O(n²)")):
+            with self.subTest(step=step_id):
+                step = next(s for s in self.lesson["steps"] if s["step_id"] == step_id)
+                teach = step["teach"]
+                frames = teach["frames"]
+                explain = teach_visual.explain_frame_indices(teach)
+                self.assertTrue(explain)
+                selected = teach_visual.select_frames(teach, explain)
+                self.assertEqual(selected[0]["type"], "sticks_boxes_complexity")
+                self.assertEqual(selected[0].get("initial_complexity"), complexity)
+                # Default path stays the curated multi-class curve (#161).
+                default = teach_visual.select_frames(teach, teach_visual.default_frame_indices(teach))
+                self.assertEqual(default[0]["type"], "growth_curve")
+                self.assertNotEqual(frames[0]["type"], "growth_workers")
+
+    def test_render_text_sticks_boxes(self):
+        text = frame_to_text(
+            {
+                "type": "sticks_boxes_complexity",
+                "initial_complexity": "O(n²)",
+                "initial_n": 2,
+                "caption": "Feel the pairs.",
+            }
+        )
+        self.assertIn("Feel the pairs.", text)
+        self.assertIn("O(n²)", text)
+        self.assertIn("4 ops", text)
+        self.assertIn("cross-pair", text.lower())
 
 
 class SlidingWindowMultiRepresentationTests(unittest.TestCase):

@@ -269,11 +269,37 @@ def _render_growth_curve(frame: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
+
+
+def _render_sticks_boxes_complexity(frame: dict[str, Any]) -> str:
+    """Compact ASCII grounding for the interactive sticks-and-boxes visual (#185)."""
+
+    lines: list[str] = []
+    caption = frame.get("caption")
+    if caption:
+        lines.append(str(caption))
+    mode = frame.get("initial_complexity") or "O(1)"
+    n = int(frame.get("initial_n") or 2)
+    if mode == "O(1)":
+        target = 1
+        rule = "put 1 stick in the first box"
+    elif mode == "O(n)":
+        target = n
+        rule = "put 1 stick in each box"
+    else:
+        target = n * n
+        rule = "cross-pair every box with every box"
+    lines.append(f"Sticks and boxes · {mode} · n={n} · {target} ops")
+    lines.append(f"Rule: {rule}")
+    lines.append("Learner places sticks (Put Next Stick / Finished / Reset).")
+    return "\n".join(lines)
+
 def frame_to_text(frame: dict[str, Any]) -> str:
     """Return a compact ASCII rendering of a single frame.
 
     Supports the ``box_index``, ``fraction_bar``, ``growth_table``, ``growth_workers``,
-    ``growth_curve``, ``mermaid_flow``/``mermaid``, ``code_block``, and ``code_tree`` representations used by the player.
+    ``growth_curve``, ``sticks_boxes_complexity``/``interactive_ops_boxes``, ``mermaid_flow``/``mermaid``,
+    ``code_block``, and ``code_tree`` representations used by the player.
     Frames that cannot be dispatched are rendered as a JSON-ish string so
     tutors still have something to ground on.
     """
@@ -289,6 +315,8 @@ def frame_to_text(frame: dict[str, Any]) -> str:
         return _render_growth_workers(frame)
     if frame_type == "growth_curve":
         return _render_growth_curve(frame)
+    if frame_type in ("sticks_boxes_complexity", "interactive_ops_boxes"):
+        return _render_sticks_boxes_complexity(frame)
     if frame_type in ("mermaid_flow", "mermaid"):
         return _render_mermaid_flow(frame)
     if frame_type == "code_block":

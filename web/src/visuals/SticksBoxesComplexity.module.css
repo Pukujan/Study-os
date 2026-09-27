@@ -1,0 +1,286 @@
+/* Interactive sticks-and-boxes Big O teach visual (#185).
+   Styles ship inside the TeachRenderBox island (style tag + module classes). */
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: min(100%, 28rem);
+  max-width: 100%;
+  padding: 0.65rem 0.75rem 0.85rem;
+  box-sizing: border-box;
+  color: var(--ink, #e8eaed);
+  background: var(--panel, #1e2128);
+  border-radius: 0.55rem;
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+}
+
+.intro {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: var(--ink, #e8eaed);
+}
+
+.intro strong {
+  font-weight: 700;
+}
+
+.stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+  min-height: 11rem;
+  padding: 0.5rem 0.25rem 0.25rem;
+}
+
+.dispenser {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.dispenserTray {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.25rem;
+  height: 1.85rem;
+  border: 1px solid var(--line, rgba(255, 255, 255, 0.22));
+  border-radius: 0.35rem;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.dispenserStick {
+  width: 1.55rem;
+  height: 0.22rem;
+  border-radius: 999px;
+  background: var(--stick, #f59e0b);
+  transform: rotate(-28deg);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15);
+}
+
+.dispenserLabel {
+  font-size: 0.72rem;
+  color: var(--muted, #9aa0a6);
+}
+
+.boxesRow {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.85rem 1.1rem;
+  width: 100%;
+}
+
+.boxWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.box {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 0.18rem;
+  width: 3.6rem;
+  height: 5.1rem;
+  padding: 0.35rem 0.3rem 0.45rem;
+  box-sizing: border-box;
+  border: 2px solid var(--line, rgba(255, 255, 255, 0.28));
+  border-radius: 0.4rem;
+  background: rgba(0, 0, 0, 0.12);
+}
+
+.boxActive {
+  border-color: var(--primary, #3b82f6);
+  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.35);
+}
+
+.boxPairSource {
+  border-color: var(--primary, #3b82f6);
+}
+
+.boxPairTarget {
+  border-color: var(--pair, #ef4444);
+}
+
+.stickInBox {
+  width: 0.28rem;
+  height: 72%;
+  max-height: 3.4rem;
+  border-radius: 999px;
+  background: var(--stick, #f59e0b);
+  align-self: center;
+}
+
+.boxCount {
+  position: absolute;
+  right: 0.28rem;
+  bottom: 0.2rem;
+  font-size: 0.72rem;
+  color: var(--ink, #e8eaed);
+  opacity: 0.9;
+}
+
+.boxLabel {
+  font-size: 0.8rem;
+  color: var(--muted, #9aa0a6);
+}
+
+.boxLabelActive {
+  color: var(--primary, #3b82f6);
+  font-weight: 600;
+}
+
+.boxLabelPair {
+  color: var(--pair, #ef4444);
+  font-weight: 600;
+}
+
+.cue {
+  position: absolute;
+  pointer-events: none;
+  color: var(--primary, #3b82f6);
+  font-size: 0.75rem;
+}
+
+.stepCue {
+  margin: 0.15rem 0 0;
+  min-height: 1.2rem;
+  text-align: center;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--pair, #ef4444);
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.35rem;
+  padding: 0.55rem 0;
+  border-top: 1px solid var(--line, rgba(255, 255, 255, 0.12));
+  border-bottom: 1px solid var(--line, rgba(255, 255, 255, 0.12));
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  text-align: center;
+}
+
+.statLabel {
+  font-size: 0.72rem;
+  color: var(--muted, #9aa0a6);
+}
+
+.statValue {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--ink, #e8eaed);
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.fieldLabel {
+  font-size: 0.78rem;
+  color: var(--muted, #9aa0a6);
+}
+
+.select {
+  width: 100%;
+  padding: 0.45rem 0.55rem;
+  border: 1px solid var(--line, rgba(255, 255, 255, 0.18));
+  border-radius: 0.4rem;
+  background: rgba(0, 0, 0, 0.28);
+  color: var(--ink, #e8eaed);
+  font: inherit;
+  font-size: 0.88rem;
+}
+
+.sliderRow {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.slider {
+  flex: 1;
+  accent-color: var(--primary, #3b82f6);
+}
+
+.sliderValue {
+  min-width: 3.2rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--ink, #e8eaed);
+  text-align: right;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.primaryBtn {
+  flex: 1;
+  padding: 0.55rem 0.75rem;
+  border: none;
+  border-radius: 0.45rem;
+  background: var(--primary, #3b82f6);
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.primaryBtn:disabled {
+  opacity: 0.75;
+  cursor: default;
+}
+
+.resetBtn {
+  padding: 0.55rem 0.85rem;
+  border: 1px solid var(--line, rgba(255, 255, 255, 0.2));
+  border-radius: 0.45rem;
+  background: rgba(0, 0, 0, 0.28);
+  color: var(--ink, #e8eaed);
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.dropCue {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.15rem;
+  height: 1.15rem;
+  margin-bottom: 0.15rem;
+  border-radius: 999px;
+  background: var(--primary, #3b82f6);
+  color: #fff;
+  font-size: 0.7rem;
+  line-height: 1;
+}

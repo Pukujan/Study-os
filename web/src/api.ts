@@ -147,6 +147,18 @@ export type GrowthCurveFrame = {
   highlight_label?: string | null;
 };
 
+/** Interactive sticks-and-boxes Big O teach visual (#185). */
+export type SticksBoxesComplexityFrame = {
+  type: "sticks_boxes_complexity" | "interactive_ops_boxes";
+  caption?: string;
+  /** Starting complexity rule. */
+  initial_complexity?: "O(1)" | "O(n)" | "O(n²)";
+  /** Starting box count (clamped to n_min..n_max). */
+  initial_n?: number;
+  n_min?: number;
+  n_max?: number;
+};
+
 export type Frame =
   | FractionBarFrame
   | BoxIndexFrame
@@ -155,7 +167,8 @@ export type Frame =
   | CodeBlockFrame
   | GrowthTableFrame
   | GrowthWorkersFrame
-  | GrowthCurveFrame;
+  | GrowthCurveFrame
+  | SticksBoxesComplexityFrame;
 
 export type Probe = {
   prompt_md: string;

@@ -31,6 +31,7 @@ Host attributes: `data-testid="teach-render-box"`, `data-teach-render=<kind>`,
 | `growth_curve` | SVG growth lines |
 | `growth_table` | Compact scoreboard **inside the island only** |
 | `fraction_bar`, `box_index`, `code_tree` | Existing frames, also island-mounted |
+| `sticks_boxes_complexity` / `interactive_ops_boxes` | Interactive sticks-and-boxes Big O (#185) |
 
 ## How to register a new render type
 

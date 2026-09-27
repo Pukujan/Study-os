@@ -167,6 +167,14 @@
   color: inherit;
 }
 
+.sticksBoxes {
+  width: min(100%, 28rem);
+  max-width: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
 /* Light-DOM fallback host (SSR / no Shadow DOM). */
 .fallbackHost {
   display: block;
