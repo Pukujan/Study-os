@@ -625,6 +625,7 @@ pre.chart { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monosp
 .spoken { background: var(--gold); border-radius: 2px; }
 
 .thinking-bubble { display: flex; align-items: center; gap: 0.5rem; }
+.thinking-label { color: var(--muted); font-size: 0.9rem; }
 .typing-indicator { display: inline-flex; gap: 0.2rem; align-items: center; }
 .typing-indicator span {
   width: 6px;
