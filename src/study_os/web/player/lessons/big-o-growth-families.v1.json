@@ -1,7 +1,7 @@
 {
   "schema_version": "study-os.player-lesson.v1",
   "lesson_id": "big-o-growth-families",
-  "revision": "big-o-growth-families.v1.o1-teach-bridge-187",
+  "revision": "big-o-growth-families.v1.why-define-n-frames-189",
   "lane": "dsa",
   "title": "Big O: how work grows",
   "summary": "Feel O(1), O(log n), O(n), O(n log n), and O(n^2) with workers, boxes, and tiny concrete counts before arrays and windows.",
@@ -16,7 +16,7 @@
       "skippable": false,
       "confirm": false,
       "teach": {
-        "md": "Two correct programs can feel totally different as n grows. Watch O(1), O(log n), O(n), and O(n²) on the same axes. Big O names how that work grows. Explain again opens a sticks-and-boxes game where you act as the computer.",
+        "md": "**n** is the input size — how many items, or how big the problem is. Work (ops) is what grows as n grows; Big O names that growth. Explain again opens sticks-and-boxes.",
         "frames": [
           {
             "type": "growth_curve",
@@ -64,8 +64,7 @@
                 ]
               }
             ],
-            "caption": "Operations vs n for O(1), O(log n), O(n), and O(n²). Steeper curves explode sooner.",
-            "series": null
+            "caption": "n is on the horizontal axis — input size, not the amount of work."
           },
           {
             "type": "growth_curve",
@@ -113,8 +112,55 @@
                 ]
               }
             ],
-            "caption": "Four labeled curves. The steep O(n²) line is called out — doubling n roughly quadruples that work.",
-            "series": null,
+            "caption": "Work (ops) is the vertical axis. Watch how each family grows as n doubles."
+          },
+          {
+            "type": "growth_curve",
+            "n_values": [
+              2,
+              4,
+              8,
+              16
+            ],
+            "series_multi": [
+              {
+                "label": "O(1)",
+                "values": [
+                  1,
+                  1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "label": "O(log n)",
+                "values": [
+                  1,
+                  2,
+                  3,
+                  4
+                ]
+              },
+              {
+                "label": "O(n)",
+                "values": [
+                  2,
+                  4,
+                  8,
+                  16
+                ]
+              },
+              {
+                "label": "O(n²)",
+                "values": [
+                  4,
+                  16,
+                  64,
+                  256
+                ]
+              }
+            ],
+            "caption": "At the same n the four curves sit far apart — steeper ones explode sooner.",
             "highlight_label": "O(n²)"
           },
           {
@@ -143,11 +189,17 @@
         },
         "teach_visual_v1": {
           "default_frame_indices": [
-            0
+            0,
+            1,
+            2
           ],
           "explain_frame_indices": [
-            2
+            3
           ]
+        },
+        "expandable_hint": {
+          "summary": "How work grows as n grows",
+          "md": "Point at the four curves: O(1) stays flat, O(log n) rises slowly, O(n) climbs with n, and O(n²) shoots up fastest."
         }
       },
       "probe": null,
@@ -202,7 +254,6 @@
               }
             ],
             "caption": "At n = 16 the four families are far apart. O(n) is the middle line.",
-            "series": null,
             "highlight_label": "O(n)"
           }
         ]
@@ -268,7 +319,7 @@
       "skippable": false,
       "confirm": false,
       "teach": {
-        "md": "Reading `a[0]` is one array lookup. That work stays 1 even when n grows — the growth curve stays flat. That flat work is what we call **O(1)**; Big O names how work grows.",
+        "md": "Reading `a[0]` is one array lookup. That work stays 1 even when n grows. That flat work is **O(1)** — Big O names how work grows.",
         "frames": [
           {
             "type": "growth_curve",
@@ -316,8 +367,56 @@
                 ]
               }
             ],
-            "caption": "Each curve is labeled at the end. The flat O(1) line is called out.",
-            "series": null,
+            "caption": "Start here: reading a[0] is one lookup — one unit of work.",
+            "highlight_label": "O(1)"
+          },
+          {
+            "type": "growth_curve",
+            "n_values": [
+              2,
+              4,
+              8,
+              16
+            ],
+            "series_multi": [
+              {
+                "label": "O(1)",
+                "values": [
+                  1,
+                  1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "label": "O(log n)",
+                "values": [
+                  1,
+                  2,
+                  3,
+                  4
+                ]
+              },
+              {
+                "label": "O(n)",
+                "values": [
+                  2,
+                  4,
+                  8,
+                  16
+                ]
+              },
+              {
+                "label": "O(n²)",
+                "values": [
+                  4,
+                  16,
+                  64,
+                  256
+                ]
+              }
+            ],
+            "caption": "As n grows, that lookup count stays 1. The O(1) line stays flat.",
             "highlight_label": "O(1)"
           },
           {
@@ -337,15 +436,16 @@
                 1
               ]
             },
-            "caption": "Only O(1) on the axes: the line does not move."
+            "caption": "Only O(1) on the axes: the line does not move. That flat family is O(1)."
           }
         ],
         "teach_visual_v1": {
           "default_frame_indices": [
-            0
+            0,
+            1
           ],
           "explain_frame_indices": [
-            1
+            2
           ]
         }
       },
@@ -565,7 +665,55 @@
               }
             ],
             "caption": "Each curve is labeled at the end. O(log n) is the slow riser.",
-            "series": null,
+            "highlight_label": "O(log n)"
+          },
+          {
+            "type": "growth_curve",
+            "n_values": [
+              2,
+              4,
+              8,
+              16
+            ],
+            "series_multi": [
+              {
+                "label": "O(1)",
+                "values": [
+                  1,
+                  1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "label": "O(log n)",
+                "values": [
+                  1,
+                  2,
+                  3,
+                  4
+                ]
+              },
+              {
+                "label": "O(n)",
+                "values": [
+                  2,
+                  4,
+                  8,
+                  16
+                ]
+              },
+              {
+                "label": "O(n²)",
+                "values": [
+                  4,
+                  16,
+                  64,
+                  256
+                ]
+              }
+            ],
+            "caption": "Bridge: when n doubles, log work usually adds about one step.",
             "highlight_label": "O(log n)"
           },
           {
@@ -590,10 +738,11 @@
         ],
         "teach_visual_v1": {
           "default_frame_indices": [
-            0
+            0,
+            1
           ],
           "explain_frame_indices": [
-            1
+            2
           ]
         }
       },
@@ -812,7 +961,55 @@
               }
             ],
             "caption": "Each curve is labeled at the end. O(n) climbs in step with n.",
-            "series": null,
+            "highlight_label": "O(n)"
+          },
+          {
+            "type": "growth_curve",
+            "n_values": [
+              2,
+              4,
+              8,
+              16
+            ],
+            "series_multi": [
+              {
+                "label": "O(1)",
+                "values": [
+                  1,
+                  1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "label": "O(log n)",
+                "values": [
+                  1,
+                  2,
+                  3,
+                  4
+                ]
+              },
+              {
+                "label": "O(n)",
+                "values": [
+                  2,
+                  4,
+                  8,
+                  16
+                ]
+              },
+              {
+                "label": "O(n²)",
+                "values": [
+                  4,
+                  16,
+                  64,
+                  256
+                ]
+              }
+            ],
+            "caption": "Bridge: one full pass visits every item — work scales with n.",
             "highlight_label": "O(n)"
           },
           {
@@ -837,10 +1034,11 @@
         ],
         "teach_visual_v1": {
           "default_frame_indices": [
-            0
+            0,
+            1
           ],
           "explain_frame_indices": [
-            1
+            2
           ]
         }
       },
@@ -1079,7 +1277,55 @@
               }
             ],
             "caption": "Each curve is labeled at the end. O(n log n) sits between O(n) and O(n²).",
-            "series": null,
+            "highlight_label": null
+          },
+          {
+            "type": "growth_curve",
+            "n_values": [
+              2,
+              4,
+              8,
+              16
+            ],
+            "series_multi": [
+              {
+                "label": "O(1)",
+                "values": [
+                  1,
+                  1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "label": "O(log n)",
+                "values": [
+                  1,
+                  2,
+                  3,
+                  4
+                ]
+              },
+              {
+                "label": "O(n)",
+                "values": [
+                  2,
+                  4,
+                  8,
+                  16
+                ]
+              },
+              {
+                "label": "O(n²)",
+                "values": [
+                  4,
+                  16,
+                  64,
+                  256
+                ]
+              }
+            ],
+            "caption": "Each curve is labeled at the end. O(n log n) sits between O(n) and O(n²).",
             "highlight_label": null
           },
           {
@@ -1104,10 +1350,11 @@
         ],
         "teach_visual_v1": {
           "default_frame_indices": [
-            0
+            0,
+            1
           ],
           "explain_frame_indices": [
-            1
+            2
           ]
         }
       },
@@ -1339,7 +1586,55 @@
               }
             ],
             "caption": "Each curve is labeled at the end. O(n²) is the steepest.",
-            "series": null,
+            "highlight_label": "O(n²)"
+          },
+          {
+            "type": "growth_curve",
+            "n_values": [
+              2,
+              4,
+              8,
+              16
+            ],
+            "series_multi": [
+              {
+                "label": "O(1)",
+                "values": [
+                  1,
+                  1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "label": "O(log n)",
+                "values": [
+                  1,
+                  2,
+                  3,
+                  4
+                ]
+              },
+              {
+                "label": "O(n)",
+                "values": [
+                  2,
+                  4,
+                  8,
+                  16
+                ]
+              },
+              {
+                "label": "O(n²)",
+                "values": [
+                  4,
+                  16,
+                  64,
+                  256
+                ]
+              }
+            ],
+            "caption": "Bridge: nested pair loops — when n doubles, work grows about 4×.",
             "highlight_label": "O(n²)"
           },
           {
@@ -1372,10 +1667,12 @@
         ],
         "teach_visual_v1": {
           "default_frame_indices": [
-            0
+            0,
+            1,
+            2
           ],
           "explain_frame_indices": [
-            2
+            3
           ]
         }
       },
@@ -1604,7 +1901,55 @@
               }
             ],
             "caption": "The four families on one plot. O(n log n) sits between O(n) and O(n²).",
-            "series": null,
+            "highlight_label": null
+          },
+          {
+            "type": "growth_curve",
+            "n_values": [
+              2,
+              4,
+              8,
+              16
+            ],
+            "series_multi": [
+              {
+                "label": "O(1)",
+                "values": [
+                  1,
+                  1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "label": "O(log n)",
+                "values": [
+                  1,
+                  2,
+                  3,
+                  4
+                ]
+              },
+              {
+                "label": "O(n)",
+                "values": [
+                  2,
+                  4,
+                  8,
+                  16
+                ]
+              },
+              {
+                "label": "O(n²)",
+                "values": [
+                  4,
+                  16,
+                  64,
+                  256
+                ]
+              }
+            ],
+            "caption": "Bridge: pick which family grows fastest at the same n.",
             "highlight_label": null
           },
           {
@@ -1654,16 +1999,16 @@
               }
             ],
             "caption": "Called out: O(n²) is the steepest line here.",
-            "series": null,
             "highlight_label": "O(n²)"
           }
         ],
         "teach_visual_v1": {
           "default_frame_indices": [
-            0
+            0,
+            1
           ],
           "explain_frame_indices": [
-            1
+            2
           ]
         }
       },

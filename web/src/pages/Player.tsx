@@ -278,6 +278,14 @@ export default function Player({ sessionId }: { sessionId: string }) {
               ) : (
                 <section className="teach card">
                   <Markdown text={view.step.teach_md} />
+                  {view.step.teach_expandable_hint && (
+                    <details className="teach-expandable-hint" data-testid="player.teach-expandable-hint">
+                      <summary>{view.step.teach_expandable_hint.summary}</summary>
+                      <div className="teach-expandable-hint-body">
+                        <Markdown text={view.step.teach_expandable_hint.md} />
+                      </div>
+                    </details>
+                  )}
                   <FrameStepper frames={view.step.teach_frames} label="Teach frames" />
                   <div className="regen-controls" role="group" aria-label="Show this step another way">
                     {(Object.keys(REGEN_PROMPTS) as RegenKind[]).map((kind) => (

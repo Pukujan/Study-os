@@ -35,11 +35,14 @@ class BigOWhyVisualTests(unittest.TestCase):
         with mock.patch.dict(os.environ, {teach_visual.FLAG_ENV: "1"}):
             md, frames = presentation.effective(self.lesson, self.state)
         self.assertNotRegex(md, r"(?m)^\s*\d+[.)]\s")
-        self.assertEqual(len(frames), 1)
-        self.assertEqual(frames[0]["type"], "growth_curve")
+        # #189: Why ships multiple short middle frames on the default stepper.
+        self.assertGreaterEqual(len(frames), 2)
+        self.assertTrue(all(f["type"] == "growth_curve" for f in frames))
         self.assertEqual(frames[0]["n_values"], [2, 4, 8, 16])
         labels = [s["label"] for s in frames[0]["series_multi"]]
         self.assertEqual(labels, ["O(1)", "O(log n)", "O(n)", "O(n²)"])
+        self.assertIn("input size", md.lower())
+        self.assertRegex(md.lower(), r"\bwork\b|\bops\b")
 
     def test_flag_off_restores_raw_table_without_data_loss(self):
         raw = self.teach["presentation_raw"]
@@ -94,11 +97,36 @@ class BigOWhyVisualTests(unittest.TestCase):
 
     def test_render_text_four_class_curve_and_single_class_curve(self):
         curve = frame_to_text(self.teach["frames"][0])
-        single = frame_to_text(self.teach["frames"][1])
+        mid = frame_to_text(self.teach["frames"][1])
+        steep = frame_to_text(self.teach["frames"][2])
         self.assertIn("n:", curve)
         self.assertIn("O(1)", curve)
         self.assertIn("O(n²)", curve)
-        self.assertIn("O(n²)", single)
+        self.assertIn("O(1)", mid)
+        self.assertIn("O(n²)", steep)
+
+    def test_why_care_expandable_hint_defines_growth(self):
+        hint = self.teach.get("expandable_hint")
+        self.assertIsInstance(hint, dict)
+        self.assertIn("work grows", hint["summary"].lower())
+        self.assertIn("O(1)", hint["md"])
+        self.assertIn("O(n²)", hint["md"])
+        view = engine.view(self.lesson, self.state)
+        pub = view["step"]["teach_expandable_hint"]
+        self.assertEqual(pub["summary"], hint["summary"])
+        self.assertIn("O(log n)", pub["md"])
+
+    def test_why_care_default_middle_frames_and_sticks_on_explain(self):
+        tv = self.teach["teach_visual_v1"]
+        self.assertEqual(tv["default_frame_indices"], [0, 1, 2])
+        self.assertEqual(tv["explain_frame_indices"], [3])
+        default = teach_visual.select_frames(self.teach, tv["default_frame_indices"])
+        explain = teach_visual.select_frames(self.teach, tv["explain_frame_indices"])
+        self.assertEqual(len(default), 3)
+        self.assertTrue(all(f["type"] == "growth_curve" for f in default))
+        self.assertEqual(explain[0]["type"], "sticks_boxes_complexity")
+        self.assertIn("input size", self.teach["md"].lower())
+        self.assertIn("Explain again", self.teach["md"])
 
 
 if __name__ == "__main__":
@@ -113,7 +141,7 @@ class AdaptReexplainFrameTypeSwapTests(unittest.TestCase):
         state = engine._new_state(lesson)
         before = teach_visual.resolve_teach(lesson["steps"][0]["teach"])[1]
         self.assertEqual(before[0]["type"], "growth_curve")
-        self.assertIsNone(before[0].get("highlight_label"))
+        self.assertGreaterEqual(len(before), 2)
         state, info = engine.adapt(lesson, state, "reexplain")
         self.assertTrue(info.get("frames_changed"))
         after = presentation.effective(lesson, state)[1]

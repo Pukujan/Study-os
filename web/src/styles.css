@@ -755,3 +755,25 @@ pre.chart { font-family: var(--font-mono); background: var(--surface-subtle); pa
 .render-error,
 .player-error { margin: 1rem 0; }
 .render-error-actions { display: flex; gap: 0.5rem; margin-top: 0.75rem; flex-wrap: wrap; }
+
+
+.teach-expandable-hint {
+  margin: 0.75rem 0 0.25rem;
+  border: 1px solid var(--border, #d0d4e4);
+  border-radius: 8px;
+  background: var(--surface-2, rgba(0, 0, 0, 0.04));
+  padding: 0.35rem 0.75rem 0.5rem;
+}
+.teach-expandable-hint > summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--primary, #4f46e5);
+  list-style: disclosure-closed;
+}
+.teach-expandable-hint[open] > summary {
+  margin-bottom: 0.35rem;
+}
+.teach-expandable-hint-body {
+  color: var(--text, inherit);
+  font-size: 0.95rem;
+}
