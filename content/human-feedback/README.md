@@ -2,7 +2,7 @@
 
 **Refs:** [#164](https://github.com/Pukujan/Study-os/issues/164) · parent [#126](https://github.com/Pukujan/Study-os/issues/126)
 
-Lean, **append-only** git pack for Alex’s live critiques (text + screenshots + lesson/step + tags).
+Lean, **append-only** git pack for **Pukujan’s** live critiques (text + screenshots + lesson/step + tags).
 
 ## Do not invent a second database
 
@@ -35,3 +35,7 @@ python tools/append_human_feedback.py \
   --lesson big-o-growth-families --step why_care \
   --screenshot /path/to.png --issue 164
 ```
+
+## Seed coverage (2026-09-27)
+
+`feedback.jsonl` holds the full this-session corpus (not a thin 5-row sample): numbered teach chrome, stick-worker invent reject, slow-vs-fast undersell, simpler 4-curve vs cheatsheets, research-first / catalog-wide interactives, Explain-again crash, dark mode + design-system tokens, pet jitter, fractions probe/nav + number-line research, sliding-window keep `box_index`, tutor latency, author=Pukujan.

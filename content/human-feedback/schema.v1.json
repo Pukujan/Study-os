@@ -5,7 +5,14 @@
   "description": "Append-only calibration critique (text + optional screenshot). NOT a parallel DB: live in-app reviews stay in ux.feedback / ux.decomposer_review; verbatim pedagogy sessions stay under sessions/.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["id", "ts", "source", "text", "tags", "store"],
+  "required": [
+    "id",
+    "ts",
+    "source",
+    "text",
+    "tags",
+    "store"
+  ],
   "properties": {
     "id": {
       "type": "string",
@@ -19,7 +26,13 @@
     },
     "source": {
       "type": "string",
-      "enum": ["chat", "live_player", "issue_comment", "decomposer_review", "session"],
+      "enum": [
+        "chat",
+        "live_player",
+        "issue_comment",
+        "decomposer_review",
+        "session"
+      ],
       "description": "Where the critique came from."
     },
     "author": {
@@ -27,19 +40,31 @@
       "description": "Human author handle (default Alex / Pukujan for product critiques)."
     },
     "lesson_id": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "description": "Player lesson id when known (e.g. big-o-growth-families)."
     },
     "step_id": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "description": "Step id when known (maps to ux.feedback.step_id)."
     },
     "target_kind": {
-      "type": ["string", "null"],
-      "description": "Optional mirror of ux.feedback.target_kind (step, message, visual, …)."
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Optional mirror of ux.feedback.target_kind (step, message, visual, \u2026)."
     },
     "target_id": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "description": "Optional mirror of ux.feedback.target_id."
     },
     "text": {
@@ -61,6 +86,15 @@
           "research_first",
           "interactive",
           "invent_forbidden",
+          "prefer_dark",
+          "design_system",
+          "pet_jitter",
+          "author_name",
+          "catalog_wide",
+          "navigation",
+          "probe_missing",
+          "latency",
+          "fractions",
           "other"
         ]
       },
@@ -68,9 +102,15 @@
       "description": "Calibration tags (also usable as ux.feedback.reasons when promoting)."
     },
     "screenshot": {
-      "type": ["object", "null"],
+      "type": [
+        "object",
+        "null"
+      ],
       "additionalProperties": false,
-      "required": ["path", "sha256"],
+      "required": [
+        "path",
+        "sha256"
+      ],
       "properties": {
         "path": {
           "type": "string",
@@ -80,27 +120,57 @@
           "type": "string",
           "pattern": "^[a-f0-9]{64}$"
         },
-        "note": { "type": "string" }
+        "note": {
+          "type": "string"
+        }
       }
     },
     "store": {
       "type": "string",
-      "enum": ["git.jsonl", "ux.feedback", "ux.decomposer_review", "session"],
+      "enum": [
+        "git.jsonl",
+        "ux.feedback",
+        "ux.decomposer_review",
+        "session"
+      ],
       "description": "Canonical store for this kind of signal. git.jsonl = this pack only; never invent a new Postgres table."
     },
     "related_issues": {
       "type": "array",
-      "items": { "type": "integer", "minimum": 1 },
+      "items": {
+        "type": "integer",
+        "minimum": 1
+      },
       "description": "GitHub issue numbers (e.g. 164, 163, 161, 126)."
     },
     "promotion": {
-      "type": ["object", "null"],
+      "type": [
+        "object",
+        "null"
+      ],
       "additionalProperties": false,
       "properties": {
-        "ux_feedback_id": { "type": ["string", "null"] },
-        "decomposer_review_id": { "type": ["integer", "null"] },
-        "session_path": { "type": ["string", "null"] },
-        "note": { "type": "string" }
+        "ux_feedback_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "decomposer_review_id": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "session_path": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "note": {
+          "type": "string"
+        }
       }
     }
   }

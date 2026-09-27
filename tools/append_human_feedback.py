@@ -28,6 +28,15 @@ ALLOWED_TAGS = frozenset(
         "research_first",
         "interactive",
         "invent_forbidden",
+        "prefer_dark",
+        "design_system",
+        "pet_jitter",
+        "author_name",
+        "catalog_wide",
+        "navigation",
+        "probe_missing",
+        "latency",
+        "fractions",
         "other",
     }
 )

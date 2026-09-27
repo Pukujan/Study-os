@@ -14,7 +14,11 @@ ROOT = Path(__file__).resolve().parents[1]
 PACK = ROOT / "content" / "human-feedback"
 JSONL = PACK / "feedback.jsonl"
 SCHEMA = PACK / "schema.v1.json"
-REQUIRED_SEED_TAGS = {"too_complex", "crash", "prefer_graph", "no_bullets", "simpler_charts"}
+REQUIRED_SEED_TAGS = {
+    "too_complex", "crash", "prefer_graph", "no_bullets", "simpler_charts",
+    "research_first", "prefer_dark", "design_system", "pet_jitter", "author_name",
+    "catalog_wide", "fractions",
+}
 
 
 class HumanFeedbackPackTests(unittest.TestCase):
@@ -32,7 +36,7 @@ class HumanFeedbackPackTests(unittest.TestCase):
         ids: set[str] = set()
 
         lines = [ln for ln in JSONL.read_text(encoding="utf-8").splitlines() if ln.strip()]
-        self.assertGreaterEqual(len(lines), 4, "seed must include tonight's critiques")
+        self.assertGreaterEqual(len(lines), 15, "seed must cover full 2026-09-27 session critiques")
 
         for line in lines:
             row = json.loads(line)
@@ -46,6 +50,7 @@ class HumanFeedbackPackTests(unittest.TestCase):
                 "sqlite",
                 "must not invent a parallel DB store",
             )
+            self.assertEqual(row.get("author"), "Pukujan", "attribute critiques as Pukujan")
             for tag in row["tags"]:
                 self.assertIn(tag, allowed_tags)
                 seen_tags.add(tag)

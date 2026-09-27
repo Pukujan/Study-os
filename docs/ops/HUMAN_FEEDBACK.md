@@ -3,6 +3,10 @@
 **Refs:** [#164](https://github.com/Pukujan/Study-os/issues/164) · parent [#126](https://github.com/Pukujan/Study-os/issues/126)  
 **Pack:** [`content/human-feedback/`](../../content/human-feedback/)
 
+## Author
+
+Product critiques in this pack: **`author: Pukujan`** (not "Alex").
+
 ## Rule (non-negotiable)
 
 Before inventing or “improving” learner-visible UX (diagrams, teach chrome, Explain/Worked flows, chat ack, etc.):
@@ -21,7 +25,7 @@ Before inventing or “improving” learner-visible UX (diagrams, teach chrome, 
 | Chat / issue / live screenshot product critique | **Append** `content/human-feedback/feedback.jsonl` (+ `assets/`) | Invent SQLite/analytics theater |
 
 Schema: [`content/human-feedback/schema.v1.json`](../../content/human-feedback/schema.v1.json).  
-Tags (also usable as `ux.feedback.reasons` if you later promote): `too_complex`, `crash`, `prefer_graph`, `no_bullets`, `simpler_charts`, `research_first`, `interactive`, `invent_forbidden`, `other`.
+Tags (also usable as `ux.feedback.reasons` if you later promote): `too_complex`, `crash`, `prefer_graph`, `no_bullets`, `simpler_charts`, `research_first`, `interactive`, `invent_forbidden`, `prefer_dark`, `design_system`, `pet_jitter`, `author_name`, `catalog_wide`, `navigation`, `probe_missing`, `latency`, `fractions`, `other`.
 
 ## Append helper
 
@@ -39,7 +43,7 @@ Idempotent on screenshot sha256: re-running with the same asset hash + identical
 
 ## Seed (2026-09-27)
 
-Tonight’s Big O / Explain-crash / simpler-charts critiques are already seeded (Refs #161 #163 #164). Session pointer: `sessions/2026-09-27/big-o-ux-calibration/`.
+2026-09-27 session fully ingested (Big O / Explain-crash / simpler-charts / research-first interactives / catalog-wide / dark mode + design system / pet jitter / fractions probe+nav / author=Pukujan — Refs #161 #163 #164 #165 #160 #121). Session pointer: `sessions/2026-09-27/big-o-ux-calibration/`.
 
 ## Related surfaces
 
