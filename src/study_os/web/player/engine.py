@@ -554,6 +554,47 @@ def revisit(
     return state, {"revisited_step": target["step_id"]}
 
 
+def _worked_example_payload(
+    lesson: dict[str, Any], state: dict[str, Any], *, alternate: bool = False
+) -> tuple[dict[str, Any], str]:
+    """Build a learner-visible worked-example card for the current step.
+
+    Primary content prefers the probe solution; teach text is the fallback when
+    the step has no probe. A second request (``alternate=True``) rotates to
+    explain/correct copy or a clearly labeled "Another look" so the teach-panel
+    Worked example chip is never a silent no-op after resume (#126 Ultrafast D004).
+    """
+
+    step = _current_step(lesson, state)
+    teach = step.get("teach") or {}
+    teach_md = str(teach.get("md") or "").strip()
+    teach_frames = list(teach.get("frames") or [])
+    probe = _current_probe(lesson, state)
+
+    primary_md = teach_md
+    primary_frames = teach_frames
+    alt_md = ""
+    alt_frames: list[Any] = []
+    if probe:
+        primary_md = str(probe.get("solution_md") or "").strip() or teach_md
+        primary_frames = list(probe.get("frames") or teach_frames)
+        alt_md = str(probe.get("explain_md") or probe.get("correct_md") or "").strip()
+        alt_frames = list(probe.get("explain_frames") or primary_frames)
+
+    if alternate:
+        if alt_md and alt_md != primary_md:
+            return {"solution_md": alt_md, "frames": alt_frames}, "example_alt"
+        if primary_md:
+            return {
+                "solution_md": f"Another look: {primary_md}",
+                "frames": primary_frames,
+            }, "example_alt"
+        if teach_md:
+            return {"solution_md": f"Another look: {teach_md}", "frames": teach_frames}, "example_alt"
+
+    return {"solution_md": primary_md, "frames": primary_frames}, "example"
+
+
 def adapt(lesson: dict[str, Any], state: dict[str, Any], kind: str) -> tuple[dict[str, Any], dict[str, Any]]:
     """Switch the current card to a worked example or a different-difficulty variant.
 
@@ -566,24 +607,20 @@ def adapt(lesson: dict[str, Any], state: dict[str, Any], kind: str) -> tuple[dic
         info: dict[str, Any] = {"can_go_back": bool(state.get("adapt_stack"))}
         return state, info
 
-    if kind in ("example", "easier", "harder"):
-        # Assessment lessons refuse adaptive changes while a probe is open.
+    if kind in ("easier", "harder"):
+        # Assessment lessons refuse difficulty changes while a probe is open.
+        # Worked examples stay available so teach chips are never dead (#126 D004).
         if lesson.get("mode") == "assessment" and state.get("phase") == "probe":
             return state, {"refused": True}
 
     if kind == "example":
+        already = state.get("card_mode") == "worked_example"
         _push_adapt(state)
-        probe = _current_probe(lesson, state)
-        if probe:
-            solution_md = probe.get("solution_md", "")
-            frames = list(probe.get("frames", []))
-        else:
-            solution_md = _current_step(lesson, state).get("teach", {}).get("md", "")
-            frames = list(_current_step(lesson, state).get("teach", {}).get("frames", []))
+        payload, tag = _worked_example_payload(lesson, state, alternate=already)
         state["card_mode"] = "worked_example"
-        state["worked_example"] = {"solution_md": solution_md, "frames": frames}
-        state["variant_tag"] = "example"
-        return state, {"card_mode": "worked_example", "can_go_back": True}
+        state["worked_example"] = payload
+        state["variant_tag"] = tag
+        return state, {"card_mode": "worked_example", "variant_tag": tag, "can_go_back": True}
 
     if kind in ("easier", "harder"):
         step = _current_step(lesson, state)

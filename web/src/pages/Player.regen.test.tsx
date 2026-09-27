@@ -136,6 +136,65 @@ describe("Player teach-panel regen chips", () => {
     cleanup();
   }, 15000);
 
+  it("Worked example re-click applies alternate card content", async () => {
+    let adaptCalls = 0;
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (url: string, init?: RequestInit) => {
+        switch (route(url)) {
+          case "get":
+            return new Response(
+              JSON.stringify({
+                ...baseView,
+                card_mode: "worked_example",
+                variant_tag: "example",
+                worked_example: { md: "1 + 1 = 2", frames: [] },
+                step: { ...baseView.step, probe: null },
+                can_go_back: true,
+              }),
+              { status: 200 },
+            );
+          case "adapt": {
+            const body = JSON.parse(String(init?.body || "{}"));
+            expect(body.kind).toBe("example");
+            adaptCalls += 1;
+            return new Response(
+              JSON.stringify({
+                ...baseView,
+                card_mode: "worked_example",
+                variant_tag: "example_alt",
+                worked_example: { md: "Another look: 1 + 1 = 2", frames: [] },
+                step: { ...baseView.step, probe: null },
+                can_go_back: true,
+              }),
+              { status: 200 },
+            );
+          }
+          default:
+            return new Response(JSON.stringify({ ok: true }), { status: 200 });
+        }
+      }),
+    );
+
+    const { default: Player } = await import("./Player");
+    const { container, cleanup } = render(<Player sessionId="sess-1" />);
+    await flush();
+    await flush();
+
+    expect(container.textContent).toContain("1 + 1 = 2");
+    const btn = container.querySelector('[data-testid="player.step.regen-example"]') as HTMLButtonElement | null;
+    expect(btn).toBeTruthy();
+    await act(async () => {
+      btn!.click();
+    });
+    await flush();
+    await flush();
+
+    expect(adaptCalls).toBe(1);
+    expect(container.textContent).toContain("Another look: 1 + 1 = 2");
+    cleanup();
+  }, 15000);
+
   it("Explain again falls back to confused when tutor returns no presentation", async () => {
     const tutor = vi.fn();
     const confused = vi.fn();
