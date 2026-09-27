@@ -135,16 +135,32 @@ export default function Player({ sessionId }: { sessionId: string }) {
 
   // Teach-panel regen chips must always do something useful.
   // Prefer deterministic adapt / confused paths so a silent tutor no-op cannot
-  // leave Explain again / Worked example looking dead (#126 A12).
+  // leave Explain again / Worked example looking dead (#126 A12 / Ultrafast D004).
   const regenerate = async (kind: RegenKind) => {
     if (busy || !view) return;
     setBusy(true);
     setError(null);
     try {
       if (kind === "example") {
+        // Keep teach open so the chip's effect is visible on the teaching surface.
+        setShowTeach(true);
+        const beforeMode = view.card_mode;
+        const beforeMd = view.worked_example?.md || "";
         const v = await api.adapt(sessionId, "example");
         setView(v);
         setMood("encourage", 1200);
+        // Backend rotates to an alternate example when already in worked_example
+        // mode; if content somehow still matches, fall back to confused so the
+        // fractions teach chip is never a silent no-op after resume.
+        const afterMd = v.worked_example?.md || "";
+        if (
+          beforeMode === "worked_example" &&
+          v.card_mode === "worked_example" &&
+          afterMd === beforeMd
+        ) {
+          const fallback = await api.playerConfused(sessionId);
+          setView(fallback);
+        }
         return;
       }
 

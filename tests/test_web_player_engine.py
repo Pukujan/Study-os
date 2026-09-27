@@ -800,6 +800,56 @@ class AdaptTests(unittest.TestCase):
         self.assertTrue(info["refused"])
         self.assertEqual(state["variant_index"], -1)
 
+    def test_assessment_allows_worked_example_during_probe(self):
+        """Teach-panel Worked example must still work in assessment (#126 D004)."""
+
+        from study_os.web.player import engine
+
+        lesson = self._lesson()
+        lesson["mode"] = "assessment"
+        state = engine.start(lesson)
+        state, info = engine.adapt(lesson, state, "example")
+        self.assertNotIn("refused", info)
+        self.assertEqual(info["card_mode"], "worked_example")
+        self.assertEqual(state["card_mode"], "worked_example")
+        view = engine.view(lesson, state)
+        self.assertEqual(view["worked_example"]["md"], "Main solution: 1 + 2 = 3.")
+
+    def test_worked_example_second_click_rotates_visible_content(self):
+        """Re-clicking Worked example must change visible card text (#126 D004)."""
+
+        from study_os.web.player import engine
+
+        lesson = self._lesson()
+        # Give the probe an alternate explain so rotation is contentful.
+        lesson["steps"][0]["probe"]["explain_md"] = "Count on: 1 then 2 makes 3."
+        state = engine.start(lesson)
+        state, info1 = engine.adapt(lesson, state, "example")
+        self.assertEqual(info1["variant_tag"], "example")
+        first = engine.view(lesson, state)["worked_example"]["md"]
+        state, info2 = engine.adapt(lesson, state, "example")
+        self.assertEqual(info2["variant_tag"], "example_alt")
+        second = engine.view(lesson, state)["worked_example"]["md"]
+        self.assertNotEqual(first, second)
+        self.assertEqual(second, "Count on: 1 then 2 makes 3.")
+
+    def test_fractions_worked_example_second_click_changes_content(self):
+        """fractions-compare teach chip must change content on re-click / resume."""
+
+        from study_os.web.player import engine
+        from study_os.web.player.content import load_lesson
+
+        lesson = load_lesson("fractions-compare")
+        state = engine.start(lesson)
+        state, _ = engine.adapt(lesson, state, "example")
+        first = engine.view(lesson, state)
+        self.assertEqual(first["card_mode"], "worked_example")
+        self.assertTrue(first["worked_example"]["md"])
+        state, info = engine.adapt(lesson, state, "example")
+        second = engine.view(lesson, state)
+        self.assertEqual(info["variant_tag"], "example_alt")
+        self.assertNotEqual(first["worked_example"]["md"], second["worked_example"]["md"])
+
     def test_stack_max_five_drops_oldest(self):
         from study_os.web.player import engine
 
