@@ -1,0 +1,48 @@
+name: CD
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: study-os-cd-gravebuster
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy gravebuster
+    runs-on: [self-hosted, study-os-cd]
+    timeout-minutes: 45
+    steps:
+      - name: Deploy SHA to gravebuster
+        shell: pwsh
+        env:
+          DEPLOY_SHA: ${{ github.sha }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $sha = $env:DEPLOY_SHA
+          if (-not $sha) { throw 'DEPLOY_SHA missing' }
+          Write-Host "Deploying $sha to gravebuster..."
+          $remote = @"
+          set -euo pipefail
+          cd /srv/study-os/app
+          git fetch --prune origin
+          git checkout --force main
+          git reset --hard $sha
+          cd /srv/study-os
+          cp -f app/deploy/docker-compose.yml docker-compose.yml
+          docker compose up -d --build
+          for i in 1 2 3 4 5 6 7 8 9 10; do
+            if curl -fsS http://127.0.0.1:18400/api/health; then break; fi
+            sleep 3
+          done
+          curl -fsS http://127.0.0.1:18400/api/health
+          curl -fsS https://study.design-bakery.com/api/health
+          echo
+          echo DEPLOYED=`$(git -C /srv/study-os/app rev-parse HEAD)
+          "@
+          $remote = ($remote -split "`n" | ForEach-Object { $_.TrimStart() }) -join "`n"
+          ssh -o BatchMode=yes -o ConnectTimeout=30 gravebuster $remote
+          if ($LASTEXITCODE -ne 0) { throw "ssh deploy failed exit=$LASTEXITCODE" }
+          Write-Host "CD ok for $sha"
