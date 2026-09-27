@@ -29,7 +29,7 @@
         "opendsa-analintro",
         "moore-thompson-2015"
       ],
-      "notes": "TEACH DEFAULT: four-class SVG (O(1)/log n/n/n\u00b2) via big-o.growth-simple-4class. Full Cmglee comparison is optional_reference only (Alex: multi-class too complex). Constructivist cite: Moore & Thompson emergent shape thinking.",
+      "notes": "TEACH DEFAULT: four-class SVG. Full Cmglee optional_reference only.",
       "exercise_affordance": "read_multiclass_chart",
       "optional_reference_asset_ids": [
         "big-o.comparison-computational-complexity"
@@ -56,7 +56,7 @@
         "opendsa-analintro",
         "moore-thompson-2015"
       ],
-      "notes": "TEACH DEFAULT: four-class SVG (O(1)/log n/n/n\u00b2) via big-o.growth-simple-4class. Full Cmglee comparison is optional_reference only (Alex: multi-class too complex). Constructivist cite: Moore & Thompson emergent shape thinking.",
+      "notes": "TEACH DEFAULT: four-class SVG. Full Cmglee optional_reference only.",
       "exercise_affordance": "highlight_flat_series",
       "optional_reference_asset_ids": [
         "big-o.comparison-computational-complexity"
@@ -83,7 +83,7 @@
         "opendsa-analintro",
         "moore-thompson-2015"
       ],
-      "notes": "TEACH DEFAULT: four-class SVG (O(1)/log n/n/n\u00b2) via big-o.growth-simple-4class. Full Cmglee comparison is optional_reference only (Alex: multi-class too complex). Constructivist cite: Moore & Thompson emergent shape thinking.",
+      "notes": "TEACH DEFAULT: four-class SVG. Full Cmglee optional_reference only.",
       "exercise_affordance": "highlight_log_series",
       "optional_reference_asset_ids": [
         "big-o.comparison-computational-complexity"
@@ -110,7 +110,7 @@
         "opendsa-analintro",
         "moore-thompson-2015"
       ],
-      "notes": "TEACH DEFAULT: four-class SVG (O(1)/log n/n/n\u00b2) via big-o.growth-simple-4class. Full Cmglee comparison is optional_reference only (Alex: multi-class too complex). Constructivist cite: Moore & Thompson emergent shape thinking.",
+      "notes": "TEACH DEFAULT: four-class SVG. Full Cmglee optional_reference only.",
       "exercise_affordance": "highlight_linear_series",
       "optional_reference_asset_ids": [
         "big-o.comparison-computational-complexity"
@@ -137,7 +137,7 @@
         "opendsa-analintro",
         "moore-thompson-2015"
       ],
-      "notes": "TEACH DEFAULT: four-class SVG (O(1)/log n/n/n\u00b2) via big-o.growth-simple-4class. Full Cmglee comparison is optional_reference only (Alex: multi-class too complex). Constructivist cite: Moore & Thompson emergent shape thinking.",
+      "notes": "TEACH DEFAULT: four-class SVG. Full Cmglee optional_reference only.",
       "exercise_affordance": "highlight_nlogn_series",
       "optional_reference_asset_ids": [
         "big-o.comparison-computational-complexity"
@@ -164,7 +164,7 @@
         "opendsa-analintro",
         "moore-thompson-2015"
       ],
-      "notes": "TEACH DEFAULT: four-class SVG (O(1)/log n/n/n\u00b2) via big-o.growth-simple-4class. Full Cmglee comparison is optional_reference only (Alex: multi-class too complex). Constructivist cite: Moore & Thompson emergent shape thinking.",
+      "notes": "TEACH DEFAULT: four-class SVG. Full Cmglee optional_reference only.",
       "exercise_affordance": "highlight_quadratic_series",
       "optional_reference_asset_ids": [
         "big-o.comparison-computational-complexity"
@@ -191,7 +191,7 @@
         "opendsa-analintro",
         "moore-thompson-2015"
       ],
-      "notes": "TEACH DEFAULT: four-class SVG (O(1)/log n/n/n\u00b2) via big-o.growth-simple-4class. Full Cmglee comparison is optional_reference only (Alex: multi-class too complex). Constructivist cite: Moore & Thompson emergent shape thinking.",
+      "notes": "TEACH DEFAULT: four-class SVG. Full Cmglee optional_reference only.",
       "exercise_affordance": "compare_families",
       "optional_reference_asset_ids": [
         "big-o.comparison-computational-complexity"
@@ -486,5 +486,5 @@
       "exercise_affordance": "slide_window_on_array"
     }
   ],
-  "policy_note": "Alex 2026-09-27: teach Big O with O(1)/O(log n)/O(n)/O(n\u00b2) only. Full Cmglee/cheatsheet overlays with n!/2^n/\u221an are optional_reference."
+  "policy_note": "Alex 2026-09-27: teach Big O with O(1)/O(log n)/O(n)/O(n\u00b2) only; full cheatsheets optional_reference."
 }
