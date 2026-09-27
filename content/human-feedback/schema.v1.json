@@ -1,0 +1,177 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://study.design-bakery.com/schemas/human-feedback.v1.json",
+  "title": "Study OS human feedback entry (git JSONL)",
+  "description": "Append-only calibration critique (text + optional screenshot). NOT a parallel DB: live in-app reviews stay in ux.feedback / ux.decomposer_review; verbatim pedagogy sessions stay under sessions/.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "ts",
+    "source",
+    "text",
+    "tags",
+    "store"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable entry id (UUID)."
+    },
+    "ts": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the critique was voiced (ISO-8601)."
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "chat",
+        "live_player",
+        "issue_comment",
+        "decomposer_review",
+        "session"
+      ],
+      "description": "Where the critique came from."
+    },
+    "author": {
+      "type": "string",
+      "description": "Human author handle (default Alex / Pukujan for product critiques)."
+    },
+    "lesson_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Player lesson id when known (e.g. big-o-growth-families)."
+    },
+    "step_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Step id when known (maps to ux.feedback.step_id)."
+    },
+    "target_kind": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Optional mirror of ux.feedback.target_kind (step, message, visual, \u2026)."
+    },
+    "target_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Optional mirror of ux.feedback.target_id."
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 8000,
+      "description": "Scrubbed critique text (no secrets / private exports)."
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "too_complex",
+          "crash",
+          "prefer_graph",
+          "no_bullets",
+          "simpler_charts",
+          "research_first",
+          "interactive",
+          "invent_forbidden",
+          "prefer_dark",
+          "design_system",
+          "pet_jitter",
+          "author_name",
+          "catalog_wide",
+          "navigation",
+          "probe_missing",
+          "latency",
+          "fractions",
+          "other"
+        ]
+      },
+      "uniqueItems": true,
+      "description": "Calibration tags (also usable as ux.feedback.reasons when promoting)."
+    },
+    "screenshot": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "Repo-relative path under content/human-feedback/assets/."
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
+    "store": {
+      "type": "string",
+      "enum": [
+        "git.jsonl",
+        "ux.feedback",
+        "ux.decomposer_review",
+        "session"
+      ],
+      "description": "Canonical store for this kind of signal. git.jsonl = this pack only; never invent a new Postgres table."
+    },
+    "related_issues": {
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "description": "GitHub issue numbers (e.g. 164, 163, 161, 126)."
+    },
+    "promotion": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "ux_feedback_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "decomposer_review_id": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "session_path": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

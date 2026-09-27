@@ -1,0 +1,38 @@
+{
+  "schema_version": "0.1.0",
+  "session_id": "big-o-ux-calibration",
+  "subject_id": "subject-001",
+  "started_at": "2026-09-25T00:00:00-04:00",
+  "ended_at": "2026-09-27T03:32:18-04:00",
+  "domain": "dsa",
+  "concepts": [
+    "big-o-growth-families",
+    "fractions",
+    "sliding-window",
+    "theme-system"
+  ],
+  "lesson_ids": [
+    "big-o-growth-families",
+    "fractions-compare",
+    "sliding-window-box"
+  ],
+  "source": {
+    "provider": "study-os-agent-chat",
+    "model": null,
+    "conversation_id": null,
+    "capture_method": "manual"
+  },
+  "raw_artifacts": [
+    {
+      "path": "content/human-feedback/feedback.jsonl",
+      "media_type": "application/jsonl",
+      "sha256": "291e3213f93d73e0b9e5fb0fa538a6b684570204219633e507d7a57feb9bbd90"
+    },
+    {
+      "path": "content/human-feedback/assets/MANIFEST.sha256.json",
+      "media_type": "application/json",
+      "sha256": "cd2de7f9ff3c43a32f7b61d5fa9d2e988f31a59783681d6eb77827a6d494ce23"
+    }
+  ],
+  "notes": "Evidence class: self_reported product-UX calibration only. This is NOT mastery evidence and must never be written as learn.* events. raw_artifacts are the scrubbed critique capture (git JSONL) plus its asset hash manifest; derived/findings.md is derived analysis, deliberately not listed as raw. No private study-log content; screenshots are public and scrubbed. Live in-app step reviews remain Postgres ux.feedback and decomposer ratings remain ux.decomposer_review - this pack adds no parallel feedback database."
+}
