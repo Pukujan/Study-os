@@ -231,7 +231,7 @@ describe("visuals", () => {
     expect(unhighlighted).not.toContain('stroke-width="3.5"');
   });
 
-  it("GrowthTable empty series hides scoreboard and shows a helpful hint (#178)", () => {
+  it("GrowthTable empty series hides scoreboard and shows a current-problem hint (#178)", () => {
     const html = renderToStaticMarkup(
       <GrowthTable frame={{ type: "growth_table", n_values: [2, 4, 8, 16] }} />,
     );
@@ -242,7 +242,7 @@ describe("visuals", () => {
     expect(html).toContain("n = 2, 4, 8, 16");
   });
 
-  it("GrowthTable empty_hint overrides the default probe line (#178)", () => {
+  it("GrowthTable empty_hint is the sole in-table line when no caption (#178)", () => {
     const html = renderToStaticMarkup(
       <GrowthTable
         frame={{
@@ -254,6 +254,41 @@ describe("visuals", () => {
     );
     expect(html).toContain("Reading a[0] is one lookup");
     expect(html).not.toContain("Counts arrive");
+  });
+
+  it("GrowthTable does not repeat caption when island already shows it (#178)", () => {
+    const caption = "Still reading a[0]. Does a much larger n change the step count?";
+    const html = renderToStaticMarkup(
+      <GrowthTable
+        frame={{
+          type: "growth_table",
+          n_values: [10, 10000],
+          caption,
+          empty_hint: "Reading a[0] is one lookup. Does that stay 1 when n grows?",
+        }}
+      />,
+    );
+    // Caption is painted by TeachRenderBox figcaption — table must not add a second prose line.
+    expect(html).not.toContain("growth-table-empty-note");
+    expect(html).not.toContain("Counts arrive");
+    expect(html).toContain("n = 10, 10000");
+    // aria-label mirrors the visible caption (not a second empty_hint).
+    expect(html).toContain(caption);
+    expect(html).not.toContain("Reading a[0] is one lookup. Does that stay 1 when n grows?");
+    // Frame island surfaces the kept back-pointer as figcaption (not a second empty-note).
+    const island = renderToStaticMarkup(
+      <Frame
+        frame={{
+          type: "growth_table",
+          n_values: [10, 10000],
+          caption,
+        }}
+      />,
+    );
+    expect(island).toContain(caption);
+    expect(island).toContain("figcaption");
+    expect(island).not.toContain("growth-table-empty-note");
+    expect(island).not.toContain("Counts arrive");
   });
 
   it("GrowthCurve shows textbook end-of-line labels in curve color, no swatch legend (#179)", () => {
