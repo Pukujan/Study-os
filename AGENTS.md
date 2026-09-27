@@ -73,7 +73,7 @@ For every substantive task:
 | Helper | Role here | Pin (never read moving `main` during work) | Adoption shape |
 | --- | --- | --- | --- |
 | [`Pukujan/project-continuity-modules`](https://github.com/Pukujan/project-continuity-modules) (PCM) | continuity protocol, validator, checkpoints | CLI `0.6.0`, protocol `0.1.0-draft`, commit `c18bfd6064d1249996bc00c45dbbc6721ec5dfd9` | mature-repository overlay ([`docs/TARGET_ADOPTION.md`](https://github.com/Pukujan/project-continuity-modules/blob/c18bfd6064d1249996bc00c45dbbc6721ec5dfd9/docs/TARGET_ADOPTION.md)) |
-| [`Pukujan/content-generation-modules`](https://github.com/Pukujan/content-generation-modules) (CGM) | README/brand/visual/image method and adapter validator | `0.4.0`, commit `f85e88bc00362c53061d95ac7811bd9c6ada8e32` (see `.content-system/system-version.json`) | target adapter in `.content-system/` |
+| [`Pukujan/content-generation-modules`](https://github.com/Pukujan/content-generation-modules) (CGM) | README/brand/visual/image method and adapter validator | `0.5.1`, commit `9874b26dc46499137bf22e1ca163874ef2dd5e7a` (see `.content-system/system-version.json`) | target adapter in `.content-system/` |
 | [`Pukujan/agent-custom-setup`](https://github.com/Pukujan/agent-custom-setup) (ACS) | multi-agent hotloader pack (roles, boss lease, claim queue, watchdog) | commit `f9650936fd5fd66be3b0e2cf04e653f0a3cbb7e4` (ACS PR #12 tip until merged to ACS `main`) | git submodule at `third_party/agent-custom-setup`; load [`HOTLOAD.md`](third_party/agent-custom-setup/modules/coordination/multi-agent-hotload/v0.1.0/HOTLOAD.md) — see [`docs/ops/ACS_HOTLOAD.md`](docs/ops/ACS_HOTLOAD.md) |
 
 Rules:
