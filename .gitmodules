@@ -1,0 +1,3 @@
+[submodule "third_party/agent-custom-setup"]
+	path = third_party/agent-custom-setup
+	url = https://github.com/Pukujan/agent-custom-setup.git
