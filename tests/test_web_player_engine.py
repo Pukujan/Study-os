@@ -668,6 +668,34 @@ class AdaptTests(unittest.TestCase):
         self.assertIsNotNone(view["worked_example"])
         self.assertIsNone(view["step"]["probe"])
 
+    def test_view_worked_example_exposes_public_md(self):
+        """The public card must carry real content, not a stripped payload (#126)."""
+
+        from study_os.web.player import engine
+
+        lesson = self._lesson()
+        state = engine.start(lesson)
+        state, _ = engine.adapt(lesson, state, "example")
+        view = engine.view(lesson, state)
+        example = view["worked_example"]
+        self.assertIsInstance(example, dict)
+        self.assertEqual(example["md"], "Main solution: 1 + 2 = 3.")
+        self.assertIsInstance(example.get("frames"), list)
+        self.assertNotIn("solution_md", json.dumps(view))
+
+    def test_view_worked_example_without_solution_still_has_shape(self):
+        """A card with no solution text must still return a renderable object."""
+
+        from study_os.web.player import engine
+
+        lesson = self._lesson()
+        state = engine.start(lesson)
+        state["card_mode"] = "worked_example"
+        state["worked_example"] = {"solution_md": "", "frames": []}
+        view = engine.view(lesson, state)
+        self.assertEqual(view["worked_example"], {"frames": []})
+        self.assertNotIn("solution_md", json.dumps(view))
+
     def test_back_restores_previous_mode(self):
         from study_os.web.player import engine
 

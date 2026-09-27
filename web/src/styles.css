@@ -750,3 +750,8 @@ pre.chart { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monosp
     scroll-behavior: auto !important;
   }
 }
+
+/* Recoverable render/load errors (#126): never leave a blank shell. */
+.render-error,
+.player-error { margin: 1rem 0; }
+.render-error-actions { display: flex; gap: 0.5rem; margin-top: 0.75rem; flex-wrap: wrap; }

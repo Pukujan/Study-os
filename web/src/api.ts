@@ -125,7 +125,7 @@ export type Feedback = {
   next_action: "continue" | "retry_same";
 };
 
-export type WorkedExample = { steps_md: string[] } | { md: string };
+export type WorkedExample = { md?: string; steps_md?: string[]; frames?: Frame[] };
 
 export type PlayerView = {
   session_id: string;

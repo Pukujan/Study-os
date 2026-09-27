@@ -7,11 +7,13 @@ import Frame from "../visuals/Frame";
 import LessonMap, { getLessonSteps } from "../visuals/LessonMap";
 import VoiceControls from "../player/VoiceControls";
 import CompanionPanel from "../player/CompanionPanel";
+import WorkedExampleCard from "../player/WorkedExampleCard";
 import FeedbackBar from "../player/FeedbackBar";
 import { applyPresentation } from "../player/presentation";
 import Pet, { type PetMood } from "../mascot/Pet";
 import RobotVisit from "../mascot/RobotVisit";
 import { newIdempotencyKey } from "../api";
+import ErrorBoundary from "../ErrorBoundary";
 
 type RegenKind = "reexplain" | "example";
 
@@ -48,6 +50,10 @@ export default function Player({ sessionId }: { sessionId: string }) {
   const moodTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
+    // A new session id (Resume, revisit, back/forward) must never render the
+    // previous session's card, and must clear a sticky load error (#126).
+    setView(null);
+    setError(null);
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionId]);
@@ -73,6 +79,7 @@ export default function Player({ sessionId }: { sessionId: string }) {
       setAnswer("");
       setShowTeach(!v.step.teach_collapsed);
       setMood("wave", 1200);
+      setError(null);
     } catch (e) {
       setError(e instanceof ApiError ? e.code : "error");
     } finally {
@@ -157,14 +164,35 @@ export default function Player({ sessionId }: { sessionId: string }) {
     }
   };
 
-  if (error) return <p className="error" role="alert">Something went wrong ({error}).</p>;
-  if (!view) return <p className="muted">Loading…</p>;
+  const retryLoad = () => {
+    setView(null);
+    setError(null);
+    void load();
+  };
 
+  if (error) {
+    return (
+      <section className="card player-error" role="alert" data-testid="player-error">
+        <h2>We couldn't load this lesson</h2>
+        <p className="muted">Something went wrong ({error}). Your progress is saved.</p>
+        <div className="render-error-actions">
+          <button className="btn primary" onClick={retryLoad} disabled={busy} data-testid="player-error-retry">
+            Retry
+          </button>
+          <button className="btn" onClick={() => navigate("/")} data-testid="player-error-home">
+            Go home
+          </button>
+        </div>
+      </section>
+    );
+  }
+  if (!view || !view.step) return <p className="muted">Loading…</p>;
   const progressPct = view.progress.total > 0 ? (view.progress.done / view.progress.total) * 100 : 0;
   const speakText = `${view.step.teach_md} ${view.step.probe?.prompt_md || ""}`;
   const probeOpen = view.phase === "probe" && !!view.step.probe;
 
   return (
+    <ErrorBoundary resetKey={sessionId} onRetry={retryLoad}>
     <div className="player">
       <div className="player-layout">
         <div className="player-main">
@@ -219,21 +247,7 @@ export default function Player({ sessionId }: { sessionId: string }) {
                     {view.variant_tag && <span className="tag variant-tag">{view.variant_tag}</span>}
                   </div>
                 )}
-                {view.card_mode === "worked_example" && view.worked_example && (
-                  <div className="worked-example">
-                    {"md" in view.worked_example ? (
-                      <Markdown text={view.worked_example.md} />
-                    ) : (
-                      <ol>
-                        {view.worked_example.steps_md.map((step, i) => (
-                          <li key={i}>
-                            <Markdown text={step} />
-                          </li>
-                        ))}
-                      </ol>
-                    )}
-                  </div>
-                )}
+                {view.card_mode === "worked_example" && <WorkedExampleCard example={view.worked_example} />}
                 {view.step.probe && (
                   <>
                     <Markdown text={view.step.probe.prompt_md} />
@@ -392,6 +406,7 @@ export default function Player({ sessionId }: { sessionId: string }) {
         paused={probeOpen && !companionOpen && !companionSpeaking}
       />
     </div>
+    </ErrorBoundary>
   );
 
   async function adaptBack() {

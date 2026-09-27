@@ -214,7 +214,8 @@ export default function CompanionPanel({
         onViewChange(v);
       }
     } catch {
-      // ignore
+      // Keep the previous card on screen; never leave the learner with a blank view.
+      pushSystem("Couldn't update the card. Try again in a moment.");
     } finally {
       setBusy(false);
     }
@@ -225,6 +226,8 @@ export default function CompanionPanel({
     try {
       const v = await api.adapt(sessionId, "back");
       onViewChange(v);
+    } catch {
+      pushSystem("Couldn't go back. Try again in a moment.");
     } finally {
       setBusy(false);
     }
