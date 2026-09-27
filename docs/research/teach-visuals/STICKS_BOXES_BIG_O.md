@@ -1,6 +1,6 @@
 # Sticks-and-boxes Big O interactive teach visual
 
-**Refs:** [#185](https://github.com/Pukujan/Study-os/issues/185) · [#126](https://github.com/Pukujan/Study-os/issues/126) · [#161](https://github.com/Pukujan/Study-os/issues/161)
+**Refs:** [#191](https://github.com/Pukujan/Study-os/issues/191) · [#185](https://github.com/Pukujan/Study-os/issues/185) · [#126](https://github.com/Pukujan/Study-os/issues/126) · [#161](https://github.com/Pukujan/Study-os/issues/161)
 
 ## Intent
 
@@ -15,8 +15,11 @@ Study-os matches the validated control grammar; it is not a pixel clone of Gemin
 | Control | Behavior |
 | --- | --- |
 | Complexity dropdown | O(1) / O(n) / O(n²) rules |
-| n slider | Box count 2–8; recomputes stick budget |
-| Put Next Stick | One op; dispenser → active box; stats tick |
+| n slider | Box count 2–8 (default **n = 3**); recomputes stick budget; compare O(n) at 3 vs 5 |
+| Put Next Stick / click target box | One op; dispenser → active box; stats tick |
+| Compare-next CTA | After a mode finishes: advance O(1)→O(n); after O(n) at n<5 offer try n=5; then O(n²); Finished only at end |
+| Heat panel | Calm → warm → melting as Total Work climbs |
+| Scale note | Copy-only n=3 vs n=1 billion — never render huge box counts |
 | Finished! | When sticks placed == target |
 | Reset | Clears sticks / step cue; keeps n + complexity |
 | Stats | Complexity · Sticks Placed x/y · Total Work ops |

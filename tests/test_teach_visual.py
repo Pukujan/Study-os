@@ -241,13 +241,14 @@ class BigOSticksBoxesInteractiveTests(unittest.TestCase):
             {
                 "type": "sticks_boxes_complexity",
                 "initial_complexity": "O(n²)",
-                "initial_n": 2,
+                "initial_n": 3,
                 "caption": "Feel the pairs.",
             }
         )
         self.assertIn("Feel the pairs.", text)
         self.assertIn("O(n²)", text)
-        self.assertIn("4 ops", text)
+        self.assertIn("9 ops", text)
+        self.assertIn("n=3", text)
         self.assertIn("cross-pair", text.lower())
 
 

@@ -16,7 +16,7 @@
       "skippable": false,
       "confirm": false,
       "teach": {
-        "md": "**n** is the input size — how many items, or how big the problem is. Work (ops) is what grows as n grows; Big O names that growth. Explain again opens sticks-and-boxes.",
+        "md": "**n** is the input size — how many items, or how big the problem is. Work (ops) is what grows as n grows; Big O names that growth. Explain again opens sticks-and-boxes: you place the work and feel it grow (try n = 3 vs n = 5 under O(n); we never draw a billion boxes).",
         "frames": [
           {
             "type": "growth_curve",
@@ -165,9 +165,9 @@
           },
           {
             "type": "sticks_boxes_complexity",
-            "caption": "You place the sticks. Try O(1), O(n), and O(n²) and watch Total Work change with n.",
+            "caption": "You place the sticks. Try O(1), O(n), and O(n²). Watch Total Work as the problem size n grows — try n = 3 then n = 5 under O(n).",
             "initial_complexity": "O(1)",
-            "initial_n": 2,
+            "initial_n": 3,
             "n_min": 2,
             "n_max": 8
           }
@@ -1658,9 +1658,9 @@
           },
           {
             "type": "sticks_boxes_complexity",
-            "caption": "Feel O(n²): cross-pair every box with every box and count the sticks.",
+            "caption": "Feel O(n²): cross-pair every box with every box and count the sticks. Work explodes as n grows (we still only draw a few boxes).",
             "initial_complexity": "O(n²)",
-            "initial_n": 2,
+            "initial_n": 3,
             "n_min": 2,
             "n_max": 8
           }
