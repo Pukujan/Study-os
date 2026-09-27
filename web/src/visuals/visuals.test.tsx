@@ -8,7 +8,6 @@ import LessonMap from "./LessonMap";
 import CodeTree from "./CodeTree";
 import GrowthTable from "./GrowthTable";
 import GrowthWorkers from "./GrowthWorkers";
-import GrowthCurve from "./GrowthCurve";
 
 describe("visuals", () => {
   it("FractionBar renders the right aria-label and shaded parts", () => {

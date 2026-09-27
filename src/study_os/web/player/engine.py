@@ -467,6 +467,17 @@ def confused(lesson: dict[str, Any], state: dict[str, Any]) -> tuple[dict[str, A
 def next(lesson: dict[str, Any], state: dict[str, Any]) -> dict[str, Any]:  # noqa: A001
     """Acknowledge any pending feedback and move to the next probe or step."""
 
+    # Worked-example Continue must never no-op: leave the example, then advance
+    # when the step has no probe (teach-only). Probe steps return to answering.
+    if state.get("card_mode") == "worked_example" and state.get("phase") == "probe":
+        state["card_mode"] = "probe"
+        state["worked_example"] = None
+        state["variant_tag"] = None
+        state["hint_open"] = False
+        if _current_probe(lesson, state) is None:
+            return _advance(lesson, state)
+        return state
+
     if state["phase"] == "probe" and _current_probe(lesson, state) is None:
         return _advance(lesson, state)
     if state["phase"] != "feedback":

@@ -332,7 +332,8 @@ export default function Player({ sessionId }: { sessionId: string }) {
               </section>
               )}
 
-              {view.phase === "probe" && !view.step.probe && (
+              {/* Continue stays after teach / explain / worked — probe steps included (HESI fractions P0). */}
+              {view.phase === "probe" && (view.card_mode === "worked_example" || !view.step.probe) && (
                 <section className="probe card teach-advance" data-testid="player.teach-advance">
                   {view.card_mode === "worked_example" && view.can_go_back && (
                     <button
