@@ -5,6 +5,8 @@ import BoxIndex, { describeBoxIndex } from "./BoxIndex";
 import MermaidDiagram from "./MermaidDiagram";
 import CodeTree, { describeCodeTree } from "./CodeTree";
 import GrowthTable, { describeGrowthTable } from "./GrowthTable";
+import GrowthWorkers, { describeGrowthWorkers } from "./GrowthWorkers";
+import GrowthCurve, { describeGrowthCurve } from "./GrowthCurve";
 
 export function describeFrame(frame: FrameType): string {
   if (frame.type === "fraction_bar") return describeFractionBar(frame);
@@ -12,6 +14,8 @@ export function describeFrame(frame: FrameType): string {
   if (frame.type === "mermaid_flow") return frame.caption || "Mermaid diagram";
   if (frame.type === "code_tree") return describeCodeTree(frame);
   if (frame.type === "growth_table") return describeGrowthTable(frame);
+  if (frame.type === "growth_workers") return describeGrowthWorkers(frame);
+  if (frame.type === "growth_curve") return describeGrowthCurve(frame);
   return "Frame";
 }
 
@@ -56,6 +60,24 @@ export default function Frame({ frame }: { frame: FrameType }) {
       <figure className="frame-figure">
         <GrowthTable frame={gt} />
         {gt.caption && <figcaption className="frame-caption">{gt.caption}</figcaption>}
+      </figure>
+    );
+  }
+  if (frame.type === "growth_workers") {
+    const gw = frame;
+    return (
+      <figure className="frame-figure">
+        <GrowthWorkers frame={gw} />
+        {gw.caption && <figcaption className="frame-caption">{gw.caption}</figcaption>}
+      </figure>
+    );
+  }
+  if (frame.type === "growth_curve") {
+    const gc = frame;
+    return (
+      <figure className="frame-figure">
+        <GrowthCurve frame={gc} />
+        {gc.caption && <figcaption className="frame-caption">{gc.caption}</figcaption>}
       </figure>
     );
   }

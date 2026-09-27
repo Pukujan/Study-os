@@ -6,7 +6,7 @@ from copy import deepcopy
 from typing import Any
 
 from ..validator import validate_generated
-from . import human_rewrite
+from . import human_rewrite, teach_visual
 
 SCHEMA_VERSION = "study-os.player-presentation.v1"
 
@@ -46,8 +46,6 @@ def effective(lesson: dict[str, Any], state: dict[str, Any]) -> tuple[str | None
 
     step = lesson["steps"][state["step_index"]]
     teach = step.get("teach", {}) or {}
-    teach_md: str | None = teach.get("md", "")
-    teach_frames = list(teach.get("frames", []))
 
     # A collapsed intro-only step stays collapsed; regeneration cannot reopen it.
     if state.get("scaffold", 0) >= 1 and step.get("skippable"):
@@ -57,9 +55,12 @@ def effective(lesson: dict[str, Any], state: dict[str, Any]) -> tuple[str | None
     if update:
         md = human_rewrite.rewrite(update["teach_md"], kind="teach")
         return md, list(update["teach_frames"])
-    if teach_md:
-        teach_md = human_rewrite.rewrite(teach_md, kind="teach")
-    return teach_md, teach_frames
+
+    # teach_visual_v1 selects default metaphor frames (or presentation_raw when off).
+    md, frames = teach_visual.resolve_teach(teach)
+    if md:
+        md = human_rewrite.rewrite(md, kind="teach")
+    return md, frames
 
 
 def validate_proposal(
@@ -104,14 +105,22 @@ def authored_reserve(
     teach = step.get("teach") or {}
     md = str(teach.get("md") or "")
     frames = list(teach.get("frames") or [])
-    if not md:
+    if not md and not frames:
         return None, ("NO_AUTHORED_CARD",)
     current_md, current_frames = effective(lesson, state)
-    rewritten = human_rewrite.rewrite(md, kind="teach") if md else ""
-    if rewritten == (current_md or "") and frames == list(current_frames):
+    # Prefer an alternate metaphor (explain indices) so Explain again changes the picture.
+    indices = teach_visual.alternate_indices(teach, list(current_frames))
+    if not indices:
+        indices = list(range(len(frames)))
+    candidate_frames = [frames[i] for i in indices if 0 <= i < len(frames)]
+    candidate_md = md or (current_md or "")
+    rewritten = human_rewrite.rewrite(candidate_md, kind="teach") if candidate_md else ""
+    if rewritten == (current_md or "") and candidate_frames == list(current_frames):
         return None, ("RENDER_UNAVAILABLE",)
+    if not candidate_md:
+        return None, ("NO_AUTHORED_CARD",)
     return validate_proposal(
-        {"teach_md": md, "frame_indices": list(range(len(frames)))}, lesson, state, forbidden
+        {"teach_md": candidate_md, "frame_indices": indices}, lesson, state, forbidden
     )
 
 

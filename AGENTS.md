@@ -248,3 +248,7 @@ Until Research Gate R0 passes, do not prioritize:
 - video/image generation pipelines;
 - generalized learner recommendation models;
 - universal learning claims.
+
+## Teach visuals
+
+- Big O step-1 diagrams: [`docs/ops/TEACH_VISUAL_V1.md`](docs/ops/TEACH_VISUAL_V1.md) (`STUDY_OS_TEACH_VISUAL_V1=0` restores legacy table).

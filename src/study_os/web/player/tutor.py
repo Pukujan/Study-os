@@ -17,6 +17,7 @@ from ..privacy import scrub
 from ..validator import validate_generated
 from . import render_text
 from . import presentation
+from . import teach_visual
 from . import engine as _engine
 
 
@@ -158,12 +159,16 @@ def _render_proposal(
     """
 
     step = lesson["steps"][state["step_index"]]
-    teach_md, frames = presentation.effective(lesson, state)
+    teach_md, current_frames = presentation.effective(lesson, state)
+    teach = step.get("teach") or {}
+    authored = teach_visual.authored_frames(teach) or list(current_frames)
     context = {
         "step_id": step["step_id"],
         "concept_id": step["kc"],
         "current_teach_md": teach_md or "",
-        "teach_frames": [render_text.frame_to_text(frame) for frame in frames],
+        "current_frame_types": [f.get("type") for f in current_frames],
+        "teach_frames": [render_text.frame_to_text(frame) for frame in authored],
+        "preferred_explain_frame_indices": teach_visual.explain_frame_indices(teach),
         "forbidden_answers": list(forbidden),
     }
     messages = [
@@ -206,9 +211,12 @@ def build_messages(
 
     # Ground the tutor in what the learner can actually see right now; an applied
     # presentation overlay replaces the step's authored teach text and frames.
+    # teach_frames is the FULL authored pool so frame_indices map to validate_proposal.
     current_md, current_frames = presentation.effective(lesson, state)
+    teach = (lesson["steps"][state["step_index"]].get("teach") or {})
     teach_md = current_md or ""
-    teach_frames = [render_text.frame_to_text(f) for f in current_frames]
+    authored = teach_visual.authored_frames(teach) or list(current_frames)
+    teach_frames = [render_text.frame_to_text(f) for f in authored]
 
     probe_prompt = ""
     probe_frames: list[str] = []
@@ -226,6 +234,8 @@ def build_messages(
         "current_presentation": presentation.current(lesson, state),
         "teach_md": teach_md,
         "teach_frames": teach_frames,
+        "current_frame_types": [f.get("type") for f in current_frames],
+        "preferred_explain_frame_indices": teach_visual.explain_frame_indices(teach),
         "probe_prompt": probe_prompt,
         "probe_frames": probe_frames,
         "solution_md": solution_md,

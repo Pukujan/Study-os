@@ -120,7 +120,30 @@ export type GrowthTableFrame = {
   series_multi?: GrowthTableSeries[] | null;
 };
 
-export type Frame = FractionBarFrame | BoxIndexFrame | MermaidFlowFrame | CodeTreeFrame | GrowthTableFrame;
+export type GrowthWorkersFrame = {
+  type: "growth_workers";
+  caption?: string;
+  n_values: number[];
+  role_label?: string;
+  highlight_n?: number | null;
+};
+
+export type GrowthCurveFrame = {
+  type: "growth_curve";
+  caption?: string;
+  n_values: number[];
+  series?: GrowthTableSeries | null;
+  series_multi?: GrowthTableSeries[] | null;
+};
+
+export type Frame =
+  | FractionBarFrame
+  | BoxIndexFrame
+  | MermaidFlowFrame
+  | CodeTreeFrame
+  | GrowthTableFrame
+  | GrowthWorkersFrame
+  | GrowthCurveFrame;
 
 export type Probe = {
   prompt_md: string;
