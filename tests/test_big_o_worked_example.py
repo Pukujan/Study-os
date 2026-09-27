@@ -28,7 +28,7 @@ class BigOWorkedExampleTests(unittest.TestCase):
         self.assertIsNotNone(example)
         assert example is not None
         self.assertNotEqual(example["md"], teach_md)
-        self.assertTrue(example["md"].startswith("1)"))
+        self.assertNotRegex(example["md"], r"(?m)^\s*\d+[.)]\s")
         example_types = [f["type"] for f in example["frames"]]
         self.assertNotEqual(example_types, teach_types)
         # Teach-only steps remain in probe phase so Continue stays available.

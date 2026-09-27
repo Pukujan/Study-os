@@ -24,9 +24,12 @@ describe("markdown", () => {
     expect(html).toContain("&lt;img");
   });
 
-  it("renders lists and inline code", () => {
+  it("renders digit lines as plain paragraphs, not ordered lists", () => {
     const html = renderToStaticMarkup(<Markdown text={"1. one `a`\n2. two\n\n- x\n- *y*"} />);
-    expect(html).toContain("<ol><li>one <code>a</code></li><li>two</li></ol>");
+    expect(html).not.toContain("<ol");
+    expect(html).not.toMatch(/<li>one/);
+    expect(html).toContain("<p>one <code>a</code></p>");
+    expect(html).toContain("<p>two</p>");
     expect(html).toContain("<ul><li>x</li><li><em>y</em></li></ul>");
   });
 });

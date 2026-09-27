@@ -1,10 +1,41 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme-palette="slate" data-theme-appearance="dark" data-theme-type="sans" data-theme-mood="calm" data-theme-density="comfortable">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="referrer" content="same-origin" />
+    <meta name="color-scheme" content="dark light" />
     <title>Study OS</title>
+    <script>
+      (function () {
+        try {
+          var k = "sos.theme.v1";
+          var d = { palette: "slate", appearance: "dark", type: "sans", mood: "calm", density: "comfortable" };
+          var t = d;
+          var r = localStorage.getItem(k);
+          if (r) {
+            try {
+              var p = JSON.parse(r);
+              t = Object.assign({}, d, p);
+            } catch (e) {}
+          }
+          var a = t.appearance;
+          var resolved =
+            a === "light" || a === "dark"
+              ? a
+              : window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
+                ? "dark"
+                : "dark";
+          var el = document.documentElement;
+          el.dataset.themePalette = t.palette || d.palette;
+          el.dataset.themeAppearance = resolved;
+          el.dataset.themeType = t.type || d.type;
+          el.dataset.themeMood = t.mood || d.mood;
+          el.dataset.themeDensity = t.density || d.density;
+          el.style.colorScheme = resolved;
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
