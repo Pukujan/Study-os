@@ -8,8 +8,15 @@ function seriesList(frame: GrowthTableFrame): GrowthTableSeries[] {
   return out;
 }
 
-/** One-line hint when the scoreboard has n values but no counts yet (Refs #178). */
+/**
+ * Single current-problem hint for empty scoreboards (Refs #178).
+ * Prefer empty_hint, else caption (back pointers that ground THIS probe are OK).
+ * Never invent forward "counts arrive later" copy.
+ */
 export function emptyGrowthTableHint(frame: GrowthTableFrame): string {
+  // Caption is the island figcaption — prefer it so aria matches what the learner sees.
+  const caption = frame.caption?.trim();
+  if (caption) return caption;
   const custom = frame.empty_hint?.trim();
   if (custom) return custom;
   return "Estimate how the step count changes as n grows.";
@@ -35,7 +42,9 @@ export default function GrowthTable({ frame, scoped = false }: Props) {
   const rootClass = scoped ? styles.scoreboard : "growth-table";
 
   if (series.length === 0) {
-    // Probe empty tables: hide the fake empty scoreboard; keep n context + one clear hint (#178).
+    // Island already renders frame.caption as figcaption — do not repeat it here (#178).
+    // Only paint an in-table note when there is no caption yet.
+    const captionOnIsland = Boolean(frame.caption?.trim());
     const hint = emptyGrowthTableHint(frame);
     return (
       <div
@@ -44,7 +53,9 @@ export default function GrowthTable({ frame, scoped = false }: Props) {
         aria-label={describeGrowthTable(frame)}
         data-testid="growth-table-empty"
       >
-        <p className={scoped ? styles.emptyNote : "muted small growth-table-empty-note"}>{hint}</p>
+        {!captionOnIsland ? (
+          <p className={scoped ? styles.emptyNote : "muted small growth-table-empty-note"}>{hint}</p>
+        ) : null}
         <p className={scoped ? styles.emptyN : "muted small growth-table-empty-n"}>
           n = {nValues.join(", ")}
         </p>

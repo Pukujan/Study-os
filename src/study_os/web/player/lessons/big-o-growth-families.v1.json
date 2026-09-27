@@ -350,8 +350,7 @@
               4,
               1000
             ],
-            "caption": "n jumps from small to huge. For a[0], does the step count stay 1?",
-            "empty_hint": "Reading a[0] is one lookup. Does that stay 1 when n grows?"
+            "caption": "Still reading a[0]. Does a much larger n change the step count?"
           }
         ],
         "answer_kind": "integer",
@@ -405,8 +404,7 @@
                   10,
                   10000
                 ],
-                "caption": "Still reading a[0]. Does a much larger n change the step count?",
-                "empty_hint": "Reading a[0] is one lookup. Does that stay 1 when n grows?"
+                "caption": "Still reading a[0]. Does a much larger n change the step count?"
               }
             ],
             "answer_kind": "integer",
@@ -460,8 +458,7 @@
                   2,
                   64
                 ],
-                "caption": "Constant family.",
-                "empty_hint": "Reading a[0] is one lookup. Does that stay 1 when n grows?"
+                "caption": "Still reading a[0]. Does the step count stay 1?"
               }
             ],
             "answer_kind": "integer",
