@@ -15,7 +15,7 @@ import json
 import shutil
 import sys
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime
 from pathlib import Path
 
 ALLOWED_TAGS = frozenset(
