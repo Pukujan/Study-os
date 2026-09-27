@@ -31,10 +31,13 @@ jobs:
           cd /srv/study-os
           cp -f app/deploy/docker-compose.yml docker-compose.yml
           docker compose up -d --build
-          for i in 1 2 3 4 5 6 7 8 9 10; do
-            if curl -fsS http://127.0.0.1:18400/api/health; then break; fi
+          # Runner uses --network=host so 127.0.0.1 is gravebuster
+          ok=0
+          for i in $(seq 1 40); do
+            if curl -fsS http://127.0.0.1:18400/api/health; then ok=1; break; fi
             sleep 3
           done
+          if [ "$ok" != 1 ]; then echo "local health failed"; exit 1; fi
           curl -fsS http://127.0.0.1:18400/api/health
           echo
           curl -fsS https://study.design-bakery.com/api/health
