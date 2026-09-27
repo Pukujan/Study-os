@@ -164,3 +164,11 @@
   max-width: 100%;
   margin: 0.5rem 0;
 }
+
+.curated img,
+:host .curated-diagram img {
+  display: block;
+  max-width: min(100%, 28rem);
+  height: auto;
+  border-radius: 0.25rem;
+}

@@ -1,11 +1,11 @@
 {
   "schema_version": "study-os.player-lesson.v1",
   "lesson_id": "big-o-growth-families",
-  "revision": "big-o-growth-families.v1.teach-visual-v1",
+  "revision": "big-o-growth-families.v1.curated-multi-class",
   "lane": "dsa",
   "title": "Big O: how work grows",
-  "summary": "Feel O(1), O(log n), O(n), O(n log n), and O(n^2) with workers, boxes, and tiny concrete counts before arrays and windows.",
-  "representation": "growth_table",
+  "summary": "Compare O(1), O(log n), O(n), and O(n²) on one growth chart before arrays and windows.",
+  "representation": "growth_curve",
   "golden_ref": null,
   "prerequisites": [],
   "catalog_order": 1,
@@ -21,6 +21,7 @@
           {
             "type": "growth_curve",
             "n_values": [
+              1,
               2,
               4,
               8,
@@ -33,12 +34,14 @@
                   1,
                   1,
                   1,
+                  1,
                   1
                 ]
               },
               {
                 "label": "O(log n)",
                 "values": [
+                  1,
                   1,
                   2,
                   3,
@@ -48,6 +51,7 @@
               {
                 "label": "O(n)",
                 "values": [
+                  1,
                   2,
                   4,
                   8,
@@ -57,6 +61,7 @@
               {
                 "label": "O(n²)",
                 "values": [
+                  1,
                   4,
                   16,
                   64,
@@ -64,19 +69,16 @@
                 ]
               }
             ],
+            "y_scale": "log",
             "caption": "Operations vs n for O(1), O(log n), O(n), and O(n²). Steeper curves explode sooner.",
-            "series": null
+            "asset_id": "big-o.growth-simple-4class"
           },
           {
-            "type": "growth_workers",
-            "n_values": [
-              2,
-              4,
-              8,
-              16
-            ],
-            "caption": "Each column is one pile of boxes for size n. As n doubles, the pile grows.",
-            "role_label": "workers"
+            "type": "curated_diagram",
+            "asset_id": "big-o.growth-simple-4class",
+            "src": "/teach-visuals/big-o/growth-simple-4class.svg",
+            "alt": "Reference chart of common Big-O growth families (Cmglee, CC BY-SA 4.0).",
+            "caption": "Curated reference: same multi-class growth families used in CS course cheatsheets."
           }
         ],
         "presentation_raw": {
@@ -100,6 +102,9 @@
           ],
           "explain_frame_indices": [
             1
+          ],
+          "provenance_asset_ids": [
+            "big-o.growth-simple-4class"
           ]
         }
       },
@@ -109,15 +114,11 @@
         "md": "At n=16, O(1) is still 1, O(n) is 16, and O(n²) is 256. Same n, very different work.",
         "frames": [
           {
-            "type": "growth_workers",
-            "n_values": [
-              2,
-              4,
-              8,
-              16
-            ],
-            "caption": "Each column is one pile of boxes for size n. As n doubles, the pile grows.",
-            "role_label": "workers"
+            "type": "curated_diagram",
+            "asset_id": "big-o.growth-simple-4class",
+            "src": "/teach-visuals/big-o/growth-simple-4class.svg",
+            "alt": "Reference chart of common Big-O growth families (Cmglee, CC BY-SA 4.0).",
+            "caption": "Curated reference: same multi-class growth families used in CS course cheatsheets."
           }
         ]
       },
@@ -127,6 +128,7 @@
           {
             "type": "growth_curve",
             "n_values": [
+              1,
               2,
               4,
               8,
@@ -139,12 +141,14 @@
                   1,
                   1,
                   1,
+                  1,
                   1
                 ]
               },
               {
                 "label": "O(log n)",
                 "values": [
+                  1,
                   1,
                   2,
                   3,
@@ -154,6 +158,7 @@
               {
                 "label": "O(n)",
                 "values": [
+                  1,
                   2,
                   4,
                   8,
@@ -163,6 +168,7 @@
               {
                 "label": "O(n²)",
                 "values": [
+                  1,
                   4,
                   16,
                   64,
@@ -185,6 +191,62 @@
         "md": "**O(1)** stays about the same when n grows. Reading `a[0]` is one lookup. The table stays flat.",
         "frames": [
           {
+            "type": "growth_curve",
+            "n_values": [
+              1,
+              2,
+              4,
+              8,
+              16
+            ],
+            "series_multi": [
+              {
+                "label": "O(1)",
+                "values": [
+                  1,
+                  1,
+                  1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "label": "O(log n)",
+                "values": [
+                  1,
+                  1,
+                  2,
+                  3,
+                  4
+                ]
+              },
+              {
+                "label": "O(n)",
+                "values": [
+                  1,
+                  2,
+                  4,
+                  8,
+                  16
+                ]
+              },
+              {
+                "label": "O(n²)",
+                "values": [
+                  1,
+                  4,
+                  16,
+                  64,
+                  256
+                ]
+              }
+            ],
+            "y_scale": "log",
+            "caption": "All four families on one chart. Focus on O(1) ",
+            "asset_id": "big-o.growth-simple-4class",
+            "highlight_label": "O(1)"
+          },
+          {
             "type": "growth_table",
             "n_values": [
               2,
@@ -203,7 +265,18 @@
             },
             "caption": "Constant work: a flat line."
           }
-        ]
+        ],
+        "teach_visual_v1": {
+          "default_frame_indices": [
+            0
+          ],
+          "explain_frame_indices": [
+            1
+          ],
+          "provenance_asset_ids": [
+            "big-o.growth-simple-4class"
+          ]
+        }
       },
       "probe": {
         "prompt_md": "Reading `a[0]` takes 1 step when n = 4. About how many steps when n = 1000?",
@@ -364,7 +437,68 @@
             "hint_md": "Look for the flat family."
           }
         }
-      ]
+      ],
+      "worked_example": {
+        "md": "**O(1)** stays about the same when n grows. Reading `a[0]` is one lookup. The table stays flat.",
+        "frames": [
+          {
+            "type": "growth_curve",
+            "n_values": [
+              1,
+              2,
+              4,
+              8,
+              16
+            ],
+            "series_multi": [
+              {
+                "label": "O(1)",
+                "values": [
+                  1,
+                  1,
+                  1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "label": "O(log n)",
+                "values": [
+                  1,
+                  1,
+                  2,
+                  3,
+                  4
+                ]
+              },
+              {
+                "label": "O(n)",
+                "values": [
+                  1,
+                  2,
+                  4,
+                  8,
+                  16
+                ]
+              },
+              {
+                "label": "O(n²)",
+                "values": [
+                  1,
+                  4,
+                  16,
+                  64,
+                  256
+                ]
+              }
+            ],
+            "y_scale": "log",
+            "caption": "All four families on one chart. Focus on O(1) ",
+            "asset_id": "big-o.growth-simple-4class",
+            "highlight_label": "O(1)"
+          }
+        ]
+      }
     },
     {
       "step_id": "ologn",
@@ -374,6 +508,62 @@
       "teach": {
         "md": "**O(log n)** grows slowly. Each step can cut the space in half. When n doubles, add about one step.",
         "frames": [
+          {
+            "type": "growth_curve",
+            "n_values": [
+              1,
+              2,
+              4,
+              8,
+              16
+            ],
+            "series_multi": [
+              {
+                "label": "O(1)",
+                "values": [
+                  1,
+                  1,
+                  1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "label": "O(log n)",
+                "values": [
+                  1,
+                  1,
+                  2,
+                  3,
+                  4
+                ]
+              },
+              {
+                "label": "O(n)",
+                "values": [
+                  1,
+                  2,
+                  4,
+                  8,
+                  16
+                ]
+              },
+              {
+                "label": "O(n²)",
+                "values": [
+                  1,
+                  4,
+                  16,
+                  64,
+                  256
+                ]
+              }
+            ],
+            "y_scale": "log",
+            "caption": "All four families on one chart. Focus on O(log n).",
+            "asset_id": "big-o.growth-simple-4class",
+            "highlight_label": "O(log n)"
+          },
           {
             "type": "growth_table",
             "n_values": [
@@ -393,7 +583,18 @@
             },
             "caption": "Log growth: +1 step when n doubles."
           }
-        ]
+        ],
+        "teach_visual_v1": {
+          "default_frame_indices": [
+            0
+          ],
+          "explain_frame_indices": [
+            1
+          ],
+          "provenance_asset_ids": [
+            "big-o.growth-simple-4class"
+          ]
+        }
       },
       "probe": {
         "prompt_md": "O(log n) takes 3 steps at n = 8. About how many steps at n = 16?",
@@ -425,7 +626,7 @@
           }
         ],
         "correct_md": "Correct — about **4** steps.",
-        "explain_md": "Halving 16 needs one more step than 8.\nSo 3 becomes 4.",
+        "explain_md": "Halving 16 needs one more step than.\nSo 3 becomes 4.",
         "explain_frames": [
           {
             "type": "growth_table",
@@ -553,7 +754,68 @@
             "hint_md": "Think: one more halving."
           }
         }
-      ]
+      ],
+      "worked_example": {
+        "md": "**O(log n)** grows slowly. Each step can cut the space in half. When n doubles, add about one step.",
+        "frames": [
+          {
+            "type": "growth_curve",
+            "n_values": [
+              1,
+              2,
+              4,
+              8,
+              16
+            ],
+            "series_multi": [
+              {
+                "label": "O(1)",
+                "values": [
+                  1,
+                  1,
+                  1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "label": "O(log n)",
+                "values": [
+                  1,
+                  1,
+                  2,
+                  3,
+                  4
+                ]
+              },
+              {
+                "label": "O(n)",
+                "values": [
+                  1,
+                  2,
+                  4,
+                  8,
+                  16
+                ]
+              },
+              {
+                "label": "O(n²)",
+                "values": [
+                  1,
+                  4,
+                  16,
+                  64,
+                  256
+                ]
+              }
+            ],
+            "y_scale": "log",
+            "caption": "All four families on one chart. Focus on O(log n).",
+            "asset_id": "big-o.growth-simple-4class",
+            "highlight_label": "O(log n)"
+          }
+        ]
+      }
     },
     {
       "step_id": "on_linear",
@@ -563,6 +825,62 @@
       "teach": {
         "md": "**O(n)** grows with n. One full pass visits every item. When n doubles, work about doubles.",
         "frames": [
+          {
+            "type": "growth_curve",
+            "n_values": [
+              1,
+              2,
+              4,
+              8,
+              16
+            ],
+            "series_multi": [
+              {
+                "label": "O(1)",
+                "values": [
+                  1,
+                  1,
+                  1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "label": "O(log n)",
+                "values": [
+                  1,
+                  1,
+                  2,
+                  3,
+                  4
+                ]
+              },
+              {
+                "label": "O(n)",
+                "values": [
+                  1,
+                  2,
+                  4,
+                  8,
+                  16
+                ]
+              },
+              {
+                "label": "O(n²)",
+                "values": [
+                  1,
+                  4,
+                  16,
+                  64,
+                  256
+                ]
+              }
+            ],
+            "y_scale": "log",
+            "caption": "All four families on one chart. Focus on O(n).",
+            "asset_id": "big-o.growth-simple-4class",
+            "highlight_label": "O(n)"
+          },
           {
             "type": "growth_table",
             "n_values": [
@@ -582,7 +900,18 @@
             },
             "caption": "Linear: the count tracks n."
           }
-        ]
+        ],
+        "teach_visual_v1": {
+          "default_frame_indices": [
+            0
+          ],
+          "explain_frame_indices": [
+            1
+          ],
+          "provenance_asset_ids": [
+            "big-o.growth-simple-4class"
+          ]
+        }
       },
       "probe": {
         "prompt_md": "A single loop does 8 steps when n = 8. About how many steps when n = 16?",
@@ -762,7 +1091,68 @@
             "hint_md": "Stay linear."
           }
         }
-      ]
+      ],
+      "worked_example": {
+        "md": "**O(n)** grows with n. One full pass visits every item. When n doubles, work about doubles.",
+        "frames": [
+          {
+            "type": "growth_curve",
+            "n_values": [
+              1,
+              2,
+              4,
+              8,
+              16
+            ],
+            "series_multi": [
+              {
+                "label": "O(1)",
+                "values": [
+                  1,
+                  1,
+                  1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "label": "O(log n)",
+                "values": [
+                  1,
+                  1,
+                  2,
+                  3,
+                  4
+                ]
+              },
+              {
+                "label": "O(n)",
+                "values": [
+                  1,
+                  2,
+                  4,
+                  8,
+                  16
+                ]
+              },
+              {
+                "label": "O(n²)",
+                "values": [
+                  1,
+                  4,
+                  16,
+                  64,
+                  256
+                ]
+              }
+            ],
+            "y_scale": "log",
+            "caption": "All four families on one chart. Focus on O(n).",
+            "asset_id": "big-o.growth-simple-4class",
+            "highlight_label": "O(n)"
+          }
+        ]
+      }
     },
     {
       "step_id": "onlogn",
@@ -772,6 +1162,62 @@
       "teach": {
         "md": "**O(n log n)** sits between linear and quadratic. Think: log-cost work for each of n items. Doubling n grows a bit more than 2×.",
         "frames": [
+          {
+            "type": "growth_curve",
+            "n_values": [
+              1,
+              2,
+              4,
+              8,
+              16
+            ],
+            "series_multi": [
+              {
+                "label": "O(1)",
+                "values": [
+                  1,
+                  1,
+                  1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "label": "O(log n)",
+                "values": [
+                  1,
+                  1,
+                  2,
+                  3,
+                  4
+                ]
+              },
+              {
+                "label": "O(n)",
+                "values": [
+                  1,
+                  2,
+                  4,
+                  8,
+                  16
+                ]
+              },
+              {
+                "label": "O(n²)",
+                "values": [
+                  1,
+                  4,
+                  16,
+                  64,
+                  256
+                ]
+              }
+            ],
+            "y_scale": "log",
+            "caption": "All four families on one chart. Focus on O(n).",
+            "asset_id": "big-o.growth-simple-4class",
+            "highlight_label": "O(n)"
+          },
           {
             "type": "growth_table",
             "n_values": [
@@ -791,7 +1237,18 @@
             },
             "caption": "n log n: faster than linear, slower than n²."
           }
-        ]
+        ],
+        "teach_visual_v1": {
+          "default_frame_indices": [
+            0
+          ],
+          "explain_frame_indices": [
+            1
+          ],
+          "provenance_asset_ids": [
+            "big-o.growth-simple-4class"
+          ]
+        }
       },
       "probe": {
         "prompt_md": "At n = 8, an O(n log n) count is 24. About how many at n = 16? Use n · log₂ n.",
@@ -802,7 +1259,7 @@
               8,
               16
             ],
-            "caption": "16 · log₂(16) = 16 · 4."
+            "caption": "16 · log₂(. = 16 ·"
           }
         ],
         "answer_kind": "integer",
@@ -887,7 +1344,7 @@
               }
             ],
             "correct_md": "Correct — **8**.",
-            "explain_md": "log₂(4) = 2.\n4 · 2 = 8.",
+            "explain_md": "log₂(4) =.\n4 · 2 = 8.",
             "explain_frames": [
               {
                 "type": "growth_table",
@@ -944,7 +1401,7 @@
               }
             ],
             "correct_md": "Correct — **160**.",
-            "explain_md": "log₂(32) = 5.\n32 · 5 = 160.",
+            "explain_md": "log₂(32) =.\n32 · 5 = 160.",
             "explain_frames": [
               {
                 "type": "growth_table",
@@ -964,7 +1421,68 @@
             "hint_md": "log₂(32) = 5."
           }
         }
-      ]
+      ],
+      "worked_example": {
+        "md": "**O(n log n)** sits between linear and quadratic. Think: log-cost work for each of n items. Doubling n grows a bit more than 2×.",
+        "frames": [
+          {
+            "type": "growth_curve",
+            "n_values": [
+              1,
+              2,
+              4,
+              8,
+              16
+            ],
+            "series_multi": [
+              {
+                "label": "O(1)",
+                "values": [
+                  1,
+                  1,
+                  1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "label": "O(log n)",
+                "values": [
+                  1,
+                  1,
+                  2,
+                  3,
+                  4
+                ]
+              },
+              {
+                "label": "O(n)",
+                "values": [
+                  1,
+                  2,
+                  4,
+                  8,
+                  16
+                ]
+              },
+              {
+                "label": "O(n²)",
+                "values": [
+                  1,
+                  4,
+                  16,
+                  64,
+                  256
+                ]
+              }
+            ],
+            "y_scale": "log",
+            "caption": "All four families on one chart. Focus on O(n).",
+            "asset_id": "big-o.growth-simple-4class",
+            "highlight_label": "O(n)"
+          }
+        ]
+      }
     },
     {
       "step_id": "on2_quadratic",
@@ -974,6 +1492,62 @@
       "teach": {
         "md": "**O(n²)** grows fast. Nested pair loops do much more work as n grows. When n doubles, work grows about 4×.",
         "frames": [
+          {
+            "type": "growth_curve",
+            "n_values": [
+              1,
+              2,
+              4,
+              8,
+              16
+            ],
+            "series_multi": [
+              {
+                "label": "O(1)",
+                "values": [
+                  1,
+                  1,
+                  1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "label": "O(log n)",
+                "values": [
+                  1,
+                  1,
+                  2,
+                  3,
+                  4
+                ]
+              },
+              {
+                "label": "O(n)",
+                "values": [
+                  1,
+                  2,
+                  4,
+                  8,
+                  16
+                ]
+              },
+              {
+                "label": "O(n²)",
+                "values": [
+                  1,
+                  4,
+                  16,
+                  64,
+                  256
+                ]
+              }
+            ],
+            "y_scale": "log",
+            "caption": "All four families on one chart. Focus on O(n²).",
+            "asset_id": "big-o.growth-simple-4class",
+            "highlight_label": "O(n²)"
+          },
           {
             "type": "growth_table",
             "n_values": [
@@ -993,7 +1567,18 @@
             },
             "caption": "Quadratic: the count explodes as n grows."
           }
-        ]
+        ],
+        "teach_visual_v1": {
+          "default_frame_indices": [
+            0
+          ],
+          "explain_frame_indices": [
+            1
+          ],
+          "provenance_asset_ids": [
+            "big-o.growth-simple-4class"
+          ]
+        }
       },
       "probe": {
         "prompt_md": "A pair-check does 64 steps at n = 8. About how many steps at n = 16?",
@@ -1156,14 +1741,75 @@
                     25
                   ]
                 },
-                "caption": "25."
+                "caption": ""
               }
             ],
             "solution_md": "25.",
             "hint_md": "Multiply n by itself."
           }
         }
-      ]
+      ],
+      "worked_example": {
+        "md": "**O(n²)** grows fast. Nested pair loops do much more work as n grows. When n doubles, work grows about 4×.",
+        "frames": [
+          {
+            "type": "growth_curve",
+            "n_values": [
+              1,
+              2,
+              4,
+              8,
+              16
+            ],
+            "series_multi": [
+              {
+                "label": "O(1)",
+                "values": [
+                  1,
+                  1,
+                  1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "label": "O(log n)",
+                "values": [
+                  1,
+                  1,
+                  2,
+                  3,
+                  4
+                ]
+              },
+              {
+                "label": "O(n)",
+                "values": [
+                  1,
+                  2,
+                  4,
+                  8,
+                  16
+                ]
+              },
+              {
+                "label": "O(n²)",
+                "values": [
+                  1,
+                  4,
+                  16,
+                  64,
+                  256
+                ]
+              }
+            ],
+            "y_scale": "log",
+            "caption": "All four families on one chart. Focus on O(n²).",
+            "asset_id": "big-o.growth-simple-4class",
+            "highlight_label": "O(n²)"
+          }
+        ]
+      }
     },
     {
       "step_id": "compare_families",
@@ -1173,6 +1819,61 @@
       "teach": {
         "md": "At n=16: O(1)≈1, O(log n)≈4, O(n)≈16, O(n log n)≈64, O(n²)≈256. Later patterns move work down this ladder.",
         "frames": [
+          {
+            "type": "growth_curve",
+            "n_values": [
+              1,
+              2,
+              4,
+              8,
+              16
+            ],
+            "series_multi": [
+              {
+                "label": "O(1)",
+                "values": [
+                  1,
+                  1,
+                  1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "label": "O(log n)",
+                "values": [
+                  1,
+                  1,
+                  2,
+                  3,
+                  4
+                ]
+              },
+              {
+                "label": "O(n)",
+                "values": [
+                  1,
+                  2,
+                  4,
+                  8,
+                  16
+                ]
+              },
+              {
+                "label": "O(n²)",
+                "values": [
+                  1,
+                  4,
+                  16,
+                  64,
+                  256
+                ]
+              }
+            ],
+            "y_scale": "log",
+            "caption": "All four families on one chart. Compare heights at the same n.",
+            "asset_id": "big-o.growth-simple-4class"
+          },
           {
             "type": "growth_table",
             "n_values": [
@@ -1212,7 +1913,18 @@
             ],
             "caption": "Side-by-side at n = 16."
           }
-        ]
+        ],
+        "teach_visual_v1": {
+          "default_frame_indices": [
+            0
+          ],
+          "explain_frame_indices": [
+            1
+          ],
+          "provenance_asset_ids": [
+            "big-o.growth-simple-4class"
+          ]
+        }
       },
       "probe": {
         "prompt_md": "Which family grows fastest as n increases: O(1), O(log n), O(n), O(n log n), or O(n²)?",
@@ -1288,7 +2000,7 @@
           }
         ],
         "correct_md": "Correct — **O(n²)** grows fastest among these.",
-        "explain_md": "Compare the n=16 column.\n256 dwarfs 64, 16, 4, and 1.\nQuadratic dominates this set.",
+        "explain_md": "Compare the n=16 column.\n256 dwarfs 64, 16, 4, and.\n1.",
         "explain_frames": [
           {
             "type": "growth_table",
@@ -1500,14 +2212,74 @@
                     ]
                   }
                 ],
-                "caption": "O(1) stays put."
+                "caption": "O(1) stays put"
               }
             ],
             "solution_md": "O(1).",
             "hint_md": "Which count barely moves?"
           }
         }
-      ]
+      ],
+      "worked_example": {
+        "md": "At n=16: O(1)≈1, O(log n)≈4, O(n)≈16, O(n log n)≈64, O(n²)≈256. Later patterns move work down this ladder.",
+        "frames": [
+          {
+            "type": "growth_curve",
+            "n_values": [
+              1,
+              2,
+              4,
+              8,
+              16
+            ],
+            "series_multi": [
+              {
+                "label": "O(1)",
+                "values": [
+                  1,
+                  1,
+                  1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "label": "O(log n)",
+                "values": [
+                  1,
+                  1,
+                  2,
+                  3,
+                  4
+                ]
+              },
+              {
+                "label": "O(n)",
+                "values": [
+                  1,
+                  2,
+                  4,
+                  8,
+                  16
+                ]
+              },
+              {
+                "label": "O(n²)",
+                "values": [
+                  1,
+                  4,
+                  16,
+                  64,
+                  256
+                ]
+              }
+            ],
+            "y_scale": "log",
+            "caption": "All four families on one chart. Compare heights at the same n.",
+            "asset_id": "big-o.growth-simple-4class"
+          }
+        ]
+      }
     }
   ]
 }
