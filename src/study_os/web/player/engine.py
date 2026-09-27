@@ -87,6 +87,27 @@ def _strip_server_only(view: Any) -> Any:
     return view
 
 
+def _public_worked_example(example: Any) -> dict[str, Any] | None:
+    """Return the learner-facing worked-example card.
+
+    The stored card carries ``solution_md``, which is server-only in the same way
+    a probe's ``solution_md`` is. The client renders a public ``md`` field, so map
+    it here instead of letting ``_strip_server_only`` delete the only content the
+    learner would see (issue #126). Frames stay renderable as-is.
+    """
+
+    if not isinstance(example, dict):
+        return None
+    public: dict[str, Any] = {}
+    solution_md = example.get("solution_md")
+    if isinstance(solution_md, str) and solution_md.strip():
+        public["md"] = solution_md
+    frames = example.get("frames")
+    if isinstance(frames, list):
+        public["frames"] = _strip_server_only(frames)
+    return public or None
+
+
 def view(lesson: dict[str, Any], state: dict[str, Any]) -> dict[str, Any]:
     """Return the public player view for the current state.
 
@@ -109,7 +130,7 @@ def view(lesson: dict[str, Any], state: dict[str, Any]) -> dict[str, Any]:
 
     worked_example = None
     if state.get("card_mode") == "worked_example":
-        worked_example = _strip_server_only(state.get("worked_example"))
+        worked_example = _public_worked_example(state.get("worked_example"))
         public_probe = None
 
     return {

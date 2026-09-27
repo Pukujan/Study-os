@@ -9,6 +9,7 @@ import Summary from "./pages/Summary";
 import TryPage from "./pages/Try";
 import Player from "./pages/Player";
 import AdminFeedback from "./pages/AdminFeedback";
+import ErrorBoundary from "./ErrorBoundary";
 
 export default function App() {
   const path = usePath();
@@ -66,6 +67,7 @@ export default function App() {
         )}
       </header>
       <main className="shell">
+        <ErrorBoundary resetKey={path}>
         {route.name === "login" && <Login onSignedIn={(m) => { setMe(m); navigate("/"); }} />}
         {me && route.name === "home" && <HomeLanes me={me} />}
         {me && route.name === "try" && <TryPage onSignedIn={(m) => { setMe(m); navigate("/"); }} />}
@@ -75,6 +77,7 @@ export default function App() {
         {me && route.name === "lesson" && <Lesson sessionId={route.id} />}
         {me && route.name === "summary" && <Summary sessionId={route.id} />}
         {route.name === "notfound" && <p>Page not found. <a href="/">Go home</a></p>}
+        </ErrorBoundary>
       </main>
     </div>
   );
