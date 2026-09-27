@@ -1,7 +1,7 @@
 {
   "schema_version": "study-os.player-lesson.v1",
   "lesson_id": "big-o-growth-families",
-  "revision": "big-o-growth-families.v1.sticks-boxes-185",
+  "revision": "big-o-growth-families.v1.o1-teach-bridge-187",
   "lane": "dsa",
   "title": "Big O: how work grows",
   "summary": "Feel O(1), O(log n), O(n), O(n log n), and O(n^2) with workers, boxes, and tiny concrete counts before arrays and windows.",
@@ -268,7 +268,7 @@
       "skippable": false,
       "confirm": false,
       "teach": {
-        "md": "**O(1)** stays about the same when n grows. Reading `a[0]` is one lookup. The line stays flat.",
+        "md": "Reading `a[0]` is one array lookup. That work stays 1 even when n grows — the growth curve stays flat. That flat work is what we call **O(1)**; Big O names how work grows.",
         "frames": [
           {
             "type": "growth_curve",
