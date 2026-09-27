@@ -1,0 +1,83 @@
+{
+  "schema_version": "study-os.interactive-exercise-templates.v1",
+  "updated": "2026-09-27",
+  "issue": "https://github.com/Pukujan/Study-os/issues/161",
+  "parent_issue": "https://github.com/Pukujan/Study-os/issues/126",
+  "policy": {
+    "invent_first": false,
+    "source": "step-visual-map.v1.json visual_type + provenance assets",
+    "prose": "2-4 plain sentences; never numbered 1.2.3. lists",
+    "note": "Alex example pattern (3-graph Big O pick/draw) is ONE template for multi_class_growth_curve — generate for every mapped step, not a one-off probe."
+  },
+  "templates": [
+    {
+      "visual_type": "multi_class_growth_curve",
+      "exercise_kinds": ["match_curves", "plot_curve"],
+      "default_kind": "match_curves",
+      "research_cites": ["farghally2017", "bigocheatsheet-family", "icap-constructive"],
+      "frame_type": "interactive_visual",
+      "params": {
+        "n_values": [1, 2, 4, 8, 16],
+        "axis_numbers_only": true,
+        "panels": [
+          {"id": "A", "shape": "flat"},
+          {"id": "B", "shape": "linear"},
+          {"id": "C", "shape": "steep"}
+        ],
+        "labels": ["O(1)", "O(n)", "O(n²)"],
+        "plot_targets": ["O(1)", "O(n)", "O(n²)"]
+      },
+      "prompt_templates": {
+        "match_curves": "Three graphs. Axis numbers only. Match each to O(1), O(n), or O(n²).",
+        "plot_curve": "Drag the dots to sketch {target}. Check the shape when it looks right."
+      }
+    },
+    {
+      "visual_type": "fraction_number_line",
+      "exercise_kinds": ["place_number_line"],
+      "default_kind": "place_number_line",
+      "research_cites": ["siegler2011", "hamdan-gunderson", "ies-fractions-toolkit"],
+      "frame_type": "interactive_visual",
+      "params": {
+        "line_max": 1,
+        "ticks": [0, 0.25, 0.5, 0.75, 1]
+      },
+      "prompt_templates": {
+        "place_number_line": "Tap the number line where {fraction} belongs."
+      }
+    },
+    {
+      "visual_type": "box_index_array",
+      "exercise_kinds": ["tap_boxes"],
+      "default_kind": "tap_boxes",
+      "research_cites": ["opendsa-jsav"],
+      "frame_type": "box_index",
+      "params": {
+        "interactive": true
+      },
+      "prompt_templates": {
+        "tap_boxes": "Tap the box that matches the prompt."
+      }
+    },
+    {
+      "visual_type": "asymptotic_bound_sketch",
+      "exercise_kinds": ["match_curves"],
+      "default_kind": "match_curves",
+      "research_cites": ["bigocheatsheet-family"],
+      "frame_type": "interactive_visual",
+      "params": {
+        "n_values": [1, 2, 4, 8, 16],
+        "axis_numbers_only": true,
+        "panels": [
+          {"id": "A", "shape": "flat"},
+          {"id": "B", "shape": "linear"},
+          {"id": "C", "shape": "steep"}
+        ],
+        "labels": ["O(1)", "O(n)", "O(n²)"]
+      },
+      "prompt_templates": {
+        "match_curves": "Match flat, linear, and steep growth to the Big-O names."
+      }
+    }
+  ]
+}

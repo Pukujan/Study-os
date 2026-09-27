@@ -141,6 +141,22 @@ export type GrowthCurveFrame = {
   n_values: number[];
   series?: GrowthTableSeries | null;
   series_multi?: GrowthTableSeries[] | null;
+  /** Log y-axis so O(1)..O(n²) remain readable on one chart (cheatsheet family). */
+  y_scale?: "linear" | "log" | null;
+  /** Emphasize one family label (e.g. "O(n²)"). */
+  highlight_label?: string | null;
+  /** Provenance asset id from content/teach-visuals/provenance.v1.json */
+  asset_id?: string | null;
+};
+
+
+
+export type CuratedDiagramFrame = {
+  type: "curated_diagram";
+  asset_id: string;
+  src: string;
+  alt: string;
+  caption?: string;
 };
 
 export type Frame =
@@ -151,7 +167,8 @@ export type Frame =
   | CodeBlockFrame
   | GrowthTableFrame
   | GrowthWorkersFrame
-  | GrowthCurveFrame;
+  | GrowthCurveFrame
+  | CuratedDiagramFrame;
 
 export type Probe = {
   prompt_md: string;

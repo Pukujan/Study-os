@@ -1,0 +1,1 @@
+{"$schema":"https://json-schema.org/draft/2020-12/schema","$id":"https://study-os.local/schemas/teach-visual-step-map.v1.json","title":"teach-visual-step-map","type":"object","required":["schema_version","entries"],"properties":{"schema_version":{"const":"study-os.teach-visual-step-map.v1"},"entries":{"type":"array"}}}

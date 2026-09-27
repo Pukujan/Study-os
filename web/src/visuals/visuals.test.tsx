@@ -208,6 +208,49 @@ describe("visuals", () => {
     expect(html).toContain("Counts arrive in the next steps.");
   });
 
+  it("multi-class growth_curve uses log scale and four family labels", () => {
+    const html = renderToStaticMarkup(
+      <Frame
+        frame={{
+          type: "growth_curve",
+          n_values: [1, 2, 4, 8, 16],
+          y_scale: "log",
+          highlight_label: "O(n²)",
+          series_multi: [
+            { label: "O(1)", values: [1, 1, 1, 1, 1] },
+            { label: "O(log n)", values: [1, 1, 2, 3, 4] },
+            { label: "O(n)", values: [1, 2, 4, 8, 16] },
+            { label: "O(n²)", values: [1, 4, 16, 64, 256] },
+          ],
+          asset_id: "big-o.comparison-computational-complexity",
+        }}
+      />,
+    );
+    expect(html).toContain('data-teach-render="growth_curve"');
+    expect(html).toContain('data-y-scale="log"');
+    expect(html).toContain("O(1)");
+    expect(html).toContain("O(log n)");
+    expect(html).toContain("O(n)");
+    expect(html).toContain("O(n²)");
+  });
+
+  it("curated_diagram mounts OSS asset inside TeachRenderBox", () => {
+    const html = renderToStaticMarkup(
+      <Frame
+        frame={{
+          type: "curated_diagram",
+          asset_id: "big-o.comparison-computational-complexity",
+          src: "/teach-visuals/big-o/comparison-computational-complexity.svg",
+          alt: "Comparison of common computational complexities",
+          caption: "Curated reference chart",
+        }}
+      />,
+    );
+    expect(html).toContain('data-teach-render="curated_diagram"');
+    expect(html).toContain('data-asset-id="big-o.comparison-computational-complexity"');
+    expect(html).toContain("/teach-visuals/big-o/comparison-computational-complexity.svg");
+  });
+
   it("Frame mounts growth frames inside TeachRenderBox island", () => {
     const html = renderToStaticMarkup(
       <Frame

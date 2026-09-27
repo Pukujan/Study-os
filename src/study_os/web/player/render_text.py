@@ -244,12 +244,15 @@ def _render_growth_workers(frame: dict[str, Any]) -> str:
 
 
 def _render_growth_curve(frame: dict[str, Any]) -> str:
-    """Render a fast-vs-slow growth curve as compact ASCII."""
+    """Render a multi-class growth curve as compact ASCII."""
 
     lines: list[str] = []
     caption = frame.get("caption")
     if caption:
         lines.append(str(caption))
+    scale = frame.get("y_scale") or "linear"
+    highlight = frame.get("highlight_label")
+    lines.append(f"growth chart ({scale})" + (f"; highlight {highlight}" if highlight else ""))
     n_values = [str(v) for v in frame.get("n_values", [])]
     series: list[dict[str, Any]] = []
     if frame.get("series"):
@@ -261,6 +264,24 @@ def _render_growth_curve(frame: dict[str, Any]) -> str:
         label = str(entry.get("label", ""))
         values = [str(v) for v in entry.get("values", [])]
         lines.append(f"{label + ':':<14}" + "  ".join(values))
+    asset_id = frame.get("asset_id")
+    if asset_id:
+        lines.append(f"asset_id: {asset_id}")
+    return "\n".join(lines)
+
+
+def _render_curated_diagram(frame: dict[str, Any]) -> str:
+    """Render a provenance-backed curated diagram as a short grounding note."""
+
+    lines: list[str] = []
+    caption = frame.get("caption")
+    if caption:
+        lines.append(str(caption))
+    lines.append(f"curated diagram asset_id={frame.get('asset_id')}")
+    if frame.get("alt"):
+        lines.append(str(frame["alt"]))
+    if frame.get("src"):
+        lines.append(f"src: {frame['src']}")
     return "\n".join(lines)
 
 
@@ -268,7 +289,7 @@ def frame_to_text(frame: dict[str, Any]) -> str:
     """Return a compact ASCII rendering of a single frame.
 
     Supports the ``box_index``, ``fraction_bar``, ``growth_table``, ``growth_workers``,
-    ``growth_curve``, ``mermaid_flow``/``mermaid``, ``code_block``, and ``code_tree`` representations used by the player.
+    ``growth_curve``, ``curated_diagram``, ``mermaid_flow``/``mermaid``, ``code_block``, and ``code_tree`` representations used by the player.
     Frames that cannot be dispatched are rendered as a JSON-ish string so
     tutors still have something to ground on.
     """
@@ -284,6 +305,8 @@ def frame_to_text(frame: dict[str, Any]) -> str:
         return _render_growth_workers(frame)
     if frame_type == "growth_curve":
         return _render_growth_curve(frame)
+    if frame_type == "curated_diagram":
+        return _render_curated_diagram(frame)
     if frame_type in ("mermaid_flow", "mermaid"):
         return _render_mermaid_flow(frame)
     if frame_type == "code_block":
