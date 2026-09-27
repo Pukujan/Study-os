@@ -16,7 +16,7 @@ jobs:
     timeout-minutes: 45
     steps:
       - name: Deploy SHA to gravebuster
-        shell: pwsh
+        shell: powershell
         env:
           DEPLOY_SHA: ${{ github.sha }}
         run: |
