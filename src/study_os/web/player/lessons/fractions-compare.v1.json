@@ -14,36 +14,121 @@
       "skippable": false,
       "confirm": false,
       "teach": {
-      "md": "Fractions name a share of the **same whole**. To compare them, look at how much of that whole is shaded \u2014 not which denominator looks bigger.",
-      "frames": [
-        {
-          "type": "fraction_bar",
-          "caption": "Same whole, different shaded amounts.",
-          "bars": [
-            {
-              "parts": 4,
-              "shaded": 3,
-              "label": "three fourths",
-              "highlight": [
-                0,
-                1,
-                2
-              ]
-            },
-            {
-              "parts": 3,
-              "shaded": 2,
-              "label": "two thirds",
-              "highlight": [
-                0,
-                1
+        "md": "Fractions name a share of the **same whole**. Compare the shaded lengths — the bars do the work.",
+        "frames": [
+          {
+            "type": "fraction_bar",
+            "caption": "Same whole, different shaded amounts.",
+            "bars": [
+              {
+                "parts": 4,
+                "shaded": 3,
+                "label": "three fourths",
+                "highlight": [
+                  0,
+                  1,
+                  2
+                ]
+              },
+              {
+                "parts": 3,
+                "shaded": 2,
+                "label": "two thirds",
+                "highlight": [
+                  0,
+                  1
+                ]
+              }
+            ],
+            "number_line": null
+          },
+          {
+            "type": "fraction_bar",
+            "caption": "Same-size twelfths: nine shaded beats eight.",
+            "bars": [
+              {
+                "parts": 12,
+                "shaded": 9,
+                "label": "nine twelfths",
+                "highlight": [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6,
+                  7,
+                  8
+                ]
+              },
+              {
+                "parts": 12,
+                "shaded": 8,
+                "label": "eight twelfths",
+                "highlight": [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6,
+                  7
+                ]
+              }
+            ],
+            "number_line": null
+          },
+          {
+            "type": "fraction_bar",
+            "caption": "The larger share sits farther right on the number line.",
+            "bars": [
+              {
+                "parts": 4,
+                "shaded": 3,
+                "label": "three fourths",
+                "highlight": [
+                  0,
+                  1,
+                  2
+                ]
+              },
+              {
+                "parts": 3,
+                "shaded": 2,
+                "label": "two thirds",
+                "highlight": [
+                  0,
+                  1
+                ]
+              }
+            ],
+            "number_line": {
+              "max": 1,
+              "ticks": 12,
+              "marks": [
+                {
+                  "at": "2/3",
+                  "label": "two thirds"
+                },
+                {
+                  "at": "3/4",
+                  "label": "three fourths"
+                }
               ]
             }
+          }
+        ],
+        "teach_visual_v1": {
+          "default_frame_indices": [
+            0
           ],
-          "number_line": null
+          "explain_frame_indices": [
+            1
+          ]
         }
-      ]
-    },
+      },
       "probe": {
         "prompt_md": "Which fraction is bigger, 3/4 or 2/3?",
         "frames": [
@@ -51,34 +136,81 @@
             "type": "fraction_bar",
             "caption": null,
             "bars": [
-              {"parts": 4, "shaded": 3, "label": "3/4", "highlight": []},
-              {"parts": 3, "shaded": 2, "label": "2/3", "highlight": []}
+              {
+                "parts": 4,
+                "shaded": 3,
+                "label": "3/4",
+                "highlight": []
+              },
+              {
+                "parts": 3,
+                "shaded": 2,
+                "label": "2/3",
+                "highlight": []
+              }
             ],
             "number_line": null
           }
         ],
         "answer_kind": "choice",
-        "choices": ["3/4", "2/3"],
-        "accept": ["3/4"],
+        "choices": [
+          "3/4",
+          "2/3"
+        ],
+        "accept": [
+          "3/4"
+        ],
         "partial": [],
         "misconceptions": [
           {
             "id": "bigger-denominator-bigger",
-            "match": ["2/3"],
+            "match": [
+              "2/3"
+            ],
             "note_md": "A bigger denominator means smaller parts. Compare the shaded amounts instead."
           }
         ],
-        "correct_md": "Correct \u2014 **3/4**.",
+        "correct_md": "Correct — **3/4**.",
         "explain_md": "3/4 and 2/3 share the same whole, and 3/4 shades more of it, so 3/4 is bigger.",
         "explain_frames": [
           {
             "type": "fraction_bar",
             "caption": "3/4 is farther right on the number line.",
             "bars": [
-              {"parts": 4, "shaded": 3, "label": "3/4", "highlight": [0, 1, 2]},
-              {"parts": 3, "shaded": 2, "label": "2/3", "highlight": [0, 1]}
+              {
+                "parts": 4,
+                "shaded": 3,
+                "label": "3/4",
+                "highlight": [
+                  0,
+                  1,
+                  2
+                ]
+              },
+              {
+                "parts": 3,
+                "shaded": 2,
+                "label": "2/3",
+                "highlight": [
+                  0,
+                  1
+                ]
+              }
             ],
-            "number_line": {"max": 1, "ticks": 12, "marks": [{"at": "2/3", "label": "2/3"}, {"at": "3/4", "label": "3/4"}]}
+            "number_line": {
+              "max": 1,
+              "ticks": 12,
+              "marks": [
+                {
+                  "at": "2/3",
+                  "label": "2/3"
+                },
+                {
+                  "at": "3/4",
+                  "label": "3/4"
+                }
+              ]
+            }
           }
         ],
         "solution_md": "Use a common denominator of 12: 3/4 = 9/12 and 2/3 = 8/12, so 3/4 is bigger.",
@@ -94,34 +226,79 @@
                 "type": "fraction_bar",
                 "caption": null,
                 "bars": [
-                  {"parts": 3, "shaded": 2, "label": "2/3", "highlight": []},
-                  {"parts": 2, "shaded": 1, "label": "1/2", "highlight": []}
+                  {
+                    "parts": 3,
+                    "shaded": 2,
+                    "label": "2/3",
+                    "highlight": []
+                  },
+                  {
+                    "parts": 2,
+                    "shaded": 1,
+                    "label": "1/2",
+                    "highlight": []
+                  }
                 ],
                 "number_line": null
               }
             ],
             "answer_kind": "choice",
-            "choices": ["2/3", "1/2"],
-            "accept": ["2/3"],
+            "choices": [
+              "2/3",
+              "1/2"
+            ],
+            "accept": [
+              "2/3"
+            ],
             "partial": [],
             "misconceptions": [
               {
                 "id": "bigger-denominator-bigger",
-                "match": ["1/2"],
+                "match": [
+                  "1/2"
+                ],
                 "note_md": "A bigger denominator means smaller parts. Compare the shaded amounts instead."
               }
             ],
-            "correct_md": "Correct \u2014 **2/3**.",
+            "correct_md": "Correct — **2/3**.",
             "explain_md": "2/3 and 1/2 share the same whole, and 2/3 shades more of it, so 2/3 is bigger.",
             "explain_frames": [
               {
                 "type": "fraction_bar",
                 "caption": "2/3 is farther right on the number line.",
                 "bars": [
-                  {"parts": 3, "shaded": 2, "label": "2/3", "highlight": [0, 1]},
-                  {"parts": 2, "shaded": 1, "label": "1/2", "highlight": [0]}
+                  {
+                    "parts": 3,
+                    "shaded": 2,
+                    "label": "2/3",
+                    "highlight": [
+                      0,
+                      1
+                    ]
+                  },
+                  {
+                    "parts": 2,
+                    "shaded": 1,
+                    "label": "1/2",
+                    "highlight": [
+                      0
+                    ]
+                  }
                 ],
-                "number_line": {"max": 1, "ticks": 12, "marks": [{"at": "1/2", "label": "1/2"}, {"at": "2/3", "label": "2/3"}]}
+                "number_line": {
+                  "max": 1,
+                  "ticks": 12,
+                  "marks": [
+                    {
+                      "at": "1/2",
+                      "label": "1/2"
+                    },
+                    {
+                      "at": "2/3",
+                      "label": "2/3"
+                    }
+                  ]
+                }
               }
             ],
             "solution_md": "Use a common denominator of 6: 2/3 = 4/6 and 1/2 = 3/6, so 2/3 is bigger.",
@@ -137,41 +314,175 @@
                 "type": "fraction_bar",
                 "caption": null,
                 "bars": [
-                  {"parts": 5, "shaded": 3, "label": "3/5", "highlight": []},
-                  {"parts": 4, "shaded": 2, "label": "2/4", "highlight": []}
+                  {
+                    "parts": 5,
+                    "shaded": 3,
+                    "label": "3/5",
+                    "highlight": []
+                  },
+                  {
+                    "parts": 4,
+                    "shaded": 2,
+                    "label": "2/4",
+                    "highlight": []
+                  }
                 ],
                 "number_line": null
               }
             ],
             "answer_kind": "choice",
-            "choices": ["3/5", "2/4"],
-            "accept": ["3/5"],
+            "choices": [
+              "3/5",
+              "2/4"
+            ],
+            "accept": [
+              "3/5"
+            ],
             "partial": [],
             "misconceptions": [
               {
                 "id": "bigger-denominator-bigger",
-                "match": ["2/4"],
+                "match": [
+                  "2/4"
+                ],
                 "note_md": "A bigger denominator means smaller parts. Compare the shaded amounts instead."
               }
             ],
-            "correct_md": "Correct \u2014 **3/5**.",
+            "correct_md": "Correct — **3/5**.",
             "explain_md": "3/5 and 2/4 share the same whole, and 3/5 shades more of it, so 3/5 is bigger.",
             "explain_frames": [
               {
                 "type": "fraction_bar",
                 "caption": "3/5 is farther right on the number line.",
                 "bars": [
-                  {"parts": 5, "shaded": 3, "label": "3/5", "highlight": [0, 1, 2]},
-                  {"parts": 4, "shaded": 2, "label": "2/4", "highlight": [0, 1]}
+                  {
+                    "parts": 5,
+                    "shaded": 3,
+                    "label": "3/5",
+                    "highlight": [
+                      0,
+                      1,
+                      2
+                    ]
+                  },
+                  {
+                    "parts": 4,
+                    "shaded": 2,
+                    "label": "2/4",
+                    "highlight": [
+                      0,
+                      1
+                    ]
+                  }
                 ],
-                "number_line": {"max": 1, "ticks": 20, "marks": [{"at": "2/4", "label": "2/4"}, {"at": "3/5", "label": "3/5"}]}
+                "number_line": {
+                  "max": 1,
+                  "ticks": 20,
+                  "marks": [
+                    {
+                      "at": "2/4",
+                      "label": "2/4"
+                    },
+                    {
+                      "at": "3/5",
+                      "label": "3/5"
+                    }
+                  ]
+                }
               }
             ],
             "solution_md": "Use decimals: 3/5 = 0.6 and 2/4 = 0.5, so 3/5 is bigger.",
             "hint_md": "Line up the two bars and compare the shaded lengths."
           }
         }
-      ]
+      ],
+      "worked_example": {
+        "md": "Rewrite both with twelfths: 3/4 = 9/12 and 2/3 = 8/12. Nine twelfths is more than eight, so 3/4 is bigger.",
+        "frames": [
+          {
+            "type": "fraction_bar",
+            "caption": "Common denominator 12.",
+            "bars": [
+              {
+                "parts": 12,
+                "shaded": 9,
+                "label": "9/12",
+                "highlight": [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6,
+                  7,
+                  8
+                ]
+              },
+              {
+                "parts": 12,
+                "shaded": 8,
+                "label": "8/12",
+                "highlight": [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6,
+                  7
+                ]
+              }
+            ],
+            "number_line": null
+          }
+        ]
+      },
+      "worked_example_alt": {
+        "md": "On the number line, 3/4 is farther right than 2/3. Farther right means bigger.",
+        "frames": [
+          {
+            "type": "fraction_bar",
+            "caption": "Number-line check.",
+            "bars": [
+              {
+                "parts": 4,
+                "shaded": 3,
+                "label": "3/4",
+                "highlight": [
+                  0,
+                  1,
+                  2
+                ]
+              },
+              {
+                "parts": 3,
+                "shaded": 2,
+                "label": "2/3",
+                "highlight": [
+                  0,
+                  1
+                ]
+              }
+            ],
+            "number_line": {
+              "max": 1,
+              "ticks": 12,
+              "marks": [
+                {
+                  "at": "2/3",
+                  "label": "2/3"
+                },
+                {
+                  "at": "3/4",
+                  "label": "3/4"
+                }
+              ]
+            }
+          }
+        ]
+      }
     },
     {
       "step_id": "denominator",
@@ -179,40 +490,79 @@
       "skippable": false,
       "confirm": false,
       "teach": {
-      "md": "The **denominator** is the bottom number. It counts how many **equal** parts the whole is cut into \u2014 every slice the same size.",
-      "frames": [
-        {
-          "type": "fraction_bar",
-          "caption": "Count every equal slice of the whole.",
-          "bars": [
-            {
-              "parts": 5,
-              "shaded": 0,
-              "label": "equal parts",
-              "highlight": []
-            }
+        "md": "The **denominator** is the bottom number. It counts how many **equal** parts the whole is cut into — every slice the same size.",
+        "frames": [
+          {
+            "type": "fraction_bar",
+            "caption": "Count every equal slice of the whole.",
+            "bars": [
+              {
+                "parts": 5,
+                "shaded": 0,
+                "label": "equal parts",
+                "highlight": []
+              }
+            ],
+            "number_line": null
+          },
+          {
+            "type": "fraction_bar",
+            "caption": "Six equal parts make the whole.",
+            "bars": [
+              {
+                "parts": 6,
+                "shaded": 0,
+                "label": "equal parts",
+                "highlight": [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5
+                ]
+              }
+            ],
+            "number_line": null
+          }
+        ],
+        "teach_visual_v1": {
+          "default_frame_indices": [
+            0
           ],
-          "number_line": null
+          "explain_frame_indices": [
+            1
+          ]
         }
-      ]
-    },
+      },
       "probe": {
         "prompt_md": "How many equal parts is this bar split into?",
         "frames": [
           {
             "type": "fraction_bar",
             "caption": null,
-            "bars": [{"parts": 4, "shaded": 0, "label": null, "highlight": []}],
+            "bars": [
+              {
+                "parts": 4,
+                "shaded": 0,
+                "label": null,
+                "highlight": []
+              }
+            ],
             "number_line": null
           }
         ],
         "answer_kind": "integer",
-        "accept": ["4"],
+        "accept": [
+          "4"
+        ],
         "partial": [],
         "misconceptions": [
           {
             "id": "denominator-counts-shaded",
-            "match": ["0"],
+            "match": [
+              "0"
+            ],
             "note_md": "Count all the parts, not just the shaded ones."
           }
         ],
@@ -222,7 +572,19 @@
           {
             "type": "fraction_bar",
             "caption": "4 equal parts",
-            "bars": [{"parts": 4, "shaded": 0, "label": "denominator = 4", "highlight": [0, 1, 2, 3]}],
+            "bars": [
+              {
+                "parts": 4,
+                "shaded": 0,
+                "label": "denominator = 4",
+                "highlight": [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              }
+            ],
             "number_line": null
           }
         ],
@@ -238,17 +600,28 @@
               {
                 "type": "fraction_bar",
                 "caption": null,
-                "bars": [{"parts": 3, "shaded": 0, "label": null, "highlight": []}],
+                "bars": [
+                  {
+                    "parts": 3,
+                    "shaded": 0,
+                    "label": null,
+                    "highlight": []
+                  }
+                ],
                 "number_line": null
               }
             ],
             "answer_kind": "integer",
-            "accept": ["3"],
+            "accept": [
+              "3"
+            ],
             "partial": [],
             "misconceptions": [
               {
                 "id": "denominator-counts-shaded",
-                "match": ["0"],
+                "match": [
+                  "0"
+                ],
                 "note_md": "Count all the parts, not just the shaded ones."
               }
             ],
@@ -258,7 +631,18 @@
               {
                 "type": "fraction_bar",
                 "caption": "3 equal parts",
-                "bars": [{"parts": 3, "shaded": 0, "label": "denominator = 3", "highlight": [0, 1, 2]}],
+                "bars": [
+                  {
+                    "parts": 3,
+                    "shaded": 0,
+                    "label": "denominator = 3",
+                    "highlight": [
+                      0,
+                      1,
+                      2
+                    ]
+                  }
+                ],
                 "number_line": null
               }
             ],
@@ -274,17 +658,28 @@
               {
                 "type": "fraction_bar",
                 "caption": null,
-                "bars": [{"parts": 6, "shaded": 0, "label": null, "highlight": []}],
+                "bars": [
+                  {
+                    "parts": 6,
+                    "shaded": 0,
+                    "label": null,
+                    "highlight": []
+                  }
+                ],
                 "number_line": null
               }
             ],
             "answer_kind": "integer",
-            "accept": ["6"],
+            "accept": [
+              "6"
+            ],
             "partial": [],
             "misconceptions": [
               {
                 "id": "denominator-counts-shaded",
-                "match": ["0"],
+                "match": [
+                  "0"
+                ],
                 "note_md": "Count all the parts, not just the shaded ones."
               }
             ],
@@ -294,7 +689,21 @@
               {
                 "type": "fraction_bar",
                 "caption": "6 equal parts",
-                "bars": [{"parts": 6, "shaded": 0, "label": "denominator = 6", "highlight": [0, 1, 2, 3, 4, 5]}],
+                "bars": [
+                  {
+                    "parts": 6,
+                    "shaded": 0,
+                    "label": "denominator = 6",
+                    "highlight": [
+                      0,
+                      1,
+                      2,
+                      3,
+                      4,
+                      5
+                    ]
+                  }
+                ],
                 "number_line": null
               }
             ],
@@ -302,7 +711,48 @@
             "hint_md": "Count every slice, shaded or not."
           }
         }
-      ]
+      ],
+      "worked_example": {
+        "md": "Count every equal part: 1, 2, 3, 4. Denominator = 4.",
+        "frames": [
+          {
+            "type": "fraction_bar",
+            "caption": "4 equal parts",
+            "bars": [
+              {
+                "parts": 4,
+                "shaded": 0,
+                "label": "denominator = 4",
+                "highlight": [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              }
+            ],
+            "number_line": null
+          }
+        ]
+      },
+      "worked_example_alt": {
+        "md": "The bar has 4 equal parts, so the denominator is 4.",
+        "frames": [
+          {
+            "type": "fraction_bar",
+            "caption": null,
+            "bars": [
+              {
+                "parts": 4,
+                "shaded": 0,
+                "label": null,
+                "highlight": []
+              }
+            ],
+            "number_line": null
+          }
+        ]
+      }
     },
     {
       "step_id": "numerator",
@@ -310,48 +760,85 @@
       "skippable": false,
       "confirm": false,
       "teach": {
-      "md": "The **numerator** is the top number. It counts how many of those equal parts are shaded.",
-      "frames": [
-        {
-          "type": "fraction_bar",
-          "caption": "Shaded slices are the numerator.",
-          "bars": [
-            {
-              "parts": 5,
-              "shaded": 2,
-              "label": "two shaded",
-              "highlight": [
-                0,
-                1
-              ]
-            }
+        "md": "The **numerator** is the top number. It counts how many of those equal parts are shaded.",
+        "frames": [
+          {
+            "type": "fraction_bar",
+            "caption": "Shaded slices are the numerator.",
+            "bars": [
+              {
+                "parts": 5,
+                "shaded": 2,
+                "label": "two shaded",
+                "highlight": [
+                  0,
+                  1
+                ]
+              }
+            ],
+            "number_line": null
+          },
+          {
+            "type": "fraction_bar",
+            "caption": "Two shaded out of five equal parts.",
+            "bars": [
+              {
+                "parts": 5,
+                "shaded": 2,
+                "label": "two of five",
+                "highlight": [
+                  0,
+                  1
+                ]
+              }
+            ],
+            "number_line": null
+          }
+        ],
+        "teach_visual_v1": {
+          "default_frame_indices": [
+            0
           ],
-          "number_line": null
+          "explain_frame_indices": [
+            1
+          ]
         }
-      ]
-    },
+      },
       "probe": {
         "prompt_md": "What fraction of the bar is shaded?",
         "frames": [
           {
             "type": "fraction_bar",
             "caption": null,
-            "bars": [{"parts": 4, "shaded": 3, "label": null, "highlight": []}],
+            "bars": [
+              {
+                "parts": 4,
+                "shaded": 3,
+                "label": null,
+                "highlight": []
+              }
+            ],
             "number_line": null
           }
         ],
         "answer_kind": "fraction",
-        "accept": ["3/4"],
+        "accept": [
+          "3/4"
+        ],
         "partial": [
           {
-            "match": ["3"],
+            "match": [
+              "3"
+            ],
             "note_md": "Yes, 3 parts are shaded. Now out of how many?"
           }
         ],
         "misconceptions": [
           {
             "id": "numerator-denominator-swapped",
-            "match": ["4/3"],
+            "match": [
+              "4/3"
+            ],
             "note_md": "The top number counts shaded parts; the bottom counts total parts."
           }
         ],
@@ -361,7 +848,18 @@
           {
             "type": "fraction_bar",
             "caption": "3 shaded out of 4 total",
-            "bars": [{"parts": 4, "shaded": 3, "label": "3/4", "highlight": [0, 1, 2]}],
+            "bars": [
+              {
+                "parts": 4,
+                "shaded": 3,
+                "label": "3/4",
+                "highlight": [
+                  0,
+                  1,
+                  2
+                ]
+              }
+            ],
             "number_line": null
           }
         ],
@@ -377,22 +875,35 @@
               {
                 "type": "fraction_bar",
                 "caption": null,
-                "bars": [{"parts": 3, "shaded": 2, "label": null, "highlight": []}],
+                "bars": [
+                  {
+                    "parts": 3,
+                    "shaded": 2,
+                    "label": null,
+                    "highlight": []
+                  }
+                ],
                 "number_line": null
               }
             ],
             "answer_kind": "fraction",
-            "accept": ["2/3"],
+            "accept": [
+              "2/3"
+            ],
             "partial": [
               {
-                "match": ["2"],
+                "match": [
+                  "2"
+                ],
                 "note_md": "Yes, 2 parts are shaded. Now out of how many?"
               }
             ],
             "misconceptions": [
               {
                 "id": "numerator-denominator-swapped",
-                "match": ["3/2"],
+                "match": [
+                  "3/2"
+                ],
                 "note_md": "The top number counts shaded parts; the bottom counts total parts."
               }
             ],
@@ -402,7 +913,17 @@
               {
                 "type": "fraction_bar",
                 "caption": "2 shaded out of 3 total",
-                "bars": [{"parts": 3, "shaded": 2, "label": "2/3", "highlight": [0, 1]}],
+                "bars": [
+                  {
+                    "parts": 3,
+                    "shaded": 2,
+                    "label": "2/3",
+                    "highlight": [
+                      0,
+                      1
+                    ]
+                  }
+                ],
                 "number_line": null
               }
             ],
@@ -418,22 +939,35 @@
               {
                 "type": "fraction_bar",
                 "caption": null,
-                "bars": [{"parts": 6, "shaded": 5, "label": null, "highlight": []}],
+                "bars": [
+                  {
+                    "parts": 6,
+                    "shaded": 5,
+                    "label": null,
+                    "highlight": []
+                  }
+                ],
                 "number_line": null
               }
             ],
             "answer_kind": "fraction",
-            "accept": ["5/6"],
+            "accept": [
+              "5/6"
+            ],
             "partial": [
               {
-                "match": ["5"],
+                "match": [
+                  "5"
+                ],
                 "note_md": "Yes, 5 parts are shaded. Now out of how many?"
               }
             ],
             "misconceptions": [
               {
                 "id": "numerator-denominator-swapped",
-                "match": ["6/5"],
+                "match": [
+                  "6/5"
+                ],
                 "note_md": "The top number counts shaded parts; the bottom counts total parts."
               }
             ],
@@ -443,7 +977,20 @@
               {
                 "type": "fraction_bar",
                 "caption": "5 shaded out of 6 total",
-                "bars": [{"parts": 6, "shaded": 5, "label": "5/6", "highlight": [0, 1, 2, 3, 4]}],
+                "bars": [
+                  {
+                    "parts": 6,
+                    "shaded": 5,
+                    "label": "5/6",
+                    "highlight": [
+                      0,
+                      1,
+                      2,
+                      3,
+                      4
+                    ]
+                  }
+                ],
                 "number_line": null
               }
             ],
@@ -451,7 +998,47 @@
             "hint_md": "Count shaded parts on top, total parts on bottom."
           }
         }
-      ]
+      ],
+      "worked_example": {
+        "md": "shaded = 3, total = 4 => fraction = 3/4.",
+        "frames": [
+          {
+            "type": "fraction_bar",
+            "caption": "3 shaded out of 4 total",
+            "bars": [
+              {
+                "parts": 4,
+                "shaded": 3,
+                "label": "3/4",
+                "highlight": [
+                  0,
+                  1,
+                  2
+                ]
+              }
+            ],
+            "number_line": null
+          }
+        ]
+      },
+      "worked_example_alt": {
+        "md": "3 parts are shaded out of 4 equal parts, so the fraction is 3/4.",
+        "frames": [
+          {
+            "type": "fraction_bar",
+            "caption": null,
+            "bars": [
+              {
+                "parts": 4,
+                "shaded": 3,
+                "label": null,
+                "highlight": []
+              }
+            ],
+            "number_line": null
+          }
+        ]
+      }
     },
     {
       "step_id": "same-denominator",
@@ -459,29 +1046,63 @@
       "skippable": false,
       "confirm": false,
       "teach": {
-      "md": "When two fractions share the **same denominator**, the parts are the same size. Compare how many parts are shaded.",
-      "frames": [
-        {
-          "type": "fraction_bar",
-          "caption": "Same-size parts \u2014 compare the shaded counts.",
-          "bars": [
-            {
-              "parts": 5,
-              "shaded": 2,
-              "label": "2 shaded",
-              "highlight": []
-            },
-            {
-              "parts": 5,
-              "shaded": 4,
-              "label": "4 shaded",
-              "highlight": []
-            }
+        "md": "When two fractions share the **same denominator**, the parts are the same size. Compare how many parts are shaded.",
+        "frames": [
+          {
+            "type": "fraction_bar",
+            "caption": "Same-size parts — compare the shaded counts.",
+            "bars": [
+              {
+                "parts": 5,
+                "shaded": 2,
+                "label": "2 shaded",
+                "highlight": []
+              },
+              {
+                "parts": 5,
+                "shaded": 4,
+                "label": "4 shaded",
+                "highlight": []
+              }
+            ],
+            "number_line": null
+          },
+          {
+            "type": "fraction_bar",
+            "caption": "3/4 has more shaded.",
+            "bars": [
+              {
+                "parts": 4,
+                "shaded": 2,
+                "label": "2/4",
+                "highlight": [
+                  0,
+                  1
+                ]
+              },
+              {
+                "parts": 4,
+                "shaded": 3,
+                "label": "3/4",
+                "highlight": [
+                  0,
+                  1,
+                  2
+                ]
+              }
+            ],
+            "number_line": null
+          }
+        ],
+        "teach_visual_v1": {
+          "default_frame_indices": [
+            0
           ],
-          "number_line": null
+          "explain_frame_indices": [
+            1
+          ]
         }
-      ]
-    },
+      },
       "probe": {
         "prompt_md": "Which is bigger, 2/4 or 3/4?",
         "frames": [
@@ -489,24 +1110,40 @@
             "type": "fraction_bar",
             "caption": null,
             "bars": [
-              {"parts": 4, "shaded": 2, "label": "2/4", "highlight": []},
-              {"parts": 4, "shaded": 3, "label": "3/4", "highlight": []}
+              {
+                "parts": 4,
+                "shaded": 2,
+                "label": "2/4",
+                "highlight": []
+              },
+              {
+                "parts": 4,
+                "shaded": 3,
+                "label": "3/4",
+                "highlight": []
+              }
             ],
             "number_line": null
           }
         ],
         "answer_kind": "fraction",
-        "accept": ["3/4"],
+        "accept": [
+          "3/4"
+        ],
         "partial": [
           {
-            "match": ["3"],
+            "match": [
+              "3"
+            ],
             "note_md": "Yes, the numerator 3 is bigger. What is the full fraction?"
           }
         ],
         "misconceptions": [
           {
             "id": "smaller-numerator-bigger",
-            "match": ["2/4"],
+            "match": [
+              "2/4"
+            ],
             "note_md": "Both have 4 parts, but 3 shaded is more than 2 shaded."
           }
         ],
@@ -517,8 +1154,25 @@
             "type": "fraction_bar",
             "caption": "3/4 has more shaded.",
             "bars": [
-              {"parts": 4, "shaded": 2, "label": "2/4", "highlight": [0, 1]},
-              {"parts": 4, "shaded": 3, "label": "3/4", "highlight": [0, 1, 2]}
+              {
+                "parts": 4,
+                "shaded": 2,
+                "label": "2/4",
+                "highlight": [
+                  0,
+                  1
+                ]
+              },
+              {
+                "parts": 4,
+                "shaded": 3,
+                "label": "3/4",
+                "highlight": [
+                  0,
+                  1,
+                  2
+                ]
+              }
             ],
             "number_line": null
           }
@@ -536,24 +1190,40 @@
                 "type": "fraction_bar",
                 "caption": null,
                 "bars": [
-                  {"parts": 3, "shaded": 1, "label": "1/3", "highlight": []},
-                  {"parts": 3, "shaded": 2, "label": "2/3", "highlight": []}
+                  {
+                    "parts": 3,
+                    "shaded": 1,
+                    "label": "1/3",
+                    "highlight": []
+                  },
+                  {
+                    "parts": 3,
+                    "shaded": 2,
+                    "label": "2/3",
+                    "highlight": []
+                  }
                 ],
                 "number_line": null
               }
             ],
             "answer_kind": "fraction",
-            "accept": ["2/3"],
+            "accept": [
+              "2/3"
+            ],
             "partial": [
               {
-                "match": ["2"],
+                "match": [
+                  "2"
+                ],
                 "note_md": "Yes, the numerator 2 is bigger. What is the full fraction?"
               }
             ],
             "misconceptions": [
               {
                 "id": "smaller-numerator-bigger",
-                "match": ["1/3"],
+                "match": [
+                  "1/3"
+                ],
                 "note_md": "Both bars have 3 parts, but 2 shaded is more than 1 shaded."
               }
             ],
@@ -564,8 +1234,23 @@
                 "type": "fraction_bar",
                 "caption": "2/3 has more shaded.",
                 "bars": [
-                  {"parts": 3, "shaded": 1, "label": "1/3", "highlight": [0]},
-                  {"parts": 3, "shaded": 2, "label": "2/3", "highlight": [0, 1]}
+                  {
+                    "parts": 3,
+                    "shaded": 1,
+                    "label": "1/3",
+                    "highlight": [
+                      0
+                    ]
+                  },
+                  {
+                    "parts": 3,
+                    "shaded": 2,
+                    "label": "2/3",
+                    "highlight": [
+                      0,
+                      1
+                    ]
+                  }
                 ],
                 "number_line": null
               }
@@ -583,24 +1268,40 @@
                 "type": "fraction_bar",
                 "caption": null,
                 "bars": [
-                  {"parts": 6, "shaded": 2, "label": "2/6", "highlight": []},
-                  {"parts": 6, "shaded": 5, "label": "5/6", "highlight": []}
+                  {
+                    "parts": 6,
+                    "shaded": 2,
+                    "label": "2/6",
+                    "highlight": []
+                  },
+                  {
+                    "parts": 6,
+                    "shaded": 5,
+                    "label": "5/6",
+                    "highlight": []
+                  }
                 ],
                 "number_line": null
               }
             ],
             "answer_kind": "fraction",
-            "accept": ["5/6"],
+            "accept": [
+              "5/6"
+            ],
             "partial": [
               {
-                "match": ["5"],
+                "match": [
+                  "5"
+                ],
                 "note_md": "Yes, the numerator 5 is bigger. What is the full fraction?"
               }
             ],
             "misconceptions": [
               {
                 "id": "smaller-numerator-bigger",
-                "match": ["2/6"],
+                "match": [
+                  "2/6"
+                ],
                 "note_md": "Both bars have 6 parts, but 5 shaded is more than 2 shaded."
               }
             ],
@@ -611,8 +1312,27 @@
                 "type": "fraction_bar",
                 "caption": "5/6 has more shaded.",
                 "bars": [
-                  {"parts": 6, "shaded": 2, "label": "2/6", "highlight": [0, 1]},
-                  {"parts": 6, "shaded": 5, "label": "5/6", "highlight": [0, 1, 2, 3, 4]}
+                  {
+                    "parts": 6,
+                    "shaded": 2,
+                    "label": "2/6",
+                    "highlight": [
+                      0,
+                      1
+                    ]
+                  },
+                  {
+                    "parts": 6,
+                    "shaded": 5,
+                    "label": "5/6",
+                    "highlight": [
+                      0,
+                      1,
+                      2,
+                      3,
+                      4
+                    ]
+                  }
                 ],
                 "number_line": null
               }
@@ -621,7 +1341,62 @@
             "hint_md": "When the bottom numbers are the same, compare the top numbers."
           }
         }
-      ]
+      ],
+      "worked_example": {
+        "md": "Same denominator 4; compare numerators: 3 > 2, so 3/4 > 2/4.",
+        "frames": [
+          {
+            "type": "fraction_bar",
+            "caption": "3/4 has more shaded.",
+            "bars": [
+              {
+                "parts": 4,
+                "shaded": 2,
+                "label": "2/4",
+                "highlight": [
+                  0,
+                  1
+                ]
+              },
+              {
+                "parts": 4,
+                "shaded": 3,
+                "label": "3/4",
+                "highlight": [
+                  0,
+                  1,
+                  2
+                ]
+              }
+            ],
+            "number_line": null
+          }
+        ]
+      },
+      "worked_example_alt": {
+        "md": "Both bars have 4 parts. 3 shaded parts is more than 2, so 3/4 is bigger.",
+        "frames": [
+          {
+            "type": "fraction_bar",
+            "caption": null,
+            "bars": [
+              {
+                "parts": 4,
+                "shaded": 2,
+                "label": "2/4",
+                "highlight": []
+              },
+              {
+                "parts": 4,
+                "shaded": 3,
+                "label": "3/4",
+                "highlight": []
+              }
+            ],
+            "number_line": null
+          }
+        ]
+      }
     },
     {
       "step_id": "same-whole-different-parts",
@@ -635,12 +1410,53 @@
             "type": "fraction_bar",
             "caption": "Same whole, different part sizes.",
             "bars": [
-              {"parts": 2, "shaded": 1, "label": "1/2", "highlight": []},
-              {"parts": 4, "shaded": 1, "label": "1/4", "highlight": []}
+              {
+                "parts": 2,
+                "shaded": 1,
+                "label": "1/2",
+                "highlight": []
+              },
+              {
+                "parts": 4,
+                "shaded": 1,
+                "label": "1/4",
+                "highlight": []
+              }
+            ],
+            "number_line": null
+          },
+          {
+            "type": "fraction_bar",
+            "caption": "1/2 covers more of the same whole.",
+            "bars": [
+              {
+                "parts": 2,
+                "shaded": 1,
+                "label": "1/2",
+                "highlight": [
+                  0
+                ]
+              },
+              {
+                "parts": 4,
+                "shaded": 1,
+                "label": "1/4",
+                "highlight": [
+                  0
+                ]
+              }
             ],
             "number_line": null
           }
-        ]
+        ],
+        "teach_visual_v1": {
+          "default_frame_indices": [
+            0
+          ],
+          "explain_frame_indices": [
+            1
+          ]
+        }
       },
       "probe": {
         "prompt_md": "Which is bigger, 1/2 or 1/4?",
@@ -649,24 +1465,40 @@
             "type": "fraction_bar",
             "caption": null,
             "bars": [
-              {"parts": 2, "shaded": 1, "label": "1/2", "highlight": []},
-              {"parts": 4, "shaded": 1, "label": "1/4", "highlight": []}
+              {
+                "parts": 2,
+                "shaded": 1,
+                "label": "1/2",
+                "highlight": []
+              },
+              {
+                "parts": 4,
+                "shaded": 1,
+                "label": "1/4",
+                "highlight": []
+              }
             ],
             "number_line": null
           }
         ],
         "answer_kind": "fraction",
-        "accept": ["1/2"],
+        "accept": [
+          "1/2"
+        ],
         "partial": [
           {
-            "match": ["2"],
+            "match": [
+              "2"
+            ],
             "note_md": "2 is the denominator of 1/2. Which fraction is bigger?"
           }
         ],
         "misconceptions": [
           {
             "id": "bigger-denominator-bigger",
-            "match": ["1/4"],
+            "match": [
+              "1/4"
+            ],
             "note_md": "A bigger denominator means smaller pieces, not a bigger fraction."
           }
         ],
@@ -677,8 +1509,22 @@
             "type": "fraction_bar",
             "caption": "1/2 covers more of the same whole.",
             "bars": [
-              {"parts": 2, "shaded": 1, "label": "1/2", "highlight": [0]},
-              {"parts": 4, "shaded": 1, "label": "1/4", "highlight": [0]}
+              {
+                "parts": 2,
+                "shaded": 1,
+                "label": "1/2",
+                "highlight": [
+                  0
+                ]
+              },
+              {
+                "parts": 4,
+                "shaded": 1,
+                "label": "1/4",
+                "highlight": [
+                  0
+                ]
+              }
             ],
             "number_line": null
           }
@@ -696,24 +1542,40 @@
                 "type": "fraction_bar",
                 "caption": null,
                 "bars": [
-                  {"parts": 3, "shaded": 1, "label": "1/3", "highlight": []},
-                  {"parts": 6, "shaded": 1, "label": "1/6", "highlight": []}
+                  {
+                    "parts": 3,
+                    "shaded": 1,
+                    "label": "1/3",
+                    "highlight": []
+                  },
+                  {
+                    "parts": 6,
+                    "shaded": 1,
+                    "label": "1/6",
+                    "highlight": []
+                  }
                 ],
                 "number_line": null
               }
             ],
             "answer_kind": "fraction",
-            "accept": ["1/3"],
+            "accept": [
+              "1/3"
+            ],
             "partial": [
               {
-                "match": ["3"],
+                "match": [
+                  "3"
+                ],
                 "note_md": "3 is the denominator of 1/3. Which fraction is bigger?"
               }
             ],
             "misconceptions": [
               {
                 "id": "bigger-denominator-bigger",
-                "match": ["1/6"],
+                "match": [
+                  "1/6"
+                ],
                 "note_md": "A bigger denominator means smaller pieces, not a bigger fraction."
               }
             ],
@@ -724,8 +1586,22 @@
                 "type": "fraction_bar",
                 "caption": "1/3 covers more of the same whole.",
                 "bars": [
-                  {"parts": 3, "shaded": 1, "label": "1/3", "highlight": [0]},
-                  {"parts": 6, "shaded": 1, "label": "1/6", "highlight": [0]}
+                  {
+                    "parts": 3,
+                    "shaded": 1,
+                    "label": "1/3",
+                    "highlight": [
+                      0
+                    ]
+                  },
+                  {
+                    "parts": 6,
+                    "shaded": 1,
+                    "label": "1/6",
+                    "highlight": [
+                      0
+                    ]
+                  }
                 ],
                 "number_line": null
               }
@@ -743,24 +1619,40 @@
                 "type": "fraction_bar",
                 "caption": null,
                 "bars": [
-                  {"parts": 5, "shaded": 1, "label": "1/5", "highlight": []},
-                  {"parts": 8, "shaded": 1, "label": "1/8", "highlight": []}
+                  {
+                    "parts": 5,
+                    "shaded": 1,
+                    "label": "1/5",
+                    "highlight": []
+                  },
+                  {
+                    "parts": 8,
+                    "shaded": 1,
+                    "label": "1/8",
+                    "highlight": []
+                  }
                 ],
                 "number_line": null
               }
             ],
             "answer_kind": "fraction",
-            "accept": ["1/5"],
+            "accept": [
+              "1/5"
+            ],
             "partial": [
               {
-                "match": ["5"],
+                "match": [
+                  "5"
+                ],
                 "note_md": "5 is the denominator of 1/5. Which fraction is bigger?"
               }
             ],
             "misconceptions": [
               {
                 "id": "bigger-denominator-bigger",
-                "match": ["1/8"],
+                "match": [
+                  "1/8"
+                ],
                 "note_md": "A bigger denominator means smaller pieces, not a bigger fraction."
               }
             ],
@@ -771,8 +1663,22 @@
                 "type": "fraction_bar",
                 "caption": "1/5 covers more of the same whole.",
                 "bars": [
-                  {"parts": 5, "shaded": 1, "label": "1/5", "highlight": [0]},
-                  {"parts": 8, "shaded": 1, "label": "1/8", "highlight": [0]}
+                  {
+                    "parts": 5,
+                    "shaded": 1,
+                    "label": "1/5",
+                    "highlight": [
+                      0
+                    ]
+                  },
+                  {
+                    "parts": 8,
+                    "shaded": 1,
+                    "label": "1/8",
+                    "highlight": [
+                      0
+                    ]
+                  }
                 ],
                 "number_line": null
               }
@@ -781,7 +1687,59 @@
             "hint_md": "Compare the size of one shaded piece in each bar."
           }
         }
-      ]
+      ],
+      "worked_example": {
+        "md": "Same numerator 1; smaller denominator means larger pieces: 1/2 > 1/4.",
+        "frames": [
+          {
+            "type": "fraction_bar",
+            "caption": "1/2 covers more of the same whole.",
+            "bars": [
+              {
+                "parts": 2,
+                "shaded": 1,
+                "label": "1/2",
+                "highlight": [
+                  0
+                ]
+              },
+              {
+                "parts": 4,
+                "shaded": 1,
+                "label": "1/4",
+                "highlight": [
+                  0
+                ]
+              }
+            ],
+            "number_line": null
+          }
+        ]
+      },
+      "worked_example_alt": {
+        "md": "Halves are bigger pieces than fourths of the same whole, so 1/2 > 1/4.",
+        "frames": [
+          {
+            "type": "fraction_bar",
+            "caption": null,
+            "bars": [
+              {
+                "parts": 2,
+                "shaded": 1,
+                "label": "1/2",
+                "highlight": []
+              },
+              {
+                "parts": 4,
+                "shaded": 1,
+                "label": "1/4",
+                "highlight": []
+              }
+            ],
+            "number_line": null
+          }
+        ]
+      }
     },
     {
       "step_id": "compare-3-4-vs-2-3",
@@ -789,18 +1747,87 @@
       "skippable": false,
       "confirm": true,
       "teach": {
-        "md": "To compare different denominators, line up the same whole on a number line.",
+        "md": "Different bottoms? Line up the same whole. The bars and number line show which shaded length wins.",
         "frames": [
           {
             "type": "fraction_bar",
             "caption": "Align the bars by the same whole.",
             "bars": [
-              {"parts": 4, "shaded": 3, "label": "3/4", "highlight": []},
-              {"parts": 3, "shaded": 2, "label": "2/3", "highlight": []}
+              {
+                "parts": 4,
+                "shaded": 3,
+                "label": "3/4",
+                "highlight": []
+              },
+              {
+                "parts": 3,
+                "shaded": 2,
+                "label": "2/3",
+                "highlight": []
+              }
             ],
-            "number_line": {"max": 1, "ticks": 12, "marks": [{"at": "3/4", "label": "3/4"}, {"at": "2/3", "label": "2/3"}]}
+            "number_line": {
+              "max": 1,
+              "ticks": 12,
+              "marks": [
+                {
+                  "at": "3/4",
+                  "label": "3/4"
+                },
+                {
+                  "at": "2/3",
+                  "label": "2/3"
+                }
+              ]
+            }
+          },
+          {
+            "type": "fraction_bar",
+            "caption": "Common denominator path: same-size parts.",
+            "bars": [
+              {
+                "parts": 12,
+                "shaded": 9,
+                "label": "9/12 (=3/4)",
+                "highlight": [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6,
+                  7,
+                  8
+                ]
+              },
+              {
+                "parts": 12,
+                "shaded": 8,
+                "label": "8/12 (=2/3)",
+                "highlight": [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6,
+                  7
+                ]
+              }
+            ],
+            "number_line": null
           }
-        ]
+        ],
+        "teach_visual_v1": {
+          "default_frame_indices": [
+            0
+          ],
+          "explain_frame_indices": [
+            1
+          ]
+        }
       },
       "probe": {
         "prompt_md": "Which is bigger, 3/4 or 2/3?",
@@ -809,24 +1836,40 @@
             "type": "fraction_bar",
             "caption": null,
             "bars": [
-              {"parts": 4, "shaded": 3, "label": "3/4", "highlight": []},
-              {"parts": 3, "shaded": 2, "label": "2/3", "highlight": []}
+              {
+                "parts": 4,
+                "shaded": 3,
+                "label": "3/4",
+                "highlight": []
+              },
+              {
+                "parts": 3,
+                "shaded": 2,
+                "label": "2/3",
+                "highlight": []
+              }
             ],
             "number_line": null
           }
         ],
         "answer_kind": "fraction",
-        "accept": ["3/4"],
+        "accept": [
+          "3/4"
+        ],
         "partial": [
           {
-            "match": ["3"],
+            "match": [
+              "3"
+            ],
             "note_md": "3 is the numerator of 3/4. Which whole fraction is bigger?"
           }
         ],
         "misconceptions": [
           {
             "id": "bigger-denominator-bigger",
-            "match": ["2/3"],
+            "match": [
+              "2/3"
+            ],
             "note_md": "Compare the shaded amount, not just the denominator."
           }
         ],
@@ -837,10 +1880,40 @@
             "type": "fraction_bar",
             "caption": "3/4 is farther right on the number line.",
             "bars": [
-              {"parts": 4, "shaded": 3, "label": "3/4", "highlight": [0, 1, 2]},
-              {"parts": 3, "shaded": 2, "label": "2/3", "highlight": [0, 1]}
+              {
+                "parts": 4,
+                "shaded": 3,
+                "label": "3/4",
+                "highlight": [
+                  0,
+                  1,
+                  2
+                ]
+              },
+              {
+                "parts": 3,
+                "shaded": 2,
+                "label": "2/3",
+                "highlight": [
+                  0,
+                  1
+                ]
+              }
             ],
-            "number_line": {"max": 1, "ticks": 12, "marks": [{"at": "2/3", "label": "2/3"}, {"at": "3/4", "label": "3/4"}]}
+            "number_line": {
+              "max": 1,
+              "ticks": 12,
+              "marks": [
+                {
+                  "at": "2/3",
+                  "label": "2/3"
+                },
+                {
+                  "at": "3/4",
+                  "label": "3/4"
+                }
+              ]
+            }
           }
         ],
         "solution_md": "Convert to common denominator 12: 3/4 = 9/12, 2/3 = 8/12, so 3/4 > 2/3.",
@@ -856,24 +1929,40 @@
                 "type": "fraction_bar",
                 "caption": null,
                 "bars": [
-                  {"parts": 3, "shaded": 2, "label": "2/3", "highlight": []},
-                  {"parts": 2, "shaded": 1, "label": "1/2", "highlight": []}
+                  {
+                    "parts": 3,
+                    "shaded": 2,
+                    "label": "2/3",
+                    "highlight": []
+                  },
+                  {
+                    "parts": 2,
+                    "shaded": 1,
+                    "label": "1/2",
+                    "highlight": []
+                  }
                 ],
                 "number_line": null
               }
             ],
             "answer_kind": "fraction",
-            "accept": ["2/3"],
+            "accept": [
+              "2/3"
+            ],
             "partial": [
               {
-                "match": ["2"],
+                "match": [
+                  "2"
+                ],
                 "note_md": "2 is the numerator of 2/3. Which whole fraction is bigger?"
               }
             ],
             "misconceptions": [
               {
                 "id": "bigger-denominator-bigger",
-                "match": ["1/2"],
+                "match": [
+                  "1/2"
+                ],
                 "note_md": "Compare the shaded amount, not just the denominator."
               }
             ],
@@ -884,10 +1973,38 @@
                 "type": "fraction_bar",
                 "caption": "2/3 is farther right on the number line.",
                 "bars": [
-                  {"parts": 3, "shaded": 2, "label": "2/3", "highlight": [0, 1]},
-                  {"parts": 2, "shaded": 1, "label": "1/2", "highlight": [0]}
+                  {
+                    "parts": 3,
+                    "shaded": 2,
+                    "label": "2/3",
+                    "highlight": [
+                      0,
+                      1
+                    ]
+                  },
+                  {
+                    "parts": 2,
+                    "shaded": 1,
+                    "label": "1/2",
+                    "highlight": [
+                      0
+                    ]
+                  }
                 ],
-                "number_line": {"max": 1, "ticks": 12, "marks": [{"at": "1/2", "label": "1/2"}, {"at": "2/3", "label": "2/3"}]}
+                "number_line": {
+                  "max": 1,
+                  "ticks": 12,
+                  "marks": [
+                    {
+                      "at": "1/2",
+                      "label": "1/2"
+                    },
+                    {
+                      "at": "2/3",
+                      "label": "2/3"
+                    }
+                  ]
+                }
               }
             ],
             "solution_md": "Convert to common denominator 6: 2/3 = 4/6, 1/2 = 3/6, so 2/3 > 1/2.",
@@ -903,24 +2020,40 @@
                 "type": "fraction_bar",
                 "caption": null,
                 "bars": [
-                  {"parts": 5, "shaded": 3, "label": "3/5", "highlight": []},
-                  {"parts": 4, "shaded": 2, "label": "2/4", "highlight": []}
+                  {
+                    "parts": 5,
+                    "shaded": 3,
+                    "label": "3/5",
+                    "highlight": []
+                  },
+                  {
+                    "parts": 4,
+                    "shaded": 2,
+                    "label": "2/4",
+                    "highlight": []
+                  }
                 ],
                 "number_line": null
               }
             ],
             "answer_kind": "fraction",
-            "accept": ["3/5"],
+            "accept": [
+              "3/5"
+            ],
             "partial": [
               {
-                "match": ["3"],
+                "match": [
+                  "3"
+                ],
                 "note_md": "3 is the numerator of 3/5. Which whole fraction is bigger?"
               }
             ],
             "misconceptions": [
               {
                 "id": "bigger-denominator-bigger",
-                "match": ["2/4"],
+                "match": [
+                  "2/4"
+                ],
                 "note_md": "Compare the shaded amount, not just the denominator."
               }
             ],
@@ -931,17 +2064,134 @@
                 "type": "fraction_bar",
                 "caption": "3/5 is farther right on the number line.",
                 "bars": [
-                  {"parts": 5, "shaded": 3, "label": "3/5", "highlight": [0, 1, 2]},
-                  {"parts": 4, "shaded": 2, "label": "2/4", "highlight": [0, 1]}
+                  {
+                    "parts": 5,
+                    "shaded": 3,
+                    "label": "3/5",
+                    "highlight": [
+                      0,
+                      1,
+                      2
+                    ]
+                  },
+                  {
+                    "parts": 4,
+                    "shaded": 2,
+                    "label": "2/4",
+                    "highlight": [
+                      0,
+                      1
+                    ]
+                  }
                 ],
-                "number_line": {"max": 1, "ticks": 20, "marks": [{"at": "2/4", "label": "2/4"}, {"at": "3/5", "label": "3/5"}]}
+                "number_line": {
+                  "max": 1,
+                  "ticks": 20,
+                  "marks": [
+                    {
+                      "at": "2/4",
+                      "label": "2/4"
+                    },
+                    {
+                      "at": "3/5",
+                      "label": "3/5"
+                    }
+                  ]
+                }
               }
             ],
             "solution_md": "Convert to decimals: 3/5 = 0.6, 2/4 = 0.5, so 3/5 > 2/4.",
             "hint_md": "Line up the bars and see which shaded part is longer."
           }
         }
-      ]
+      ],
+      "worked_example": {
+        "md": "Common denominator 12: 3/4 = 9/12, 2/3 = 8/12. 9 > 8, so 3/4 > 2/3.",
+        "frames": [
+          {
+            "type": "fraction_bar",
+            "caption": "Twelfths side by side.",
+            "bars": [
+              {
+                "parts": 12,
+                "shaded": 9,
+                "label": "9/12",
+                "highlight": [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6,
+                  7,
+                  8
+                ]
+              },
+              {
+                "parts": 12,
+                "shaded": 8,
+                "label": "8/12",
+                "highlight": [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6,
+                  7
+                ]
+              }
+            ],
+            "number_line": null
+          }
+        ]
+      },
+      "worked_example_alt": {
+        "md": "Another check: 3/4 is farther right on the number line than 2/3.",
+        "frames": [
+          {
+            "type": "fraction_bar",
+            "caption": "Number-line check.",
+            "bars": [
+              {
+                "parts": 4,
+                "shaded": 3,
+                "label": "3/4",
+                "highlight": [
+                  0,
+                  1,
+                  2
+                ]
+              },
+              {
+                "parts": 3,
+                "shaded": 2,
+                "label": "2/3",
+                "highlight": [
+                  0,
+                  1
+                ]
+              }
+            ],
+            "number_line": {
+              "max": 1,
+              "ticks": 12,
+              "marks": [
+                {
+                  "at": "2/3",
+                  "label": "2/3"
+                },
+                {
+                  "at": "3/4",
+                  "label": "3/4"
+                }
+              ]
+            }
+          }
+        ]
+      }
     }
   ]
 }

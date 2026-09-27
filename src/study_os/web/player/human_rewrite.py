@@ -1,21 +1,19 @@
 """Mandatory post-gen plain-human rewrite for learner-visible teach copy.
 
 Applies at generation/regen and at serve time so live player/pack cards stay
-short, numbered, and free of AI-blog voice (Refs #126).
+short, plain, and free of AI-blog voice (Refs #126).
 
-Structure (study-os-golden-tutor):
-- Numbered sentences: ``1) … 2) …``
-- For teach / decomposition, sentence 1 grounds the problem, goal, and what
-  the learner will practice (when the source already says that; we never invent
-  new facts).
+Structure (A19 revised after live feedback):
+- Prefer 2–3 short plain sentences for teach (hard cap 3).
+- No digit-prefixed lists (``1) 2) 3)``) — those distract more than they help.
+- Step-1 still grounds problem/goal/learn as the first prose sentence when the
+  source already says that; we never invent new facts.
 - No walls of text: long paragraphs are split; word budgets trim the tail.
 
 Voice (human-sounding-writing / CGM hsw):
 - Concrete short sentences, active verbs.
 - Scrub common AI-tell words and participle tails.
-- Never expand cognitive load: result is shorter or equal, never longer in
-  word count than the input (except a leading number prefix when numbering
-  was missing — that overhead is capped and content words do not grow).
+- Never expand cognitive load: result is shorter or equal in content-word count.
 """
 
 from __future__ import annotations
@@ -33,21 +31,28 @@ Kind = Literal[
     "rationale",
 ]
 
-REWRITE_VERSION = "study-os.human-rewrite.v1"
+REWRITE_VERSION = "study-os.human-rewrite.v2"
 
-# Soft word budgets (content words). Tail sentences drop when over budget.
 _BUDGET: dict[str, int] = {
-    "teach": 90,
-    "explain": 50,
-    "correct": 40,
-    "worked_example": 90,
-    "decomposition": 120,
-    "rationale": 70,
+    "teach": 42,
+    "explain": 36,
+    "correct": 28,
+    "worked_example": 48,
+    "decomposition": 64,
+    "rationale": 40,
 }
 
-_MAX_SENTENCE_WORDS = 28
+_MAX_SENTENCES: dict[str, int] = {
+    "teach": 3,
+    "explain": 3,
+    "correct": 2,
+    "worked_example": 3,
+    "decomposition": 4,
+    "rationale": 3,
+}
 
-# Error-severity AI tells → short replacements (CGM human-sounding-writing).
+_MAX_SENTENCE_WORDS = 22
+
 _WORD_REPLACEMENTS: tuple[tuple[str, str], ...] = (
     (r"\bdelving\b", "looking"),
     (r"\bdelves\b", "looks"),
@@ -109,11 +114,14 @@ _PARTICIPLE_TAIL = re.compile(
     re.IGNORECASE,
 )
 
+# Require whitespace + non-empty body after the index so values like "64." /
+# "and 1." are never treated as a new bullet (especially before a newline).
 _NUMBERED_LINE = re.compile(
-    r"^\s*(?:\*\*)?(?:\d+[.)]|[-*])\s*(?:\*\*)?(.*)$",
+    # "1) body" / "1. body" — not values like "64." (2+ digits + period).
+    r"^\s*(?:\*\*)?(?:\d{1,2}\)|\d\.|[-*])\s+(?:\*\*)?(.+)$",
 )
 
-_SENTENCE_SPLIT = re.compile(r"(?<=[.!?])\s+(?=[A-Z0-9\"'(\[])")
+_SENTENCE_SPLIT = re.compile(r"(?<!\d)(?<=[.!?])\s+(?=[A-Z\"\'(\[])")
 
 _GROUNDING_CUES = re.compile(
     r"\b(?:you will|you'll|we will|we'll|goal|learn|practice|look at|here|"
@@ -123,9 +131,7 @@ _GROUNDING_CUES = re.compile(
 
 
 def _content_words(text: str) -> int:
-    """Count content tokens; ignore ``1)`` / ``2.`` number prefixes."""
-
-    stripped = re.sub(r"(?m)^\s*\d+[.)]\s*", "", text or "")
+    stripped = re.sub(r"(?m)^\s*(?:\d{1,2}\)|\d\.|[-*])\s+", "", text or "")
     return len(re.findall(r"[A-Za-z0-9']+", stripped))
 
 
@@ -134,7 +140,6 @@ def _scrub(text: str) -> str:
     out = _PARTICIPLE_TAIL.sub("", out)
     for pattern, repl in _WORD_REPLACEMENTS:
         out = re.sub(pattern, repl, out, flags=re.IGNORECASE)
-    # Debris from empty replacements / clause cuts.
     out = re.sub(r"(?m)^(?:also|but),\s*", "", out, flags=re.I)
     out = re.sub(r"\b(also|but|and|so),\s*(also|but|and)\b", r"\1", out, flags=re.I)
     out = re.sub(r"^[\s,;:]+", "", out)
@@ -156,29 +161,35 @@ def _strip_number_prefix(sentence: str) -> str:
 
 
 def _split_sentences(text: str) -> list[str]:
-    """Split into sentences; keep markdown list items as their own units."""
-
     chunks: list[str] = []
     for block in re.split(r"\n+", text.strip()):
         block = block.strip()
         if not block:
             continue
-        if _NUMBERED_LINE.match(block) and not re.search(r"[.!?]\s+[A-Z]", block):
-            chunks.append(_strip_number_prefix(block))
-            continue
-        parts = _SENTENCE_SPLIT.split(block)
-        for part in parts:
-            clean = _strip_number_prefix(part)
-            if clean:
-                chunks.append(clean)
+        # List markers -> line breaks, then strip. Paren lists ("1) 2)") and
+        # single-digit dot lists before a capital ("1. Foo"). Never "64." / "O(1)".
+        block = re.sub(r"(?<=[.!?])\s+(?=\d{1,2}\)\s+\S)", "\n", block)
+        block = re.sub(r"(?<![.\d(])\s+(?=\d{1,2}\)\s+\S)", "\n", block)
+        block = re.sub(r"(?<=[.!?])\s+(?=\d\.\s+[A-Z])", "\n", block)
+        block = re.sub(r"(?<![.\d])\s+(?=\d\.\s+[A-Z])", "\n", block)
+        block = re.sub(r"(?m)^\s*(?:\d{1,2}\)|\d\.|[-*])\s+", "", block)
+        for piece in re.split(r"\n+", block):
+            piece = piece.strip()
+            if not piece:
+                continue
+            piece = _strip_number_prefix(piece)
+            if not piece:
+                continue
+            for part in _SENTENCE_SPLIT.split(piece):
+                clean = _strip_number_prefix(part.strip())
+                if clean:
+                    chunks.append(clean)
     return chunks
-
 
 def _break_long(sentence: str) -> list[str]:
     words = sentence.split()
     if len(words) <= _MAX_SENTENCE_WORDS:
         return [sentence]
-    # Prefer a comma/semicolon cut near the middle.
     mid = len(words) // 2
     for cut in range(mid, max(8, mid - 8), -1):
         token = words[cut - 1]
@@ -186,8 +197,9 @@ def _break_long(sentence: str) -> list[str]:
             left = " ".join(words[:cut]).rstrip(",;:")
             right = " ".join(words[cut:])
             if left and right:
-                return _break_long(left + ".") + _break_long(right[0].upper() + right[1:] if right else right)
-    # Hard split.
+                return _break_long(left + ".") + _break_long(
+                    right[0].upper() + right[1:] if right else right
+                )
     left = " ".join(words[:mid]).rstrip(",;:")
     right = " ".join(words[mid:])
     if not left.endswith((".", "!", "?")):
@@ -216,7 +228,6 @@ def _apply_budget(sentences: list[str], budget: int) -> list[str]:
         if kept and used + n > budget:
             break
         if not kept and n > budget:
-            # Keep a shortened first sentence rather than a wall.
             words = sentence.split()
             cut = max(8, budget)
             piece = " ".join(words[:cut]).rstrip(",;:")
@@ -231,17 +242,16 @@ def _apply_budget(sentences: list[str], budget: int) -> list[str]:
     return kept or sentences[:1]
 
 
-def _number(sentences: list[str]) -> str:
+def _format_prose(sentences: list[str]) -> str:
     lines = []
-    for i, sentence in enumerate(sentences, start=1):
+    for sentence in sentences:
         body = _ensure_terminal(_strip_number_prefix(sentence))
-        lines.append(f"{i}) {body}")
+        if body:
+            lines.append(body)
     return "\n".join(lines)
 
 
 def rewrite(markdown: str | None, *, kind: Kind = "teach") -> str:
-    """Rewrite learner-visible markdown. Idempotent. Never invents facts."""
-
     if markdown is None:
         return ""
     raw = str(markdown)
@@ -250,7 +260,6 @@ def rewrite(markdown: str | None, *, kind: Kind = "teach") -> str:
 
     original_words = _content_words(raw)
     scrubbed = _scrub(raw)
-    # Preserve fenced blocks untouched by refusing to rewrite if present.
     if "```" in scrubbed or "~~~" in scrubbed:
         return raw.strip()
 
@@ -261,42 +270,39 @@ def rewrite(markdown: str | None, *, kind: Kind = "teach") -> str:
     if not sentences:
         return raw.strip()
 
-    budget = _BUDGET.get(kind, 90)
-    sentences = _apply_budget(sentences, budget)
+    budget = _BUDGET.get(kind, 42)
+    max_sents = _MAX_SENTENCES.get(kind, 3)
+    sentences = _apply_budget(sentences, budget)[:max_sents]
 
     _FLUFF_OPEN = re.compile(
         r"^(?:also|moreover|in this (?:lesson|section)|today we|we (?:look|explore)|"
         r"let us explore|this (?:full|strong|key))\b",
         re.IGNORECASE,
     )
-    # Only reorder when the opener is fluff; keep a concrete authored opener as #1.
     if kind in ("teach", "decomposition") and sentences and _FLUFF_OPEN.match(sentences[0]):
         for idx in range(1, min(len(sentences), 4)):
             if _looks_grounded(sentences[idx]) and not _FLUFF_OPEN.match(sentences[idx]):
                 sentences = [sentences[idx]] + sentences[:idx] + sentences[idx + 1 :]
                 break
 
-    numbered = _number(sentences)
+    prose = _format_prose(sentences)
 
-    # Never grow content-word count vs input (number prefixes excluded).
-    if _content_words(numbered) > original_words and original_words > 0:
+    if _content_words(prose) > original_words and original_words > 0:
         flat = []
         for piece in _split_sentences(_scrub(raw)):
             flat.extend(_break_long(piece))
-        numbered = _number(_apply_budget(flat, budget))
-        if _content_words(numbered) > original_words:
-            # Still prefer numbered short form: trim words to fit.
-            while _content_words(numbered) > original_words and len(flat) > 1:
+        flat = _apply_budget(flat, budget)[:max_sents]
+        prose = _format_prose(flat)
+        if _content_words(prose) > original_words:
+            while _content_words(prose) > original_words and len(flat) > 1:
                 flat = flat[:-1]
-                numbered = _number(flat)
-            if _content_words(numbered) > original_words:
-                numbered = _number(flat[:1])
+                prose = _format_prose(flat)
+            if _content_words(prose) > original_words:
+                prose = _format_prose(flat[:1])
 
-    return numbered
+    return prose
 
 
 @lru_cache(maxsize=512)
 def rewrite_cached(markdown: str, kind: Kind = "teach") -> str:
-    """LRU wrapper for hot serve paths (identical lesson strings)."""
-
     return rewrite(markdown, kind=kind)

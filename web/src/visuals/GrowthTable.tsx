@@ -1,4 +1,5 @@
 import type { GrowthTableFrame, GrowthTableSeries } from "../api";
+import styles from "./TeachRenderBox.module.css";
 
 function seriesList(frame: GrowthTableFrame): GrowthTableSeries[] {
   const out: GrowthTableSeries[] = [];
@@ -15,14 +16,40 @@ export function describeGrowthTable(frame: GrowthTableFrame): string {
   return `Growth table for n = ${n.join(", ")}; ${parts.join("; ")}`;
 }
 
-export default function GrowthTable({ frame }: { frame: GrowthTableFrame }) {
+type Props = { frame: GrowthTableFrame; scoped?: boolean };
+
+/** Compact scoreboard. Island CSS owns layout when scoped. */
+export default function GrowthTable({ frame, scoped = false }: Props) {
   const nValues = frame.n_values;
   const series = seriesList(frame);
   const max = Math.max(1, ...series.flatMap((s) => s.values));
+  const rootClass = scoped ? styles.scoreboard : "growth-table";
+
+  if (series.length === 0) {
+    return (
+      <div
+        className={scoped ? undefined : "growth-table growth-table--empty"}
+        role="img"
+        aria-label={describeGrowthTable(frame)}
+      >
+        <div className={scoped ? styles.chips : "growth-scoreboard-chips"}>
+          <span className={scoped ? styles.chipLabel : "growth-scoreboard-chip growth-scoreboard-chip--label"}>n</span>
+          {nValues.map((value, i) => (
+            <span key={`n-${i}`} className={scoped ? styles.chip : "growth-scoreboard-chip"}>
+              {value}
+            </span>
+          ))}
+        </div>
+        <p className={scoped ? styles.emptyNote : "muted small growth-table-empty-note"}>
+          Counts arrive in the next steps.
+        </p>
+      </div>
+    );
+  }
 
   return (
-    <div className="growth-table" role="img" aria-label={describeGrowthTable(frame)}>
-      <table className="growth-table-grid">
+    <div className={rootClass} role="img" aria-label={describeGrowthTable(frame)}>
+      <table className={scoped ? undefined : "growth-table-grid growth-scoreboard"}>
         <thead>
           <tr>
             <th scope="col">n</th>
@@ -39,11 +66,17 @@ export default function GrowthTable({ frame }: { frame: GrowthTableFrame }) {
               <th scope="row">{s.label}</th>
               {nValues.map((_, i) => {
                 const value = s.values[i] ?? 0;
-                const pct = Math.max(2, Math.round((value / max) * 100));
+                const pct = Math.max(8, Math.round((value / max) * 100));
                 return (
                   <td key={`${s.label}-${i}`}>
-                    <span className="growth-table-value">{value}</span>
-                    <span className="growth-table-bar" style={{ width: `${pct}%` }} aria-hidden="true" />
+                    <span className={scoped ? styles.cell : "growth-table-cell"}>
+                      <span className={scoped ? styles.value : "growth-table-value"}>{value}</span>
+                      <span
+                        className={scoped ? styles.bar : "growth-table-bar"}
+                        style={{ width: `${pct}%` }}
+                        aria-hidden="true"
+                      />
+                    </span>
                   </td>
                 );
               })}
@@ -51,7 +84,6 @@ export default function GrowthTable({ frame }: { frame: GrowthTableFrame }) {
           ))}
         </tbody>
       </table>
-      {series.length === 0 && <p className="muted small">Counts arrive in the next steps.</p>}
     </div>
   );
 }

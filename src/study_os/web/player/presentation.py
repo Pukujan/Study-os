@@ -11,6 +11,16 @@ from . import human_rewrite, teach_visual
 SCHEMA_VERSION = "study-os.player-presentation.v1"
 
 
+def _usable_frames(frames: list[Any] | None) -> list[dict[str, Any]]:
+    """Drop holes / non-dicts / frames missing a string type (Explain-again harden)."""
+
+    out: list[dict[str, Any]] = []
+    for frame in frames or []:
+        if isinstance(frame, dict) and isinstance(frame.get("type"), str) and frame["type"]:
+            out.append(frame)
+    return out
+
+
 def regeneration_allowed(lesson: dict[str, Any], state: dict[str, Any]) -> bool:
     """Whether an in-place re-render of the current card is permitted right now.
 
@@ -54,13 +64,13 @@ def effective(lesson: dict[str, Any], state: dict[str, Any]) -> tuple[str | None
     update = current(lesson, state)
     if update:
         md = human_rewrite.rewrite(update["teach_md"], kind="teach")
-        return md, list(update["teach_frames"])
+        return md, _usable_frames(list(update["teach_frames"]))
 
     # teach_visual_v1 selects default metaphor frames (or presentation_raw when off).
     md, frames = teach_visual.resolve_teach(teach)
     if md:
         md = human_rewrite.rewrite(md, kind="teach")
-    return md, frames
+    return md, _usable_frames(frames)
 
 
 def validate_proposal(
@@ -84,10 +94,10 @@ def validate_proposal(
     # Fences are not allowed: the general prose validator excludes fenced code.
     if "```" in md or "~~~" in md:
         return None, ("INVALID_PRESENTATION",)
-    result = validate_generated(md, forbidden_answers=forbidden, required_blocks=(), word_budget=90)
+    result = validate_generated(md, forbidden_answers=forbidden, required_blocks=(), word_budget=50)
     if not result.ok:
         return None, result.codes
-    return {"teach_md": md, "teach_frames": deepcopy([frames[i] for i in indices])}, ()
+    return {"teach_md": md, "teach_frames": deepcopy(_usable_frames([frames[i] for i in indices]))}, ()
 
 
 def authored_reserve(

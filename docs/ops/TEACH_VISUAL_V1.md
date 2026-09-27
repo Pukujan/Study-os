@@ -26,3 +26,7 @@ Prose stays simple numbered sentences (A19). No hard must-match-diagram rule; vi
 PYTHONPATH=src python -m unittest tests.test_big_o_worked_example -v
 cd web && npm test -- --run src/visuals/visuals.test.tsx
 ```
+
+## Island isolation
+
+Learner-visible frames mount through `TeachRenderBox` (Shadow DOM). See [`TEACH_RENDER_BOX.md`](TEACH_RENDER_BOX.md).

@@ -1,0 +1,346 @@
+/* Design system tokens (Refs #165). Chrome/UI only — not teach images or pet/bot. */
+
+:root {
+  --ink: #e8eaf2;
+  --violet: #a99bff;
+  --cyan: #63D9FF;
+  --coral: #FF8A70;
+  --cream: #1a1d2e;
+  --mint: #94E3CB;
+  --gold: #FFD28A;
+  --paper: var(--cream);
+  --primary: var(--violet);
+  --accent: var(--cyan);
+  --warm: var(--coral);
+  --ok: #3dbaa0;
+  --bad: var(--coral);
+  --muted: #9aa0b8;
+  --fg: var(--ink);
+  --bg: var(--paper);
+  --card: #242836;
+  --line: #3a4058;
+  --shadow: rgba(0, 0, 0, 0.35);
+  --on-primary: #ffffff;
+  --surface-subtle: #2c3144;
+  --banner-bg: #3a3420;
+  --banner-line: #6a5a30;
+  --chart-bg: var(--card);
+  --chart-1: #8eb4ff;
+  --chart-2: #ff8a9a;
+  --chart-3: #5ee0a8;
+  --chart-4: #ffd078;
+  --chart-axis: var(--muted);
+  --panel: var(--card);
+  --space-unit: 1rem;
+  --radius: 12px;
+  --font-sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --font-body: var(--font-sans);
+  --font-size-root: 16px;
+  --line-height-body: 1.5;
+  color-scheme: dark;
+  font-family: var(--font-body);
+  font-size: var(--font-size-root);
+  line-height: var(--line-height-body);
+  color: var(--fg);
+  background: var(--bg);
+}
+
+/* ---- Light appearance × palette ---- */
+html[data-theme-appearance="light"][data-theme-palette="lavender"] {
+  --ink: #111B4D;
+  --violet: #8F7CFF;
+  --cyan: #63D9FF;
+  --coral: #FF8A70;
+  --cream: #F4F1FF;
+  --mint: #94E3CB;
+  --gold: #FFD28A;
+  --paper: var(--cream);
+  --primary: var(--violet);
+  --accent: var(--cyan);
+  --ok: #2a9d8f;
+  --muted: #6b6f8a;
+  --fg: var(--ink);
+  --bg: var(--paper);
+  --card: #ffffff;
+  --line: #d7d4e8;
+  --shadow: rgba(17, 27, 77, 0.08);
+  --surface-subtle: #f7f6ff;
+  --banner-bg: #fff7e0;
+  --banner-line: #f0d890;
+  --chart-1: #5b4fd6;
+  --chart-2: #e04d5a;
+  --chart-3: #0d9f6e;
+  --chart-4: #c47a00;
+  color-scheme: light;
+}
+
+html[data-theme-appearance="light"][data-theme-palette="slate"] {
+  --ink: #0f172a;
+  --violet: #4f6bed;
+  --cyan: #0ea5e9;
+  --coral: #f07167;
+  --cream: #f1f5f9;
+  --mint: #34d399;
+  --gold: #fbbf24;
+  --paper: var(--cream);
+  --primary: #334155;
+  --accent: var(--cyan);
+  --ok: #059669;
+  --muted: #64748b;
+  --fg: var(--ink);
+  --bg: var(--paper);
+  --card: #ffffff;
+  --line: #cbd5e1;
+  --shadow: rgba(15, 23, 42, 0.08);
+  --surface-subtle: #e2e8f0;
+  --banner-bg: #fff7e0;
+  --banner-line: #f0d890;
+  --chart-1: #2563eb;
+  --chart-2: #dc2626;
+  --chart-3: #059669;
+  --chart-4: #d97706;
+  color-scheme: light;
+}
+
+html[data-theme-appearance="light"][data-theme-palette="forest"] {
+  --ink: #14261c;
+  --violet: #3d8b6e;
+  --cyan: #2dd4bf;
+  --coral: #e07a5f;
+  --cream: #eef6f0;
+  --mint: #6ee7b7;
+  --gold: #d4a373;
+  --paper: var(--cream);
+  --primary: #2f6f4e;
+  --accent: var(--cyan);
+  --ok: #1b7a4e;
+  --muted: #5c735f;
+  --fg: var(--ink);
+  --bg: var(--paper);
+  --card: #ffffff;
+  --line: #c5d9cc;
+  --shadow: rgba(20, 38, 28, 0.1);
+  --surface-subtle: #e0eee4;
+  --banner-bg: #f3f7e8;
+  --banner-line: #c5d48a;
+  --chart-1: #1a7a4c;
+  --chart-2: #c45c3e;
+  --chart-3: #0f9f8a;
+  --chart-4: #b07d2a;
+  color-scheme: light;
+}
+
+html[data-theme-appearance="light"][data-theme-palette="sunset"] {
+  --ink: #2a1520;
+  --violet: #d4537e;
+  --cyan: #f4a261;
+  --coral: #e76f51;
+  --cream: #fff4ee;
+  --mint: #94E3CB;
+  --gold: #e9c46a;
+  --paper: var(--cream);
+  --primary: #c44569;
+  --accent: #f4a261;
+  --ok: #2a9d8f;
+  --muted: #8a6a72;
+  --fg: var(--ink);
+  --bg: var(--paper);
+  --card: #ffffff;
+  --line: #efd5d0;
+  --shadow: rgba(42, 21, 32, 0.1);
+  --surface-subtle: #ffe8e0;
+  --banner-bg: #fff0d8;
+  --banner-line: #efd090;
+  --chart-1: #c44569;
+  --chart-2: #e76f51;
+  --chart-3: #2a9d8f;
+  --chart-4: #e9c46a;
+  color-scheme: light;
+}
+
+/* ---- Dark appearance × palette ---- */
+html[data-theme-appearance="dark"][data-theme-palette="lavender"] {
+  --ink: #ebe8ff;
+  --violet: #b4a6ff;
+  --cyan: #63D9FF;
+  --coral: #FF8A70;
+  --cream: #1a1730;
+  --mint: #94E3CB;
+  --gold: #FFD28A;
+  --paper: var(--cream);
+  --primary: #b4a6ff;
+  --accent: var(--cyan);
+  --ok: #3dbaa0;
+  --muted: #a29bb8;
+  --fg: var(--ink);
+  --bg: var(--paper);
+  --card: #262240;
+  --line: #433e66;
+  --shadow: rgba(0, 0, 0, 0.4);
+  --surface-subtle: #312c4d;
+  --banner-bg: #3a3420;
+  --banner-line: #6a5a30;
+  --chart-1: #c4b8ff;
+  --chart-2: #ff9a8a;
+  --chart-3: #6eecc0;
+  --chart-4: #ffd78a;
+  color-scheme: dark;
+}
+
+html[data-theme-appearance="dark"][data-theme-palette="slate"] {
+  --ink: #e8eaf2;
+  --violet: #8eb4ff;
+  --cyan: #38bdf8;
+  --coral: #fb7185;
+  --cream: #0f1219;
+  --mint: #6ee7b7;
+  --gold: #fbbf24;
+  --paper: var(--cream);
+  --primary: #94a3b8;
+  --accent: var(--cyan);
+  --ok: #34d399;
+  --muted: #94a3b8;
+  --fg: var(--ink);
+  --bg: var(--paper);
+  --card: #1a1f2b;
+  --line: #334155;
+  --shadow: rgba(0, 0, 0, 0.45);
+  --surface-subtle: #243044;
+  --banner-bg: #3a3420;
+  --banner-line: #6a5a30;
+  --chart-1: #8eb4ff;
+  --chart-2: #ff8a9a;
+  --chart-3: #5ee0a8;
+  --chart-4: #ffd078;
+  color-scheme: dark;
+}
+
+html[data-theme-appearance="dark"][data-theme-palette="forest"] {
+  --ink: #e4f0e8;
+  --violet: #5ecf9a;
+  --cyan: #2dd4bf;
+  --coral: #e07a5f;
+  --cream: #0f1a14;
+  --mint: #6ee7b7;
+  --gold: #d4a373;
+  --paper: var(--cream);
+  --primary: #5ecf9a;
+  --accent: var(--cyan);
+  --ok: #4ade80;
+  --muted: #8aaa94;
+  --fg: var(--ink);
+  --bg: var(--paper);
+  --card: #17241c;
+  --line: #2d4638;
+  --shadow: rgba(0, 0, 0, 0.45);
+  --surface-subtle: #1f3228;
+  --banner-bg: #2a3220;
+  --banner-line: #4a5a30;
+  --chart-1: #5ecf9a;
+  --chart-2: #e07a5f;
+  --chart-3: #2dd4bf;
+  --chart-4: #d4a373;
+  color-scheme: dark;
+}
+
+html[data-theme-appearance="dark"][data-theme-palette="sunset"] {
+  --ink: #ffe8ee;
+  --violet: #f472b6;
+  --cyan: #fb923c;
+  --coral: #fb7185;
+  --cream: #1a1014;
+  --mint: #94E3CB;
+  --gold: #fbbf24;
+  --paper: var(--cream);
+  --primary: #f472b6;
+  --accent: #fb923c;
+  --ok: #34d399;
+  --muted: #c4a0aa;
+  --fg: var(--ink);
+  --bg: var(--paper);
+  --card: #261820;
+  --line: #4a3040;
+  --shadow: rgba(0, 0, 0, 0.45);
+  --surface-subtle: #362028;
+  --banner-bg: #3a2a18;
+  --banner-line: #6a5030;
+  --chart-1: #f472b6;
+  --chart-2: #fb923c;
+  --chart-3: #34d399;
+  --chart-4: #fbbf24;
+  color-scheme: dark;
+}
+
+/* ---- Typography packs ---- */
+html[data-theme-type="sans"] { --font-body: var(--font-sans); }
+html[data-theme-type="serif"] { --font-body: var(--font-serif); }
+html[data-theme-type="mono"] { --font-body: var(--font-mono); }
+
+/* ---- Mood packs (chrome radius / shadow / weight) ---- */
+html[data-theme-mood="calm"] {
+  --radius: 12px;
+  --shadow: color-mix(in srgb, var(--shadow) 90%, transparent);
+}
+html[data-theme-mood="focus"] {
+  --radius: 6px;
+  --line-height-body: 1.45;
+}
+html[data-theme-mood="playful"] {
+  --radius: 18px;
+  --line-height-body: 1.55;
+}
+
+/* ---- Density packs (space) ---- */
+html[data-theme-density="comfortable"] { --space-unit: 1rem; --font-size-root: 16px; }
+html[data-theme-density="compact"] { --space-unit: 0.8rem; --font-size-root: 15px; }
+html[data-theme-density="spacious"] { --space-unit: 1.2rem; --font-size-root: 17px; }
+
+
+html {
+  font-family: var(--font-body);
+  font-size: var(--font-size-root);
+  line-height: var(--line-height-body);
+  color: var(--fg);
+  background: var(--bg);
+}
+body {
+  margin: 0;
+  font-family: inherit;
+  color: inherit;
+  background: inherit;
+}
+/* Theme chrome controls */
+.theme-toggle {
+  position: relative;
+  display: inline-flex;
+  gap: 0.35rem;
+  align-items: center;
+}
+.theme-panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.4rem);
+  z-index: 50;
+  min-width: 220px;
+  margin: 0;
+  padding: 0.85rem;
+  box-shadow: 0 8px 24px var(--shadow);
+}
+.theme-fieldset {
+  border: none;
+  margin: 0 0 0.55rem;
+  padding: 0;
+}
+.theme-fieldset legend {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-bottom: 0.2rem;
+}
+.theme-fieldset select {
+  margin-top: 0;
+  font-size: 0.9rem;
+  padding: 0.4rem 0.5rem;
+}
+.theme-panel-note { margin: 0.35rem 0 0; }
