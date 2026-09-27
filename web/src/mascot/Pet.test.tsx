@@ -43,6 +43,30 @@ describe("Pet free-roam", () => {
     cleanup();
   });
 
+  it("uses held-pose idle at low fps (A22a)", () => {
+    const { container, cleanup } = render(<Pet mood="idle" onTap={() => undefined} />);
+    const pet = container.querySelector<HTMLElement>('[data-testid="mascot.pet"]');
+    const sprite = container.querySelector<HTMLElement>('[data-testid="mascot.sprite"]');
+    expect(pet?.getAttribute("data-mood")).toBe("idle");
+    expect(sprite?.getAttribute("data-anim")).toBe("held-pose");
+    expect(Number(sprite?.getAttribute("data-fps"))).toBeLessThanOrEqual(3);
+    expect(sprite?.style.animation).toMatch(/none|^$/);
+    // No CSS transform tween on the float shell.
+    expect(pet?.style.transition === "" || pet?.style.transition === "none").toBe(true);
+    cleanup();
+  });
+
+  it("renders cute-ball held-pose loop", () => {
+    const { container, cleanup } = render(<Pet mood="ball" onTap={() => undefined} />);
+    const pet = container.querySelector<HTMLElement>('[data-testid="mascot.pet"]');
+    const sprite = container.querySelector<HTMLElement>('[data-testid="mascot.sprite"]');
+    expect(pet?.getAttribute("data-mood")).toBe("ball");
+    expect(sprite?.getAttribute("data-anim")).toBe("held-pose");
+    expect(sprite?.style.backgroundImage).toMatch(/pet-ball\.webp/);
+    expect(Number(sprite?.getAttribute("data-frames"))).toBe(9);
+    cleanup();
+  });
+
   it("shows coach tip after ~2s once per session and dismisses on hover", () => {
     vi.useFakeTimers();
     const { container, cleanup } = render(<Pet mood="idle" onTap={() => undefined} />);

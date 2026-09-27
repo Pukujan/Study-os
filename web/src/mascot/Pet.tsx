@@ -1,10 +1,27 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Sprite from "./Sprite";
 
-export type PetMood = "idle" | "wave" | "thinking" | "talking" | "celebrate" | "encourage";
+export type PetMood =
+  | "idle"
+  | "ball"
+  | "wave"
+  | "thinking"
+  | "talking"
+  | "celebrate"
+  | "encourage";
+
+/** A22a — JP limited held-pose fps (slow, deliberate). */
+const FPS = {
+  idle: 2,
+  ball: 2.5,
+  oneshot: 3,
+  reacting: 3,
+} as const;
 
 const MOODS: Record<PetMood, { src: string; frames: number; frameW: number; frameH: number }> = {
   idle: { src: "/mascot/pet-idle.webp", frames: 6, frameW: 144, frameH: 176 },
+  // Cute ball / star-play loop (letterboxed from duo-starplay into pet frame size).
+  ball: { src: "/mascot/pet-ball.webp", frames: 9, frameW: 144, frameH: 176 },
   wave: { src: "/mascot/pet-wave.webp", frames: 6, frameW: 144, frameH: 176 },
   thinking: { src: "/mascot/pet-thinking.webp", frames: 6, frameW: 144, frameH: 176 },
   talking: { src: "/mascot/pet-talking.webp", frames: 6, frameW: 144, frameH: 176 },
@@ -234,29 +251,57 @@ export default function Pet({
     });
   }, []);
 
+  // Discrete free-roam hops (no CSS transform tween) — sliding + idle was the live jitter.
   useEffect(() => {
     if (hidden || reducedMotion || dragging || hovering) return;
     const tick = () => {
       const next = pickWanderTarget(width, height);
       setPos(next);
       writeSessionPos(next);
-      wanderTimer.current = window.setTimeout(tick, 28000 + Math.random() * 22000);
+      wanderTimer.current = window.setTimeout(tick, 36000 + Math.random() * 24000);
     };
-    wanderTimer.current = window.setTimeout(tick, 18000 + Math.random() * 12000);
+    wanderTimer.current = window.setTimeout(tick, 22000 + Math.random() * 16000);
     return () => {
       if (wanderTimer.current) window.clearTimeout(wanderTimer.current);
     };
   }, [hidden, reducedMotion, dragging, hovering, width, height]);
 
-  const handleWaveEnd = () => {
-    if (!hovering) setDisplayMood((m) => (m === "wave" ? "idle" : mood));
+  // Occasional cute-ball loop while truly idle (A22a).
+  useEffect(() => {
+    if (hidden || reducedMotion || dragging || hovering) return;
+    if (mood !== "idle" || displayMood === "ball") return;
+    const delay = 16000 + Math.random() * 14000;
+    const t = window.setTimeout(() => setDisplayMood("ball"), delay);
+    return () => window.clearTimeout(t);
+  }, [hidden, reducedMotion, dragging, hovering, mood, displayMood]);
+
+  const handleOneShotEnd = () => {
+    if (hovering) return;
+    setDisplayMood((m) => {
+      if (m === "wave" || m === "ball" || m === "celebrate" || m === "encourage") {
+        return mood === "idle" || mood === "ball" ? "idle" : mood;
+      }
+      return m;
+    });
   };
 
   const effectiveMood: PetMood = hovering && !dragging ? "wave" : displayMood;
   const meta = MOODS[effectiveMood];
 
   const sprite = useMemo(() => {
-    const oneShot = effectiveMood === "wave" || effectiveMood === "celebrate" || effectiveMood === "encourage";
+    const oneShot =
+      effectiveMood === "wave" ||
+      effectiveMood === "ball" ||
+      effectiveMood === "celebrate" ||
+      effectiveMood === "encourage";
+    const fps =
+      effectiveMood === "idle"
+        ? FPS.idle
+        : effectiveMood === "ball"
+          ? FPS.ball
+          : oneShot
+            ? FPS.oneshot
+            : FPS.reacting;
     return (
       <Sprite
         src={meta.src}
@@ -264,16 +309,16 @@ export default function Pet({
         frameW={meta.frameW}
         frameH={meta.frameH}
         height={height}
-        fps={oneShot ? 5 : 4}
+        fps={fps}
         loop={!oneShot}
-        onEnd={oneShot ? handleWaveEnd : undefined}
-        paused={paused && !hovering}
+        onEnd={oneShot ? handleOneShotEnd : undefined}
+        paused={(paused && !hovering) || dragging}
         alt={`Study buddy — ${effectiveMood}`}
         className="pet-sprite"
       />
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [meta.src, meta.frames, meta.frameW, meta.frameH, height, effectiveMood, paused, hovering]);
+  }, [meta.src, meta.frames, meta.frameW, meta.frameH, height, effectiveMood, paused, hovering, dragging]);
 
   const onPointerDown = (e: React.PointerEvent<HTMLButtonElement>) => {
     if (e.button !== 0) return;
@@ -341,9 +386,12 @@ export default function Pet({
       className={`pet-float${hovering ? " is-hover" : ""}${dragging ? " is-dragging" : ""}${reducedMotion ? " is-reduced" : ""}`}
       style={{
         transform: `translate3d(${pos.x}px, ${pos.y}px, 0)`,
-        transition: dragging || reducedMotion ? "none" : "transform 4.5s cubic-bezier(0.33, 0, 0.2, 1)",
+        // A22a: discrete hops only — CSS tween + idle sheet = live jitter.
+        transition: "none",
       }}
       data-pet-float
+      data-testid="mascot.pet"
+      data-mood={effectiveMood}
     >
       {tipOpen && (
         <div className="pet-tip" role="status">

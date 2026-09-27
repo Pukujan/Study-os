@@ -36,6 +36,10 @@ Read these files before making substantive changes:
 
 See `PROJECT_MANIFEST.yaml` for machine-readable state.
 
+## Pet / mascot animation (A22a)
+
+In-app pet uses **slow JS held-pose spritesheets** (idle + cute ball), Japanese limited 2D, low fps — not CSS keyframe jitter and not Live2D. See [`docs/ops/A22A_HELD_POSE_PET.md`](docs/ops/A22A_HELD_POSE_PET.md). A22b Live2D is a separate comparison slice.
+
 ## Plain-human lesson copy
 
 Learner-visible teach / explain-again / worked-example / pack-decomposition markdown goes through a mandatory post-gen rewrite (`src/study_os/web/player/human_rewrite.py`). See [`docs/ops/PLAIN_HUMAN_REWRITE.md`](docs/ops/PLAIN_HUMAN_REWRITE.md). Do not ship walls of AI-blog prose on those surfaces.

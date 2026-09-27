@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export type SpriteProps = {
   src: string;
@@ -6,6 +6,7 @@ export type SpriteProps = {
   frameW: number;
   frameH: number;
   height?: number;
+  /** Held-pose fps (JP limited / cutout). Default 3 — slow deliberate loops. */
   fps?: number;
   loop?: boolean;
   onEnd?: () => void;
@@ -14,13 +15,18 @@ export type SpriteProps = {
   className?: string;
 };
 
+/**
+ * Horizontal spritesheet player using **JS-held poses** (discrete frame steps).
+ * No CSS @keyframes — avoids the live "jizzle" when position transforms compete
+ * with interpolated background-position (A22a / pet_jitter).
+ */
 export default function Sprite({
   src,
   frames,
   frameW,
   frameH,
   height,
-  fps = 12,
+  fps = 3,
   loop = false,
   onEnd,
   paused = false,
@@ -28,6 +34,10 @@ export default function Sprite({
   className,
 }: SpriteProps) {
   const [reduced, setReduced] = useState(false);
+  const [frame, setFrame] = useState(0);
+  const onEndRef = useRef(onEnd);
+  onEndRef.current = onEnd;
+  const endedRef = useRef(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -47,55 +57,67 @@ export default function Sprite({
     return () => legacy.removeListener(wrapped);
   }, []);
 
+  // Reset to first pose when sheet identity changes.
+  useEffect(() => {
+    setFrame(0);
+    endedRef.current = false;
+  }, [src, frames, frameW, frameH]);
+
+  useEffect(() => {
+    if (reduced || paused || frames <= 1) return;
+    const safeFps = Math.max(0.5, Math.min(12, fps));
+    const holdMs = Math.round(1000 / safeFps);
+    const id = window.setInterval(() => {
+      setFrame((prev) => {
+        if (!loop && endedRef.current) return prev;
+        const next = prev + 1;
+        if (next >= frames) {
+          if (loop) return 0;
+          endedRef.current = true;
+          onEndRef.current?.();
+          return frames - 1;
+        }
+        return next;
+      });
+    }, holdMs);
+    return () => window.clearInterval(id);
+  }, [reduced, paused, frames, fps, loop, src]);
+
   const ratio = frameW / frameH;
   const h = height ?? frameH;
   const w = Math.round(h * ratio);
   const sheetW = Math.round((frames * frameW * h) / frameH);
-  // Infinite loops advance to -sheetW (wraps before the empty slot). One-shots must
-  // end on the last visible frame (-(frames-1)*w) or fill-mode:both holds an empty frame.
-  const endShift = loop ? sheetW : Math.max(0, sheetW - w);
-  const stepCount = loop ? frames : Math.max(1, frames - 1);
-  const animName = useMemo(
-    () => `sos-sprite-${frames}-${frameW}-${frameH}-${h}-${loop ? "loop" : "once"}`,
-    [frames, frameW, frameH, h, loop],
-  );
-  const isStatic = reduced || paused;
-  const duration = frames / fps;
+  const displayFrame = Math.max(0, Math.min(frames - 1, frame));
+  const x = -Math.round(displayFrame * w);
 
   return (
-    <>
-      <style>{`
-        @keyframes ${animName} {
-          from { background-position: 0 0; }
-          to { background-position: -${endShift}px 0; }
-        }
-      `}</style>
-      <div
-        role="img"
-        aria-label={alt}
-        className={className}
-        onAnimationEnd={onEnd}
-        style={{
-          width: `${w}px`,
-          height: `${h}px`,
-          minWidth: `${w}px`,
-          minHeight: `${h}px`,
-          maxWidth: `${w}px`,
-          maxHeight: `${h}px`,
-          backgroundImage: `url("${src}")`,
-          backgroundRepeat: "no-repeat",
-          backgroundSize: `${sheetW}px ${h}px`,
-          backgroundPosition: "0 0",
-          animation: isStatic
-            ? undefined
-            : `${animName} ${duration}s steps(${stepCount}) ${loop ? "infinite" : "1"} ${loop ? "both" : "forwards"}`,
-          imageRendering: "auto",
-          flexShrink: 0,
-          overflow: "hidden",
-          display: "block",
-          boxSizing: "content-box",
-        }}
-      />
-    </>
+    <div
+      role="img"
+      aria-label={alt}
+      className={className}
+      data-anim="held-pose"
+      data-frame={displayFrame}
+      data-fps={fps}
+      data-frames={frames}
+      data-testid="mascot.sprite"
+      style={{
+        width: `${w}px`,
+        height: `${h}px`,
+        minWidth: `${w}px`,
+        minHeight: `${h}px`,
+        maxWidth: `${w}px`,
+        maxHeight: `${h}px`,
+        backgroundImage: `url("${src}")`,
+        backgroundRepeat: "no-repeat",
+        backgroundSize: `${sheetW}px ${h}px`,
+        backgroundPosition: `${x}px 0`,
+        animation: "none",
+        imageRendering: "auto",
+        flexShrink: 0,
+        overflow: "hidden",
+        display: "block",
+        boxSizing: "content-box",
+      }}
+    />
   );
 }
