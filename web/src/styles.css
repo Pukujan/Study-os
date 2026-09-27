@@ -277,6 +277,10 @@ pre.chart { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monosp
 .feedback-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.5rem; }
 .feedback-thanks { color: var(--muted); font-size: 0.9rem; margin-top: 0.5rem; }
 
+/* Step review + presentation regeneration controls (SOS-0016/SOS-0017). */
+.step-review-panel { margin-top: 0.75rem; }
+.regen-controls { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.5rem; }
+
 .voice-controls { display: flex; gap: 0.5rem; align-items: center; margin: 0.5rem 0; }
 .voice-note { margin: 0 0 0 0.5rem; }
 

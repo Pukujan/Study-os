@@ -1,0 +1,23 @@
+{
+  "fixture": "text-only-re-render.json",
+  "synthetic_only": true,
+  "evidence_scope": "system_evaluation",
+  "kind": "clarify_re_render",
+  "expected_code": "MISSING_REGENERATE_PRESENTATION",
+  "note": "Known-bad turn: a same-concept clarification is answered with prose only and no regenerate_presentation payload.",
+  "tutor": {
+    "reply_md": "Think of the box as a sliding frame over the same numbers.",
+    "suggested_action": "example",
+    "regenerate_presentation": null
+  },
+  "before": {
+    "step": {"step_id": "position", "concept_id": "sliding-window.position", "variant": -1, "teach_md": "authored"},
+    "phase": "probe",
+    "presentation_version": 0
+  },
+  "after": {
+    "step": {"step_id": "position", "concept_id": "sliding-window.position", "variant": -1, "teach_md": "authored"},
+    "phase": "probe",
+    "presentation_version": 0
+  }
+}

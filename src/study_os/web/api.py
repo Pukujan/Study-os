@@ -14,12 +14,12 @@ import httpx
 from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-from . import WEB_API_VERSION, auth, packs
+from . import WEB_API_VERSION, auth, e2e_stub, packs
 from .config import Settings, load_settings
 from .db import Database
-from .models import DecisionTransport, InferHubLLM, LLMTransport, OpenRouterJev
+from .models import DecisionTransport, InferHubLLM, LLMTransport, OpenRouterJev, StubLLM
 from .ratelimit import RateLimiter
 from .player.service import PlayerService
 from .service import ServiceError, StudyService
@@ -111,9 +111,19 @@ class FeedbackBody(_Body):
     step_id: str | None = Field(default=None, max_length=120)
     target_kind: str = Field(max_length=16)
     target_id: str = Field(max_length=64)
-    rating: str = Field(max_length=8)
+    rating: int | str | None = None
     reasons: list[str] = Field(default_factory=list)
     free_text: str | None = Field(default=None, max_length=500)
+    presentation_version: int | None = Field(default=None, ge=0)
+    idempotency_key: str | None = Field(default=None, max_length=80)
+
+    @field_validator("rating", mode="before")
+    @classmethod
+    def _rating_is_not_a_boolean(cls, value: Any) -> Any:
+        # bool is an int subclass; a JSON true/false is not a 1-5 review rating.
+        if isinstance(value, bool):
+            raise ValueError("rating must be an integer 1-5")
+        return value
 
 
 class AttemptBody(_Body):
@@ -167,6 +177,10 @@ def create_app(
             jev = OpenRouterJev(settings.openrouter_api_key, settings.openrouter_decisions_url, settings.jev_model)
         if llm is None and settings.inferhub_api_key:
             llm = InferHubLLM(settings.inferhub_api_key, settings.inferhub_base_url)
+        # The SOS-0017 browser gate runs the real player offline: an explicitly
+        # opted-in process gets the deterministic stub instead of a hosted call.
+        if llm is None and e2e_stub.enabled():
+            llm = StubLLM(e2e_stub.policy)
     state: dict[str, Any] = {}
     limiter = RateLimiter()
 
@@ -275,7 +289,7 @@ def create_app(
     def signup(body: SignupBody, request: Request) -> JSONResponse:
         if not settings.local_signup_enabled:
             raise HTTPException(403, "local_signup_disabled")
-        if not limiter.allow("signup:" + _client_ip(request), 10, 3600):
+        if not limiter.allow("signup:" + _client_ip(request), settings.rate_signup_per_hour, 3600):
             raise HTTPException(429, "rate_limited")
         with database().tx() as conn:
             p = auth.signup_local(conn, email=body.email, passphrase=body.passphrase, handle=body.handle, display_name=body.display_name)
@@ -420,7 +434,7 @@ def create_app(
             with database().tx() as conn:
                 if auth.resolve_session(conn, token) is not None:
                     raise HTTPException(409, "already_signed_in")
-        if not limiter.allow("signup:" + _client_ip(request), 10, 3600):
+        if not limiter.allow("signup:" + _client_ip(request), settings.rate_signup_per_hour, 3600):
             raise HTTPException(429, "rate_limited")
         with database().tx() as conn:
             p = auth.create_guest_account(conn)

@@ -7,7 +7,7 @@ JEV_PINNED_MODEL = "typesafe/jev-1.13"
 JEV_FORBIDDEN_ALIASES = ("~typesafe/jev-latest", "typesafe/jev-latest")
 INFERHUB_PRIMARY_ROUTE = "cb/glm-5.3"
 INFERHUB_FALLBACK_ROUTE = "cb/deepseek-v4.1-flash"
-TUTOR_PROMPT_VERSION = "tutor.v2"
+TUTOR_PROMPT_VERSION = "tutor.v3"
 # IRE Top-20 snapshot that informed the route choice (docs/webapp/LLM_ROUTE.md §2).
 PRICE_SNAPSHOT_ID = "ire-top20-8e2b1b323cf9438b1274f321c309729d60f133ef14915895265ca76758570e7c"
 
@@ -59,6 +59,10 @@ class Settings:
     global_daily_spend_usd: float = 3.0
     rate_per_ip_per_min: int = 240
     rate_per_user_per_min: int = 120
+    # Guest/signup account creation shares one per-IP bucket. It stays low in
+    # production but must be raisable so a branch-local gate that starts many
+    # guest lessons in one process is not throttled into a false failure.
+    rate_signup_per_hour: int = 10
     decision_model_enabled: bool = True
     llm_enabled: bool = True
     extra: dict[str, str] = field(default_factory=dict)
@@ -103,6 +107,7 @@ def load_settings() -> Settings:
         global_daily_spend_usd=_float("GLOBAL_DAILY_SPEND_USD", 3.0),
         rate_per_ip_per_min=int(_float("RATE_PER_IP_PER_MIN", 240)),
         rate_per_user_per_min=int(_float("RATE_PER_USER_PER_MIN", 120)),
+        rate_signup_per_hour=int(_float("RATE_SIGNUP_PER_HOUR", 10)),
         decision_model_enabled=_flag("DECISION_MODEL_ENABLED", True),
         llm_enabled=_flag("LLM_ENABLED", True),
     )
