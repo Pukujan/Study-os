@@ -44,3 +44,7 @@ Covers scrub + numbering, teach grounding preference, idempotence, presentation/
 - `/home/box/agent-data/workflows/study-os-golden-tutor/SKILL.md`
 - `/home/box/agent-data/workflows/human-sounding-writing-and-plain-charts/SKILL.md`
 - CGM `docs/HUMAN_SOUNDING_WRITING.md` / `human-sounding-rules.json`
+
+## A19 layout
+
+Teach bodies emit **one numbered sentence per line** (`1) …\n2) …`). Linguistic constraint = simple words; layout = one idea per line. Not a must-match-diagram rule.
