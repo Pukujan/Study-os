@@ -91,4 +91,14 @@ describe("TeachRenderBox", () => {
     );
     expect(curve).toContain('data-teach-render="growth_curve"');
   });
+
+  it("returns null for undefined / untyped frames (Explain-again harden)", () => {
+    const { container, cleanup } = render(<TeachRenderBox frame={undefined as never} />);
+    expect(container.querySelector('[data-testid="teach-render-box"]')).toBeNull();
+    cleanup();
+    const again = render(<TeachRenderBox frame={{} as never} />);
+    expect(again.container.querySelector('[data-testid="teach-render-box"]')).toBeNull();
+    again.cleanup();
+  });
+
 });

@@ -1,14 +1,24 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Frame as FrameType } from "../api";
 import Frame from "./Frame";
+import { sanitizeFrames } from "./frames";
 
 export default function FrameStepper({ frames, label }: { frames: FrameType[]; label?: string }) {
+  const safe = sanitizeFrames(frames);
   const [index, setIndex] = useState(0);
-  const total = frames.length;
+  const total = safe.length;
+
+  // Explain again / presentation rotate can shrink the list while the stepper
+  // still holds a stale index → frames[index] is undefined → frame.type throws.
+  useEffect(() => {
+    setIndex((i) => (total === 0 ? 0 : Math.min(i, total - 1)));
+  }, [total]);
+
   if (total === 0) return null;
 
   const showControls = total > 1;
-  const current = frames[index];
+  const current = safe[Math.min(index, total - 1)];
+  if (!current) return null;
 
   return (
     <div className="frame-stepper" aria-label={label || "Step through frames"}>
@@ -25,12 +35,12 @@ export default function FrameStepper({ frames, label }: { frames: FrameType[]; l
             Back
           </button>
           <span className="frame-stepper-count" aria-live="polite">
-            {index + 1} of {total}
+            {Math.min(index, total - 1) + 1} of {total}
           </span>
           <button
             className="btn small"
             onClick={() => setIndex((i) => Math.min(total - 1, i + 1))}
-            disabled={index === total - 1}
+            disabled={index >= total - 1}
             aria-label="Next frame"
             data-track="framestepper.next"
           >

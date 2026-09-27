@@ -90,6 +90,21 @@ describe("applyPresentation", () => {
     expect(applyPresentation(before, update({ version: 2, previous_version: 1 }))).toBe(before);
     expect(applyPresentation(before, update({ version: 1, previous_version: 0 }))).toBe(before);
   });
+
+  it("drops malformed teach_frames so rotate cannot ship holes", () => {
+    const before = view();
+    const after = applyPresentation(
+      before,
+      update({
+        teach_frames: [
+          { type: "box_index", array: [1], show_positions: true, show_indices: false },
+          null as unknown as never,
+          { type: "growth_workers", n_values: [2] },
+        ],
+      }),
+    );
+    expect(after.step.teach_frames).toHaveLength(2);
+    expect(after.step.teach_frames.every((f) => typeof f.type === "string")).toBe(true);
+  });
+
 });
-
-

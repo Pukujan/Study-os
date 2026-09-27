@@ -42,4 +42,33 @@ describe("FrameStepper", () => {
     expect(container.querySelector(".frame-stepper-count")?.textContent).toBe("1 of 3");
     cleanup();
   });
+
+  it("survives Explain-again shrink after Next (stale index must not read .type)", () => {
+    const multi = [
+      { type: "growth_curve" as const, n_values: [2, 4], series_multi: [{ label: "O(1)", values: [1, 1] }] },
+      { type: "growth_workers" as const, n_values: [2, 4] },
+    ];
+    const { container, cleanup, rerender } = render(<FrameStepper frames={multi} />);
+    const next = container.querySelector<HTMLButtonElement>("button[aria-label='Next frame']");
+    act(() => next?.click());
+    expect(container.querySelector(".frame-stepper-count")?.textContent).toBe("2 of 2");
+    // Second Explain again often collapses back to a single alternate frame.
+    expect(() => rerender(<FrameStepper frames={[multi[0]]} />)).not.toThrow();
+    expect(container.querySelector(".frame-stepper-count")).toBeNull();
+    expect(container.textContent).not.toMatch(/Something broke/);
+    const svgs = queryAllDeep(container, "svg");
+    expect(svgs.length).toBeGreaterThan(0);
+    cleanup();
+  });
+
+  it("drops malformed frames so holes never reach TeachRenderBox", () => {
+    const { container, cleanup } = render(
+      <FrameStepper
+        frames={[undefined as unknown as (typeof frames)[0], frames[0], null as unknown as (typeof frames)[0]]}
+      />,
+    );
+    expect(container.querySelector(".frame-stepper")).not.toBeNull();
+    expect(queryAllDeep(container, "svg").length).toBe(1);
+    cleanup();
+  });
 });
