@@ -1,0 +1,5 @@
+title=File:4 es mayor que 2.png
+license=CC BY-SA 4.0
+mime=image/png
+size=3692
+url=https://upload.wikimedia.org/wikipedia/commons/2/2f/4_es_mayor_que_2.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original

@@ -1,7 +1,22 @@
-# Growth-ops datasets
+# Big-O growth datasets (formula-derived)
 
-- `growth_ops_simple_4class.csv` — **teach default**. Columns: n, O_1, O_logn, O_n, O_n2 (c=1). Alex 2026-09-27: no n!/2^n/√n clutter.
-- `growth_ops_c1_n1_64.csv` — optional reference full table (includes n log n, 2^n, n!, …).
-- `growth_ops_cheatsheet_sizes.csv` — optional reference at power-of-two sizes.
+These CSVs are **not invented pedagogical metaphors**. They tabulate idealized operation
+counts for standard asymptotic classes with leading coefficient **c = 1**, matching the
+assumption stated on Wikimedia Commons
+[`Comparison_computational_complexity.svg`](https://commons.wikimedia.org/wiki/File:Comparison_computational_complexity.svg)
+(author Cmglee, CC BY-SA 4.0): "assuming a coefficient of 1".
 
-Formulas are mathematical facts; packaging CC0. Family mirrors Cmglee/OpenDSA/cheatsheet c=1 assumption.
+Formulas:
+- O(1) = 1
+- O(log n) = log2(n)
+- O(n) = n
+- O(n log n) = n * log2(n)
+- O(n²) = n²
+- O(2ⁿ) = 2ⁿ (capped where noted)
+- O(n!) = n! (capped where noted)
+
+Files:
+- `growth_ops_c1_n1_64.csv` — dense n=1..64
+- `growth_ops_cheatsheet_sizes.csv` — common teaching sizes
+
+Do not treat overflow/inf rows as measured runtime.

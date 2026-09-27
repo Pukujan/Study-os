@@ -1,0 +1,6 @@
+title=File:Number-line.svg
+license=CC0
+mime=image/svg+xml
+size=1600
+url=https://upload.wikimedia.org/wikipedia/commons/9/93/Number-line.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original
+artist=<a href="//commons.wikimedia.org/wiki/User:Hakunamenta" title="User:Hakunamenta">Hakunamenta</a>

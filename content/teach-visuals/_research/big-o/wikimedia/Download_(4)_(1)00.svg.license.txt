@@ -1,0 +1,5 @@
+title=File:Download (4) (1)00.svg
+license=CC BY-SA 4.0
+mime=image/svg+xml
+size=45936
+url=https://upload.wikimedia.org/wikipedia/commons/e/e6/Download_%284%29_%281%2900.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original

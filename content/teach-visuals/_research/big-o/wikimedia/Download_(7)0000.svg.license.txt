@@ -1,0 +1,5 @@
+title=File:Download (7)0000.svg
+license=CC BY-SA 4.0
+mime=image/svg+xml
+size=36539
+url=https://upload.wikimedia.org/wikipedia/commons/a/af/Download_%287%290000.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original

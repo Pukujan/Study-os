@@ -1,0 +1,5 @@
+title=File:Mplwp factorial stirling loglog.svg
+license=CC BY 3.0
+mime=image/svg+xml
+size=68557
+url=https://upload.wikimedia.org/wikipedia/commons/a/a4/Mplwp_factorial_stirling_loglog.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original

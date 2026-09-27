@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   version="1.0"
+   width="231.89896"
+   height="212.13052"
+   id="svg4769">
+  <defs
+     id="defs4771">
+    <linearGradient
+       id="linearGradient5676">
+      <stop
+         style="stop-color:black;stop-opacity:1"
+         offset="0"
+         id="stop5678" />
+      <stop
+         style="stop-color:black;stop-opacity:0"
+         offset="1"
+         id="stop5680" />
+    </linearGradient>
+    <radialGradient
+       cx="427.70395"
+       cy="471.16898"
+       r="115.94948"
+       fx="427.70395"
+       fy="471.16898"
+       id="radialGradient5682"
+       xlink:href="#linearGradient5676"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1,0,0,0.914754,121.0557,51.95771)" />
+  </defs>
+  <g
+     transform="translate(-281.1934,-349.1541)"
+     id="layer1">
+    <text
+       x="284.29248"
+       y="554.91931"
+       style="font-size:292.73910522px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#00253c;fill-opacity:1;stroke:black;stroke-width:0.939987px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:OpenSymbol"
+       id="text4763"
+       xml:space="preserve"><tspan
+         x="284.29248"
+         y="554.91931"
+         style="stroke-width:0.939987"
+         id="tspan4767">ℤ</tspan></text>
+  </g>
+</svg>

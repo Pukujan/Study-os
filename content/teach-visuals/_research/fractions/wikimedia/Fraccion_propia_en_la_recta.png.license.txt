@@ -1,0 +1,6 @@
+title=File:Fraccion propia en la recta.png
+license=CC BY-SA 4.0
+mime=image/png
+size=17117
+url=https://upload.wikimedia.org/wikipedia/commons/9/9a/Fraccion_propia_en_la_recta.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original
+artist=numerracionales

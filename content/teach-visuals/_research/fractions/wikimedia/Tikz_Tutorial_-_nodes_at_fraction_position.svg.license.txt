@@ -1,0 +1,6 @@
+title=File:Tikz Tutorial - nodes at fraction position.svg
+license=CC BY-SA 4.0
+mime=image/svg+xml
+size=5955
+url=https://upload.wikimedia.org/wikipedia/commons/9/93/Tikz_Tutorial_-_nodes_at_fraction_position.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original
+author_html=<a href="//commons.wikimedia.org/w/index.php?title=User:KlasN&amp;action=edit&amp;redlink=1" class="new" title="User:KlasN (page does not exist)">KlasN</a>

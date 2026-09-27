@@ -1,0 +1,5 @@
+title=File:Ejemplo 2 de inecuación 2.png
+license=CC BY-SA 4.0
+mime=image/png
+size=7097
+url=https://upload.wikimedia.org/wikipedia/commons/5/55/Ejemplo_2_de_inecuaci%C3%B3n_2.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original

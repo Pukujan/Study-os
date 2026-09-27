@@ -1,0 +1,5 @@
+title=File:Quadratic Golden Mean Siegel Disc IIM.png
+license=CC BY-SA 3.0
+mime=image/png
+size=27633
+url=https://upload.wikimedia.org/wikipedia/commons/f/fd/Quadratic_Golden_Mean_Siegel_Disc_IIM.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original

@@ -1,0 +1,6 @@
+title=File:Number line multiplication with 1.svg
+license=CC BY 3.0
+mime=image/svg+xml
+size=13604
+url=https://upload.wikimedia.org/wikipedia/commons/1/1f/Number_line_multiplication_with_1.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original
+author_html=<a rel="nofollow" class="external text" href="http://kulla.me/">Stephan Kulla</a> (<a href="//commons.wikimedia.org/wiki/User:Stephan_Kulla" title="User:Stephan Kulla">User:Stephan Kulla</a>)

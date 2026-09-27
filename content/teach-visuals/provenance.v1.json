@@ -7,143 +7,2133 @@
     "prefer": [
       "OSS",
       "public-domain",
-      "CC BY/BY-SA with attribution"
+      "CC BY/BY-SA",
+      "US gov PD"
     ],
-    "vision_role": "verify live TeachRenderBox render matches curated reference \u2014 never generate diagrams",
-    "default_complexity_visual": "multi_class_growth_curve",
-    "default_fraction_visual": "number_line"
+    "vision_role": "verify only",
+    "interactive_graphs": "RESEARCH TOPIC only \u2014 docs/research-visuals/INTERACTIVE_GRAPH_PEDAGOGY.md",
+    "automation": "tools/teach_visual_catalog_check.py \u2014 every lesson\u00d7step mapped; packs are illustrative seeds"
+  },
+  "stats": {
+    "curated_assets": 86,
+    "research_files": 144,
+    "curated_bytes": 4051793,
+    "research_bytes": 58968917
   },
   "assets": [
     {
-      "asset_id": "big-o.comparison-computational-complexity",
-      "path": "big-o/comparison-computational-complexity.svg",
-      "public_src": "/teach-visuals/big-o/comparison-computational-complexity.svg",
-      "title": "Comparison of common computational complexities",
-      "visual_type": "multi_class_growth_curve",
-      "topics": [
-        "big-o",
-        "complexity",
-        "growth-rate"
-      ],
+      "asset_id": "big-o-big-o-notation",
+      "path": "big-o/Big-O-notation.png",
+      "public_src": "/teach-visuals/big-o/Big-O-notation.png",
+      "title": "Big-O-notation",
+      "sha256": "9274ba59b0cbd162a3ef89bdf710a7bcee385169092cfbe232f90b8bc5b106f7",
+      "bytes": 4201,
       "source": {
-        "name": "Wikimedia Commons",
-        "page": "https://commons.wikimedia.org/wiki/File:Comparison_computational_complexity.svg",
-        "author": "Cmglee",
-        "license": "CC BY-SA 4.0",
-        "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/8/89/Big-O-notation.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "Public domain",
+        "author": "see source",
         "retrieved": "2026-09-27"
-      },
-      "pedagogy_cites": [
-        {
-          "id": "farghally2017",
-          "note": "Algorithm Analysis Visualizations (AAVs) improve engagement/performance vs prose-only AA (OpenDSA / Virginia Tech)."
-        },
-        {
-          "id": "bigocheatsheet-family",
-          "note": "Multi-class O(1)/log n/n/n\u00b2 overlay is the dominant cheatsheet/chart family used in CS courses."
-        }
-      ],
-      "sha256": "fd6376d5ee5e6804ff6825e36034e43091a248d0ed72bdf8ff65b3a0924c2123",
-      "bytes": 13668
+      }
     },
     {
-      "asset_id": "big-o.notation-asymptotic",
+      "asset_id": "big-o-big-o-cheatsheet",
+      "path": "big-o/Big-O_Cheatsheet.png",
+      "public_src": "/teach-visuals/big-o/Big-O_Cheatsheet.png",
+      "title": "Big-O Cheatsheet",
+      "sha256": "304489ce090c8ff2d36f53a3f636e112abd7f25aab33984e6ea1c367da4959c3",
+      "bytes": 66265,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/4/4e/Big-O_Cheatsheet.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "Public domain",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "big-o-big-o-notation-lpc",
+      "path": "big-o/Big-O_Notation_LPC.png",
+      "public_src": "/teach-visuals/big-o/Big-O_Notation_LPC.png",
+      "title": "Big-O Notation LPC",
+      "sha256": "069df5daccdd1a340d58581462438a7941e46678e15fec8c7d2ce88ce2ffd138",
+      "bytes": 86180,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/e/ec/Big-O_Notation_LPC.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY-SA 3.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "big-o-big-o",
+      "path": "big-o/Big_O.jpg",
+      "public_src": "/teach-visuals/big-o/Big_O.jpg",
+      "title": "Big O",
+      "sha256": "c0fac339e2d4b3cbee103736c94b92e12cc9e52e2d2513397b7f1620033c72e4",
+      "bytes": 955039,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/0/06/Big_O.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY 2.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "big-o-big-o-notation-poster",
+      "path": "big-o/Big_O_notation_poster.png",
+      "public_src": "/teach-visuals/big-o/Big_O_notation_poster.png",
+      "title": "Big O notation poster",
+      "sha256": "924a9ab2a724b01f7a63f834c7c4082221a72db1c028fbcfe4ef833cddc8fa1b",
+      "bytes": 243516,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/b/b0/Big_O_notation_poster.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY 4.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "big-o-big-o-notation",
+      "path": "big-o/Big_o_notation.png",
+      "public_src": "/teach-visuals/big-o/Big_o_notation.png",
+      "title": "Big o notation",
+      "sha256": "2ebea355957209dec9612fde77e75d96b83c57cc66d232f0a7b3ba33808472f7",
+      "bytes": 29738,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/4/4b/Big_o_notation.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY 4.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "big-o-comparison-computational-complexity-from-upload",
+      "path": "big-o/Comparison_computational_complexity.from-upload.svg",
+      "public_src": "/teach-visuals/big-o/Comparison_computational_complexity.from-upload.svg",
+      "title": "Comparison computational complexity.from-upload",
+      "sha256": "fd6376d5ee5e6804ff6825e36034e43091a248d0ed72bdf8ff65b3a0924c2123",
+      "bytes": 13668,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://commons.wikimedia.org/wiki/Special:FilePath/Comparison_computational_complexity.from-upload.svg",
+        "license": "see sidecar",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "big-o-comparison-computational-complexity",
+      "path": "big-o/Comparison_computational_complexity.svg",
+      "public_src": "/teach-visuals/big-o/Comparison_computational_complexity.svg",
+      "title": "Comparison computational complexity",
+      "sha256": "fd6376d5ee5e6804ff6825e36034e43091a248d0ed72bdf8ff65b3a0924c2123",
+      "bytes": 13668,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/7/7e/Comparison_computational_complexity.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY-SA 4.0",
+        "author": "<a href=\"//commons.wikimedia.org/wiki/User:Cmglee\" title=\"User:Cmglee\">Cmglee</a>",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "big-o-complexity-classes",
+      "path": "big-o/Complexity_classes.svg",
+      "public_src": "/teach-visuals/big-o/Complexity_classes.svg",
+      "title": "Complexity classes",
+      "sha256": "34b8acdca4ccbcfa64790f8e512d337561c55284b947bfba82e2953eb690b43c",
+      "bytes": 6144,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/b/bc/Complexity_classes.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "Public domain",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "big-o-cotasuperiorasintotica",
+      "path": "big-o/CotaSuperiorAsintotica.png",
+      "public_src": "/teach-visuals/big-o/CotaSuperiorAsintotica.png",
+      "title": "CotaSuperiorAsintotica",
+      "sha256": "159e0cb93cd26f704ecc4e5ab8517671de3e540271ac5486952797744045e202",
+      "bytes": 3553,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/3/39/CotaSuperiorAsintotica.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY-SA 3.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "big-o-dsa-o-intuition",
+      "path": "big-o/DSA_O_intuition.png",
+      "public_src": "/teach-visuals/big-o/DSA_O_intuition.png",
+      "title": "DSA O intuition",
+      "sha256": "e6b39ceb587baef87f7b41778c9534e513708ecd45804233e44783cc82e61e5f",
+      "bytes": 4202,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/9/99/DSA_O_intuition.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY-SA 3.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "big-o-exponential-growth",
+      "path": "big-o/Exponential_growth.svg",
+      "public_src": "/teach-visuals/big-o/Exponential_growth.svg",
+      "title": "Exponential growth",
+      "sha256": "25702c87da61a83ae12eac760c75a70ce3880c215856ad524daee01eb5b3f01b",
+      "bytes": 94505,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/3/31/Exponential_growth.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY-SA 3.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "big-o-function-growth",
+      "path": "big-o/Function_growth.gif",
+      "public_src": "/teach-visuals/big-o/Function_growth.gif",
+      "title": "Function growth",
+      "sha256": "e25d84310fa6a747e5c3eca1380411aa9cc3504c3b74dec5d5163a26e28b01b7",
+      "bytes": 6067,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/9/95/Function_growth.gif?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY-SA 3.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "big-o-linear-function",
+      "path": "big-o/Linear_function.svg",
+      "public_src": "/teach-visuals/big-o/Linear_function.svg",
+      "title": "Linear function",
+      "sha256": "7be8c0590bb77093548514cd80de7ed27034eeee89e3b05437223a5b09631982",
+      "bytes": 3592,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/8/87/Linear_function.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "Public domain",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "big-o-merge-sort-animation",
+      "path": "big-o/Merge_sort_animation.gif",
+      "public_src": "/teach-visuals/big-o/Merge_sort_animation.gif",
+      "title": "Merge sort animation",
+      "sha256": "4759b780421d086dd933833ecdc798261b92f516666c9a517e9e169cc14477e2",
+      "bytes": 125470,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/8/8e/Merge_sort_animation.gif?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY-SA 2.5",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "big-o-mplwp-factorial-stirling-loglog",
+      "path": "big-o/Mplwp_factorial_stirling_loglog.svg",
+      "public_src": "/teach-visuals/big-o/Mplwp_factorial_stirling_loglog.svg",
+      "title": "Mplwp factorial stirling loglog",
+      "sha256": "fab222fbf0e710d3c817a16f08e45b4fce8f3a39bb4bccf58b99599db062344b",
+      "bytes": 68557,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/a/a4/Mplwp_factorial_stirling_loglog.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY 3.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "big-o-o-n-vs-o-n-p",
+      "path": "big-o/O(n)_vs_O(n-p).png",
+      "public_src": "/teach-visuals/big-o/O(n)_vs_O(n-p).png",
+      "title": "O(n) vs O(n-p)",
+      "sha256": "a9517dd94877cde5d2e53c17c79b7555694b305820239343d99bb9322023d5b9",
+      "bytes": 267385,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/4/41/O%28n%29_vs_O%28n-p%29.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY-SA 4.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "big-o-quadratic-golden-mean-siegel-disc-iim",
+      "path": "big-o/Quadratic_Golden_Mean_Siegel_Disc_IIM.png",
+      "public_src": "/teach-visuals/big-o/Quadratic_Golden_Mean_Siegel_Disc_IIM.png",
+      "title": "Quadratic Golden Mean Siegel Disc IIM",
+      "sha256": "7f81057ec52b6f70ba2add49bad5c8e105749c963d412a34a284168fbc85b27d",
+      "bytes": 27633,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/f/fd/Quadratic_Golden_Mean_Siegel_Disc_IIM.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY-SA 3.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "big-o-quadratic-function",
+      "path": "big-o/Quadratic_function.svg",
+      "public_src": "/teach-visuals/big-o/Quadratic_function.svg",
+      "title": "Quadratic function",
+      "sha256": "23a6873124aa0b5647bd61117d8609577264b5221771308e6dbc4e4ba3d12f0a",
+      "bytes": 5738,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/b/bd/Quadratic_function.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "Public domain",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "big-o-yorick215",
+      "path": "big-o/Yorick215.svg",
+      "public_src": "/teach-visuals/big-o/Yorick215.svg",
+      "title": "Yorick215",
+      "sha256": "dee286450c68d95716968c071267d976cc59a3941e7cf04d461c659bd7028bc5",
+      "bytes": 8822,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/c/cc/Yorick215.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY-SA 3.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "big-o-big-o-cheatsheet",
+      "path": "big-o/big-o-cheatsheet.png",
+      "public_src": "/teach-visuals/big-o/big-o-cheatsheet.png",
+      "title": "big-o-cheatsheet",
+      "sha256": "304489ce090c8ff2d36f53a3f636e112abd7f25aab33984e6ea1c367da4959c3",
+      "bytes": 66265,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://commons.wikimedia.org/wiki/Special:FilePath/big-o-cheatsheet.png",
+        "license": "see sidecar",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "big-o-big-o-notation-curves",
+      "path": "big-o/big-o-notation-curves.png",
+      "public_src": "/teach-visuals/big-o/big-o-notation-curves.png",
+      "title": "big-o-notation-curves",
+      "sha256": "2ebea355957209dec9612fde77e75d96b83c57cc66d232f0a7b3ba33808472f7",
+      "bytes": 29738,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://commons.wikimedia.org/wiki/Special:FilePath/big-o-notation-curves.png",
+        "license": "see sidecar",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "big-o-big-o-notation",
       "path": "big-o/big-o-notation.png",
       "public_src": "/teach-visuals/big-o/big-o-notation.png",
-      "title": "Big-O asymptotic bound sketch",
-      "visual_type": "asymptotic_bound_sketch",
-      "topics": [
-        "big-o"
-      ],
-      "source": {
-        "name": "Wikimedia Commons",
-        "page": "https://commons.wikimedia.org/wiki/File:Big-O-notation.png",
-        "author": "w:it:User:Fede_Reghe",
-        "license": "Public domain",
-        "license_url": "https://creativecommons.org/publicdomain/mark/1.0/",
-        "retrieved": "2026-09-27"
-      },
-      "pedagogy_cites": [],
+      "title": "big-o-notation",
       "sha256": "9274ba59b0cbd162a3ef89bdf710a7bcee385169092cfbe232f90b8bc5b106f7",
-      "bytes": 4201
-    },
-    {
-      "asset_id": "fractions.number-line",
-      "path": "fractions/number-line.svg",
-      "public_src": "/teach-visuals/fractions/number-line.svg",
-      "title": "Real number line (-9..9)",
-      "visual_type": "number_line",
-      "topics": [
-        "fractions",
-        "magnitude"
-      ],
+      "bytes": 4201,
       "source": {
-        "name": "Wikimedia Commons",
-        "page": "https://commons.wikimedia.org/wiki/File:Number-line.svg",
-        "author": "Hakunamenta",
-        "license": "CC0 1.0",
-        "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://commons.wikimedia.org/wiki/Special:FilePath/big-o-notation.png",
+        "license": "see sidecar",
+        "author": "see source",
         "retrieved": "2026-09-27"
-      },
-      "pedagogy_cites": [
-        {
-          "id": "siegler2011",
-          "note": "Integrated theory: fractions as magnitudes on a mental number line (Cog Psych)."
-        },
-        {
-          "id": "hamdan-gunderson",
-          "note": "Number-line training causally improves fraction magnitude understanding (issue #161 starter cite)."
-        }
-      ],
-      "sha256": "0b0730f7b0d345e77e3abcadf5e702703d8ae5b7b169191604f076388023fbff",
-      "bytes": 1600
+      }
     },
     {
-      "asset_id": "fractions.propia-en-recta",
-      "path": "fractions/fraccion-propia-en-la-recta.png",
-      "public_src": "/teach-visuals/fractions/fraccion-propia-en-la-recta.png",
-      "title": "Proper fractions located on number lines",
-      "visual_type": "fraction_number_line",
-      "topics": [
-        "fractions"
-      ],
+      "asset_id": "big-o-comparison-computational-complexity",
+      "path": "big-o/comparison-computational-complexity.svg",
+      "public_src": "/teach-visuals/big-o/comparison-computational-complexity.svg",
+      "title": "comparison-computational-complexity",
+      "sha256": "fd6376d5ee5e6804ff6825e36034e43091a248d0ed72bdf8ff65b3a0924c2123",
+      "bytes": 13668,
       "source": {
-        "name": "Wikimedia Commons",
-        "page": "https://commons.wikimedia.org/wiki/File:Fraccion_propia_en_la_recta.png",
-        "author": "numerracionales",
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://commons.wikimedia.org/wiki/Special:FilePath/comparison-computational-complexity.svg",
+        "license": "see sidecar",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "big-o",
+      "path": "big-o/\u062e\u0637_\u0627\u0644\u0623\u0639\u062f\u0627\u062f.jpg",
+      "public_src": "/teach-visuals/big-o/\u062e\u0637_\u0627\u0644\u0623\u0639\u062f\u0627\u062f.jpg",
+      "title": "\u062e\u0637 \u0627\u0644\u0623\u0639\u062f\u0627\u062f",
+      "sha256": "75720f75164f2614d909697e516df446913791361bb5145f7f47e94c5ae84509",
+      "bytes": 11972,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/4/44/%D8%AE%D8%B7_%D8%A7%D9%84%D8%A3%D8%B9%D8%AF%D8%A7%D8%AF.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
         "license": "CC BY-SA 4.0",
-        "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+        "author": "see source",
         "retrieved": "2026-09-27"
-      },
-      "pedagogy_cites": [
-        {
-          "id": "ies-fractions-toolkit",
-          "note": "IES REL Teaching Fractions Toolkit Module 1 emphasizes number-line representations."
-        }
-      ],
-      "sha256": "4846d6cb8d7a11342e5bacf22efe4873a900af265078f086529f54046e818c7a",
-      "bytes": 17117
+      }
     },
     {
-      "asset_id": "fractions.three-fourths-area",
+      "asset_id": "fractions-180-degree-rotation",
+      "path": "fractions/180-degree_rotation.png",
+      "public_src": "/teach-visuals/fractions/180-degree_rotation.png",
+      "title": "180-degree rotation",
+      "sha256": "a4528b2ca23367e552b84b61c878b4e76afc83706d05124de7ffb286826331e0",
+      "bytes": 7047,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/0/04/180-degree_rotation.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY-SA 3.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-3-4-fraction",
       "path": "fractions/3-4-fraction.svg",
       "public_src": "/teach-visuals/fractions/3-4-fraction.svg",
-      "title": "Area model for 3/4",
-      "visual_type": "fraction_area",
-      "topics": [
-        "fractions"
-      ],
-      "source": {
-        "name": "Wikimedia Commons",
-        "page": "https://commons.wikimedia.org/wiki/File:3_4_fraction.svg",
-        "author": "Pbroks13",
-        "license": "Public domain",
-        "license_url": "https://creativecommons.org/publicdomain/mark/1.0/",
-        "retrieved": "2026-09-27"
-      },
-      "pedagogy_cites": [],
+      "title": "3-4-fraction",
       "sha256": "47b0db227e8805f8f2dbe0323cbce75c6b11f4b1fcf2d1c1ee27f3b192ee6b7c",
-      "bytes": 2532
+      "bytes": 2532,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://commons.wikimedia.org/wiki/Special:FilePath/3-4-fraction.svg",
+        "license": "see sidecar",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-3-4-fraction",
+      "path": "fractions/3_4_fraction.svg",
+      "public_src": "/teach-visuals/fractions/3_4_fraction.svg",
+      "title": "3 4 fraction",
+      "sha256": "47b0db227e8805f8f2dbe0323cbce75c6b11f4b1fcf2d1c1ee27f3b192ee6b7c",
+      "bytes": 2532,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/f/f6/3_4_fraction.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "Public domain",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-4-es-mayor-que-2",
+      "path": "fractions/4_es_mayor_que_2.png",
+      "public_src": "/teach-visuals/fractions/4_es_mayor_que_2.png",
+      "title": "4 es mayor que 2",
+      "sha256": "9365e786884b79cecdc72c2023baaa541929d94bbbb97e57d63acf34a2275373",
+      "bytes": 3692,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/2/2f/4_es_mayor_que_2.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY-SA 4.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-absolutevaluediagram",
+      "path": "fractions/AbsoluteValueDiagram.svg",
+      "public_src": "/teach-visuals/fractions/AbsoluteValueDiagram.svg",
+      "title": "AbsoluteValueDiagram",
+      "sha256": "639c6fc6b1e23be741fb39d1e8566eb2789f6cfce8509909ae8d13a209fcd4cf",
+      "bytes": 7647,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/f/f1/AbsoluteValueDiagram.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY-SA 4.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-absolute-value-number-line",
+      "path": "fractions/Absolute_value_number_line.jpg",
+      "public_src": "/teach-visuals/fractions/Absolute_value_number_line.jpg",
+      "title": "Absolute value number line",
+      "sha256": "a30cae8c9bad8ac41343e3a9e5b9c9eda4649f0efc025f995e16a4088fed3991",
+      "bytes": 61534,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/d/da/Absolute_value_number_line.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-algebra1-01-fig001-rapgeoi",
+      "path": "fractions/Algebra1_01_fig001_rapgeoi.svg",
+      "public_src": "/teach-visuals/fractions/Algebra1_01_fig001_rapgeoi.svg",
+      "title": "Algebra1 01 fig001 rapgeoi",
+      "sha256": "9a03fe0cdd8e3ccb984265e914a4c13bb8f42223fad487d708ec96de708bf235",
+      "bytes": 23249,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/4/45/Algebra1_01_fig001_rapgeoi.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY 3.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-algebra1-01-fig002-addmol",
+      "path": "fractions/Algebra1_01_fig002_addmol.svg",
+      "public_src": "/teach-visuals/fractions/Algebra1_01_fig002_addmol.svg",
+      "title": "Algebra1 01 fig002 addmol",
+      "sha256": "438ada123506f4796af0f4ebc3766ef202647c35864fe883648e52e856131d42",
+      "bytes": 17690,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/8/84/Algebra1_01_fig002_addmol.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY 3.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-algebra1-01-fig003-sotdivi",
+      "path": "fractions/Algebra1_01_fig003_sotdivi.svg",
+      "public_src": "/teach-visuals/fractions/Algebra1_01_fig003_sotdivi.svg",
+      "title": "Algebra1 01 fig003 sotdivi",
+      "sha256": "83eb8c28c29fd6c13ac1a7a2fda733ec78846165e6d7c14490adc667e3e17a2e",
+      "bytes": 17667,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/d/d7/Algebra1_01_fig003_sotdivi.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY 3.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-algebra1-01-fig004-sotdivii",
+      "path": "fractions/Algebra1_01_fig004_sotdivii.svg",
+      "public_src": "/teach-visuals/fractions/Algebra1_01_fig004_sotdivii.svg",
+      "title": "Algebra1 01 fig004 sotdivii",
+      "sha256": "57d20bf89eaca9f3153dec69fba431a317b82a8309386aae315fb0f5b8032a0e",
+      "bytes": 18881,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/9/92/Algebra1_01_fig004_sotdivii.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY 3.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-algebra1-03-fig021-perretre",
+      "path": "fractions/Algebra1_03_fig021_perretre.svg",
+      "public_src": "/teach-visuals/fractions/Algebra1_03_fig021_perretre.svg",
+      "title": "Algebra1 03 fig021 perretre",
+      "sha256": "89e77499fde563fb0e51c43b6cb13e9be02515ad3c68c661c61b5e49ce5880fc",
+      "bytes": 4458,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/5/5a/Algebra1_03_fig021_perretre.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY 3.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-algebra1-03-fig022a-rettafraz",
+      "path": "fractions/Algebra1_03_fig022a_rettafraz.svg",
+      "public_src": "/teach-visuals/fractions/Algebra1_03_fig022a_rettafraz.svg",
+      "title": "Algebra1 03 fig022a rettafraz",
+      "sha256": "7fae571ea211e358c1fff176c03d10f75389d8e98fc579eb244ec00a26adbf43",
+      "bytes": 21614,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/3/3a/Algebra1_03_fig022a_rettafraz.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY 3.0",
+        "author": "Dimitrios Vrettos",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-algebra1-03-fig022b-rettafraz",
+      "path": "fractions/Algebra1_03_fig022b_rettafraz.svg",
+      "public_src": "/teach-visuals/fractions/Algebra1_03_fig022b_rettafraz.svg",
+      "title": "Algebra1 03 fig022b rettafraz",
+      "sha256": "b68e2099379e6f05bc778983fee0c1f60eae99b3c6d4cd50f78e5e029f89ff0d",
+      "bytes": 13918,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/e/e7/Algebra1_03_fig022b_rettafraz.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY 3.0",
+        "author": "Dimitrios Vrettos",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-algebra1-fnz-fig011-ret",
+      "path": "fractions/Algebra1_fnz_fig011_ret.svg",
+      "public_src": "/teach-visuals/fractions/Algebra1_fnz_fig011_ret.svg",
+      "title": "Algebra1 fnz fig011 ret",
+      "sha256": "24ad7a00668fa288e4219ca2cc3e42419301c5cf32eceae1458e658815af26f8",
+      "bytes": 19535,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/7/77/Algebra1_fnz_fig011_ret.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY 3.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-algebra1-fnz-fig012-ret",
+      "path": "fractions/Algebra1_fnz_fig012_ret.svg",
+      "public_src": "/teach-visuals/fractions/Algebra1_fnz_fig012_ret.svg",
+      "title": "Algebra1 fnz fig012 ret",
+      "sha256": "55cfca67e6e48ac5a975064446d770700b82ea64341c3ab5b380d78c3d977c2c",
+      "bytes": 9617,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/f/f2/Algebra1_fnz_fig012_ret.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY 3.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-antecesor",
+      "path": "fractions/Antecesor.png",
+      "public_src": "/teach-visuals/fractions/Antecesor.png",
+      "title": "Antecesor",
+      "sha256": "5583ebccd052023c6fa9bd5d0f968cdcd893e8428d927fa2b146c03025429a2d",
+      "bytes": 5582,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/d/de/Antecesor.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY-SA 4.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-arithmetic-mean",
+      "path": "fractions/Arithmetic_mean.PNG",
+      "public_src": "/teach-visuals/fractions/Arithmetic_mean.PNG",
+      "title": "Arithmetic mean",
+      "sha256": "a8ce051269dcd8955df237051d272af70286b0beb96b780bb935d857610b3be2",
+      "bytes": 3095,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/3/36/Arithmetic_mean.PNG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "Public domain",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-bieu-dien-tap-nghiem-cua-x-lon-hon-12",
+      "path": "fractions/Bieu_dien_tap_nghiem_cua_x_lon_hon_-12.svg",
+      "public_src": "/teach-visuals/fractions/Bieu_dien_tap_nghiem_cua_x_lon_hon_-12.svg",
+      "title": "Bieu dien tap nghiem cua x lon hon -12",
+      "sha256": "4e073937b1e698f541d919862b0d25d52fa0546365824aa8680f86873e867448",
+      "bytes": 13221,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/0/0a/Bieu_dien_tap_nghiem_cua_x_lon_hon_-12.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY-SA 3.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-bieu-dien-tap-nghiem-cua-x-lon-hon-2",
+      "path": "fractions/Bieu_dien_tap_nghiem_cua_x_lon_hon_2.svg",
+      "public_src": "/teach-visuals/fractions/Bieu_dien_tap_nghiem_cua_x_lon_hon_2.svg",
+      "title": "Bieu dien tap nghiem cua x lon hon 2",
+      "sha256": "78fd491193dce315d5bb33e1b1ebdade929a04ab0c64e9641cc0020ea6745212",
+      "bytes": 22803,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/a/a6/Bieu_dien_tap_nghiem_cua_x_lon_hon_2.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY-SA 3.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-bieu-dien-tap-nghiem-cua-x-lon-hon-3",
+      "path": "fractions/Bieu_dien_tap_nghiem_cua_x_lon_hon_3.svg",
+      "public_src": "/teach-visuals/fractions/Bieu_dien_tap_nghiem_cua_x_lon_hon_3.svg",
+      "title": "Bieu dien tap nghiem cua x lon hon 3",
+      "sha256": "c6c1628ac6f5d078a367288595c12d92ac238971584d616ec6660cb6b3e092eb",
+      "bytes": 22803,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/0/08/Bieu_dien_tap_nghiem_cua_x_lon_hon_3.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY-SA 3.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-bieu-dien-tap-nghiem-cua-x-lon-hon-5",
+      "path": "fractions/Bieu_dien_tap_nghiem_cua_x_lon_hon_5.svg",
+      "public_src": "/teach-visuals/fractions/Bieu_dien_tap_nghiem_cua_x_lon_hon_5.svg",
+      "title": "Bieu dien tap nghiem cua x lon hon 5",
+      "sha256": "361293309537bf46e096e52bcce1b7ac49efbecef4e099fb7f0ad9a2bff1ceb9",
+      "bytes": 25706,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/c/c0/Bieu_dien_tap_nghiem_cua_x_lon_hon_5.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY-SA 3.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-bieu-dien-tap-nghiem-cua-x-lon-hon-hoac-bang-5",
+      "path": "fractions/Bieu_dien_tap_nghiem_cua_x_lon_hon_hoac_bang_5.svg",
+      "public_src": "/teach-visuals/fractions/Bieu_dien_tap_nghiem_cua_x_lon_hon_hoac_bang_5.svg",
+      "title": "Bieu dien tap nghiem cua x lon hon hoac bang 5",
+      "sha256": "4293214700f757d65e2bfd7aee6aceefe468d1915e9c90266350c9e2adc08183",
+      "bytes": 25716,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/a/a3/Bieu_dien_tap_nghiem_cua_x_lon_hon_hoac_bang_5.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY-SA 3.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-bieu-dien-tap-nghiem-cua-x-lon-hon-hoac-bang-8",
+      "path": "fractions/Bieu_dien_tap_nghiem_cua_x_lon_hon_hoac_bang_8.svg",
+      "public_src": "/teach-visuals/fractions/Bieu_dien_tap_nghiem_cua_x_lon_hon_hoac_bang_8.svg",
+      "title": "Bieu dien tap nghiem cua x lon hon hoac bang 8",
+      "sha256": "b72dc093564dd8d098973c797a13a3950d4a5c999e99504465416b28ebe5dde7",
+      "bytes": 28572,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/c/c5/Bieu_dien_tap_nghiem_cua_x_lon_hon_hoac_bang_8.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY-SA 3.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-bieu-dien-tap-nghiem-cua-x-nho-hon-1",
+      "path": "fractions/Bieu_dien_tap_nghiem_cua_x_nho_hon_-1.svg",
+      "public_src": "/teach-visuals/fractions/Bieu_dien_tap_nghiem_cua_x_nho_hon_-1.svg",
+      "title": "Bieu dien tap nghiem cua x nho hon -1",
+      "sha256": "426c77be96daee46d9a31188cc3470f0812486da29ad0d689bbd6193816a6437",
+      "bytes": 26703,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/1/17/Bieu_dien_tap_nghiem_cua_x_nho_hon_-1.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY-SA 3.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-bieu-dien-tap-nghiem-cua-x-nho-hon-1-5",
+      "path": "fractions/Bieu_dien_tap_nghiem_cua_x_nho_hon_1,5.svg",
+      "public_src": "/teach-visuals/fractions/Bieu_dien_tap_nghiem_cua_x_nho_hon_1,5.svg",
+      "title": "Bieu dien tap nghiem cua x nho hon 1,5",
+      "sha256": "4f7fa17b6c1d11ec40b0ec2991c41a245db957056c11cba5a6dd9c81fd10f77d",
+      "bytes": 23756,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/9/91/Bieu_dien_tap_nghiem_cua_x_nho_hon_1%2C5.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY-SA 3.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-bieu-dien-tap-nghiem-cua-x-nho-hon-hoac-bang-12",
+      "path": "fractions/Bieu_dien_tap_nghiem_cua_x_nho_hon_hoac_bang_12.svg",
+      "public_src": "/teach-visuals/fractions/Bieu_dien_tap_nghiem_cua_x_nho_hon_hoac_bang_12.svg",
+      "title": "Bieu dien tap nghiem cua x nho hon hoac bang 12",
+      "sha256": "262578162d1581cc39595b04338cbee297965908a1778906508abdf2553781ac",
+      "bytes": 17706,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/4/45/Bieu_dien_tap_nghiem_cua_x_nho_hon_hoac_bang_12.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY-SA 3.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-bieu-dien-tap-nghiem-cua-x-nho-hon-hoac-bang-6",
+      "path": "fractions/Bieu_dien_tap_nghiem_cua_x_nho_hon_hoac_bang_6.svg",
+      "public_src": "/teach-visuals/fractions/Bieu_dien_tap_nghiem_cua_x_nho_hon_hoac_bang_6.svg",
+      "title": "Bieu dien tap nghiem cua x nho hon hoac bang 6",
+      "sha256": "998982052a6f2d62b8c98f1c55f7d9a8f96e573c4bfc96a7a0ac0fb52e5928a5",
+      "bytes": 19029,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/3/31/Bieu_dien_tap_nghiem_cua_x_nho_hon_hoac_bang_6.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY-SA 3.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-bieu-dien-tap-nghiem-cua-x-nho-hon-hoac-bang-7",
+      "path": "fractions/Bieu_dien_tap_nghiem_cua_x_nho_hon_hoac_bang_7.svg",
+      "public_src": "/teach-visuals/fractions/Bieu_dien_tap_nghiem_cua_x_nho_hon_hoac_bang_7.svg",
+      "title": "Bieu dien tap nghiem cua x nho hon hoac bang 7",
+      "sha256": "237e7253ddfe7ba8c8b5ddecf50dc7902044079d36411733099b4b21c7a81822",
+      "bytes": 18894,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/4/4a/Bieu_dien_tap_nghiem_cua_x_nho_hon_hoac_bang_7.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY-SA 3.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-bijection-between-vectors-and-points-on-number-line",
+      "path": "fractions/Bijection_between_vectors_and_points_on_number_line.svg",
+      "public_src": "/teach-visuals/fractions/Bijection_between_vectors_and_points_on_number_line.svg",
+      "title": "Bijection between vectors and points on number line",
+      "sha256": "2e5a0ea5465ad4fa2f553811afdc3a4d0b19413b3c4369f84a958e1571a4dac4",
+      "bytes": 18702,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/3/34/Bijection_between_vectors_and_points_on_number_line.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY 3.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-deflimini",
+      "path": "fractions/Deflimini.JPG",
+      "public_src": "/teach-visuals/fractions/Deflimini.JPG",
+      "title": "Deflimini",
+      "sha256": "05339768c4de34c81b95af29daf943a96807c5fbe79d1d48a71dbd438a25897c",
+      "bytes": 11302,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/0/06/Deflimini.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY-SA 4.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-denormalized-numbers-on-a-line",
+      "path": "fractions/Denormalized_numbers_on_a_line.svg",
+      "public_src": "/teach-visuals/fractions/Denormalized_numbers_on_a_line.svg",
+      "title": "Denormalized numbers on a line",
+      "sha256": "dc9495e343392f5e111fe1969f4db9fdefdc86950d1fd4d9ace17319653f77ac",
+      "bytes": 11141,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/6/69/Denormalized_numbers_on_a_line.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY-SA 3.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-download-3-22222",
+      "path": "fractions/Download_(3)22222.svg",
+      "public_src": "/teach-visuals/fractions/Download_(3)22222.svg",
+      "title": "Download (3)22222",
+      "sha256": "9179d3a4d93d66e2adb421ea7b2c41ef927379b343fe42f24e9349e0dcc768d2",
+      "bytes": 35225,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/a/aa/Download_%283%2922222.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY-SA 4.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-download-4-1-00",
+      "path": "fractions/Download_(4)_(1)00.svg",
+      "public_src": "/teach-visuals/fractions/Download_(4)_(1)00.svg",
+      "title": "Download (4) (1)00",
+      "sha256": "016d7f0ddaf1488ebaa94506f7db761e06e065ef64d4ac95202876cf36e216f0",
+      "bytes": 45936,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/e/e6/Download_%284%29_%281%2900.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY-SA 4.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-download-5-1-0000",
+      "path": "fractions/Download_(5)_(1)0000.svg",
+      "public_src": "/teach-visuals/fractions/Download_(5)_(1)0000.svg",
+      "title": "Download (5) (1)0000",
+      "sha256": "99c9d0702bc7a8c69b2012b3341cd1524be7a3dfe7a2c952ddaec31af29264de",
+      "bytes": 55821,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/c/c3/Download_%285%29_%281%290000.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY-SA 4.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-download-6-2-000",
+      "path": "fractions/Download_(6)_(2)000.svg",
+      "public_src": "/teach-visuals/fractions/Download_(6)_(2)000.svg",
+      "title": "Download (6) (2)000",
+      "sha256": "2cbb94327858c7b5d86368e012f898d529054f7eefb93f61d689d0071b5b226c",
+      "bytes": 33339,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/4/4d/Download_%286%29_%282%29000.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY-SA 4.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-download-7-0000",
+      "path": "fractions/Download_(7)0000.svg",
+      "public_src": "/teach-visuals/fractions/Download_(7)0000.svg",
+      "title": "Download (7)0000",
+      "sha256": "fd1601ef5579b4462665d8db83f71c82fc49362e512634d06d301f4f6ef22fbf",
+      "bytes": 36539,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/a/af/Download_%287%290000.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY-SA 4.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-ejemplo-2-de-inecuaci-n-2",
+      "path": "fractions/Ejemplo_2_de_inecuaci\u00f3n_2.png",
+      "public_src": "/teach-visuals/fractions/Ejemplo_2_de_inecuaci\u00f3n_2.png",
+      "title": "Ejemplo 2 de inecuaci\u00f3n 2",
+      "sha256": "9cde47bdc00e7c760cc41a271b2ebe75477feb23797f9962dc6f796177343992",
+      "bytes": 7097,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/5/55/Ejemplo_2_de_inecuaci%C3%B3n_2.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY-SA 4.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-ejemplo-de-doble-inecuaci-n-1-e",
+      "path": "fractions/Ejemplo_de_doble_inecuaci\u00f3n_1_e.png",
+      "public_src": "/teach-visuals/fractions/Ejemplo_de_doble_inecuaci\u00f3n_1_e.png",
+      "title": "Ejemplo de doble inecuaci\u00f3n 1 e",
+      "sha256": "aa2c260c4d8d9715e7380966c30395645fe0b5e319c130656e4236bbb523ef03",
+      "bytes": 5481,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/a/a5/Ejemplo_de_doble_inecuaci%C3%B3n_1_e.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY-SA 4.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-eredu-lieneala-kenketa-gif-a",
+      "path": "fractions/Eredu_lieneala_Kenketa_GIF-a.gif",
+      "public_src": "/teach-visuals/fractions/Eredu_lieneala_Kenketa_GIF-a.gif",
+      "title": "Eredu lieneala Kenketa GIF-a",
+      "sha256": "1f6c56cd79ef4daf4444a656ce057e7ef5546598d774169e15bb36ddf54f4228",
+      "bytes": 87701,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/c/c2/Eredu_lieneala_Kenketa_GIF-a.gif?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY-SA 4.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-eredu-lineala-binaka",
+      "path": "fractions/Eredu_lineala_binaka.png",
+      "public_src": "/teach-visuals/fractions/Eredu_lineala_binaka.png",
+      "title": "Eredu lineala binaka",
+      "sha256": "8df08e2cd96cbb1620d21ffd66a8e3715ecd83da830f8cfcb721b5ff12dcecad",
+      "bytes": 4133,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/7/79/Eredu_lineala_binaka.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY-SA 4.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-evennessvert256",
+      "path": "fractions/EvennessVert256.svg",
+      "public_src": "/teach-visuals/fractions/EvennessVert256.svg",
+      "title": "EvennessVert256",
+      "sha256": "7d3320cfc50bcb7469e78a4b5ebba0bc007587673a3814e86e0575f0d4815dec",
+      "bytes": 88682,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/e/e6/EvennessVert256.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY-SA 3.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-fraccion-propia-en-la-recta",
+      "path": "fractions/Fraccion_propia_en_la_recta.png",
+      "public_src": "/teach-visuals/fractions/Fraccion_propia_en_la_recta.png",
+      "title": "Fraccion propia en la recta",
+      "sha256": "4846d6cb8d7a11342e5bacf22efe4873a900af265078f086529f54046e818c7a",
+      "bytes": 17117,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/9/9a/Fraccion_propia_en_la_recta.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY-SA 4.0",
+        "author": "numerracionales",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-integers",
+      "path": "fractions/Integers.svg",
+      "public_src": "/teach-visuals/fractions/Integers.svg",
+      "title": "Integers",
+      "sha256": "49e93b1bdf206a2c4c6d5f5e53e38ed7fed292914eecac840be9dd10972262d8",
+      "bytes": 1612,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/6/69/Integers.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY-SA 3.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-mm-to-1-inch-fraction-ruler",
+      "path": "fractions/Mm_to_1_inch_fraction_ruler.svg",
+      "public_src": "/teach-visuals/fractions/Mm_to_1_inch_fraction_ruler.svg",
+      "title": "Mm to 1 inch fraction ruler",
+      "sha256": "f3e109c6c5d7d1326ce10f8554a6f419e9820c9eecdf9be4ae5dcf78d2a25099",
+      "bytes": 41062,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/c/cc/Mm_to_1_inch_fraction_ruler.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY-SA 3.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-number-line",
+      "path": "fractions/Number-line.svg",
+      "public_src": "/teach-visuals/fractions/Number-line.svg",
+      "title": "Number-line",
+      "sha256": "0b0730f7b0d345e77e3abcadf5e702703d8ae5b7b169191604f076388023fbff",
+      "bytes": 1600,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/9/93/Number-line.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC0",
+        "author": "<a href=\"//commons.wikimedia.org/wiki/User:Hakunamenta\" title=\"User:Hakunamenta\">Hakunamenta</a>",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-numberlineintegers",
+      "path": "fractions/NumberLineIntegers.svg",
+      "public_src": "/teach-visuals/fractions/NumberLineIntegers.svg",
+      "title": "NumberLineIntegers",
+      "sha256": "1919103293e7274a48742855c9a9a648829a17c285043996711a6291a67e34fb",
+      "bytes": 24313,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/a/ae/NumberLineIntegers.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY-SA 3.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-number-line-division-3-with-2",
+      "path": "fractions/Number_line_division_3_with_2.svg",
+      "public_src": "/teach-visuals/fractions/Number_line_division_3_with_2.svg",
+      "title": "Number line division 3 with 2",
+      "sha256": "ce80defaf00f3a0972caea18f80906673d710ffa31a5ef683870a8de4519e387",
+      "bytes": 16656,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/e/ec/Number_line_division_3_with_2.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY 3.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-number-line-multiplication-2-with-1-2c5",
+      "path": "fractions/Number_line_multiplication_2_with_1%2C5.svg",
+      "public_src": "/teach-visuals/fractions/Number_line_multiplication_2_with_1%2C5.svg",
+      "title": "Number line multiplication 2 with 1%2C5",
+      "sha256": "9b5b1444af99dd4590f7bf26699ee835c11adda3ad953c8ccd764574db3f8a50",
+      "bytes": 17140,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/d/d9/Number_line_multiplication_2_with_1%2C5.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY 3.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-number-line-multiplication-with-1",
+      "path": "fractions/Number_line_multiplication_with_1.svg",
+      "public_src": "/teach-visuals/fractions/Number_line_multiplication_with_1.svg",
+      "title": "Number line multiplication with 1",
+      "sha256": "2e3a410376797a8779f4f02234dab514f1be92575cabcc1bbb2aef34b99aef59",
+      "bytes": 13604,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/1/1f/Number_line_multiplication_with_1.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY 3.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-number-line-with-multiplication-of-0-5-with-2",
+      "path": "fractions/Number_line_with_multiplication_of_-0.5_with_2.svg",
+      "public_src": "/teach-visuals/fractions/Number_line_with_multiplication_of_-0.5_with_2.svg",
+      "title": "Number line with multiplication of -0.5 with 2",
+      "sha256": "18db92c9714a4b61e40dec50a408cec59f1266994fd0fc59a928c8e783bc4b5a",
+      "bytes": 15686,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/4/41/Number_line_with_multiplication_of_-0.5_with_2.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY 3.0",
+        "author": "<a rel=\"nofollow\" class=\"external text\" href=\"http://kulla.me/\">Stephan Kulla</a> (<a href=\"//commons.wikimedia.org/wiki",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-real-number-line",
+      "path": "fractions/Real_number_line.svg",
+      "public_src": "/teach-visuals/fractions/Real_number_line.svg",
+      "title": "Real number line",
+      "sha256": "07ceb9a13197d2811b6f04d3bf2a497081141854baac93a4ffd83eb84f2d0dea",
+      "bytes": 18736,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/d/d7/Real_number_line.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "Public domain",
+        "author": "<a href=\"//commons.wikimedia.org/wiki/User:Phrood~commonswiki\" title=\"User:Phrood~commonswiki\">User:Phrood~commonswiki</",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-ruler-height-error",
+      "path": "fractions/Ruler_height_error.svg",
+      "public_src": "/teach-visuals/fractions/Ruler_height_error.svg",
+      "title": "Ruler height error",
+      "sha256": "887c2e1f4d7cce493be0c8a10bf5d3608ab3469fe660d700e5ca35ee678f670d",
+      "bytes": 712907,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/7/7f/Ruler_height_error.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-tikz-tutorial-nodes-at-fraction-position",
+      "path": "fractions/Tikz_Tutorial_-_nodes_at_fraction_position.svg",
+      "public_src": "/teach-visuals/fractions/Tikz_Tutorial_-_nodes_at_fraction_position.svg",
+      "title": "Tikz Tutorial - nodes at fraction position",
+      "sha256": "1082f7bd358a3f7beb0a400515e8b4c68855de3a4576785cae64d4ec767e27e8",
+      "bytes": 5955,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://upload.wikimedia.org/wikipedia/commons/9/93/Tikz_Tutorial_-_nodes_at_fraction_position.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+        "license": "CC BY-SA 4.0",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-algebra1-frac-numberline-a",
+      "path": "fractions/algebra1-frac-numberline-a.svg",
+      "public_src": "/teach-visuals/fractions/algebra1-frac-numberline-a.svg",
+      "title": "algebra1-frac-numberline-a",
+      "sha256": "7fae571ea211e358c1fff176c03d10f75389d8e98fc579eb244ec00a26adbf43",
+      "bytes": 21614,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://commons.wikimedia.org/wiki/Special:FilePath/algebra1-frac-numberline-a.svg",
+        "license": "see sidecar",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-algebra1-frac-numberline-b",
+      "path": "fractions/algebra1-frac-numberline-b.svg",
+      "public_src": "/teach-visuals/fractions/algebra1-frac-numberline-b.svg",
+      "title": "algebra1-frac-numberline-b",
+      "sha256": "b68e2099379e6f05bc778983fee0c1f60eae99b3c6d4cd50f78e5e029f89ff0d",
+      "bytes": 13918,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://commons.wikimedia.org/wiki/Special:FilePath/algebra1-frac-numberline-b.svg",
+        "license": "see sidecar",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-fraccion-propia-en-la-recta",
+      "path": "fractions/fraccion-propia-en-la-recta.png",
+      "public_src": "/teach-visuals/fractions/fraccion-propia-en-la-recta.png",
+      "title": "fraccion-propia-en-la-recta",
+      "sha256": "4846d6cb8d7a11342e5bacf22efe4873a900af265078f086529f54046e818c7a",
+      "bytes": 17117,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://commons.wikimedia.org/wiki/Special:FilePath/fraccion-propia-en-la-recta.png",
+        "license": "see sidecar",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-number-line",
+      "path": "fractions/number-line.svg",
+      "public_src": "/teach-visuals/fractions/number-line.svg",
+      "title": "number-line",
+      "sha256": "0b0730f7b0d345e77e3abcadf5e702703d8ae5b7b169191604f076388023fbff",
+      "bytes": 1600,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://commons.wikimedia.org/wiki/Special:FilePath/number-line.svg",
+        "license": "see sidecar",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "fractions-real-number-line",
+      "path": "fractions/real-number-line.svg",
+      "public_src": "/teach-visuals/fractions/real-number-line.svg",
+      "title": "real-number-line",
+      "sha256": "07ceb9a13197d2811b6f04d3bf2a497081141854baac93a4ffd83eb84f2d0dea",
+      "bytes": 18736,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://commons.wikimedia.org/wiki/Special:FilePath/real-number-line.svg",
+        "license": "see sidecar",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "datasets-growth-ops-c1-n1-64",
+      "path": "datasets/growth_ops_c1_n1_64.csv",
+      "public_src": "/teach-visuals/datasets/growth_ops_c1_n1_64.csv",
+      "title": "growth ops c1 n1 64",
+      "sha256": "4a91a1bbd33e7bdf14172c00374606a5cc30576b3d6732e4c4c82a3212188ec3",
+      "bytes": 4792,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://commons.wikimedia.org/wiki/Special:FilePath/growth_ops_c1_n1_64.csv",
+        "license": "see sidecar",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "datasets-growth-ops-cheatsheet-sizes",
+      "path": "datasets/growth_ops_cheatsheet_sizes.csv",
+      "public_src": "/teach-visuals/datasets/growth_ops_cheatsheet_sizes.csv",
+      "title": "growth ops cheatsheet sizes",
+      "sha256": "7f4e14be7c0f67c3c333dc9d969864bab49b696ee7a28ec77d698904cb4bd5be",
+      "bytes": 447,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://commons.wikimedia.org/wiki/Special:FilePath/growth_ops_cheatsheet_sizes.csv",
+        "license": "see sidecar",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    },
+    {
+      "asset_id": "datasets-growth-ops-simple-4class",
+      "path": "datasets/growth_ops_simple_4class.csv",
+      "public_src": "/teach-visuals/datasets/growth_ops_simple_4class.csv",
+      "title": "growth ops simple 4class",
+      "sha256": "533613bea152c111ebdc96b39dcc9195c5d603964155fbb3860a819266f997b8",
+      "bytes": 1096,
+      "source": {
+        "name": "Wikimedia/OSS/Study-os",
+        "page": "https://commons.wikimedia.org/wiki/Special:FilePath/growth_ops_simple_4class.csv",
+        "license": "see sidecar",
+        "author": "see source",
+        "retrieved": "2026-09-27"
+      }
+    }
+  ],
+  "research_archive": {
+    "root": "content/teach-visuals/_research/",
+    "file_count": 144,
+    "files": [
+      {
+        "path": "_research/big-o/ReaVNaiL-cite/LICENSE",
+        "bytes": 1068,
+        "sha256": "7eeab381807d7935ab68fb14f31712ee50373d12a66e2d702e14368936ef20ef"
+      },
+      {
+        "path": "_research/big-o/ReaVNaiL-cite/README.md",
+        "bytes": 10545,
+        "sha256": "15e5ac9129e2b45a3b676b41d6ace8827ab3afdad3ff7a18dae9cf4db5dccbad"
+      },
+      {
+        "path": "_research/big-o/bigoposter-LICENSE_NOTE.md",
+        "bytes": 1645,
+        "sha256": "aa03fc8df5aa29a1a90785589897bb06d8e3898cb29288e6bd0139e1fb3815cc"
+      },
+      {
+        "path": "_research/big-o/bigoposter.pdf",
+        "bytes": 100197,
+        "sha256": "cf9fd4f38f13961870f53e7ace0b863bff78466b4462e1f99e8077e7e03564c7"
+      },
+      {
+        "path": "_research/big-o/froster02/LICENSE_NOTE.md",
+        "bytes": 545,
+        "sha256": "688a0a5b6ab5dddb2797a3d6227326ccb62699464eb04e117f742857db995e35"
+      },
+      {
+        "path": "_research/big-o/froster02/README.md",
+        "bytes": 1298,
+        "sha256": "fcb25ef5bf69584139b9af34164ca90e9b66cc013a858dffbb95a5051a147e7e"
+      },
+      {
+        "path": "_research/big-o/froster02/big_o.png",
+        "bytes": 115824,
+        "sha256": "67a2461c5fd9552b6adf540c742ce0fe110c1461eea7226757008093b6fa2266"
+      },
+      {
+        "path": "_research/big-o/froster02/sorting.png",
+        "bytes": 377000,
+        "sha256": "2a606e3c433e1a717a1ea335d3782522d1c2baab42f1b23c47ccb2f42d1d6f4d"
+      },
+      {
+        "path": "_research/big-o/kevin-lago-cite-only/DO_NOT_VENDOR.txt",
+        "bytes": 35,
+        "sha256": "bbf482392eacf553d06e5e4f0453306e5f76d0d609770ad0b42f32ec14f041c7"
+      },
+      {
+        "path": "_research/big-o/kevin-lago-cite-only/exponential_time_complexity_graph_dark.svg",
+        "bytes": 17199,
+        "sha256": "cbce42564e19885774423951f6647bf2c9a95063fee16f3d7a4849f8a1e816ab"
+      },
+      {
+        "path": "_research/big-o/kevin-lago-cite-only/exponential_time_complexity_graph_light.svg",
+        "bytes": 17133,
+        "sha256": "79083c7a004d1419bba12f92a33f98015dfa22cc91409107116652d25c9302e7"
+      },
+      {
+        "path": "_research/big-o/kevin-lago-cite-only/full_time_complexity_graph_dark.svg",
+        "bytes": 34298,
+        "sha256": "540c90c7864def7cddc29bc9991187574531712691ccf0d9103b276270e3013a"
+      },
+      {
+        "path": "_research/big-o/kevin-lago-cite-only/full_time_complexity_graph_light.svg",
+        "bytes": 34232,
+        "sha256": "ee9d6dc8fa20c4bae5604650a81e646d974d92b75a547f2c829bc7841b7ef23a"
+      },
+      {
+        "path": "_research/big-o/kevin-lago-cite-only/polynomial_time_complexity_graph_dark.svg",
+        "bytes": 28107,
+        "sha256": "3f66f0ff5e1ca441dce8e5ad3d22764503c5d7312cc76675c2966d8a7a0558a3"
+      },
+      {
+        "path": "_research/big-o/kevin-lago-cite-only/polynomial_time_complexity_graph_light.svg",
+        "bytes": 28041,
+        "sha256": "9b23c4f9c00b451917c929cbcdf9c1f27ffddbfb767ee066c19efb9ad6f14f2e"
+      },
+      {
+        "path": "_research/big-o/papers/Farghally-Visualizing-Algorithm-Analysis-Topics.pdf",
+        "bytes": 306464,
+        "sha256": "a5c52c8fdf988079f435ed84a784cf560fdcc90f767e0cf821c8de6ff9c8712b"
+      },
+      {
+        "path": "_research/big-o/papers/Farghally2017-AAV-SIGCSE.pdf",
+        "bytes": 492818,
+        "sha256": "859240dda444a9d3878330f1cdddcab0a3780a342c701b4886e0942defb3beb6"
+      },
+      {
+        "path": "_research/big-o/papers/OpenDSA-AnalProgram.html",
+        "bytes": 48918,
+        "sha256": "326bde6fc2f5fcc4812c63f276c51d3e3464c387f58ec813c511da8be0a44b7e"
+      },
+      {
+        "path": "_research/big-o/papers/farghally-2016-visualizing-aa-dissertation.pdf",
+        "bytes": 3200221,
+        "sha256": "10f8e58fb95ed12b2a56252b060b16f0306004e065da20e4dc2a4c9f5dabb7c0"
+      },
+      {
+        "path": "_research/big-o/papers/frank-lines-points-egst.pdf",
+        "bytes": 604262,
+        "sha256": "d05a512f3a49da2109baf3b19b7dc9f58b735c13994030bcf79986eeadcb4051"
+      },
+      {
+        "path": "_research/big-o/papers/lee-identifying-shape-thinking.pdf",
+        "bytes": 2239410,
+        "sha256": "94b8f0a30b05b5ca15e1bfa65fa605f2b230fac31cab0c6606ed3624ff504c07"
+      },
+      {
+        "path": "_research/big-o/papers/moore-2021-graphical-shape-thinking.pdf",
+        "bytes": 799517,
+        "sha256": "6049e29c430209807a0bbe5747ac7466668764173eba0c46d2fa161ce1ca9527"
+      },
+      {
+        "path": "_research/big-o/papers/moore-thompson-2015-shape-thinking.pdf",
+        "bytes": 1331658,
+        "sha256": "dd967d5c0b5117ddb6b08c1c52bac8cbf38c51ff984f6405128a1e50a2d60613"
+      },
+      {
+        "path": "_research/big-o/papers/nsf-egst-task-design.pdf",
+        "bytes": 281235,
+        "sha256": "7fea7dde92846a24d122e1e3506e9de85df2f740433981fe54954ee552466e77"
+      },
+      {
+        "path": "_research/big-o/papers/opendsa-AnalIntro.html",
+        "bytes": 37385,
+        "sha256": "5588ceb0e3b2d9ff3d276b8d5e61d749633eef8d2350fd81e435b6494d751896"
+      },
+      {
+        "path": "_research/big-o/rehansaeed-big-o-complexity.png",
+        "bytes": 17834,
+        "sha256": "a7e298cf576e8af7360b487c4cac3935e7eed3e0c48fb2058f61821cd2f3a515"
+      },
+      {
+        "path": "_research/big-o/rehansaeed-cheat-sheet.png",
+        "bytes": 192431,
+        "sha256": "882a15d701dc34dcfb0bc3889e4cb9ed3f0e07939de3be388a0a87397bf4d023"
+      },
+      {
+        "path": "_research/big-o/wikimedia/180-degree_rotation.png",
+        "bytes": 7047,
+        "sha256": "a4528b2ca23367e552b84b61c878b4e76afc83706d05124de7ffb286826331e0"
+      },
+      {
+        "path": "_research/big-o/wikimedia/4_es_mayor_que_2.png",
+        "bytes": 3692,
+        "sha256": "9365e786884b79cecdc72c2023baaa541929d94bbbb97e57d63acf34a2275373"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Algebra1_01_fig001_rapgeoi.svg",
+        "bytes": 23249,
+        "sha256": "9a03fe0cdd8e3ccb984265e914a4c13bb8f42223fad487d708ec96de708bf235"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Algebra1_01_fig002_addmol.svg",
+        "bytes": 17690,
+        "sha256": "438ada123506f4796af0f4ebc3766ef202647c35864fe883648e52e856131d42"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Algebra1_01_fig003_sotdivi.svg",
+        "bytes": 17667,
+        "sha256": "83eb8c28c29fd6c13ac1a7a2fda733ec78846165e6d7c14490adc667e3e17a2e"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Algebra1_01_fig004_sotdivii.svg",
+        "bytes": 18881,
+        "sha256": "57d20bf89eaca9f3153dec69fba431a317b82a8309386aae315fb0f5b8032a0e"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Algebra1_03_fig021_perretre.svg",
+        "bytes": 4458,
+        "sha256": "89e77499fde563fb0e51c43b6cb13e9be02515ad3c68c661c61b5e49ce5880fc"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Algebra1_03_fig022a_rettafraz.svg",
+        "bytes": 21614,
+        "sha256": "7fae571ea211e358c1fff176c03d10f75389d8e98fc579eb244ec00a26adbf43"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Algebra1_03_fig022b_rettafraz.svg",
+        "bytes": 13918,
+        "sha256": "b68e2099379e6f05bc778983fee0c1f60eae99b3c6d4cd50f78e5e029f89ff0d"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Algebra1_fnz_fig011_ret.svg",
+        "bytes": 19535,
+        "sha256": "24ad7a00668fa288e4219ca2cc3e42419301c5cf32eceae1458e658815af26f8"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Algebra1_fnz_fig012_ret.svg",
+        "bytes": 9617,
+        "sha256": "55cfca67e6e48ac5a975064446d770700b82ea64341c3ab5b380d78c3d977c2c"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Antecesor.png",
+        "bytes": 5582,
+        "sha256": "5583ebccd052023c6fa9bd5d0f968cdcd893e8428d927fa2b146c03025429a2d"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Arithmetic_mean.PNG",
+        "bytes": 3095,
+        "sha256": "a8ce051269dcd8955df237051d272af70286b0beb96b780bb935d857610b3be2"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Bieu_dien_tap_nghiem_cua_x_lon_hon_-12.svg",
+        "bytes": 13221,
+        "sha256": "4e073937b1e698f541d919862b0d25d52fa0546365824aa8680f86873e867448"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Bieu_dien_tap_nghiem_cua_x_lon_hon_2.svg",
+        "bytes": 22803,
+        "sha256": "78fd491193dce315d5bb33e1b1ebdade929a04ab0c64e9641cc0020ea6745212"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Bieu_dien_tap_nghiem_cua_x_lon_hon_3.svg",
+        "bytes": 22803,
+        "sha256": "c6c1628ac6f5d078a367288595c12d92ac238971584d616ec6660cb6b3e092eb"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Bieu_dien_tap_nghiem_cua_x_lon_hon_5.svg",
+        "bytes": 25706,
+        "sha256": "361293309537bf46e096e52bcce1b7ac49efbecef4e099fb7f0ad9a2bff1ceb9"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Bieu_dien_tap_nghiem_cua_x_lon_hon_hoac_bang_5.svg",
+        "bytes": 25716,
+        "sha256": "4293214700f757d65e2bfd7aee6aceefe468d1915e9c90266350c9e2adc08183"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Bieu_dien_tap_nghiem_cua_x_lon_hon_hoac_bang_8.svg",
+        "bytes": 28572,
+        "sha256": "b72dc093564dd8d098973c797a13a3950d4a5c999e99504465416b28ebe5dde7"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Bieu_dien_tap_nghiem_cua_x_nho_hon_-1.svg",
+        "bytes": 26703,
+        "sha256": "426c77be96daee46d9a31188cc3470f0812486da29ad0d689bbd6193816a6437"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Bieu_dien_tap_nghiem_cua_x_nho_hon_1,5.svg",
+        "bytes": 23756,
+        "sha256": "4f7fa17b6c1d11ec40b0ec2991c41a245db957056c11cba5a6dd9c81fd10f77d"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Bieu_dien_tap_nghiem_cua_x_nho_hon_hoac_bang_12.svg",
+        "bytes": 17706,
+        "sha256": "262578162d1581cc39595b04338cbee297965908a1778906508abdf2553781ac"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Bieu_dien_tap_nghiem_cua_x_nho_hon_hoac_bang_6.svg",
+        "bytes": 19029,
+        "sha256": "998982052a6f2d62b8c98f1c55f7d9a8f96e573c4bfc96a7a0ac0fb52e5928a5"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Bieu_dien_tap_nghiem_cua_x_nho_hon_hoac_bang_7.svg",
+        "bytes": 18894,
+        "sha256": "237e7253ddfe7ba8c8b5ddecf50dc7902044079d36411733099b4b21c7a81822"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Big-O-notation.png",
+        "bytes": 4201,
+        "sha256": "9274ba59b0cbd162a3ef89bdf710a7bcee385169092cfbe232f90b8bc5b106f7"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Big-O_Cheatsheet.png",
+        "bytes": 66265,
+        "sha256": "304489ce090c8ff2d36f53a3f636e112abd7f25aab33984e6ea1c367da4959c3"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Big-O_Notation_LPC.png",
+        "bytes": 86180,
+        "sha256": "069df5daccdd1a340d58581462438a7941e46678e15fec8c7d2ce88ce2ffd138"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Big_O.jpg",
+        "bytes": 955039,
+        "sha256": "c0fac339e2d4b3cbee103736c94b92e12cc9e52e2d2513397b7f1620033c72e4"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Big_O_notation_poster.png",
+        "bytes": 243516,
+        "sha256": "924a9ab2a724b01f7a63f834c7c4082221a72db1c028fbcfe4ef833cddc8fa1b"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Big_o_notation.png",
+        "bytes": 29738,
+        "sha256": "2ebea355957209dec9612fde77e75d96b83c57cc66d232f0a7b3ba33808472f7"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Comparison_computational_complexity.from-upload.svg",
+        "bytes": 13668,
+        "sha256": "fd6376d5ee5e6804ff6825e36034e43091a248d0ed72bdf8ff65b3a0924c2123"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Comparison_computational_complexity.svg",
+        "bytes": 13668,
+        "sha256": "fd6376d5ee5e6804ff6825e36034e43091a248d0ed72bdf8ff65b3a0924c2123"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Complexity_classes.svg",
+        "bytes": 6144,
+        "sha256": "34b8acdca4ccbcfa64790f8e512d337561c55284b947bfba82e2953eb690b43c"
+      },
+      {
+        "path": "_research/big-o/wikimedia/CotaSuperiorAsintotica.png",
+        "bytes": 3553,
+        "sha256": "159e0cb93cd26f704ecc4e5ab8517671de3e540271ac5486952797744045e202"
+      },
+      {
+        "path": "_research/big-o/wikimedia/DSA_O_intuition.png",
+        "bytes": 4202,
+        "sha256": "e6b39ceb587baef87f7b41778c9534e513708ecd45804233e44783cc82e61e5f"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Deflimini.JPG",
+        "bytes": 11302,
+        "sha256": "05339768c4de34c81b95af29daf943a96807c5fbe79d1d48a71dbd438a25897c"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Denormalized_numbers_on_a_line.svg",
+        "bytes": 11141,
+        "sha256": "dc9495e343392f5e111fe1969f4db9fdefdc86950d1fd4d9ace17319653f77ac"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Download_(3)22222.svg",
+        "bytes": 35225,
+        "sha256": "9179d3a4d93d66e2adb421ea7b2c41ef927379b343fe42f24e9349e0dcc768d2"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Download_(4)_(1)00.svg",
+        "bytes": 45936,
+        "sha256": "016d7f0ddaf1488ebaa94506f7db761e06e065ef64d4ac95202876cf36e216f0"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Download_(5)_(1)0000.svg",
+        "bytes": 55821,
+        "sha256": "99c9d0702bc7a8c69b2012b3341cd1524be7a3dfe7a2c952ddaec31af29264de"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Download_(6)_(2)000.svg",
+        "bytes": 33339,
+        "sha256": "2cbb94327858c7b5d86368e012f898d529054f7eefb93f61d689d0071b5b226c"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Download_(7)0000.svg",
+        "bytes": 36539,
+        "sha256": "fd1601ef5579b4462665d8db83f71c82fc49362e512634d06d301f4f6ef22fbf"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Ejemplo_2_de_inecuaci\u00f3n_2.png",
+        "bytes": 7097,
+        "sha256": "9cde47bdc00e7c760cc41a271b2ebe75477feb23797f9962dc6f796177343992"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Ejemplo_de_doble_inecuaci\u00f3n_1_e.png",
+        "bytes": 5481,
+        "sha256": "aa2c260c4d8d9715e7380966c30395645fe0b5e319c130656e4236bbb523ef03"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Eredu_lieneala_Kenketa_GIF-a.gif",
+        "bytes": 87701,
+        "sha256": "1f6c56cd79ef4daf4444a656ce057e7ef5546598d774169e15bb36ddf54f4228"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Eredu_lineala_binaka.png",
+        "bytes": 4133,
+        "sha256": "8df08e2cd96cbb1620d21ffd66a8e3715ecd83da830f8cfcb721b5ff12dcecad"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Exponential_growth.svg",
+        "bytes": 94505,
+        "sha256": "25702c87da61a83ae12eac760c75a70ce3880c215856ad524daee01eb5b3f01b"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Function_growth.gif",
+        "bytes": 6067,
+        "sha256": "e25d84310fa6a747e5c3eca1380411aa9cc3504c3b74dec5d5163a26e28b01b7"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Linear_function.svg",
+        "bytes": 3592,
+        "sha256": "7be8c0590bb77093548514cd80de7ed27034eeee89e3b05437223a5b09631982"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Merge_sort_animation.gif",
+        "bytes": 125470,
+        "sha256": "4759b780421d086dd933833ecdc798261b92f516666c9a517e9e169cc14477e2"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Mplwp_factorial_stirling_loglog.svg",
+        "bytes": 68557,
+        "sha256": "fab222fbf0e710d3c817a16f08e45b4fce8f3a39bb4bccf58b99599db062344b"
+      },
+      {
+        "path": "_research/big-o/wikimedia/O(n)_vs_O(n-p).png",
+        "bytes": 267385,
+        "sha256": "a9517dd94877cde5d2e53c17c79b7555694b305820239343d99bb9322023d5b9"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Quadratic_Golden_Mean_Siegel_Disc_IIM.png",
+        "bytes": 27633,
+        "sha256": "7f81057ec52b6f70ba2add49bad5c8e105749c963d412a34a284168fbc85b27d"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Quadratic_function.svg",
+        "bytes": 5738,
+        "sha256": "23a6873124aa0b5647bd61117d8609577264b5221771308e6dbc4e4ba3d12f0a"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Ruler_height_error.svg",
+        "bytes": 712907,
+        "sha256": "887c2e1f4d7cce493be0c8a10bf5d3608ab3469fe660d700e5ca35ee678f670d"
+      },
+      {
+        "path": "_research/big-o/wikimedia/Yorick215.svg",
+        "bytes": 8822,
+        "sha256": "dee286450c68d95716968c071267d976cc59a3941e7cf04d461c659bd7028bc5"
+      },
+      {
+        "path": "_research/big-o/wikimedia/\u062e\u0637_\u0627\u0644\u0623\u0639\u062f\u0627\u062f.jpg",
+        "bytes": 11972,
+        "sha256": "75720f75164f2614d909697e516df446913791361bb5145f7f47e94c5ae84509"
+      },
+      {
+        "path": "_research/fractions/gollmar-number-lines/PROVENANCE.md",
+        "bytes": 498,
+        "sha256": "c4f94e2ea35affc13ddfaaf64e2bfbe32c133d60e3334a7172be386629b40a33"
+      },
+      {
+        "path": "_research/fractions/gollmar-number-lines/README.md",
+        "bytes": 368,
+        "sha256": "09624a6608721f19491b9cbcabce8931d8aacf45bea35c7e47846232abfbd1d1"
+      },
+      {
+        "path": "_research/fractions/ies-toolkit/Module1_FacilitatorGuide.pdf",
+        "bytes": 3508249,
+        "sha256": "9835830150c6e6216ef6c21330d06eb6fe4f4e599d58f323b530e4248828dbb4"
+      },
+      {
+        "path": "_research/fractions/ies-toolkit/Module1_Workbook.pdf",
+        "bytes": 4414652,
+        "sha256": "f038c422790ce349bc3e98c34a5f62a65bf18ef928edf327126bdd70ddc371ea"
+      },
+      {
+        "path": "_research/fractions/ies-toolkit/SOURCES.md",
+        "bytes": 314,
+        "sha256": "02546ebd91dde639a847a00e0b16e78eec488d2d929065baa0d5d3295609f30b"
+      },
+      {
+        "path": "_research/fractions/ies-toolkit/ToolkitOverview.pdf",
+        "bytes": 161563,
+        "sha256": "20b8da445d30d10e08d815ce1129cb5fe94a1824e5064272011614998a5df7ff"
+      },
+      {
+        "path": "_research/fractions/ies-toolkit/WWC_Fractions_Practice_Guide.pdf",
+        "bytes": 4899556,
+        "sha256": "ed94a5ee4127a32240fd0114d2afc025c15ba8233014da3c07601157b770c252"
+      },
+      {
+        "path": "_research/fractions/ies-toolkit/WWC_Fractions_Practice_Guide_alt.pdf",
+        "bytes": 4899556,
+        "sha256": "ed94a5ee4127a32240fd0114d2afc025c15ba8233014da3c07601157b770c252"
+      },
+      {
+        "path": "_research/fractions/ies-toolkit/pages/facilitator-01.png",
+        "bytes": 450774,
+        "sha256": "a1a7ef79ab4b3c535fc64047b468acb5d3c018cfd635fb074b63ee67f86d6df0"
+      },
+      {
+        "path": "_research/fractions/ies-toolkit/pages/facilitator-02.png",
+        "bytes": 228145,
+        "sha256": "d6d96ff829515a5f98f4b9b6b86f98f9696874b97c27be13fc81a582cf6cb383"
+      },
+      {
+        "path": "_research/fractions/ies-toolkit/pages/facilitator-03.png",
+        "bytes": 245740,
+        "sha256": "94eb4f09b5ef5926fe65db37177621c64b4c6fc17bcd1ff41295a15cb7aaa9f2"
+      },
+      {
+        "path": "_research/fractions/ies-toolkit/pages/facilitator-04.png",
+        "bytes": 45848,
+        "sha256": "f365ed40d7b5cf9b47b1b7334470cd042b10b0fba6e2f4bf5b96f55866112090"
+      },
+      {
+        "path": "_research/fractions/ies-toolkit/pages/workbook-01.png",
+        "bytes": 450172,
+        "sha256": "bd1780a6f915fe02477901688eecfea6a9da7a15fa8737c817d5b73e5a684cbe"
+      },
+      {
+        "path": "_research/fractions/ies-toolkit/pages/workbook-02.png",
+        "bytes": 228069,
+        "sha256": "b8ddc755eae4949cc87cf19e9c0085c138372eb08395d7e44d1fea5c0187b400"
+      },
+      {
+        "path": "_research/fractions/ies-toolkit/pages/workbook-03.png",
+        "bytes": 245139,
+        "sha256": "94ce3274b63f3a47f162eef53eb47819b9f9ae152c1fb1f86372824fe1d27d8e"
+      },
+      {
+        "path": "_research/fractions/ies-toolkit/pages/workbook-04.png",
+        "bytes": 45427,
+        "sha256": "1229fd0eda514356bf207057c3990b865742b6cad2840cb9130e43c19a7d21bd"
+      },
+      {
+        "path": "_research/fractions/ies-toolkit/pages/workbook-05.png",
+        "bytes": 173669,
+        "sha256": "a9c216bf47d5481fbeb61717937d611f57cef4f76133c5472bc32ac4349e5e6c"
+      },
+      {
+        "path": "_research/fractions/ies-toolkit/pages/workbook-06.png",
+        "bytes": 248981,
+        "sha256": "d2091efb5870fdd6de4f4df1fc430da516f7c71fc0b244e1119f9d87a54812cf"
+      },
+      {
+        "path": "_research/fractions/ies-toolkit/pages/workbook-07.png",
+        "bytes": 222704,
+        "sha256": "1a79619871600c2b424aea1cb8170a47dcbfedee19ef1906ee805fad36bf1075"
+      },
+      {
+        "path": "_research/fractions/ies-toolkit/pages/workbook-08.png",
+        "bytes": 109072,
+        "sha256": "e9ccecefdc5b00a70b775abd4a43c4d5ce2dec29154d56ca159ab55741601a44"
+      },
+      {
+        "path": "_research/fractions/ies-toolkit/pages/workbook-09.png",
+        "bytes": 83536,
+        "sha256": "c00ba4979e48f88eda269116a70dfc97856cd3714561cfcc08b180420f0d72dd"
+      },
+      {
+        "path": "_research/fractions/ies-toolkit/pages/workbook-10.png",
+        "bytes": 183445,
+        "sha256": "3874e83332e32a85782a9aa2307d74738cf142c40f8ceb76585892653ec8b4a3"
+      },
+      {
+        "path": "_research/fractions/ies-toolkit/pages/workbook-11.png",
+        "bytes": 100225,
+        "sha256": "cfff49b6af40dfbc337fada0fea62fdd6461fe3263c28fa789684b0e5332dd2e"
+      },
+      {
+        "path": "_research/fractions/ies-toolkit/pages/workbook-12.png",
+        "bytes": 288171,
+        "sha256": "c04ab5ca1f4b4fe64a20226bc9b2742810274a8351a9af0ecac787a411e8e128"
+      },
+      {
+        "path": "_research/fractions/ies-toolkit/pages/workbook-13.png",
+        "bytes": 122525,
+        "sha256": "aab68e33dfe00757dc8c5beb48055c34c0445cc27347ca2724ab25bb964ad902"
+      },
+      {
+        "path": "_research/fractions/ies-toolkit/pages/workbook-14.png",
+        "bytes": 42131,
+        "sha256": "af6bf6ee3a369738bd217ecb8df7db6e9bb1e5e347a9a1af7913b50165f8106f"
+      },
+      {
+        "path": "_research/fractions/ies-toolkit/pages/workbook-15.png",
+        "bytes": 170387,
+        "sha256": "88136ee3a1aad8ef66159e8c2819675426f4fdf96686e9387010ead54885d5a3"
+      },
+      {
+        "path": "_research/fractions/ies-toolkit/pages/workbook-16.png",
+        "bytes": 182430,
+        "sha256": "9aaf9cea668eba9e1d44b4d697480077482608d6beb75d600abd8c251b0cb569"
+      },
+      {
+        "path": "_research/fractions/ies-toolkit/pages/workbook-17.png",
+        "bytes": 53657,
+        "sha256": "1aa42a5284d5b60e6c7555b19faa72487a6c32eebb4796eb30fd2808f734e6cd"
+      },
+      {
+        "path": "_research/fractions/ies-toolkit/pages/workbook-18.png",
+        "bytes": 206792,
+        "sha256": "56e6a6045689b52ee259ef00def6cbccfc62089b01247a06c6d9a919e629488a"
+      },
+      {
+        "path": "_research/fractions/ies-toolkit/pages/workbook-19.png",
+        "bytes": 148854,
+        "sha256": "f257475221edc0c8be3dfcd825e6e80fbc05967ddee03a31f0baa811809829fe"
+      },
+      {
+        "path": "_research/fractions/ies-toolkit/pages/workbook-20.png",
+        "bytes": 101191,
+        "sha256": "6aad43c1bf76c8786a7853e567992c7cf82c8c64bc7b73954036ac42200d8224"
+      },
+      {
+        "path": "_research/fractions/papers/Hamdan-Gunderson-2017.pdf",
+        "bytes": 632516,
+        "sha256": "4da7b9fbf2d395e0bb280270498dacbf81e8b0a1f4593c82ce31a5cca4bea292"
+      },
+      {
+        "path": "_research/fractions/papers/fuchs-etal-fraction-intervention-five-rcts.pdf",
+        "bytes": 613128,
+        "sha256": "76786f28ecaebbba6972633d6f91f434d6b56a6bc709dd557018c09ce4edbede"
+      },
+      {
+        "path": "_research/fractions/papers/hamdan-gunderson-2017.pdf",
+        "bytes": 632516,
+        "sha256": "4da7b9fbf2d395e0bb280270498dacbf81e8b0a1f4593c82ce31a5cca4bea292"
+      },
+      {
+        "path": "_research/fractions/papers/ies-teaching-fractions-toolkit-module1.pdf",
+        "bytes": 20169715,
+        "sha256": "db1702ca88ad2b42b15330dfb53bc20394ecd47ce5de90272a8a6eb2345cc583"
+      },
+      {
+        "path": "_research/fractions/papers/siegler-etal-2011-fractions.pdf",
+        "bytes": 375095,
+        "sha256": "ff8c011e0eb81786cb7bb51c956de095a1759f8150edc42c9e9ce9809e5376d3"
+      },
+      {
+        "path": "_research/fractions/wikimedia/3_4_fraction.svg",
+        "bytes": 2532,
+        "sha256": "47b0db227e8805f8f2dbe0323cbce75c6b11f4b1fcf2d1c1ee27f3b192ee6b7c"
+      },
+      {
+        "path": "_research/fractions/wikimedia/AbsoluteValueDiagram.svg",
+        "bytes": 7647,
+        "sha256": "639c6fc6b1e23be741fb39d1e8566eb2789f6cfce8509909ae8d13a209fcd4cf"
+      },
+      {
+        "path": "_research/fractions/wikimedia/Absolute_value_number_line.jpg",
+        "bytes": 61534,
+        "sha256": "a30cae8c9bad8ac41343e3a9e5b9c9eda4649f0efc025f995e16a4088fed3991"
+      },
+      {
+        "path": "_research/fractions/wikimedia/Algebra1_01_fig001_rapgeoi.svg",
+        "bytes": 23249,
+        "sha256": "9a03fe0cdd8e3ccb984265e914a4c13bb8f42223fad487d708ec96de708bf235"
+      },
+      {
+        "path": "_research/fractions/wikimedia/Algebra1_01_fig002_addmol.svg",
+        "bytes": 17690,
+        "sha256": "438ada123506f4796af0f4ebc3766ef202647c35864fe883648e52e856131d42"
+      },
+      {
+        "path": "_research/fractions/wikimedia/Algebra1_03_fig022a_rettafraz.svg",
+        "bytes": 21614,
+        "sha256": "7fae571ea211e358c1fff176c03d10f75389d8e98fc579eb244ec00a26adbf43"
+      },
+      {
+        "path": "_research/fractions/wikimedia/Algebra1_03_fig022b_rettafraz.svg",
+        "bytes": 13918,
+        "sha256": "b68e2099379e6f05bc778983fee0c1f60eae99b3c6d4cd50f78e5e029f89ff0d"
+      },
+      {
+        "path": "_research/fractions/wikimedia/Algebra1_fnz_fig011_ret.svg",
+        "bytes": 19535,
+        "sha256": "24ad7a00668fa288e4219ca2cc3e42419301c5cf32eceae1458e658815af26f8"
+      },
+      {
+        "path": "_research/fractions/wikimedia/Algebra1_fnz_fig012_ret.svg",
+        "bytes": 9617,
+        "sha256": "55cfca67e6e48ac5a975064446d770700b82ea64341c3ab5b380d78c3d977c2c"
+      },
+      {
+        "path": "_research/fractions/wikimedia/Arithmetic_mean.PNG",
+        "bytes": 3095,
+        "sha256": "a8ce051269dcd8955df237051d272af70286b0beb96b780bb935d857610b3be2"
+      },
+      {
+        "path": "_research/fractions/wikimedia/Bijection_between_vectors_and_points_on_number_line.svg",
+        "bytes": 18702,
+        "sha256": "2e5a0ea5465ad4fa2f553811afdc3a4d0b19413b3c4369f84a958e1571a4dac4"
+      },
+      {
+        "path": "_research/fractions/wikimedia/EvennessVert256.svg",
+        "bytes": 88682,
+        "sha256": "7d3320cfc50bcb7469e78a4b5ebba0bc007587673a3814e86e0575f0d4815dec"
+      },
+      {
+        "path": "_research/fractions/wikimedia/Fraccion_propia_en_la_recta.png",
+        "bytes": 17117,
+        "sha256": "4846d6cb8d7a11342e5bacf22efe4873a900af265078f086529f54046e818c7a"
+      },
+      {
+        "path": "_research/fractions/wikimedia/Integers.svg",
+        "bytes": 1612,
+        "sha256": "49e93b1bdf206a2c4c6d5f5e53e38ed7fed292914eecac840be9dd10972262d8"
+      },
+      {
+        "path": "_research/fractions/wikimedia/Mm_to_1_inch_fraction_ruler.svg",
+        "bytes": 41062,
+        "sha256": "f3e109c6c5d7d1326ce10f8554a6f419e9820c9eecdf9be4ae5dcf78d2a25099"
+      },
+      {
+        "path": "_research/fractions/wikimedia/Number-line.svg",
+        "bytes": 1600,
+        "sha256": "0b0730f7b0d345e77e3abcadf5e702703d8ae5b7b169191604f076388023fbff"
+      },
+      {
+        "path": "_research/fractions/wikimedia/NumberLineIntegers.svg",
+        "bytes": 24313,
+        "sha256": "1919103293e7274a48742855c9a9a648829a17c285043996711a6291a67e34fb"
+      },
+      {
+        "path": "_research/fractions/wikimedia/Number_line_division_3_with_2.svg",
+        "bytes": 16656,
+        "sha256": "ce80defaf00f3a0972caea18f80906673d710ffa31a5ef683870a8de4519e387"
+      },
+      {
+        "path": "_research/fractions/wikimedia/Number_line_multiplication_2_with_1%2C5.svg",
+        "bytes": 17140,
+        "sha256": "9b5b1444af99dd4590f7bf26699ee835c11adda3ad953c8ccd764574db3f8a50"
+      },
+      {
+        "path": "_research/fractions/wikimedia/Number_line_multiplication_with_1.svg",
+        "bytes": 13604,
+        "sha256": "2e3a410376797a8779f4f02234dab514f1be92575cabcc1bbb2aef34b99aef59"
+      },
+      {
+        "path": "_research/fractions/wikimedia/Number_line_with_multiplication_of_-0.5_with_2.svg",
+        "bytes": 15686,
+        "sha256": "18db92c9714a4b61e40dec50a408cec59f1266994fd0fc59a928c8e783bc4b5a"
+      },
+      {
+        "path": "_research/fractions/wikimedia/Real_number_line.svg",
+        "bytes": 18736,
+        "sha256": "07ceb9a13197d2811b6f04d3bf2a497081141854baac93a4ffd83eb84f2d0dea"
+      },
+      {
+        "path": "_research/fractions/wikimedia/Tikz_Tutorial_-_nodes_at_fraction_position.svg",
+        "bytes": 5955,
+        "sha256": "1082f7bd358a3f7beb0a400515e8b4c68855de3a4576785cae64d4ec767e27e8"
+      }
+    ]
+  },
+  "external_cites": [
+    {
+      "id": "farghally2017",
+      "title": "Evaluating AAVs (SIGCSE 2017)",
+      "url": "https://dl.acm.org/doi/10.1145/3017680.3017698",
+      "local": "_research/big-o/papers/Farghally2017-AAV-SIGCSE.pdf"
+    },
+    {
+      "id": "farghally-thesis",
+      "title": "Visualizing Algorithm Analysis Topics",
+      "url": "https://vtechworks.lib.vt.edu/items/54e56543-cb1a-4ce2-87a9-19fbeab690a8",
+      "local": "_research/big-o/papers/Farghally-Visualizing-Algorithm-Analysis-Topics.pdf"
+    },
+    {
+      "id": "opendsa",
+      "title": "OpenDSA / JSAV",
+      "url": "https://opendsa-server.cs.vt.edu/",
+      "local": "_research/big-o/papers/OpenDSA-AnalProgram.html"
+    },
+    {
+      "id": "naps2003",
+      "title": "Engagement taxonomy for AV",
+      "url": "https://dl.acm.org/doi/10.1145/960492.960540"
+    },
+    {
+      "id": "hundhausen-constructivist",
+      "title": "AV as construction tools",
+      "url": "https://www.researchgate.net/publication/313522851_Current_perspectives_on_the_pedagogical_value_of_algorithm_visualization"
+    },
+    {
+      "id": "apos-koli2018",
+      "title": "Missing APOS stages in AA teaching",
+      "url": "https://dl.acm.org/doi/10.1145/3279720.3279738"
+    },
+    {
+      "id": "hamdan-gunderson",
+      "title": "Number line causal RCT",
+      "url": "https://sites.temple.edu/cognitionlearning/files/2017/05/Hamdan-Gunderson-2017.pdf",
+      "local": "_research/fractions/papers/Hamdan-Gunderson-2017.pdf"
+    },
+    {
+      "id": "ies-tft",
+      "title": "IES REL Teaching Fractions Toolkit Mod1",
+      "url": "https://ies.ed.gov/ncee/rel/fractions-grade-6",
+      "local": "_research/fractions/ies-toolkit/"
+    },
+    {
+      "id": "wwc-fractions",
+      "title": "WWC Fractions Practice Guide",
+      "url": "https://ies.ed.gov/ncee/wwc/Docs/PracticeGuide/fractions_pg_093010.pdf",
+      "local": "_research/fractions/ies-toolkit/WWC_Fractions_Practice_Guide.pdf"
+    },
+    {
+      "id": "siegler2011",
+      "title": "Fractions as magnitudes on mental number line",
+      "url": "https://doi.org/10.1016/j.cogpsych.2010.06.001"
+    },
+    {
+      "id": "bigocheatsheet",
+      "title": "bigocheatsheet.com",
+      "url": "https://www.bigocheatsheet.com/"
+    },
+    {
+      "id": "bigochart",
+      "title": "bigochart.com",
+      "url": "https://bigochart.com/"
+    },
+    {
+      "id": "ro31337-bigoposter",
+      "title": "ro31337/bigoposter",
+      "url": "https://github.com/ro31337/bigoposter",
+      "local": "_research/big-o/bigoposter.pdf"
+    },
+    {
+      "id": "reavnail",
+      "title": "ReaVNaiL MIT cheat sheet",
+      "url": "https://github.com/ReaVNaiL/Big-O-Complexity-Cheat-Sheet",
+      "local": "_research/big-o/ReaVNaiL-cite/"
+    },
+    {
+      "id": "froster02",
+      "title": "froster02 charts (README MIT; LICENSE missing)",
+      "url": "https://github.com/froster02/shorting-algorithm-complexity-chart",
+      "local": "_research/big-o/froster02/"
+    },
+    {
+      "id": "rehansaeed",
+      "title": "RehanSaeed Big-O Cheat Sheet MIT",
+      "url": "https://github.com/RehanSaeed/Big-O-Cheat-Sheet",
+      "local": "_research/big-o/rehansaeed-cheat-sheet.png"
+    },
+    {
+      "id": "gollmar",
+      "title": "gollmar/number-lines cite-only",
+      "url": "https://gitlab.com/gollmar/number-lines",
+      "local": "_research/fractions/gollmar-number-lines/"
     }
   ]
 }

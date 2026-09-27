@@ -5,7 +5,7 @@
   "parent_issue": "https://github.com/Pukujan/Study-os/issues/126",
   "automation": {
     "checker": "tools/teach_visual_catalog_check.py",
-    "rule": "Every player lesson step MUST have a map entry. Big O + fractions packs are illustrative examples that seed the pipeline \u2014 do not lock one Big O widget for all steps."
+    "rule": "Every player lesson step MUST have a map entry. Big O + fractions packs are illustrative examples \u2014 do not lock one Big O widget for all steps."
   },
   "entries": [
     {
@@ -17,23 +17,21 @@
         "explain",
         "worked"
       ],
-      "visual_type": "simple_four_class_growth_curve",
+      "visual_type": "multi_class_growth_curve",
       "asset_ids": [
-        "big-o.growth-simple-4class"
+        "big-o-big-o-cheatsheet",
+        "big-o-comparison-computational-complexity-from-upload",
+        "big-o-comparison-computational-complexity",
+        "datasets-growth-ops-c1-n1-64"
       ],
       "status": "landed",
       "research_cites": [
         "farghally2017",
         "bigocheatsheet",
-        "opendsa",
-        "opendsa-analintro",
-        "moore-thompson-2015"
+        "opendsa"
       ],
-      "notes": "TEACH DEFAULT: four-class SVG. Full Cmglee optional_reference only.",
-      "exercise_affordance": "read_multiclass_chart",
-      "optional_reference_asset_ids": [
-        "big-o.comparison-computational-complexity"
-      ]
+      "notes": "Multi-class overview; CSV-driven \u2014 illustrative seed not one locked widget.",
+      "exercise_affordance": "read_multiclass_chart"
     },
     {
       "lesson_id": "big-o-growth-families",
@@ -44,23 +42,21 @@
         "explain",
         "worked"
       ],
-      "visual_type": "simple_four_class_growth_curve",
+      "visual_type": "flat_growth_curve",
       "asset_ids": [
-        "big-o.growth-simple-4class"
+        "big-o-comparison-computational-complexity-from-upload",
+        "big-o-comparison-computational-complexity",
+        "big-o-linear-function",
+        "datasets-growth-ops-c1-n1-64"
       ],
       "status": "landed",
       "research_cites": [
         "farghally2017",
         "bigocheatsheet",
-        "opendsa",
-        "opendsa-analintro",
-        "moore-thompson-2015"
+        "opendsa"
       ],
-      "notes": "TEACH DEFAULT: four-class SVG. Full Cmglee optional_reference only.",
-      "exercise_affordance": "highlight_flat_series",
-      "optional_reference_asset_ids": [
-        "big-o.comparison-computational-complexity"
-      ]
+      "notes": "FLAT O(1) series highlight. Person+boxes only if curated research asset exists.",
+      "exercise_affordance": "highlight_flat_series"
     },
     {
       "lesson_id": "big-o-growth-families",
@@ -71,23 +67,21 @@
         "explain",
         "worked"
       ],
-      "visual_type": "simple_four_class_growth_curve",
+      "visual_type": "log_growth_curve",
       "asset_ids": [
-        "big-o.growth-simple-4class"
+        "big-o-comparison-computational-complexity-from-upload",
+        "big-o-comparison-computational-complexity",
+        "big-o-function-growth",
+        "datasets-growth-ops-c1-n1-64"
       ],
       "status": "landed",
       "research_cites": [
         "farghally2017",
         "bigocheatsheet",
-        "opendsa",
-        "opendsa-analintro",
-        "moore-thompson-2015"
+        "opendsa"
       ],
-      "notes": "TEACH DEFAULT: four-class SVG. Full Cmglee optional_reference only.",
-      "exercise_affordance": "highlight_log_series",
-      "optional_reference_asset_ids": [
-        "big-o.comparison-computational-complexity"
-      ]
+      "notes": "Highlight O(log n).",
+      "exercise_affordance": "highlight_log_series"
     },
     {
       "lesson_id": "big-o-growth-families",
@@ -98,23 +92,21 @@
         "explain",
         "worked"
       ],
-      "visual_type": "simple_four_class_growth_curve",
+      "visual_type": "linear_growth_curve",
       "asset_ids": [
-        "big-o.growth-simple-4class"
+        "big-o-comparison-computational-complexity-from-upload",
+        "big-o-comparison-computational-complexity",
+        "big-o-linear-function",
+        "datasets-growth-ops-c1-n1-64"
       ],
       "status": "landed",
       "research_cites": [
         "farghally2017",
         "bigocheatsheet",
-        "opendsa",
-        "opendsa-analintro",
-        "moore-thompson-2015"
+        "opendsa"
       ],
-      "notes": "TEACH DEFAULT: four-class SVG. Full Cmglee optional_reference only.",
-      "exercise_affordance": "highlight_linear_series",
-      "optional_reference_asset_ids": [
-        "big-o.comparison-computational-complexity"
-      ]
+      "notes": "Highlight O(n).",
+      "exercise_affordance": "highlight_linear_series"
     },
     {
       "lesson_id": "big-o-growth-families",
@@ -125,23 +117,21 @@
         "explain",
         "worked"
       ],
-      "visual_type": "simple_four_class_growth_curve",
+      "visual_type": "linearithmic_growth_curve",
       "asset_ids": [
-        "big-o.growth-simple-4class"
+        "big-o-comparison-computational-complexity-from-upload",
+        "big-o-comparison-computational-complexity",
+        "big-o-merge-sort-animation",
+        "datasets-growth-ops-c1-n1-64"
       ],
       "status": "landed",
       "research_cites": [
         "farghally2017",
         "bigocheatsheet",
-        "opendsa",
-        "opendsa-analintro",
-        "moore-thompson-2015"
+        "opendsa"
       ],
-      "notes": "TEACH DEFAULT: four-class SVG. Full Cmglee optional_reference only.",
-      "exercise_affordance": "highlight_nlogn_series",
-      "optional_reference_asset_ids": [
-        "big-o.comparison-computational-complexity"
-      ]
+      "notes": "O(n log n)+merge-sort ref.",
+      "exercise_affordance": "highlight_nlogn_series"
     },
     {
       "lesson_id": "big-o-growth-families",
@@ -152,23 +142,21 @@
         "explain",
         "worked"
       ],
-      "visual_type": "simple_four_class_growth_curve",
+      "visual_type": "quadratic_growth_curve",
       "asset_ids": [
-        "big-o.growth-simple-4class"
+        "big-o-comparison-computational-complexity-from-upload",
+        "big-o-comparison-computational-complexity",
+        "big-o-quadratic-function",
+        "datasets-growth-ops-c1-n1-64"
       ],
       "status": "landed",
       "research_cites": [
         "farghally2017",
         "bigocheatsheet",
-        "opendsa",
-        "opendsa-analintro",
-        "moore-thompson-2015"
+        "opendsa"
       ],
-      "notes": "TEACH DEFAULT: four-class SVG. Full Cmglee optional_reference only.",
-      "exercise_affordance": "highlight_quadratic_series",
-      "optional_reference_asset_ids": [
-        "big-o.comparison-computational-complexity"
-      ]
+      "notes": "Highlight O(n\u00b2).",
+      "exercise_affordance": "highlight_quadratic_series"
     },
     {
       "lesson_id": "big-o-growth-families",
@@ -179,23 +167,23 @@
         "explain",
         "worked"
       ],
-      "visual_type": "simple_four_class_growth_curve",
+      "visual_type": "multi_class_growth_curve",
       "asset_ids": [
-        "big-o.growth-simple-4class"
+        "big-o-big-o-cheatsheet",
+        "big-o-big-o",
+        "big-o-comparison-computational-complexity-from-upload",
+        "big-o-comparison-computational-complexity",
+        "datasets-growth-ops-c1-n1-64",
+        "datasets-growth-ops-cheatsheet-sizes"
       ],
       "status": "landed",
       "research_cites": [
         "farghally2017",
         "bigocheatsheet",
-        "opendsa",
-        "opendsa-analintro",
-        "moore-thompson-2015"
+        "opendsa"
       ],
-      "notes": "TEACH DEFAULT: four-class SVG. Full Cmglee optional_reference only.",
-      "exercise_affordance": "compare_families",
-      "optional_reference_asset_ids": [
-        "big-o.comparison-computational-complexity"
-      ]
+      "notes": "Full family compare.",
+      "exercise_affordance": "compare_families"
     },
     {
       "lesson_id": "fractions-compare",
@@ -209,22 +197,19 @@
       "visual_type": "fraction_number_line",
       "asset_ids": [
         "fractions-3-4-fraction",
+        "fractions-absolute-value-number-line",
         "fractions-algebra1-03-fig022a-rettafraz",
         "fractions-algebra1-03-fig022b-rettafraz",
-        "fractions-algebra1-frac-numberline-a",
-        "fractions-algebra1-frac-numberline-b",
+        "fractions-bijection-between-vectors-and-points-on-number-line",
         "fractions-fraccion-propia-en-la-recta"
       ],
       "status": "landed",
       "research_cites": [
         "hamdan-gunderson",
         "ies-tft",
-        "siegler2011",
-        "hamdan-gunderson-2017",
-        "fuchs-five-rcts",
-        "ies-fractions-toolkit"
+        "siegler2011"
       ],
-      "notes": "Number-line-first per Hamdan/Gunderson + IES Module 1; area optional.",
+      "notes": "Number-line-first (Hamdan/Gunderson; IES Mod1).",
       "exercise_affordance": "place_or_compare_on_number_line"
     },
     {
@@ -239,22 +224,19 @@
       "visual_type": "fraction_number_line",
       "asset_ids": [
         "fractions-3-4-fraction",
+        "fractions-absolute-value-number-line",
         "fractions-algebra1-03-fig022a-rettafraz",
         "fractions-algebra1-03-fig022b-rettafraz",
-        "fractions-algebra1-frac-numberline-a",
-        "fractions-algebra1-frac-numberline-b",
+        "fractions-bijection-between-vectors-and-points-on-number-line",
         "fractions-fraccion-propia-en-la-recta"
       ],
       "status": "landed",
       "research_cites": [
         "hamdan-gunderson",
         "ies-tft",
-        "siegler2011",
-        "hamdan-gunderson-2017",
-        "fuchs-five-rcts",
-        "ies-fractions-toolkit"
+        "siegler2011"
       ],
-      "notes": "Number-line-first per Hamdan/Gunderson + IES Module 1; area optional.",
+      "notes": "Number-line-first (Hamdan/Gunderson; IES Mod1).",
       "exercise_affordance": "place_or_compare_on_number_line"
     },
     {
@@ -269,22 +251,19 @@
       "visual_type": "fraction_number_line",
       "asset_ids": [
         "fractions-3-4-fraction",
+        "fractions-absolute-value-number-line",
         "fractions-algebra1-03-fig022a-rettafraz",
         "fractions-algebra1-03-fig022b-rettafraz",
-        "fractions-algebra1-frac-numberline-a",
-        "fractions-algebra1-frac-numberline-b",
+        "fractions-bijection-between-vectors-and-points-on-number-line",
         "fractions-fraccion-propia-en-la-recta"
       ],
       "status": "landed",
       "research_cites": [
         "hamdan-gunderson",
         "ies-tft",
-        "siegler2011",
-        "hamdan-gunderson-2017",
-        "fuchs-five-rcts",
-        "ies-fractions-toolkit"
+        "siegler2011"
       ],
-      "notes": "Number-line-first per Hamdan/Gunderson + IES Module 1; area optional.",
+      "notes": "Number-line-first (Hamdan/Gunderson; IES Mod1).",
       "exercise_affordance": "place_or_compare_on_number_line"
     },
     {
@@ -299,22 +278,19 @@
       "visual_type": "fraction_number_line",
       "asset_ids": [
         "fractions-3-4-fraction",
+        "fractions-absolute-value-number-line",
         "fractions-algebra1-03-fig022a-rettafraz",
         "fractions-algebra1-03-fig022b-rettafraz",
-        "fractions-algebra1-frac-numberline-a",
-        "fractions-algebra1-frac-numberline-b",
+        "fractions-bijection-between-vectors-and-points-on-number-line",
         "fractions-fraccion-propia-en-la-recta"
       ],
       "status": "landed",
       "research_cites": [
         "hamdan-gunderson",
         "ies-tft",
-        "siegler2011",
-        "hamdan-gunderson-2017",
-        "fuchs-five-rcts",
-        "ies-fractions-toolkit"
+        "siegler2011"
       ],
-      "notes": "Number-line-first per Hamdan/Gunderson + IES Module 1; area optional.",
+      "notes": "Number-line-first (Hamdan/Gunderson; IES Mod1).",
       "exercise_affordance": "place_or_compare_on_number_line"
     },
     {
@@ -329,22 +305,19 @@
       "visual_type": "fraction_number_line",
       "asset_ids": [
         "fractions-3-4-fraction",
+        "fractions-absolute-value-number-line",
         "fractions-algebra1-03-fig022a-rettafraz",
         "fractions-algebra1-03-fig022b-rettafraz",
-        "fractions-algebra1-frac-numberline-a",
-        "fractions-algebra1-frac-numberline-b",
+        "fractions-bijection-between-vectors-and-points-on-number-line",
         "fractions-fraccion-propia-en-la-recta"
       ],
       "status": "landed",
       "research_cites": [
         "hamdan-gunderson",
         "ies-tft",
-        "siegler2011",
-        "hamdan-gunderson-2017",
-        "fuchs-five-rcts",
-        "ies-fractions-toolkit"
+        "siegler2011"
       ],
-      "notes": "Number-line-first per Hamdan/Gunderson + IES Module 1; area optional.",
+      "notes": "Number-line-first (Hamdan/Gunderson; IES Mod1).",
       "exercise_affordance": "place_or_compare_on_number_line"
     },
     {
@@ -359,22 +332,19 @@
       "visual_type": "fraction_number_line",
       "asset_ids": [
         "fractions-3-4-fraction",
+        "fractions-absolute-value-number-line",
         "fractions-algebra1-03-fig022a-rettafraz",
         "fractions-algebra1-03-fig022b-rettafraz",
-        "fractions-algebra1-frac-numberline-a",
-        "fractions-algebra1-frac-numberline-b",
+        "fractions-bijection-between-vectors-and-points-on-number-line",
         "fractions-fraccion-propia-en-la-recta"
       ],
       "status": "landed",
       "research_cites": [
         "hamdan-gunderson",
         "ies-tft",
-        "siegler2011",
-        "hamdan-gunderson-2017",
-        "fuchs-five-rcts",
-        "ies-fractions-toolkit"
+        "siegler2011"
       ],
-      "notes": "Number-line-first per Hamdan/Gunderson + IES Module 1; area optional.",
+      "notes": "Number-line-first (Hamdan/Gunderson; IES Mod1).",
       "exercise_affordance": "place_or_compare_on_number_line"
     },
     {
@@ -392,7 +362,7 @@
       "research_cites": [
         "opendsa"
       ],
-      "notes": "Deterministic box_index; OSS stills queued. Map row required by automation.",
+      "notes": "Deterministic box_index; OSS stills queued.",
       "exercise_affordance": "slide_window_on_array"
     },
     {
@@ -410,7 +380,7 @@
       "research_cites": [
         "opendsa"
       ],
-      "notes": "Deterministic box_index; OSS stills queued. Map row required by automation.",
+      "notes": "Deterministic box_index; OSS stills queued.",
       "exercise_affordance": "slide_window_on_array"
     },
     {
@@ -428,7 +398,7 @@
       "research_cites": [
         "opendsa"
       ],
-      "notes": "Deterministic box_index; OSS stills queued. Map row required by automation.",
+      "notes": "Deterministic box_index; OSS stills queued.",
       "exercise_affordance": "slide_window_on_array"
     },
     {
@@ -446,7 +416,7 @@
       "research_cites": [
         "opendsa"
       ],
-      "notes": "Deterministic box_index; OSS stills queued. Map row required by automation.",
+      "notes": "Deterministic box_index; OSS stills queued.",
       "exercise_affordance": "slide_window_on_array"
     },
     {
@@ -464,7 +434,7 @@
       "research_cites": [
         "opendsa"
       ],
-      "notes": "Deterministic box_index; OSS stills queued. Map row required by automation.",
+      "notes": "Deterministic box_index; OSS stills queued.",
       "exercise_affordance": "slide_window_on_array"
     },
     {
@@ -482,9 +452,8 @@
       "research_cites": [
         "opendsa"
       ],
-      "notes": "Deterministic box_index; OSS stills queued. Map row required by automation.",
+      "notes": "Deterministic box_index; OSS stills queued.",
       "exercise_affordance": "slide_window_on_array"
     }
-  ],
-  "policy_note": "Alex 2026-09-27: teach Big O with O(1)/O(log n)/O(n)/O(n\u00b2) only; full cheatsheets optional_reference."
+  ]
 }

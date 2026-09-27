@@ -1,0 +1,5 @@
+title=File:Arithmetic mean.PNG
+license=Public domain
+mime=image/png
+size=3095
+url=https://upload.wikimedia.org/wikipedia/commons/3/36/Arithmetic_mean.PNG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original

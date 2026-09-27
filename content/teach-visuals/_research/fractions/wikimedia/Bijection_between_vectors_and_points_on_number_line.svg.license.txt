@@ -1,0 +1,5 @@
+title=File:Bijection between vectors and points on number line.svg
+license=CC BY 3.0
+mime=image/svg+xml
+size=18702
+url=https://upload.wikimedia.org/wikipedia/commons/3/34/Bijection_between_vectors_and_points_on_number_line.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original

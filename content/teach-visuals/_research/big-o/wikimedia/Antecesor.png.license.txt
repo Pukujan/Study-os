@@ -1,0 +1,5 @@
+title=File:Antecesor.png
+license=CC BY-SA 4.0
+mime=image/png
+size=5582
+url=https://upload.wikimedia.org/wikipedia/commons/d/de/Antecesor.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original

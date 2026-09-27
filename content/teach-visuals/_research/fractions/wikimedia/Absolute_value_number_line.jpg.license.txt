@@ -1,0 +1,5 @@
+title=File:Absolute value number line.jpg
+license=CC0
+mime=image/jpeg
+size=61534
+url=https://upload.wikimedia.org/wikipedia/commons/d/da/Absolute_value_number_line.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original
