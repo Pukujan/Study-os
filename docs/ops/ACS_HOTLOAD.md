@@ -56,3 +56,5 @@ When ACS PR #12 merges to `main`, bump the submodule to the merge commit on ACS 
 - Multi-agent authority: `docs/AUTHORITY.md`
 - Port notes (jev-classifier to Study-os): `docs/ops/MULTI_AGENT_TASK_WORKFLOW.md`
 - ACS owning issue for the pack: [agent-custom-setup#11](https://github.com/Pukujan/agent-custom-setup/issues/11)
+
+- Claude Code pasteable worker handoff: [`docs/ops/CLAUDE_CODE_WORKER_HANDOFF.md`](CLAUDE_CODE_WORKER_HANDOFF.md)
