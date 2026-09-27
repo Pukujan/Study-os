@@ -243,22 +243,34 @@ test.describe("learner step review: metamorphic relations", () => {
 
     await openPlayer(page);
     await draftReview(page, 3);
-    const before = await page.locator(".teach.card").first().innerText();
+    // Compare the whole teach card, not its text: Explain again swaps the
+    // *diagram* (authored frame reserve), and a fraction_bar frame renders no
+    // text, so innerText is identical across a real re-render.
+    const before = await page.locator(".teach.card").first().innerHTML();
     const progressBefore = await progressLabel(page);
 
     // The regeneration control family is the chat path to a re-render.
     const regen = page.locator('[data-testid^="player.step.regen-"]');
     await expect(regen.first()).toBeVisible();
-    // The regeneration path asks the tutor for another render of the same step.
-    const tutorCall = page.waitForRequest(
-      (request) => request.method() === "POST" && request.url().includes("/api/player/sessions/") && request.url().endsWith("/tutor"),
+    // A regeneration is a request that re-renders the same step. Two transports
+    // are legitimate: `/adapt` (the deterministic authored-frame swap, preferred
+    // since #158) and `/tutor` (the model re-render). Asserting one of them by
+    // name made this a transport test, so it broke the moment Explain again
+    // gained the adapt-first path — while the relation under test (a re-render
+    // happens and nothing is posted) still held. Accept either; a silent no-op
+    // that fires no request at all still fails.
+    const regenCall = page.waitForRequest(
+      (request) =>
+        request.method() === "POST" &&
+        request.url().includes("/api/player/sessions/") &&
+        (request.url().endsWith("/tutor") || request.url().endsWith("/adapt")),
       { timeout: 30_000 },
     );
     await regen.first().click();
-    await tutorCall;
+    await regenCall;
 
     await expect
-      .poll(async () => page.locator(".teach.card").first().innerText(), { timeout: 30_000 })
+      .poll(async () => page.locator(".teach.card").first().innerHTML(), { timeout: 30_000 })
       .not.toBe(before);
 
     await expectReviewControls(page, { submitEnabled: true });

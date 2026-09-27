@@ -231,7 +231,10 @@ function registerDefaults() {
 registerDefaults();
 
 /** Frame → typed render inside the isolated island. */
-export default function TeachRenderBox({ frame }: { frame: FrameType }) {
+export default function TeachRenderBox({ frame }: { frame: FrameType | null | undefined }) {
+  // Explain-again rotate can briefly hand the stepper an undefined slot
+  // (stale index or a hole in teach_frames). Never read `.type` on that.
+  if (!frame || typeof frame.type !== "string") return null;
   const kind = canonicalTeachRenderType(frame.type);
   const entry = getTeachRenderer(kind) || getTeachRenderer(frame.type);
   if (!entry) return null;

@@ -6,8 +6,10 @@ import { describeCodeTree } from "./CodeTree";
 import { describeGrowthTable } from "./GrowthTable";
 import { describeGrowthWorkers } from "./GrowthWorkers";
 import { describeGrowthCurve } from "./GrowthCurve";
+import { isRenderableFrame } from "./frames";
 
-export function describeFrame(frame: FrameType): string {
+export function describeFrame(frame: FrameType | null | undefined): string {
+  if (!isRenderableFrame(frame)) return "Frame";
   if (frame.type === "fraction_bar") return describeFractionBar(frame);
   if (frame.type === "box_index") return describeBoxIndex(frame);
   if (frame.type === "mermaid_flow") return frame.caption || "Mermaid diagram";
@@ -19,6 +21,7 @@ export function describeFrame(frame: FrameType): string {
 }
 
 /** All teach frames mount through the isolated TeachRenderBox island. */
-export default function Frame({ frame }: { frame: FrameType }) {
+export default function Frame({ frame }: { frame: FrameType | null | undefined }) {
+  if (!isRenderableFrame(frame)) return null;
   return <TeachRenderBox frame={frame} />;
 }

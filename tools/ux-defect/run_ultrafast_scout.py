@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
-"""Thin Study-os guest Ultrafast scout. Writes ux-defect-report.v1 summary.json."""
+"""Thin Study-os LOCAL guest Ultrafast scout (FE claim gate; not a CI job).
+
+Writes ux-defect-report.v1 summary.json. P0/P1 fails regardless of confidence.
+OpenRouter Decisions misconfig is env/config — not an Ultrafast flake.
+"""
 from __future__ import annotations
 
 import json

@@ -84,6 +84,35 @@ test.describe("UX defect P0/P1 controls (stub server)", () => {
     await expect(reply.first()).toBeVisible({ timeout: CHAT_TIMEOUT_MS });
   });
 
+  test("Chat ack survives a slow tutor (no silent drop while in flight)", async ({ page }) => {
+    // The stub tutor answers instantly, which makes the 3s ack assertion in the
+    // test above trivially true — the reply *is* the ack. This test delays the
+    // tutor by 10s so the ack must stand on its own, which is the live defect
+    // condition (tutor measured 9–23s on study.design-bakery.com).
+    await page.route("**/api/player/sessions/*/tutor", async (route) => {
+      await new Promise((r) => setTimeout(r, 10_000));
+      await route.continue();
+    });
+
+    await openFractionsPlayer(page);
+    await openCompanion(page);
+    const panel = page.locator(".companion-panel");
+    const input = panel.locator('[aria-label="Message"]');
+    await expect(input).toBeVisible();
+    await input.fill("What should I notice on this step?");
+    await panel.locator('[data-track="companion.send"]').click();
+
+    // Must be observable within 3s even though the reply is still 7s out.
+    const ack = panel.locator(".thinking-label, .companion-bubble.system, .companion-bubble.tutor:not(.thinking-bubble)");
+    await expect(ack.first()).toBeVisible({ timeout: 3_000 });
+    const ackText = (await ack.first().innerText()).trim();
+    expect(ackText.length, "ack must carry visible text, not just a sprite").toBeGreaterThan(0);
+
+    // And the real reply still lands once the tutor responds.
+    const reply = panel.locator(".companion-bubble.tutor:not(.thinking-bubble), .companion-bubble.system");
+    await expect(reply.first()).toBeVisible({ timeout: CHAT_TIMEOUT_MS });
+  });
+
   test("Read aloud / Voice input / Open Message affordances are present", async ({ page }, testInfo) => {
     await openFractionsPlayer(page);
     // Voice controls on the player teach surface
@@ -114,6 +143,39 @@ test.describe("UX defect P0/P1 controls (stub server)", () => {
     });
   });
 
+  test("Pet uses slow held-pose spritesheet (idle / ball, A22a)", async ({ page }) => {
+    await page.addInitScript(() => {
+      try {
+        localStorage.setItem("sos.pet.hidden", "false");
+        sessionStorage.removeItem("sos.pet.tipSeen");
+      } catch {
+        /* ignore */
+      }
+    });
+    await openFractionsPlayer(page);
+    // Prefer testid; fall back to free-roam shell (may sit near viewport edge).
+    const pet = page.locator('[data-testid="mascot.pet"], [data-pet-float]').first();
+    await expect(pet).toBeAttached({ timeout: 15_000 });
+    // Bring into view if free-roam parked near the edge on narrow viewports.
+    await pet.evaluate((el) => {
+      (el as HTMLElement).style.transform = "translate3d(24px, 120px, 0)";
+    });
+    await expect(pet).toBeVisible({ timeout: 5_000 });
+    const sprite = pet.locator('[data-testid="mascot.sprite"], [data-anim="held-pose"]').first();
+    await expect(sprite).toBeVisible();
+    await expect(sprite).toHaveAttribute("data-anim", "held-pose");
+    const fps = Number(await sprite.getAttribute("data-fps"));
+    expect(fps, "A22a idle/react fps must stay low (JP limited)").toBeLessThanOrEqual(4);
+    const anim = await sprite.evaluate((el) => getComputedStyle(el).animationName);
+    expect(["none", "", "initial"].includes(anim) || anim === "none").toBeTruthy();
+    const mood = await pet.getAttribute("data-mood");
+    expect(["idle", "wave", "ball", "thinking", "talking", "celebrate", "encourage", null]).toContain(mood);
+    const bg = await sprite.evaluate((el) => getComputedStyle(el).backgroundImage);
+    // Any mascot sheet counts: with SOS-0014 locomotion the pet may legitimately
+    // be mid-walk/turn when this samples, and that is still a held-pose sheet.
+    expect(bg).toMatch(/pet-(idle|ball|wave|thinking|talking|celebrate|encourage|walk|turn)\.webp/);
+  });
+
   test("player.back or brand exit leaves no permanent blank play", async ({ page }) => {
     await openFractionsPlayer(page);
     // If Worked example enables back, exercise it; else brand exit.
@@ -137,4 +199,21 @@ test.describe("UX defect P0/P1 controls (stub server)", () => {
     await page.locator("a.brand").first().click();
     await expect(page).not.toHaveURL(/\/play\//);
   });
+
+  test("Explain again ×3 never ErrorBoundary on .type (Refs #163)", async ({ page }) => {
+    await openFractionsPlayer(page);
+    const explain = page.getByTestId("player.step.regen-reexplain");
+    await expect(explain).toBeVisible();
+    await expect(explain).toBeEnabled({ timeout: 15_000 });
+    // Done-when: 3+ Explain again must not crash (Ultrafast/Playwright).
+    for (let i = 0; i < 3; i++) {
+      await explain.click();
+      await page.waitForTimeout(800);
+      await expect(page.getByText("Something broke on this screen")).toHaveCount(0);
+      await expect(page.getByTestId("render-error")).toHaveCount(0);
+    }
+    // Teach surface still mounted with a diagram or prose.
+    await expect(page.locator(".teach, [data-testid='teach-render-box']").first()).toBeVisible();
+  });
+
 });
