@@ -14,16 +14,36 @@
       "skippable": false,
       "confirm": false,
       "teach": {
-        "md": "We will compare fractions to find which is bigger.",
-        "frames": [
-          {
-            "type": "fraction_bar",
-            "caption": "Which is bigger, 3/4 or 2/3?",
-            "bars": [{"parts": 4, "shaded": 3, "label": "3/4", "highlight": [0, 1, 2]}, {"parts": 3, "shaded": 2, "label": "2/3", "highlight": [0, 1]}],
-            "number_line": null
-          }
-        ]
-      },
+      "md": "Fractions name a share of the **same whole**. To compare them, look at how much of that whole is shaded \u2014 not which denominator looks bigger.",
+      "frames": [
+        {
+          "type": "fraction_bar",
+          "caption": "Same whole, different shaded amounts.",
+          "bars": [
+            {
+              "parts": 4,
+              "shaded": 3,
+              "label": "three fourths",
+              "highlight": [
+                0,
+                1,
+                2
+              ]
+            },
+            {
+              "parts": 3,
+              "shaded": 2,
+              "label": "two thirds",
+              "highlight": [
+                0,
+                1
+              ]
+            }
+          ],
+          "number_line": null
+        }
+      ]
+    },
       "probe": {
         "prompt_md": "Which fraction is bigger, 3/4 or 2/3?",
         "frames": [
@@ -159,16 +179,23 @@
       "skippable": false,
       "confirm": false,
       "teach": {
-        "md": "The denominator tells how many equal parts the whole is split into.",
-        "frames": [
-          {
-            "type": "fraction_bar",
-            "caption": "A whole split into 4 equal parts.",
-            "bars": [{"parts": 4, "shaded": 0, "label": "denominator = 4", "highlight": []}],
-            "number_line": null
-          }
-        ]
-      },
+      "md": "The **denominator** is the bottom number. It counts how many **equal** parts the whole is cut into \u2014 every slice the same size.",
+      "frames": [
+        {
+          "type": "fraction_bar",
+          "caption": "Count every equal slice of the whole.",
+          "bars": [
+            {
+              "parts": 5,
+              "shaded": 0,
+              "label": "equal parts",
+              "highlight": []
+            }
+          ],
+          "number_line": null
+        }
+      ]
+    },
       "probe": {
         "prompt_md": "How many equal parts is this bar split into?",
         "frames": [
@@ -283,16 +310,26 @@
       "skippable": false,
       "confirm": false,
       "teach": {
-        "md": "The numerator counts how many parts are shaded.",
-        "frames": [
-          {
-            "type": "fraction_bar",
-            "caption": "3 out of 4 parts are shaded.",
-            "bars": [{"parts": 4, "shaded": 3, "label": "3/4", "highlight": [0, 1, 2]}],
-            "number_line": null
-          }
-        ]
-      },
+      "md": "The **numerator** is the top number. It counts how many of those equal parts are shaded.",
+      "frames": [
+        {
+          "type": "fraction_bar",
+          "caption": "Shaded slices are the numerator.",
+          "bars": [
+            {
+              "parts": 5,
+              "shaded": 2,
+              "label": "two shaded",
+              "highlight": [
+                0,
+                1
+              ]
+            }
+          ],
+          "number_line": null
+        }
+      ]
+    },
       "probe": {
         "prompt_md": "What fraction of the bar is shaded?",
         "frames": [
@@ -422,19 +459,29 @@
       "skippable": false,
       "confirm": false,
       "teach": {
-        "md": "When the bottom numbers match, the bigger top number wins.",
-        "frames": [
-          {
-            "type": "fraction_bar",
-            "caption": "Same whole, same size parts.",
-            "bars": [
-              {"parts": 4, "shaded": 2, "label": "2/4", "highlight": []},
-              {"parts": 4, "shaded": 3, "label": "3/4", "highlight": []}
-            ],
-            "number_line": null
-          }
-        ]
-      },
+      "md": "When two fractions share the **same denominator**, the parts are the same size. Compare how many parts are shaded.",
+      "frames": [
+        {
+          "type": "fraction_bar",
+          "caption": "Same-size parts \u2014 compare the shaded counts.",
+          "bars": [
+            {
+              "parts": 5,
+              "shaded": 2,
+              "label": "2 shaded",
+              "highlight": []
+            },
+            {
+              "parts": 5,
+              "shaded": 4,
+              "label": "4 shaded",
+              "highlight": []
+            }
+          ],
+          "number_line": null
+        }
+      ]
+    },
       "probe": {
         "prompt_md": "Which is bigger, 2/4 or 3/4?",
         "frames": [

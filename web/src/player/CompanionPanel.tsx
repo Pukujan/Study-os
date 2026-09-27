@@ -201,7 +201,8 @@ export default function CompanionPanel({
   };
 
   const handleChip = async (kind: "example" | "easier" | "harder" | "reexplain") => {
-    if (view.phase === "probe") return;
+    // Easier/harder stay feedback-only; example + reexplain work during probe too (#126 A12).
+    if (view.phase === "probe" && (kind === "easier" || kind === "harder")) return;
     setBusy(true);
     try {
       if (kind === "reexplain") {
@@ -370,7 +371,7 @@ export default function CompanionPanel({
             label="Show a worked example"
             kind="example"
             onClick={() => handleChip("example")}
-            disabled={isProbe || busy}
+            disabled={busy}
             highlighted={suggestedAction === "example"}
           />
           <ActionChip label="Easier" kind="easier" onClick={() => handleChip("easier")} disabled={isProbe || busy} highlighted={suggestedAction === "easier"} />
@@ -379,7 +380,7 @@ export default function CompanionPanel({
             label="Explain again"
             kind="reexplain"
             onClick={() => handleChip("reexplain")}
-            disabled={isProbe || busy}
+            disabled={busy}
             highlighted={suggestedAction === "reexplain"}
           />
         </div>
