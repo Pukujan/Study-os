@@ -202,6 +202,28 @@ A substantive PR should state:
 - known limitations;
 - whether manifest/handoff changed.
 
+## Frontend QA mandate (mandatory)
+
+**Ultrafast + Playwright (and CI vision) are mandatory** before claiming a frontend change works or opening/merging a UI PR.
+
+Full policy: [`docs/AGENT_FRONTEND_QA.md`](docs/AGENT_FRONTEND_QA.md).
+
+Non-negotiable summary:
+
+- Run **local Ultrafast scout** and **Playwright UX / vision** against live or the PR preview; CI must also run Playwright+vision and Ultrafast crawl.
+- Any **P0/P1** fail → do not claim green; fix or file and block.
+- **Low confidence** → manually re-check why; do not skip. Record confidence; it does **not** waive P0/P1.
+- **No Jev / OpenRouter Decisions on product code.** Ultrafast is a QA harness only (OpenRouter Decisions).
+
+Runners:
+
+```bash
+./tools/frontend_qa/run_ultrafast_scout.sh https://study.design-bakery.com   # or PR preview URL
+./tools/frontend_qa/run_playwright_ux.sh                                    # wraps web/ e2e + vision gate
+```
+
+Ultrafast lives at [`Pukujan/jev-ultrafast`](https://github.com/Pukujan/jev-ultrafast) (Alex host path `D:\claude\jev-ultrafast`). Playwright specs: `web/e2e/`. CI job: `playwright` in `.github/workflows/ci.yml`.
+
 ## Explicitly deferred
 
 Until Research Gate R0 passes, do not prioritize:
