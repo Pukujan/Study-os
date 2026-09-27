@@ -307,10 +307,19 @@ class PlayerRegeneratePresentationTests(_PlayerDbCase):
             self.assertEqual(reply.status_code, 200, reply.text)
             body = reply.json()
             after = c.c.get(f"/api/player/sessions/{sid}", headers=c.headers).json()
-            return before, body, after
+            return before, body, after, sid
+
+    def _codes(self, session_id: str) -> list[str]:
+        rows = self.sql(
+            "SELECT validation_codes FROM learn.llm_interaction "
+            "WHERE session_id = %s AND operation = 'tutor_reply' "
+            "ORDER BY created_at DESC LIMIT 1",
+            (session_id,),
+        )
+        return list(rows[0]["validation_codes"]) if rows else []
 
     def test_valid_regeneration_is_applied_in_place_without_advancing(self) -> None:
-        before, body, after = self._run({"teach_md": "Same box, read from its left edge.", "frame_indices": [0]})
+        before, body, after, _sid = self._run({"teach_md": "Same box, read from its left edge.", "frame_indices": [0]})
         update = body["regenerate_presentation"]
         self.assertEqual(update["schema_version"], "study-os.player-presentation.v1")
         self.assertEqual(update["operation"], "regenerate_presentation")
@@ -343,23 +352,47 @@ class PlayerRegeneratePresentationTests(_PlayerDbCase):
 
     def test_rejected_regeneration_leaves_the_session_untouched(self) -> None:
         # The probe answer is 4; a proposal that leaks it must be refused.
-        before, body, after = self._run({"teach_md": "The position is 4.", "frame_indices": [0]})
-        self.assertIsNone(body["regenerate_presentation"])
-        self.assertEqual(after["presentation_version"], 0)
+        before, body, after, sid = self._run({"teach_md": "The position is 4.", "frame_indices": [0]})
+        update = body["regenerate_presentation"]
+        # The leaky model card is never adopted: the prose stays the authored md,
+        # the refused frame_indices are not used, and nothing advances.
+        self.assertIsNotNone(update)
         self.assertEqual(after["step"]["teach_md"], before["step"]["teach_md"])
         self.assertNotIn("4", after["step"]["teach_md"])
+        self.assertEqual(after["step"]["step_id"], before["step"]["step_id"])
+        self.assertEqual(after["step"]["probe"], before["step"]["probe"])
+        self.assertNotEqual(after["step"]["teach_frames"], before["step"]["teach_frames"])
+        # The turn instead re-serves the step's authored alternate card (#126),
+        # which is what makes Explain again a real re-render rather than a no-op.
+        self.assertEqual(after["step"]["teach_frames"], update["teach_frames"])
+        self.assertEqual(after["presentation_version"], 1)
+        codes = self._codes(sid)
+        self.assertIn("ANSWER_REVEAL_FORBIDDEN", codes)
+        self.assertIn("RENDER_AUTHORED_RESERVE", codes)
 
     def test_out_of_range_frames_are_refused(self) -> None:
-        before, body, after = self._run({"teach_md": "Another look at the same box.", "frame_indices": [7]})
-        self.assertIsNone(body["regenerate_presentation"])
-        self.assertEqual(after["presentation_version"], 0)
-        self.assertEqual(after["step"]["teach_frames"], before["step"]["teach_frames"])
+        before, body, after, sid = self._run({"teach_md": "Another look at the same box.", "frame_indices": [7]})
+        # Index 7 does not exist in this step, so the model's card is refused and
+        # the authored alternate card is served in its place.
+        self.assertIsNotNone(body["regenerate_presentation"])
+        self.assertNotEqual(after["step"]["teach_frames"], before["step"]["teach_frames"])
+        self.assertEqual(after["step"]["teach_frames"], body["regenerate_presentation"]["teach_frames"])
+        self.assertEqual(after["presentation_version"], 1)
+        codes = self._codes(sid)
+        self.assertIn("INVALID_PRESENTATION", codes)
+        self.assertIn("RENDER_AUTHORED_RESERVE", codes)
 
     def test_absent_regeneration_is_still_a_normal_reply(self) -> None:
-        before, body, after = self._run(None)
-        self.assertIsNone(body["regenerate_presentation"])
+        before, body, after, sid = self._run(None)
         self.assertEqual(body["served"], "generated")
-        self.assertEqual(after["presentation_version"], 0)
+        self.assertTrue(body["reply_md"])
+        # The card refresh is part of the turn contract, so an absent proposal
+        # still lands on the step's authored alternate card rather than nothing.
+        self.assertIsNotNone(body["regenerate_presentation"])
+        self.assertEqual(after["step"]["teach_md"], before["step"]["teach_md"])
+        self.assertNotEqual(after["step"]["teach_frames"], before["step"]["teach_frames"])
+        self.assertEqual(after["presentation_version"], 1)
+        self.assertIn("RENDER_AUTHORED_RESERVE", self._codes(sid))
 
 
 @requires_db

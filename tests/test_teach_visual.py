@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import json
 import re
 import unittest
 from unittest import mock
@@ -293,6 +294,37 @@ class SlidingWindowMultiRepresentationTests(unittest.TestCase):
                 self.assertEqual(frames[:base], teach["frames"][:base])
                 for frame in frames[:base]:
                     self.assertEqual(frame["type"], self.GEOMETRY)
+
+    def test_alternate_cards_never_state_the_open_probe_answer(self):
+        """An alternate card is served while the step's probe is still open.
+
+        The geometry default already shows the array, so plain values are fine;
+        what is banned is the answer *claim* for that step (for example
+        ``p = 4`` for number 6, ``a[1:4] = [7, 2, 6]``, or ``sum[i=2] = 9``).
+        """
+
+        banned_claims = {
+            "position": ["p = 4", "p=4", "position 4"],
+            "index": ["i = 3", "i=3", "index 3"],
+            "box-size": ["4, 7, 2", "4 7 2", "[4, 7, 2]"],
+            "box-start": ["7, 2, 6", "7 2 6", "[7, 2, 6]", "a[1:4]"],
+            "window-sum": ["sum[2]", "sum[i=2]", "= 9", "2 + 6 + 1", "2+6+1"],
+        }
+        # The array itself is public: the geometry default frame already shows it.
+        array_literal = "4, 7, 2, 6, 1, 9"
+        for step in self.lesson["steps"]:
+            claims = banned_claims.get(step["step_id"])
+            if not claims:
+                continue
+            teach = step["teach"]
+            default = set(teach_visual.default_frame_indices(teach))
+            for index, frame in enumerate(teach["frames"]):
+                if index in default:
+                    continue
+                blob = json.dumps(frame, ensure_ascii=False).replace(array_literal, " the array ")
+                with self.subTest(step=step["step_id"], index=index):
+                    for claim in claims:
+                        self.assertNotIn(claim, blob)
 
     def test_flag_on_serves_only_the_default_card(self):
         for step in self.lesson["steps"]:
