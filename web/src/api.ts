@@ -153,7 +153,7 @@ export type SticksBoxesComplexityFrame = {
   caption?: string;
   /** Starting complexity rule. */
   initial_complexity?: "O(1)" | "O(n)" | "O(n²)";
-  /** Starting box count (clamped to n_min..n_max). */
+  /** Starting box count (default 3; clamped to n_min..n_max). */
   initial_n?: number;
   n_min?: number;
   n_max?: number;

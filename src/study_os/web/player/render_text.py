@@ -279,7 +279,7 @@ def _render_sticks_boxes_complexity(frame: dict[str, Any]) -> str:
     if caption:
         lines.append(str(caption))
     mode = frame.get("initial_complexity") or "O(1)"
-    n = int(frame.get("initial_n") or 2)
+    n = int(frame.get("initial_n") or 3)
     if mode == "O(1)":
         target = 1
         rule = "put 1 stick in the first box"
@@ -291,7 +291,7 @@ def _render_sticks_boxes_complexity(frame: dict[str, Any]) -> str:
         rule = "cross-pair every box with every box"
     lines.append(f"Sticks and boxes · {mode} · n={n} · {target} ops")
     lines.append(f"Rule: {rule}")
-    lines.append("Learner places sticks (Put Next Stick / Finished / Reset).")
+    lines.append("Learner places sticks (click target box / Put Next Stick / compare-next / Finished / Reset).")
     return "\n".join(lines)
 
 def frame_to_text(frame: dict[str, Any]) -> str:
