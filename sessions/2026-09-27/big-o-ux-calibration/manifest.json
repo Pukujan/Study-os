@@ -1,58 +1,38 @@
 {
+  "schema_version": "0.1.0",
   "session_id": "big-o-ux-calibration",
-  "date": "2026-09-27",
   "subject_id": "subject-001",
+  "started_at": "2026-09-25T00:00:00-04:00",
+  "ended_at": "2026-09-27T03:32:18-04:00",
   "domain": "dsa",
-  "concept": "big-o-growth-families+fractions+sliding-window+theme",
-  "purpose": "Preserve Pukujan's 2026-09-27 Study-os chat/live critiques (Big O teach visuals, Explain-crash, simpler charts, research-first interactives, dark mode / design system, pet jitter, fractions probe/nav, author naming) as calibration evidence. Git JSONL + screenshots under content/human-feedback/; in-app reviews remain ux.feedback; decomposer ratings remain ux.decomposer_review.",
+  "concepts": [
+    "big-o-growth-families",
+    "fractions",
+    "sliding-window",
+    "theme-system"
+  ],
+  "lesson_ids": [
+    "big-o-growth-families",
+    "fractions-compare",
+    "sliding-window-box"
+  ],
   "source": {
     "provider": "study-os-agent-chat",
-    "capture_scope": "product UX critiques + live player screenshots (not a full learner transcript)",
-    "integrity_note": "Scrubbed critique text and public screenshots only. No private study-log content."
+    "model": null,
+    "conversation_id": null,
+    "capture_method": "manual"
   },
-  "artifacts": {
-    "human_feedback_jsonl": "content/human-feedback/feedback.jsonl",
-    "human_feedback_schema": "content/human-feedback/schema.v1.json",
-    "assets": [
-      "content/human-feedback/assets/big-o-hikers-table-scoreboard.png",
-      "content/human-feedback/assets/big-o-multiclass-cheatsheet-pack.png",
-      "content/human-feedback/assets/big-o-o1-numbered-flat-table.png",
-      "content/human-feedback/assets/big-o-slow-vs-fast-frame.png",
-      "content/human-feedback/assets/big-o-slow-vs-fast-undersells.png",
-      "content/human-feedback/assets/big-o-stick-workers-boxes.png",
-      "content/human-feedback/assets/big-o-stick-workers-bullets.png",
-      "content/human-feedback/assets/big-o-why-hikers-analogy.png",
-      "content/human-feedback/assets/big-o-why-numbered-bullets.png",
-      "content/human-feedback/assets/big-o-why-with-feedback-bar.png",
-      "content/human-feedback/assets/big-o-why-worked-example-dup.png",
-      "content/human-feedback/assets/explain-crash-type-undefined.png",
-      "content/human-feedback/assets/fractions-compare-bars-alt.png",
-      "content/human-feedback/assets/fractions-compare-bars-step1.png",
-      "content/human-feedback/assets/fractions-denominator-parts.png",
-      "content/human-feedback/assets/fractions-ies-toolkit-module1.png",
-      "content/human-feedback/assets/fractions-step-visual-b.png",
-      "content/human-feedback/assets/sliding-window-box-index-ready.png",
-      "content/human-feedback/assets/sliding-window-k-box-probe.png",
-      "content/human-feedback/assets/teach-numbered-chrome-crop.png"
-    ],
-    "derived": [
-      "derived/findings.md"
-    ],
-    "related_issues": [
-      164,
-      165,
-      163,
-      161,
-      160,
-      126,
-      121,
-      103
-    ]
-  },
-  "stores": {
-    "git_jsonl": "content/human-feedback/feedback.jsonl",
-    "ux_feedback": "Postgres ux.feedback (live step review / thumbs \u2014 do not duplicate)",
-    "ux_decomposer_review": "Postgres ux.decomposer_review (pedagogy ratings \u2014 do not duplicate)"
-  },
-  "evidence_boundary": "Product-development calibration. Critique language is self_reported UX feedback, never mastery evidence or learn.* events."
+  "raw_artifacts": [
+    {
+      "path": "content/human-feedback/feedback.jsonl",
+      "media_type": "application/jsonl",
+      "sha256": "291e3213f93d73e0b9e5fb0fa538a6b684570204219633e507d7a57feb9bbd90"
+    },
+    {
+      "path": "content/human-feedback/assets/MANIFEST.sha256.json",
+      "media_type": "application/json",
+      "sha256": "cd2de7f9ff3c43a32f7b61d5fa9d2e988f31a59783681d6eb77827a6d494ce23"
+    }
+  ],
+  "notes": "Evidence class: self_reported product-UX calibration only. This is NOT mastery evidence and must never be written as learn.* events. raw_artifacts are the scrubbed critique capture (git JSONL) plus its asset hash manifest; derived/findings.md is derived analysis, deliberately not listed as raw. No private study-log content; screenshots are public and scrubbed. Live in-app step reviews remain Postgres ux.feedback and decomposer ratings remain ux.decomposer_review - this pack adds no parallel feedback database."
 }
