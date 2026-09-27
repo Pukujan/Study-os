@@ -1,0 +1,207 @@
+{
+  "schema_version": "study-os.teach-visual-provenance.v1",
+  "pack_id": "teach-visuals.v1",
+  "updated": "2026-09-27",
+  "policy": {
+    "invent_first": false,
+    "prefer": [
+      "OSS",
+      "public-domain",
+      "CC BY/BY-SA with attribution"
+    ],
+    "vision_role": "verify live TeachRenderBox render matches curated reference \u2014 never generate diagrams",
+    "default_complexity_visual": "multi_class_growth_curve",
+    "default_fraction_visual": "number_line"
+  },
+  "assets": [
+    {
+      "asset_id": "big-o.comparison-computational-complexity",
+      "path": "big-o/comparison-computational-complexity.svg",
+      "public_src": "/teach-visuals/big-o/comparison-computational-complexity.svg",
+      "title": "Comparison of common computational complexities",
+      "visual_type": "multi_class_growth_curve",
+      "topics": [
+        "big-o",
+        "complexity",
+        "growth-rate"
+      ],
+      "source": {
+        "name": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Comparison_computational_complexity.svg",
+        "author": "Cmglee",
+        "license": "CC BY-SA 4.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+        "retrieved": "2026-09-27"
+      },
+      "pedagogy_cites": [
+        {
+          "id": "farghally2017",
+          "note": "Algorithm Analysis Visualizations (AAVs) improve engagement/performance vs prose-only AA (OpenDSA / Virginia Tech)."
+        },
+        {
+          "id": "bigocheatsheet-family",
+          "note": "Multi-class O(1)/log n/n/n\u00b2 overlay is the dominant cheatsheet/chart family used in CS courses."
+        }
+      ],
+      "sha256": "fd6376d5ee5e6804ff6825e36034e43091a248d0ed72bdf8ff65b3a0924c2123",
+      "bytes": 13668
+    },
+    {
+      "asset_id": "big-o.notation-asymptotic",
+      "path": "big-o/big-o-notation.png",
+      "public_src": "/teach-visuals/big-o/big-o-notation.png",
+      "title": "Big-O asymptotic bound sketch",
+      "visual_type": "asymptotic_bound_sketch",
+      "topics": [
+        "big-o"
+      ],
+      "source": {
+        "name": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Big-O-notation.png",
+        "author": "w:it:User:Fede_Reghe",
+        "license": "Public domain",
+        "license_url": "https://creativecommons.org/publicdomain/mark/1.0/",
+        "retrieved": "2026-09-27"
+      },
+      "pedagogy_cites": [],
+      "sha256": "9274ba59b0cbd162a3ef89bdf710a7bcee385169092cfbe232f90b8bc5b106f7",
+      "bytes": 4201
+    },
+    {
+      "asset_id": "fractions.number-line",
+      "path": "fractions/number-line.svg",
+      "public_src": "/teach-visuals/fractions/number-line.svg",
+      "title": "Real number line (-9..9)",
+      "visual_type": "number_line",
+      "topics": [
+        "fractions",
+        "magnitude"
+      ],
+      "source": {
+        "name": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Number-line.svg",
+        "author": "Hakunamenta",
+        "license": "CC0 1.0",
+        "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "retrieved": "2026-09-27"
+      },
+      "pedagogy_cites": [
+        {
+          "id": "siegler2011",
+          "note": "Integrated theory: fractions as magnitudes on a mental number line (Cog Psych)."
+        },
+        {
+          "id": "hamdan-gunderson",
+          "note": "Number-line training causally improves fraction magnitude understanding (issue #161 starter cite)."
+        }
+      ],
+      "sha256": "0b0730f7b0d345e77e3abcadf5e702703d8ae5b7b169191604f076388023fbff",
+      "bytes": 1600
+    },
+    {
+      "asset_id": "fractions.propia-en-recta",
+      "path": "fractions/fraccion-propia-en-la-recta.png",
+      "public_src": "/teach-visuals/fractions/fraccion-propia-en-la-recta.png",
+      "title": "Proper fractions located on number lines",
+      "visual_type": "fraction_number_line",
+      "topics": [
+        "fractions"
+      ],
+      "source": {
+        "name": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Fraccion_propia_en_la_recta.png",
+        "author": "numerracionales",
+        "license": "CC BY-SA 4.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+        "retrieved": "2026-09-27"
+      },
+      "pedagogy_cites": [
+        {
+          "id": "ies-fractions-toolkit",
+          "note": "IES REL Teaching Fractions Toolkit Module 1 emphasizes number-line representations."
+        }
+      ],
+      "sha256": "4846d6cb8d7a11342e5bacf22efe4873a900af265078f086529f54046e818c7a",
+      "bytes": 17117
+    },
+    {
+      "asset_id": "fractions.three-fourths-area",
+      "path": "fractions/3-4-fraction.svg",
+      "public_src": "/teach-visuals/fractions/3-4-fraction.svg",
+      "title": "Area model for 3/4",
+      "visual_type": "fraction_area",
+      "topics": [
+        "fractions"
+      ],
+      "source": {
+        "name": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:3_4_fraction.svg",
+        "author": "Pbroks13",
+        "license": "Public domain",
+        "license_url": "https://creativecommons.org/publicdomain/mark/1.0/",
+        "retrieved": "2026-09-27"
+      },
+      "pedagogy_cites": [],
+      "sha256": "47b0db227e8805f8f2dbe0323cbce75c6b11f4b1fcf2d1c1ee27f3b192ee6b7c",
+      "bytes": 2532
+    },
+    {
+      "asset_id": "big-o.growth-ops-c1-n1-64",
+      "path": "datasets/growth_ops_c1_n1_64.csv",
+      "public_src": "/teach-visuals/big-o/growth_ops_c1_n1_64.csv",
+      "title": "Idealized ops vs n (c=1), n=1..64",
+      "visual_type": "growth_ops_table",
+      "topics": [
+        "big-o",
+        "dataset"
+      ],
+      "source": {
+        "name": "Study-os formula derivation (c=1)",
+        "page": "https://commons.wikimedia.org/wiki/File:Comparison_computational_complexity.svg",
+        "author": "Study-os",
+        "license": "CC0 packaging",
+        "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "retrieved": "2026-09-27"
+      },
+      "pedagogy_cites": [
+        {
+          "id": "cmglee-commons",
+          "note": "c=1 assumption"
+        }
+      ],
+      "sha256": "4a91a1bbd33e7bdf14172c00374606a5cc30576b3d6732e4c4c82a3212188ec3",
+      "bytes": 4792
+    },
+    {
+      "asset_id": "big-o.growth-ops-cheatsheet-sizes",
+      "path": "datasets/growth_ops_cheatsheet_sizes.csv",
+      "public_src": "/teach-visuals/big-o/growth_ops_cheatsheet_sizes.csv",
+      "title": "Idealized ops at cheatsheet sizes",
+      "visual_type": "growth_ops_table",
+      "topics": [
+        "big-o",
+        "dataset"
+      ],
+      "source": {
+        "name": "Study-os formula derivation (c=1)",
+        "page": "https://commons.wikimedia.org/wiki/File:Comparison_computational_complexity.svg",
+        "author": "Study-os",
+        "license": "CC0 packaging",
+        "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "retrieved": "2026-09-27"
+      },
+      "pedagogy_cites": [
+        {
+          "id": "cmglee-commons",
+          "note": "c=1 assumption"
+        }
+      ],
+      "sha256": "7f4e14be7c0f67c3c333dc9d969864bab49b696ee7a28ec77d698904cb4bd5be",
+      "bytes": 447
+    }
+  ],
+  "research_archive": {
+    "path": "content/teach-visuals/_research",
+    "box_mirror": "/workspace/study-os-visual-research/"
+  }
+}

@@ -1,0 +1,401 @@
+{
+  "schema_version": "study-os.teach-visual-step-map.v1",
+  "updated": "2026-09-27",
+  "issue": "https://github.com/Pukujan/Study-os/issues/161",
+  "parent_issue": "https://github.com/Pukujan/Study-os/issues/126",
+  "entries": [
+    {
+      "lesson_id": "big-o-growth-families",
+      "step_id": "why_care",
+      "kc": "big-o.motivation",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "multi_class_growth_curve",
+      "asset_ids": [
+        "big-o.comparison-computational-complexity"
+      ],
+      "status": "landed",
+      "research_cites": [
+        "farghally2017",
+        "bigocheatsheet-family",
+        "cmglee-commons"
+      ],
+      "notes": "Primary teach is O(1)/O(log n)/O(n)/O(n\u00b2) on shared axes; curated Commons SVG for explain/vision reference. Stick-worker metaphors removed from default path."
+    },
+    {
+      "lesson_id": "big-o-growth-families",
+      "step_id": "o1_constant",
+      "kc": "big-o.o1",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "multi_class_growth_curve",
+      "asset_ids": [
+        "big-o.comparison-computational-complexity"
+      ],
+      "status": "landed",
+      "research_cites": [
+        "farghally2017",
+        "bigocheatsheet-family",
+        "cmglee-commons"
+      ],
+      "notes": "Primary teach is O(1)/O(log n)/O(n)/O(n\u00b2) on shared axes; curated Commons SVG for explain/vision reference. Stick-worker metaphors removed from default path."
+    },
+    {
+      "lesson_id": "big-o-growth-families",
+      "step_id": "ologn",
+      "kc": "big-o.ologn",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "multi_class_growth_curve",
+      "asset_ids": [
+        "big-o.comparison-computational-complexity"
+      ],
+      "status": "landed",
+      "research_cites": [
+        "farghally2017",
+        "bigocheatsheet-family",
+        "cmglee-commons"
+      ],
+      "notes": "Primary teach is O(1)/O(log n)/O(n)/O(n\u00b2) on shared axes; curated Commons SVG for explain/vision reference. Stick-worker metaphors removed from default path."
+    },
+    {
+      "lesson_id": "big-o-growth-families",
+      "step_id": "on_linear",
+      "kc": "big-o.on",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "multi_class_growth_curve",
+      "asset_ids": [
+        "big-o.comparison-computational-complexity"
+      ],
+      "status": "landed",
+      "research_cites": [
+        "farghally2017",
+        "bigocheatsheet-family",
+        "cmglee-commons"
+      ],
+      "notes": "Primary teach is O(1)/O(log n)/O(n)/O(n\u00b2) on shared axes; curated Commons SVG for explain/vision reference. Stick-worker metaphors removed from default path."
+    },
+    {
+      "lesson_id": "big-o-growth-families",
+      "step_id": "onlogn",
+      "kc": "big-o.onlogn",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "multi_class_growth_curve",
+      "asset_ids": [
+        "big-o.comparison-computational-complexity"
+      ],
+      "status": "landed",
+      "research_cites": [
+        "farghally2017",
+        "bigocheatsheet-family",
+        "cmglee-commons"
+      ],
+      "notes": "Primary teach is O(1)/O(log n)/O(n)/O(n\u00b2) on shared axes; curated Commons SVG for explain/vision reference. Stick-worker metaphors removed from default path."
+    },
+    {
+      "lesson_id": "big-o-growth-families",
+      "step_id": "on2_quadratic",
+      "kc": "big-o.on2",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "multi_class_growth_curve",
+      "asset_ids": [
+        "big-o.comparison-computational-complexity"
+      ],
+      "status": "landed",
+      "research_cites": [
+        "farghally2017",
+        "bigocheatsheet-family",
+        "cmglee-commons"
+      ],
+      "notes": "Primary teach is O(1)/O(log n)/O(n)/O(n\u00b2) on shared axes; curated Commons SVG for explain/vision reference. Stick-worker metaphors removed from default path."
+    },
+    {
+      "lesson_id": "big-o-growth-families",
+      "step_id": "compare_families",
+      "kc": "big-o.compare",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "multi_class_growth_curve",
+      "asset_ids": [
+        "big-o.comparison-computational-complexity"
+      ],
+      "status": "landed",
+      "research_cites": [
+        "farghally2017",
+        "bigocheatsheet-family",
+        "cmglee-commons"
+      ],
+      "notes": "Primary teach is O(1)/O(log n)/O(n)/O(n\u00b2) on shared axes; curated Commons SVG for explain/vision reference. Stick-worker metaphors removed from default path."
+    },
+    {
+      "lesson_id": "fractions-compare",
+      "step_id": "problem",
+      "kc": "fractions.compare.problem",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "fraction_number_line",
+      "asset_ids": [
+        "fractions.propia-en-recta",
+        "fractions.number-line",
+        "fractions.three-fourths-area"
+      ],
+      "status": "landed",
+      "research_cites": [
+        "siegler2011",
+        "hamdan-gunderson",
+        "ies-fractions-toolkit"
+      ],
+      "notes": "Number line required on default teach; area bars may accompany. Curated Commons number-line figures for explain/vision."
+    },
+    {
+      "lesson_id": "fractions-compare",
+      "step_id": "denominator",
+      "kc": "fractions.denominator",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "fraction_number_line",
+      "asset_ids": [
+        "fractions.propia-en-recta",
+        "fractions.number-line",
+        "fractions.three-fourths-area"
+      ],
+      "status": "landed",
+      "research_cites": [
+        "siegler2011",
+        "hamdan-gunderson",
+        "ies-fractions-toolkit"
+      ],
+      "notes": "Number line required on default teach; area bars may accompany. Curated Commons number-line figures for explain/vision."
+    },
+    {
+      "lesson_id": "fractions-compare",
+      "step_id": "numerator",
+      "kc": "fractions.numerator",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "fraction_number_line",
+      "asset_ids": [
+        "fractions.propia-en-recta",
+        "fractions.number-line",
+        "fractions.three-fourths-area"
+      ],
+      "status": "landed",
+      "research_cites": [
+        "siegler2011",
+        "hamdan-gunderson",
+        "ies-fractions-toolkit"
+      ],
+      "notes": "Number line required on default teach; area bars may accompany. Curated Commons number-line figures for explain/vision."
+    },
+    {
+      "lesson_id": "fractions-compare",
+      "step_id": "same-denominator",
+      "kc": "fractions.same-denominator",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "fraction_number_line",
+      "asset_ids": [
+        "fractions.propia-en-recta",
+        "fractions.number-line",
+        "fractions.three-fourths-area"
+      ],
+      "status": "landed",
+      "research_cites": [
+        "siegler2011",
+        "hamdan-gunderson",
+        "ies-fractions-toolkit"
+      ],
+      "notes": "Number line required on default teach; area bars may accompany. Curated Commons number-line figures for explain/vision."
+    },
+    {
+      "lesson_id": "fractions-compare",
+      "step_id": "same-whole-different-parts",
+      "kc": "fractions.same-whole-different-parts",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "fraction_number_line",
+      "asset_ids": [
+        "fractions.propia-en-recta",
+        "fractions.number-line",
+        "fractions.three-fourths-area"
+      ],
+      "status": "landed",
+      "research_cites": [
+        "siegler2011",
+        "hamdan-gunderson",
+        "ies-fractions-toolkit"
+      ],
+      "notes": "Number line required on default teach; area bars may accompany. Curated Commons number-line figures for explain/vision."
+    },
+    {
+      "lesson_id": "fractions-compare",
+      "step_id": "compare-3-4-vs-2-3",
+      "kc": "fractions.compare.different-denominators",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "fraction_number_line",
+      "asset_ids": [
+        "fractions.propia-en-recta",
+        "fractions.number-line",
+        "fractions.three-fourths-area"
+      ],
+      "status": "landed",
+      "research_cites": [
+        "siegler2011",
+        "hamdan-gunderson",
+        "ies-fractions-toolkit"
+      ],
+      "notes": "Number line required on default teach; area bars may accompany. Curated Commons number-line figures for explain/vision."
+    },
+    {
+      "lesson_id": "sliding-window-box",
+      "step_id": "problem",
+      "kc": "sliding-window.problem",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "box_index_array",
+      "asset_ids": [],
+      "status": "queued",
+      "research_cites": [
+        "opendsa-jsav",
+        "study-os-sliding-window-golden"
+      ],
+      "notes": "Keep deterministic box_index (OpenDSA/JSAV-style array+window). External OSS stills queued \u2014 do not invent new metaphors; golden arrow rules remain authority."
+    },
+    {
+      "lesson_id": "sliding-window-box",
+      "step_id": "position",
+      "kc": "sliding-window.position",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "box_index_array",
+      "asset_ids": [],
+      "status": "queued",
+      "research_cites": [
+        "opendsa-jsav",
+        "study-os-sliding-window-golden"
+      ],
+      "notes": "Keep deterministic box_index (OpenDSA/JSAV-style array+window). External OSS stills queued \u2014 do not invent new metaphors; golden arrow rules remain authority."
+    },
+    {
+      "lesson_id": "sliding-window-box",
+      "step_id": "index",
+      "kc": "sliding-window.index",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "box_index_array",
+      "asset_ids": [],
+      "status": "queued",
+      "research_cites": [
+        "opendsa-jsav",
+        "study-os-sliding-window-golden"
+      ],
+      "notes": "Keep deterministic box_index (OpenDSA/JSAV-style array+window). External OSS stills queued \u2014 do not invent new metaphors; golden arrow rules remain authority."
+    },
+    {
+      "lesson_id": "sliding-window-box",
+      "step_id": "box-size",
+      "kc": "sliding-window.box-size",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "box_index_array",
+      "asset_ids": [],
+      "status": "queued",
+      "research_cites": [
+        "opendsa-jsav",
+        "study-os-sliding-window-golden"
+      ],
+      "notes": "Keep deterministic box_index (OpenDSA/JSAV-style array+window). External OSS stills queued \u2014 do not invent new metaphors; golden arrow rules remain authority."
+    },
+    {
+      "lesson_id": "sliding-window-box",
+      "step_id": "box-start",
+      "kc": "sliding-window.box-start",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "box_index_array",
+      "asset_ids": [],
+      "status": "queued",
+      "research_cites": [
+        "opendsa-jsav",
+        "study-os-sliding-window-golden"
+      ],
+      "notes": "Keep deterministic box_index (OpenDSA/JSAV-style array+window). External OSS stills queued \u2014 do not invent new metaphors; golden arrow rules remain authority."
+    },
+    {
+      "lesson_id": "sliding-window-box",
+      "step_id": "window-sum",
+      "kc": "sliding-window.window-sum",
+      "roles": [
+        "teach",
+        "explain",
+        "worked"
+      ],
+      "visual_type": "box_index_array",
+      "asset_ids": [],
+      "status": "queued",
+      "research_cites": [
+        "opendsa-jsav",
+        "study-os-sliding-window-golden"
+      ],
+      "notes": "Keep deterministic box_index (OpenDSA/JSAV-style array+window). External OSS stills queued \u2014 do not invent new metaphors; golden arrow rules remain authority."
+    }
+  ]
+}
