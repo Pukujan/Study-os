@@ -262,3 +262,154 @@ jobs:
             web/playwright-report
           if-no-files-found: warn
           retention-days: 14
+
+  # Additional guest UX arm (does NOT replace Playwright).
+  # Fail policy (Alex 2026-09-27): ANY P0/P1 fails this job regardless of
+  # Decisions confidence. Confidence is still recorded in artifacts —
+  # low => investigate why; high => ship the fix without re-litigating.
+  ultrafast-ux:
+    name: Jev Ultrafast guest UX crawl
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      # Pin Pukujan/jev-ultrafast (OpenRouter Decisions fork). Bump deliberately.
+      ULTRAFAST_PIN_COMMIT: 1371abf380e8fcb7c4d7da1a31c0345c2f3f4750
+      ULTRAFAST_BASE_URL: https://study.design-bakery.com
+      ULTRAFAST_ARTIFACT_DIR: artifacts/ultrafast-ux
+      ULTRAFAST_ACTION_CAP: "140"
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      OPENROUTER_DECISIONS_URL: https://openrouter.ai/api/alpha/decisions
+      OPENROUTER_MODEL: typesafe/jev-1.13
+      TEXT_MODEL_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      TEXT_MODEL_BASE_URL: https://openrouter.ai/api/v1
+      TEXT_MODEL: inception/mercury-2.5
+      TEXT_MODEL_REASONING: none
+      # Optional vision secret already used by Playwright; not required for Decisions.
+      INFERHUB_API_KEY: ${{ secrets.INFERHUB_API_KEY }}
+      BU_CDP_URL: http://127.0.0.1:9222
+      BH_CHROME_PATH: /usr/bin/google-chrome-stable
+
+    steps:
+      - name: Check out Study-os
+        uses: actions/checkout@v4
+
+      - name: Require OPENROUTER_API_KEY
+        run: |
+          set -euo pipefail
+          if [ -z "${OPENROUTER_API_KEY:-}" ]; then
+            echo "::error::OPENROUTER_API_KEY repository secret is missing."
+            echo "Ultrafast Decisions cannot run without it."
+            echo "INFERHUB_API_KEY alone is not enough (used by Playwright vision)."
+            echo "Add OPENROUTER_API_KEY under Settings → Secrets → Actions, then re-run."
+            exit 2
+          fi
+          echo "OPENROUTER_API_KEY is set (value not printed)."
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Google Chrome (native, not Snap)
+        uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: stable
+          install-dependencies: true
+
+      - name: Resolve Chrome path
+        id: chrome
+        run: |
+          set -euo pipefail
+          CHROME_BIN="$(command -v google-chrome-stable || command -v google-chrome || command -v chromium || true)"
+          if [ -z "$CHROME_BIN" ]; then
+            echo "Chrome binary not found on PATH" >&2
+            exit 1
+          fi
+          echo "chrome_bin=$CHROME_BIN" >> "$GITHUB_OUTPUT"
+          echo "Using Chrome at $CHROME_BIN"
+          echo "BH_CHROME_PATH=$CHROME_BIN" >> "$GITHUB_ENV"
+
+      - name: Check out pinned jev-ultrafast
+        uses: actions/checkout@v4
+        with:
+          repository: Pukujan/jev-ultrafast
+          ref: ${{ env.ULTRAFAST_PIN_COMMIT }}
+          path: .deps/jev-ultrafast
+
+      - name: Verify Ultrafast pin
+        run: |
+          set -euo pipefail
+          actual="$(git -C .deps/jev-ultrafast rev-parse HEAD)"
+          echo "Pinned Ultrafast commit: $actual"
+          test "$actual" = "$ULTRAFAST_PIN_COMMIT"
+
+      - name: Install Ultrafast + gate deps
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install "./.deps/jev-ultrafast" httpx[http2]
+          # jsonschema optional; gate is severity-based and does not require it
+
+      - name: Start headless Chrome with remote debugging
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/ultrafast-chrome-profile
+          "${{ steps.chrome.outputs.chrome_bin }}" \
+            --headless=new \
+            --disable-gpu \
+            --no-sandbox \
+            --disable-dev-shm-usage \
+            --remote-debugging-address=127.0.0.1 \
+            --remote-debugging-port=9222 \
+            --user-data-dir=/tmp/ultrafast-chrome-profile \
+            about:blank > /tmp/ultrafast-chrome.log 2>&1 &
+          echo $! > /tmp/ultrafast-chrome.pid
+          for i in $(seq 1 60); do
+            if curl -fsS "$BU_CDP_URL/json/version" >/dev/null; then
+              echo "Chrome CDP ready on $BU_CDP_URL"
+              curl -fsS "$BU_CDP_URL/json/version"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "Chrome CDP did not become ready" >&2
+          cat /tmp/ultrafast-chrome.log >&2 || true
+          exit 1
+
+      - name: Run full Jev Ultrafast guest UX crawl
+        env:
+          PYTHONUNBUFFERED: "1"
+        run: |
+          set -euo pipefail
+          mkdir -p "$ULTRAFAST_ARTIFACT_DIR"
+          python tools/run_jev_ultrafast_ux_crawl.py 2>&1 | tee "$ULTRAFAST_ARTIFACT_DIR/run.log"
+
+      - name: Gate — fail on ANY P0/P1 (confidence never soft-skips)
+        if: always()
+        run: |
+          set -euo pipefail
+          echo "Fail policy: ANY P0 or P1 fails this job regardless of confidence."
+          echo "Confidence remains in decisions.jsonl / actions.jsonl / summary for humans/agents."
+          if [ ! -f "$ULTRAFAST_ARTIFACT_DIR/summary.json" ]; then
+            echo "::error::summary.json missing — crawl did not produce a report (check OPENROUTER_API_KEY / Chrome CDP)."
+            exit 2
+          fi
+          python tools/gate_ux_defect_report.py "$ULTRAFAST_ARTIFACT_DIR/summary.json"
+
+      - name: Upload Ultrafast UX artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ultrafast-ux-crawl
+          path: |
+            artifacts/ultrafast-ux
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Stop Chrome
+        if: always()
+        run: |
+          if [ -f /tmp/ultrafast-chrome.pid ]; then
+            kill "$(cat /tmp/ultrafast-chrome.pid)" 2>/dev/null || true
+          fi
+

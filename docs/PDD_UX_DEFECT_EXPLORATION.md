@@ -85,4 +85,20 @@ Catch-rate = `#defects found / #controls exercised` under identical section 3 or
 
 - [x] This PDD under `docs/PDD_UX_DEFECT_EXPLORATION.md`
 - [x] Schema at `docs/schemas/ux-defect-report.v1.json`
-- Follow-on: harness writes artifacts; CI validates `summary.json` against schema.
+- [x] Follow-on: harness writes artifacts; CI gates `summary.json` (any P0/P1 fails)
+
+## 9. CI fail policy (Ultrafast job)
+
+Study-os CI runs a **full Jev Ultrafast guest UX crawl** as an **additional** job alongside Playwright (never a replacement).
+
+| Rule | Behavior |
+| --- | --- |
+| P0 or P1 present | **Fail the Ultrafast job** |
+| Confidence | Recorded on decisions/actions (and optionally defects). **Never** soft-skips a P0/P1 |
+| Low confidence | Signal for agents to investigate why Decisions was unsure — still a fail |
+| High confidence | Ship the product fix without re-litigating the finding |
+| P2 only | Does not fail the gate by itself |
+| Missing `OPENROUTER_API_KEY` | Job fails closed with an explicit missing-secret message |
+
+Gate: `tools/gate_ux_defect_report.py`. Crawl: `tools/run_jev_ultrafast_ux_crawl.py` against a pinned `Pukujan/jev-ultrafast` commit.
+

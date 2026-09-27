@@ -92,3 +92,12 @@ Traditional unit tests are insufficient. Planned checks include:
 - hidden transfer fixtures do not leak into tutor-visible lesson content;
 - schema migrations preserve old session readability;
 - fixed benchmark trajectories remain reproducible across model/tooling changes.
+
+## Ultrafast guest UX crawl (additional job)
+
+Workflow job `ultrafast-ux` in `.github/workflows/ci.yml` runs a full Jev Ultrafast guest crawl against https://study.design-bakery.com and uploads artifacts. It does **not** replace the Playwright + vision job.
+
+- Pin: `ULTRAFAST_PIN_COMMIT` (Pukujan/jev-ultrafast).
+- Secret: `OPENROUTER_API_KEY` required (fail-closed if missing). `INFERHUB_API_KEY` remains for Playwright vision only.
+- Fail: **any P0 or P1** in `summary.json` fails the job. Decisions confidence is recorded for investigation vs ship-fix signal and never soft-skips a P0/P1.
+
