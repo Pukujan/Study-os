@@ -14,7 +14,7 @@
       "skippable": false,
       "confirm": false,
       "teach": {
-        "md": "Fractions name a share of the **same whole**. Compare the shaded lengths \u2014 the bars do the work.",
+        "md": "Fractions name a share of the **same whole**. Compare the shaded lengths — the bars do the work.",
         "frames": [
           {
             "type": "fraction_bar",
@@ -44,12 +44,12 @@
           },
           {
             "type": "fraction_bar",
-            "caption": "Same-size twelfths: 9 shaded beats 8.",
+            "caption": "Same-size twelfths: nine shaded beats eight.",
             "bars": [
               {
                 "parts": 12,
                 "shaded": 9,
-                "label": "9/12 (=3/4)",
+                "label": "nine twelfths",
                 "highlight": [
                   0,
                   1,
@@ -65,7 +65,7 @@
               {
                 "parts": 12,
                 "shaded": 8,
-                "label": "8/12 (=2/3)",
+                "label": "eight twelfths",
                 "highlight": [
                   0,
                   1,
@@ -82,12 +82,12 @@
           },
           {
             "type": "fraction_bar",
-            "caption": "3/4 sits farther right on the number line.",
+            "caption": "The larger share sits farther right on the number line.",
             "bars": [
               {
                 "parts": 4,
                 "shaded": 3,
-                "label": "3/4",
+                "label": "three fourths",
                 "highlight": [
                   0,
                   1,
@@ -97,7 +97,7 @@
               {
                 "parts": 3,
                 "shaded": 2,
-                "label": "2/3",
+                "label": "two thirds",
                 "highlight": [
                   0,
                   1
@@ -110,11 +110,11 @@
               "marks": [
                 {
                   "at": "2/3",
-                  "label": "2/3"
+                  "label": "two thirds"
                 },
                 {
                   "at": "3/4",
-                  "label": "3/4"
+                  "label": "three fourths"
                 }
               ]
             }
@@ -170,7 +170,7 @@
             "note_md": "A bigger denominator means smaller parts. Compare the shaded amounts instead."
           }
         ],
-        "correct_md": "Correct \u2014 **3/4**.",
+        "correct_md": "Correct — **3/4**.",
         "explain_md": "3/4 and 2/3 share the same whole, and 3/4 shades more of it, so 3/4 is bigger.",
         "explain_frames": [
           {
@@ -260,7 +260,7 @@
                 "note_md": "A bigger denominator means smaller parts. Compare the shaded amounts instead."
               }
             ],
-            "correct_md": "Correct \u2014 **2/3**.",
+            "correct_md": "Correct — **2/3**.",
             "explain_md": "2/3 and 1/2 share the same whole, and 2/3 shades more of it, so 2/3 is bigger.",
             "explain_frames": [
               {
@@ -348,7 +348,7 @@
                 "note_md": "A bigger denominator means smaller parts. Compare the shaded amounts instead."
               }
             ],
-            "correct_md": "Correct \u2014 **3/5**.",
+            "correct_md": "Correct — **3/5**.",
             "explain_md": "3/5 and 2/4 share the same whole, and 3/5 shades more of it, so 3/5 is bigger.",
             "explain_frames": [
               {
@@ -490,7 +490,7 @@
       "skippable": false,
       "confirm": false,
       "teach": {
-        "md": "The **denominator** is the bottom number. It counts how many **equal** parts the whole is cut into \u2014 every slice the same size.",
+        "md": "The **denominator** is the bottom number. It counts how many **equal** parts the whole is cut into — every slice the same size.",
         "frames": [
           {
             "type": "fraction_bar",
@@ -507,17 +507,19 @@
           },
           {
             "type": "fraction_bar",
-            "caption": "4 equal parts",
+            "caption": "Six equal parts make the whole.",
             "bars": [
               {
-                "parts": 4,
+                "parts": 6,
                 "shaded": 0,
-                "label": "denominator = 4",
+                "label": "equal parts",
                 "highlight": [
                   0,
                   1,
                   2,
-                  3
+                  3,
+                  4,
+                  5
                 ]
               }
             ],
@@ -564,7 +566,7 @@
             "note_md": "Count all the parts, not just the shaded ones."
           }
         ],
-        "correct_md": "Correct \u2014 **4**.",
+        "correct_md": "Correct — **4**.",
         "explain_md": "The bar has 4 equal parts, so the denominator is 4.",
         "explain_frames": [
           {
@@ -623,7 +625,7 @@
                 "note_md": "Count all the parts, not just the shaded ones."
               }
             ],
-            "correct_md": "Correct \u2014 **3**.",
+            "correct_md": "Correct — **3**.",
             "explain_md": "The bar has 3 equal parts, so the denominator is 3.",
             "explain_frames": [
               {
@@ -681,7 +683,7 @@
                 "note_md": "Count all the parts, not just the shaded ones."
               }
             ],
-            "correct_md": "Correct \u2014 **6**.",
+            "correct_md": "Correct — **6**.",
             "explain_md": "The bar has 6 equal parts, so the denominator is 6.",
             "explain_frames": [
               {
@@ -778,16 +780,15 @@
           },
           {
             "type": "fraction_bar",
-            "caption": "3 shaded out of 4 total",
+            "caption": "Two shaded out of five equal parts.",
             "bars": [
               {
-                "parts": 4,
-                "shaded": 3,
-                "label": "3/4",
+                "parts": 5,
+                "shaded": 2,
+                "label": "two of five",
                 "highlight": [
                   0,
-                  1,
-                  2
+                  1
                 ]
               }
             ],
@@ -841,7 +842,7 @@
             "note_md": "The top number counts shaded parts; the bottom counts total parts."
           }
         ],
-        "correct_md": "Correct \u2014 **3/4**.",
+        "correct_md": "Correct — **3/4**.",
         "explain_md": "3 parts are shaded out of 4 equal parts, so the fraction is 3/4.",
         "explain_frames": [
           {
@@ -906,7 +907,7 @@
                 "note_md": "The top number counts shaded parts; the bottom counts total parts."
               }
             ],
-            "correct_md": "Correct \u2014 **2/3**.",
+            "correct_md": "Correct — **2/3**.",
             "explain_md": "2 parts are shaded out of 3 equal parts, so the fraction is 2/3.",
             "explain_frames": [
               {
@@ -970,7 +971,7 @@
                 "note_md": "The top number counts shaded parts; the bottom counts total parts."
               }
             ],
-            "correct_md": "Correct \u2014 **5/6**.",
+            "correct_md": "Correct — **5/6**.",
             "explain_md": "5 parts are shaded out of 6 equal parts, so the fraction is 5/6.",
             "explain_frames": [
               {
@@ -1049,7 +1050,7 @@
         "frames": [
           {
             "type": "fraction_bar",
-            "caption": "Same-size parts \u2014 compare the shaded counts.",
+            "caption": "Same-size parts — compare the shaded counts.",
             "bars": [
               {
                 "parts": 5,
@@ -1146,7 +1147,7 @@
             "note_md": "Both have 4 parts, but 3 shaded is more than 2 shaded."
           }
         ],
-        "correct_md": "Correct \u2014 **3/4**.",
+        "correct_md": "Correct — **3/4**.",
         "explain_md": "Both bars have 4 parts. 3 shaded parts is more than 2, so 3/4 is bigger.",
         "explain_frames": [
           {
@@ -1226,7 +1227,7 @@
                 "note_md": "Both bars have 3 parts, but 2 shaded is more than 1 shaded."
               }
             ],
-            "correct_md": "Correct \u2014 **2/3**.",
+            "correct_md": "Correct — **2/3**.",
             "explain_md": "Both bars have 3 parts. 2 shaded parts is more than 1, so 2/3 is bigger.",
             "explain_frames": [
               {
@@ -1304,7 +1305,7 @@
                 "note_md": "Both bars have 6 parts, but 5 shaded is more than 2 shaded."
               }
             ],
-            "correct_md": "Correct \u2014 **5/6**.",
+            "correct_md": "Correct — **5/6**.",
             "explain_md": "Both bars have 6 parts. 5 shaded parts is more than 2, so 5/6 is bigger.",
             "explain_frames": [
               {
@@ -1501,7 +1502,7 @@
             "note_md": "A bigger denominator means smaller pieces, not a bigger fraction."
           }
         ],
-        "correct_md": "Correct \u2014 **1/2**.",
+        "correct_md": "Correct — **1/2**.",
         "explain_md": "Halves are bigger pieces than fourths of the same whole, so 1/2 > 1/4.",
         "explain_frames": [
           {
@@ -1578,7 +1579,7 @@
                 "note_md": "A bigger denominator means smaller pieces, not a bigger fraction."
               }
             ],
-            "correct_md": "Correct \u2014 **1/3**.",
+            "correct_md": "Correct — **1/3**.",
             "explain_md": "Thirds are bigger pieces than sixths of the same whole, so 1/3 > 1/6.",
             "explain_frames": [
               {
@@ -1655,7 +1656,7 @@
                 "note_md": "A bigger denominator means smaller pieces, not a bigger fraction."
               }
             ],
-            "correct_md": "Correct \u2014 **1/5**.",
+            "correct_md": "Correct — **1/5**.",
             "explain_md": "Fifths are bigger pieces than eighths of the same whole, so 1/5 > 1/8.",
             "explain_frames": [
               {
@@ -1872,7 +1873,7 @@
             "note_md": "Compare the shaded amount, not just the denominator."
           }
         ],
-        "correct_md": "Correct \u2014 **3/4**.",
+        "correct_md": "Correct — **3/4**.",
         "explain_md": "3/4 and 2/3 share the same whole. 3/4 shades more of it.",
         "explain_frames": [
           {
@@ -1965,7 +1966,7 @@
                 "note_md": "Compare the shaded amount, not just the denominator."
               }
             ],
-            "correct_md": "Correct \u2014 **2/3**.",
+            "correct_md": "Correct — **2/3**.",
             "explain_md": "2/3 and 1/2 share the same whole. 2/3 shades more of it.",
             "explain_frames": [
               {
@@ -2056,7 +2057,7 @@
                 "note_md": "Compare the shaded amount, not just the denominator."
               }
             ],
-            "correct_md": "Correct \u2014 **3/5**.",
+            "correct_md": "Correct — **3/5**.",
             "explain_md": "3/5 and 2/4 share the same whole. 3/5 shades more of it.",
             "explain_frames": [
               {

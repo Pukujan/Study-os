@@ -28,14 +28,25 @@ export function parseBlocks(src: string): Block[] {
       i++;
       continue;
     }
-    if (/^\s*([-*]|\d+[.)])\s+/.test(line)) {
-      const ordered = /^\s*\d+[.)]\s+/.test(line);
+    // Numbered "1. / 1)" lines are plain prose for teach/worked — never <ol>.
+    if (/^\s*\d+[.)]\s+/.test(line)) {
       const items: string[] = [];
-      while (i < lines.length && /^\s*([-*]|\d+[.)])\s+/.test(lines[i])) {
-        items.push(lines[i].replace(/^\s*([-*]|\d+[.)])\s+/, ""));
+      while (i < lines.length && /^\s*\d+[.)]\s+/.test(lines[i])) {
+        items.push(lines[i].replace(/^\s*\d+[.)]\s+/, ""));
         i++;
       }
-      blocks.push({ type: "list", ordered, items });
+      for (const item of items) {
+        if (item.trim()) blocks.push({ type: "para", text: item });
+      }
+      continue;
+    }
+    if (/^\s*[-*]\s+/.test(line)) {
+      const items: string[] = [];
+      while (i < lines.length && /^\s*[-*]\s+/.test(lines[i])) {
+        items.push(lines[i].replace(/^\s*[-*]\s+/, ""));
+        i++;
+      }
+      blocks.push({ type: "list", ordered: false, items });
       continue;
     }
     if (line.trim() === "") {
@@ -43,7 +54,7 @@ export function parseBlocks(src: string): Block[] {
       continue;
     }
     const buf: string[] = [];
-    while (i < lines.length && lines[i].trim() !== "" && !/^```/.test(lines[i]) && !/^#{1,4}\s/.test(lines[i]) && !/^\s*([-*]|\d+[.)])\s+/.test(lines[i])) {
+    while (i < lines.length && lines[i].trim() !== "" && !/^```/.test(lines[i]) && !/^#{1,4}\s/.test(lines[i]) && !/^\s*[-*]\s+/.test(lines[i]) && !/^\s*\d+[.)]\s+/.test(lines[i])) {
       buf.push(lines[i++]);
     }
     blocks.push({ type: "para", text: buf.join("\n") });
@@ -90,8 +101,18 @@ export function Markdown({ text }: { text: string }) {
             return <Tag key={i}>{renderInline(b.text)}</Tag>;
           }
           case "list": {
+            // Never emit <ol> (digit prefixes already became paragraphs above).
+            if (b.ordered) {
+              return (
+                <Fragment key={i}>
+                  {b.items.map((it, j) => (
+                    <p key={j}>{renderInline(it)}</p>
+                  ))}
+                </Fragment>
+              );
+            }
             const items = b.items.map((it, j) => <li key={j}>{renderInline(it)}</li>);
-            return b.ordered ? <ol key={i}>{items}</ol> : <ul key={i}>{items}</ul>;
+            return <ul key={i}>{items}</ul>;
           }
           default:
             return <p key={i}>{renderInline(b.text)}</p>;

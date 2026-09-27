@@ -1,6 +1,8 @@
 """Done-when tests for plain-human rewrite v2 (Refs #126)."""
 from __future__ import annotations
-import re, sys, unittest
+import re
+import sys
+import unittest
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from study_os.web import packs
@@ -38,6 +40,12 @@ class HumanRewriteUnitTests(unittest.TestCase):
         self.assertRegex(first, r"you will|learn|track|practice|look")
         self.assertNotIn("delve", out.lower())
         self.assertNotIn("showcasing", out.lower())
+
+    def test_preserves_trailing_counts_not_eaten_as_lists(self) -> None:
+        raw = "1) Use n · log2 n. 2) 16 · 4 = 64. 3) More than 2x24, less than n2."
+        out = human_rewrite.rewrite(raw, kind="explain")
+        self.assertFalse(_DIGIT_LIST.search(out))
+        self.assertIn("64", out)
 
     def test_idempotent(self) -> None:
         once = human_rewrite.rewrite(MACHINE_WALL, kind="explain")

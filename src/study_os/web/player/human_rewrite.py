@@ -114,11 +114,14 @@ _PARTICIPLE_TAIL = re.compile(
     re.IGNORECASE,
 )
 
+# Require whitespace + non-empty body after the index so values like "64." /
+# "and 1." are never treated as a new bullet (especially before a newline).
 _NUMBERED_LINE = re.compile(
-    r"^\s*(?:\*\*)?(?:\d+[.)]|[-*])\s*(?:\*\*)?(.*)$",
+    # "1) body" / "1. body" — not values like "64." (2+ digits + period).
+    r"^\s*(?:\*\*)?(?:\d{1,2}\)|\d\.|[-*])\s+(?:\*\*)?(.+)$",
 )
 
-_SENTENCE_SPLIT = re.compile(r"(?<=[.!?])\s+(?=[A-Z0-9\"'(\[])")
+_SENTENCE_SPLIT = re.compile(r"(?<!\d)(?<=[.!?])\s+(?=[A-Z\"\'(\[])")
 
 _GROUNDING_CUES = re.compile(
     r"\b(?:you will|you'll|we will|we'll|goal|learn|practice|look at|here|"
@@ -128,7 +131,7 @@ _GROUNDING_CUES = re.compile(
 
 
 def _content_words(text: str) -> int:
-    stripped = re.sub(r"(?m)^\s*(?:\d+[.)]|[-*])\s*", "", text or "")
+    stripped = re.sub(r"(?m)^\s*(?:\d{1,2}\)|\d\.|[-*])\s+", "", text or "")
     return len(re.findall(r"[A-Za-z0-9']+", stripped))
 
 
@@ -163,23 +166,25 @@ def _split_sentences(text: str) -> list[str]:
         block = block.strip()
         if not block:
             continue
-        block = re.sub(r"(?<=[.!?])\s+(?=\d+[.)]\s)", "\n", block)
-        block = re.sub(r"(?<![.\d])\s+(?=\d+[.)]\s)", "\n", block)
+        # List markers -> line breaks, then strip. Paren lists ("1) 2)") and
+        # single-digit dot lists before a capital ("1. Foo"). Never "64." / "O(1)".
+        block = re.sub(r"(?<=[.!?])\s+(?=\d{1,2}\)\s+\S)", "\n", block)
+        block = re.sub(r"(?<![.\d(])\s+(?=\d{1,2}\)\s+\S)", "\n", block)
+        block = re.sub(r"(?<=[.!?])\s+(?=\d\.\s+[A-Z])", "\n", block)
+        block = re.sub(r"(?<![.\d])\s+(?=\d\.\s+[A-Z])", "\n", block)
+        block = re.sub(r"(?m)^\s*(?:\d{1,2}\)|\d\.|[-*])\s+", "", block)
         for piece in re.split(r"\n+", block):
             piece = piece.strip()
             if not piece:
                 continue
-            if _NUMBERED_LINE.match(piece) and not re.search(r"[.!?]\s+[A-Z0-9]", piece):
-                clean = _strip_number_prefix(piece)
-                if clean:
-                    chunks.append(clean)
+            piece = _strip_number_prefix(piece)
+            if not piece:
                 continue
             for part in _SENTENCE_SPLIT.split(piece):
-                clean = _strip_number_prefix(part)
+                clean = _strip_number_prefix(part.strip())
                 if clean:
                     chunks.append(clean)
     return chunks
-
 
 def _break_long(sentence: str) -> list[str]:
     words = sentence.split()
