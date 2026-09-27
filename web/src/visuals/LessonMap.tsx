@@ -25,9 +25,11 @@ type LessonMapProps = {
   steps: LessonMapStep[];
   currentIndex: number;
   completedIds?: string[];
+  onSelect?: (index: number) => void;
+  selectableCount?: number;
 };
 
-export default function LessonMap({ steps, currentIndex, completedIds }: LessonMapProps) {
+export default function LessonMap({ steps, currentIndex, completedIds, onSelect, selectableCount = 0 }: LessonMapProps) {
   const done = new Set(completedIds || []);
   return (
     <nav className="lesson-map lesson-map-chips" aria-label="Lesson progress map">
@@ -35,10 +37,28 @@ export default function LessonMap({ steps, currentIndex, completedIds }: LessonM
         {steps.map((step, i) => {
           const state = i === currentIndex ? "current" : done.has(step.id) || i < currentIndex ? "done" : "todo";
           const style: CSSProperties = {};
-          return (
-            <li key={step.id} className={`lesson-map-chip is-${state}`} style={style} aria-current={state === "current" ? "step" : undefined}>
+          const revisitable = !!onSelect && i < Math.min(selectableCount, currentIndex);
+          const label = (
+            <>
               <span className="lesson-map-chip-index">{i + 1}</span>
               <span className="lesson-map-chip-label">{step.label}</span>
+            </>
+          );
+          return (
+            <li key={step.id} className={`lesson-map-chip is-${state}`} style={style} aria-current={state === "current" ? "step" : undefined}>
+              {revisitable ? (
+                <button
+                  type="button"
+                  className="lesson-map-chip-button"
+                  onClick={() => onSelect?.(i)}
+                  data-track={`player.revisit.${i}`}
+                  data-testid={`player.revisit-${i}`}
+                >
+                  {label}
+                </button>
+              ) : (
+                label
+              )}
             </li>
           );
         })}

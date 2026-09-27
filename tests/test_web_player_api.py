@@ -156,11 +156,11 @@ class PlayerSessionTests(_PlayerDbCase):
         c2 = self.client()
         c2.signup(self.email())
         sid2, _ = self._start_on_probe(c2)
-        r2 = c2.c.post(f"/api/player/sessions/{sid2}/attempt", json={"response": "4", "modality": "text", "idempotency_key": "k2"}, headers=c2.headers)
+        r2 = c2.c.post(f"/api/player/sessions/{sid2}/attempt", json={"response": "3/4", "modality": "choice", "idempotency_key": "k2"}, headers=c2.headers)
         self.assertEqual(r2.status_code, 200)
         self.assertEqual(r2.json()["feedback"]["outcome"], "correct")
         # Idempotency replay
-        r3 = c2.c.post(f"/api/player/sessions/{sid2}/attempt", json={"response": "4", "modality": "text", "idempotency_key": "k2"}, headers=c2.headers)
+        r3 = c2.c.post(f"/api/player/sessions/{sid2}/attempt", json={"response": "3/4", "modality": "choice", "idempotency_key": "k2"}, headers=c2.headers)
         self.assertEqual(r3.status_code, 200)
         # Teach-skip + the real attempt both log as 'attempt'; idempotent replay must not add a third.
         events = self.sql(
@@ -192,9 +192,17 @@ class PlayerSessionTests(_PlayerDbCase):
         c.signup(self.email())
         view = c.c.post("/api/player/sessions", json={"lesson_id": "fractions-compare"}, headers=c.headers).json()
         sid = view["session_id"]
-        # first step has no probe (problem statement), next should advance
+        # Step 0 is now a real choice probe; answer it, then next advances.
+        attempt = c.c.post(
+            f"/api/player/sessions/{sid}/attempt",
+            json={"response": "3/4", "modality": "choice", "idempotency_key": "adv1"},
+            headers=c.headers,
+        )
+        self.assertEqual(attempt.status_code, 200, attempt.text)
+        self.assertEqual(attempt.json()["feedback"]["outcome"], "correct")
         r = c.c.post(f"/api/player/sessions/{sid}/next", json={}, headers=c.headers)
         self.assertEqual(r.status_code, 200)
+        self.assertEqual(r.json()["step"]["step_id"], "denominator")
 
     def test_another_users_session_is_404(self) -> None:
         a, b = self.client(), self.client()
@@ -234,7 +242,7 @@ class PlayerTutorTests(_PlayerDbCase):
         def _leaky(name: str, messages: list[dict[str, str]]) -> dict[str, Any] | None:
             if name != "tutor_reply":
                 return None
-            return {"reply_md": "The answer is 4, which is the right value."}
+            return {"reply_md": "The answer is 3/4, which is the right value."}
 
         with ExitStack() as stack:
             db_url = stack.enter_context(temp_database())
@@ -248,8 +256,8 @@ class PlayerTutorTests(_PlayerDbCase):
             self.assertEqual(r.status_code, 200)
             self.assertIn(r.json()["served"], ("generated", "fallback"))
             # Should never leak the forbidden answer while the probe is open.
-            self.assertNotIn(" 4", " " + r.json()["reply_md"] + " ")
-            self.assertNotIn("answer is 4", r.json()["reply_md"].lower())
+            self.assertNotIn(" 3/4", " " + r.json()["reply_md"] + " ")
+            self.assertNotIn("answer is 3/4", r.json()["reply_md"].lower())
 
     def test_tutor_disabled_uses_fallback(self) -> None:
         from contextlib import ExitStack

@@ -99,6 +99,7 @@ class TutorBody(_Body):
 
 class AdaptBody(_Body):
     kind: str = Field(max_length=16)
+    step_index: int | None = Field(default=None, ge=0, le=64)
 
 
 class ClaimBody(_Body):
@@ -495,7 +496,7 @@ def create_app(
 
     @app.post("/api/player/sessions/{session_id}/adapt")
     def player_adapt(session_id: str, body: AdaptBody, request: Request) -> dict[str, Any]:
-        return player().adapt(principal(request, mutate=True), session_id, body.kind)
+        return player().adapt(principal(request, mutate=True), session_id, body.kind, body.step_index)
 
     @app.post("/api/feedback")
     def feedback(body: FeedbackBody, request: Request) -> dict[str, Any]:

@@ -87,6 +87,31 @@ describe("visuals", () => {
     expect(html).toContain("Position");
   });
 
+  it("LessonMap makes visited steps revisitable when a handler is given", () => {
+    const steps = [
+      { id: "ready", label: "Ready" },
+      { id: "pos", label: "Position" },
+      { id: "idx", label: "Index" },
+    ];
+    const onSelect = () => {};
+    const html = renderToStaticMarkup(
+      <LessonMap steps={steps} currentIndex={2} completedIds={["ready", "pos"]} selectableCount={2} onSelect={onSelect} />,
+    );
+    expect(html).toContain("player.revisit-0");
+    expect(html).toContain("player.revisit-1");
+    expect(html).not.toContain("player.revisit-2");
+  });
+
+  it("LessonMap keeps visited chips inert without a handler", () => {
+    const steps = [
+      { id: "ready", label: "Ready" },
+      { id: "pos", label: "Position" },
+    ];
+    const html = renderToStaticMarkup(<LessonMap steps={steps} currentIndex={1} completedIds={["ready"]} />);
+    expect(html).not.toContain("player.revisit-0");
+    expect(html).not.toContain("<button");
+  });
+
   it("CodeTree highlights lines and underlines ranges", () => {
     const frame = {
       type: "code_tree" as const,

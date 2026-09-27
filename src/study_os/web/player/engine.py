@@ -144,6 +144,7 @@ def view(lesson: dict[str, Any], state: dict[str, Any]) -> dict[str, Any]:
         "card_mode": state.get("card_mode", "probe"),
         "variant_tag": state.get("variant_tag"),
         "can_go_back": bool(state.get("adapt_stack")),
+        "can_revisit_step": _can_revisit_step(lesson, state),
         "hint_open": state.get("hint_open", False),
         "worked_example": worked_example,
         "is_guest": False,
@@ -366,6 +367,8 @@ def attempt(
         f"{probe.get('explain_md', '')}\n\n"
         "That's okay — this one trips people up."
     )
+    if note:
+        message += "\n\n" + note
     feedback = _build_feedback(
         "incorrect",
         message,
@@ -480,6 +483,54 @@ def _restore_adapt(state: dict[str, Any]) -> bool:
     state["variant_tag"] = snap["variant_tag"]
     state["hint_open"] = snap["hint_open"]
     return True
+
+
+def _can_revisit_step(lesson: dict[str, Any], state: dict[str, Any]) -> bool:
+    """True when the previous step has been visited and can be reopened."""
+
+    current = state["step_index"]
+    if current <= 0:
+        return False
+    previous = lesson["steps"][current - 1]
+    return state["status_by_step"].get(previous["step_id"], "not_started") != "not_started"
+
+
+def revisit(
+    lesson: dict[str, Any],
+    state: dict[str, Any],
+    target_index: int | None = None,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Reopen an already-visited step so the learner can review it.
+
+    Returns ``(new_state, info)``.  ``info`` is ``{"refused": True}`` when the
+    target was never visited, otherwise it names the reopened step.
+    """
+
+    steps = lesson["steps"]
+    current = state["step_index"]
+    if target_index is None:
+        target_index = current - 1
+    if not isinstance(target_index, int) or target_index < 0 or target_index >= current:
+        return state, {"refused": True}
+
+    target = steps[target_index]
+    status = state["status_by_step"].get(target["step_id"], "not_started")
+    if status == "not_started":
+        return state, {"refused": True}
+
+    state["step_index"] = target_index
+    state["variant_index"] = -1
+    state["phase"] = "probe"
+    state["pending"] = None
+    state["pending_variant"] = None
+    state["misses_on_step"] = 0
+    state["card_mode"] = "probe"
+    state["variant_tag"] = None
+    state["hint_open"] = False
+    state["worked_example"] = None
+    state["feedback"] = None
+    state["adapt_stack"] = []
+    return state, {"revisited_step": target["step_id"]}
 
 
 def adapt(lesson: dict[str, Any], state: dict[str, Any], kind: str) -> tuple[dict[str, Any], dict[str, Any]]:
