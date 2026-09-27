@@ -84,7 +84,7 @@ def validate_proposal(
     # Fences are not allowed: the general prose validator excludes fenced code.
     if "```" in md or "~~~" in md:
         return None, ("INVALID_PRESENTATION",)
-    result = validate_generated(md, forbidden_answers=forbidden, required_blocks=(), word_budget=90)
+    result = validate_generated(md, forbidden_answers=forbidden, required_blocks=(), word_budget=50)
     if not result.ok:
         return None, result.codes
     return {"teach_md": md, "teach_frames": deepcopy([frames[i] for i in indices])}, ()

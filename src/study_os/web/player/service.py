@@ -208,7 +208,7 @@ class PlayerService:
         step_index: int | None = None,
     ) -> dict[str, Any]:
         lesson, state = self._load(principal, session_id)
-        if kind not in {"example", "easier", "harder", "back", "step_back"}:
+        if kind not in {"example", "easier", "harder", "back", "step_back", "reexplain"}:
             raise ServiceError("invalid_adapt_kind")
         with self.db.tx() as conn:
             self._session_row(conn, principal, session_id, lock=True)

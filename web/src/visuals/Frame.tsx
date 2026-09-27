@@ -1,12 +1,11 @@
 import type { Frame as FrameType } from "../api";
-import FractionBar, { describeFractionBar } from "./FractionBar";
-import NumberLine from "./NumberLine";
-import BoxIndex, { describeBoxIndex } from "./BoxIndex";
-import MermaidDiagram from "./MermaidDiagram";
-import CodeTree, { describeCodeTree } from "./CodeTree";
-import GrowthTable, { describeGrowthTable } from "./GrowthTable";
-import GrowthWorkers, { describeGrowthWorkers } from "./GrowthWorkers";
-import GrowthCurve, { describeGrowthCurve } from "./GrowthCurve";
+import TeachRenderBox from "./TeachRenderBox";
+import { describeFractionBar } from "./FractionBar";
+import { describeBoxIndex } from "./BoxIndex";
+import { describeCodeTree } from "./CodeTree";
+import { describeGrowthTable } from "./GrowthTable";
+import { describeGrowthWorkers } from "./GrowthWorkers";
+import { describeGrowthCurve } from "./GrowthCurve";
 
 export function describeFrame(frame: FrameType): string {
   if (frame.type === "fraction_bar") return describeFractionBar(frame);
@@ -19,76 +18,7 @@ export function describeFrame(frame: FrameType): string {
   return "Frame";
 }
 
+/** All teach frames mount through the isolated TeachRenderBox island. */
 export default function Frame({ frame }: { frame: FrameType }) {
-  if (frame.type === "fraction_bar") {
-    const fb = frame;
-    return (
-      <figure className="frame-figure">
-        <FractionBar frame={fb} />
-        {fb.number_line && <NumberLine max={fb.number_line.max} ticks={fb.number_line.ticks} marks={fb.number_line.marks} />}
-        {fb.caption && <figcaption className="frame-caption">{fb.caption}</figcaption>}
-      </figure>
-    );
-  }
-  if (frame.type === "box_index") {
-    const bi = frame;
-    return (
-      <figure className="frame-figure">
-        <BoxIndex frame={bi} />
-        {bi.caption && <figcaption className="frame-caption">{bi.caption}</figcaption>}
-      </figure>
-    );
-  }
-  if (frame.type === "mermaid_flow") {
-    const mf = frame;
-    return (
-      <figure className="frame-figure">
-        <MermaidDiagram
-          source={mf.source}
-          revealedNodes={mf.revealed_nodes}
-          direction={mf.direction}
-          zoomPan={mf.zoom_pan}
-          caption={mf.caption}
-        />
-        {mf.caption && <figcaption className="frame-caption">{mf.caption}</figcaption>}
-      </figure>
-    );
-  }
-  if (frame.type === "growth_table") {
-    const gt = frame;
-    return (
-      <figure className="frame-figure">
-        <GrowthTable frame={gt} />
-        {gt.caption && <figcaption className="frame-caption">{gt.caption}</figcaption>}
-      </figure>
-    );
-  }
-  if (frame.type === "growth_workers") {
-    const gw = frame;
-    return (
-      <figure className="frame-figure">
-        <GrowthWorkers frame={gw} />
-        {gw.caption && <figcaption className="frame-caption">{gw.caption}</figcaption>}
-      </figure>
-    );
-  }
-  if (frame.type === "growth_curve") {
-    const gc = frame;
-    return (
-      <figure className="frame-figure">
-        <GrowthCurve frame={gc} />
-        {gc.caption && <figcaption className="frame-caption">{gc.caption}</figcaption>}
-      </figure>
-    );
-  }
-  if (frame.type === "code_tree") {
-    const ct = frame;
-    return (
-      <figure className="frame-figure">
-        <CodeTree frame={ct} />
-        {ct.caption && <figcaption className="frame-caption">{ct.caption}</figcaption>}
-      </figure>
-    );
-  }
-  return null;
+  return <TeachRenderBox frame={frame} />;
 }

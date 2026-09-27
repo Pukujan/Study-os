@@ -9,10 +9,22 @@ const frames = [
   { type: "fraction_bar" as const, bars: [{ parts: 4, shaded: 3 }] },
 ];
 
+/** Count nodes across open shadow roots (TeachRenderBox islands). */
+function queryAllDeep(root: ParentNode, selector: string): Element[] {
+  const out: Element[] = [];
+  root.querySelectorAll(selector).forEach((el) => out.push(el));
+  root.querySelectorAll("*").forEach((el) => {
+    if (el.shadowRoot) out.push(...queryAllDeep(el.shadowRoot, selector));
+  });
+  return out;
+}
+
 describe("FrameStepper", () => {
   it("shows one frame at a time and no controls for a single frame", () => {
-    const { container, cleanup } = render(<FrameStepper frames={[{ type: "fraction_bar" as const, bars: [{ parts: 2, shaded: 1 }] }]} />);
-    const svgs = container.querySelectorAll("svg");
+    const { container, cleanup } = render(
+      <FrameStepper frames={[{ type: "fraction_bar" as const, bars: [{ parts: 2, shaded: 1 }] }]} />,
+    );
+    const svgs = queryAllDeep(container, "svg");
     expect(svgs.length).toBe(1);
     expect(container.querySelector("button")).toBeNull();
     cleanup();

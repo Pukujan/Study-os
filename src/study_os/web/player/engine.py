@@ -630,9 +630,9 @@ def _worked_example_payload(
                 cap = str(primary_frames[0].get("caption") or "").strip()
             first = (cap.split("\n")[0] if cap else "").lstrip("0123456789) .-").strip()
             primary_md = (
-                f"1) Worked look at this step.\n2) {first}"
+                f"Worked look at this step. {first}"
                 if first
-                else "1) Worked look at this step.\n2) Watch how the picture changes as n grows."
+                else "Worked look at this step. Watch how the picture changes as n grows."
             )
 
     if authored_alt:
@@ -644,7 +644,7 @@ def _worked_example_payload(
     elif authored_pool and len(authored_pool) > 1:
         alt_indices = teach_visual.default_frame_indices(teach)
         alt_frames = teach_visual.select_frames(teach, alt_indices) or teach_frames[:1]
-        alt_md = str(teach.get("worked_example_alt_md") or "").strip() or f"1) Another look.\n2) {teach_md}"
+        alt_md = str(teach.get("worked_example_alt_md") or "").strip() or f"Another look. {teach_md}"
 
     # Never ship a worked example that is identical to the visible teach card.
     visible_md, visible_frames = teach_visual.resolve_teach(teach)
@@ -654,7 +654,7 @@ def _worked_example_payload(
             primary_md = str(probe.get("solution_md") or "").strip() or primary_md
             primary_frames = list(probe.get("frames") or primary_frames)
         if primary_md.strip() == visible_md:
-            primary_md = f"1) Worked look.\n2) {primary_md}" if primary_md else "1) Worked look at this step."
+            primary_md = f"Worked look. {primary_md}" if primary_md else "Worked look at this step."
         if list(primary_frames) == list(visible_frames) and len(teach_visual.authored_frames(teach)) > 1:
             primary_frames = teach_visual.select_frames(
                 teach, teach_visual.explain_frame_indices(teach)
@@ -695,6 +695,24 @@ def adapt(lesson: dict[str, Any], state: dict[str, Any], kind: str) -> tuple[dic
         # Worked examples stay available so teach chips are never dead (#126 D004).
         if lesson.get("mode") == "assessment" and state.get("phase") == "probe":
             return state, {"refused": True}
+
+    if kind == "reexplain":
+        # Deterministic Explain again: swap teach diagram type/frames, not prose-only.
+        content, codes = presentation.authored_reserve(lesson, state, ())
+        if content is not None:
+            _push_adapt(state)
+            presentation.apply(
+                lesson,
+                state,
+                content,
+                {"source": "adapt_reexplain", "codes": list(codes)},
+            )
+            return state, {
+                "variant_tag": "reexplain",
+                "frames_changed": True,
+                "can_go_back": True,
+            }
+        return state, {"refused": True, "variant_tag": "reexplain"}
 
     if kind == "example":
         already = state.get("card_mode") == "worked_example"

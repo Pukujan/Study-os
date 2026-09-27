@@ -164,10 +164,25 @@ export default function Player({ sessionId }: { sessionId: string }) {
         return;
       }
 
-      // Explain again: try a tutor re-render first; fall back to confused /
-      // re-show teach so the button is never a silent no-op.
+      // Explain again: deterministic diagram/type swap first (adapt reexplain),
+      // then tutor re-render, then confused — never prose-only / silent no-op.
       setShowTeach(true);
       let applied = false;
+      try {
+        const beforeFrames = JSON.stringify(view.step.teach_frames || []);
+        const v = await api.adapt(sessionId, "reexplain");
+        const afterFrames = JSON.stringify(v.step.teach_frames || []);
+        if (afterFrames !== beforeFrames || v.variant_tag === "reexplain") {
+          setView(v);
+          setMood("encourage", 1200);
+          applied = afterFrames !== beforeFrames;
+          if (applied) return;
+        } else {
+          setView(v);
+        }
+      } catch {
+        // Fall through.
+      }
       try {
         const reply = await api.tutor(sessionId, REGEN_PROMPTS.reexplain);
         const next = applyPresentation(view, reply.regenerate_presentation);
@@ -176,7 +191,7 @@ export default function Player({ sessionId }: { sessionId: string }) {
           applied = true;
         }
       } catch {
-        // Fall through to the deterministic path below.
+        // Fall through to confused.
       }
       if (!applied && view.phase === "probe" && view.step.probe) {
         const v = await api.playerConfused(sessionId);

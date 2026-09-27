@@ -320,7 +320,7 @@ class PlayerRegeneratePresentationTests(_PlayerDbCase):
         self.assertEqual(after["step"]["step_id"], before["step"]["step_id"])
         self.assertEqual(after["step"]["concept_id"], before["step"]["concept_id"])
         self.assertEqual(after["presentation_version"], 1)
-        self.assertEqual(after["step"]["teach_md"], "1) Same box, read from its left edge.")
+        self.assertEqual(after["step"]["teach_md"], "Same box, read from its left edge.")
         self.assertEqual(after["step"]["teach_frames"], update["teach_frames"])
         # Nothing else moved.
         self.assertEqual(after["phase"], before["phase"])
