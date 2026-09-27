@@ -40,6 +40,8 @@ See `PROJECT_MANIFEST.yaml` for machine-readable state.
 
 For cross-agent task claims and verdicts, follow [`docs/AUTHORITY.md`](docs/AUTHORITY.md). `grok-bot@study-os` is the sole arbiter; Claude Code + InferHub sessions are claimable workers and must not self-arbitrate or merge to `main`.
 
+For the ACS multi-agent **hotloader** install surface (join-order roles, boss lease, claim queue, watchdog), use the git submodule at `third_party/agent-custom-setup` and start from [`docs/ops/ACS_HOTLOAD.md`](docs/ops/ACS_HOTLOAD.md) → pack [`HOTLOAD.md`](third_party/agent-custom-setup/modules/coordination/multi-agent-hotload/v0.1.0/HOTLOAD.md). ACS does not replace PCM/CGM or Study OS authority.
+
 ## Agent change protocol
 
 For every substantive task:
@@ -66,12 +68,13 @@ For every substantive task:
 
 ## Helper modules and project ownership
 
-**This repository is the authoritative owner of Study OS.** Its project facts, scope, gates, evidence semantics, task state, and human-facing claims live here (`AGENTS.md`, `PROJECT_MANIFEST.yaml`, `docs/`, `tasks/`, `.continuity/`, `.content-system/`) and in this repository's GitHub issues, PRs, and merged history. Two helper repositories supply reusable method only, at pinned revisions:
+**This repository is the authoritative owner of Study OS.** Its project facts, scope, gates, evidence semantics, task state, and human-facing claims live here (`AGENTS.md`, `PROJECT_MANIFEST.yaml`, `docs/`, `tasks/`, `.continuity/`, `.content-system/`) and in this repository's GitHub issues, PRs, and merged history. Helper repositories supply reusable method only, at pinned revisions:
 
 | Helper | Role here | Pin (never read moving `main` during work) | Adoption shape |
 | --- | --- | --- | --- |
 | [`Pukujan/project-continuity-modules`](https://github.com/Pukujan/project-continuity-modules) (PCM) | continuity protocol, validator, checkpoints | CLI `0.6.0`, protocol `0.1.0-draft`, commit `c18bfd6064d1249996bc00c45dbbc6721ec5dfd9` | mature-repository overlay ([`docs/TARGET_ADOPTION.md`](https://github.com/Pukujan/project-continuity-modules/blob/c18bfd6064d1249996bc00c45dbbc6721ec5dfd9/docs/TARGET_ADOPTION.md)) |
 | [`Pukujan/content-generation-modules`](https://github.com/Pukujan/content-generation-modules) (CGM) | README/brand/visual/image method and adapter validator | `0.5.1`, commit `9874b26dc46499137bf22e1ca163874ef2dd5e7a` (see `.content-system/system-version.json`) | target adapter in `.content-system/` |
+| [`Pukujan/agent-custom-setup`](https://github.com/Pukujan/agent-custom-setup) (ACS) | multi-agent hotloader pack (roles, boss lease, claim queue, watchdog) | commit `f9650936fd5fd66be3b0e2cf04e653f0a3cbb7e4` (ACS PR #12 tip until merged to ACS `main`) | git submodule at `third_party/agent-custom-setup`; load [`HOTLOAD.md`](third_party/agent-custom-setup/modules/coordination/multi-agent-hotload/v0.1.0/HOTLOAD.md) — see [`docs/ops/ACS_HOTLOAD.md`](docs/ops/ACS_HOTLOAD.md) |
 
 Rules:
 
@@ -89,6 +92,7 @@ Rules:
 - Work one task per branch (`task/SOS-XXXX-slug`), one primary writer per task. Commit product changes first, then `continuity checkpoint` (it commits and pushes the task branch), then open/update the PR and post a receipt on the leaf issue with the pushed SHA. Never push to `main` or force-push.
 - Human-facing deliverables (README, product docs, image briefs, demos) follow the pinned CGM contract and `.content-system/` adapter. Claims in `.content-system/project-brief.json` must cite exact Study OS revisions and state what each source supports and leaves unproven. Generated imagery remains deferred until Research Gate R0 (see "Explicitly deferred").
 - Private repositories (for example `Pukujan/private-study-log`) are never copied, quoted, or summarized into this public repository, its issues/PRs, or helper repositories.
+- ACS hotloader is a **git submodule** only (`third_party/agent-custom-setup`). Do not vendor-copy the pack. Init with `git submodule update --init --recursive third_party/agent-custom-setup`. Re-pin when ACS PR #12 lands on ACS `main`.
 - Moving a helper pin is its own issue-backed change: update the pin here, in `.continuity/config.json`/`schemas/v1/` or `.content-system/system-version.json`, run both validators, and record the result.
 
 ## Handoff protocol
