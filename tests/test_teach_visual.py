@@ -111,3 +111,20 @@ class AdaptReexplainFrameTypeSwapTests(unittest.TestCase):
         after = presentation.effective(lesson, state)[1]
         self.assertEqual(after[0]["type"], "growth_workers")
 
+    def test_big_o_reexplain_twice_keeps_typed_frames(self):
+        """Two+ Explain again clicks must never emit a frame missing .type."""
+        lesson = load_lesson("big-o-growth-families")
+        state = engine._new_state(lesson)
+        seen = []
+        for _ in range(4):
+            state, info = engine.adapt(lesson, state, "reexplain")
+            self.assertFalse(info.get("refused"), info)
+            frames = presentation.effective(lesson, state)[1]
+            self.assertTrue(frames, "reexplain must keep at least one frame")
+            for frame in frames:
+                self.assertIsInstance(frame, dict)
+                self.assertIsInstance(frame.get("type"), str)
+                self.assertTrue(frame["type"])
+            seen.append(frames[0]["type"])
+        # Must actually rotate types across clicks, not stick on one diagram.
+        self.assertGreaterEqual(len(set(seen)), 2, seen)
