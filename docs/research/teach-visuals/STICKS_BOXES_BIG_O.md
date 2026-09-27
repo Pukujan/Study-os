@@ -36,6 +36,25 @@ Study-os matches the validated control grammar; it is not a pixel clone of Gemin
 
 Do not lead with `ops` or `Work (ops)`. Prefer **steps** / **how much work**. Stats label is **Steps**.
 
+
+
+## Surround + in-game copy density (#195) — memory-worthy
+
+Golden tutor density applies to **text around and inside** the interactive, not only the lesson wall:
+
+| Surface | Rule |
+| --- | --- |
+| Default Why teach.md | 1–2 short sentences (motivation). No “Explain again opens…” meta. |
+| Explain / interactive teach | **`explain_md`**: one short line (or empty). Interactive fills the step. |
+| n / work glossary | Prior middle-frame captions **or** one collapsed expandable — never stacked with the game. |
+| Frame caption on sticks | Omit (UI already shows controls). |
+| In-component intro | **None** — do not restate “You are the computer…” inside the island. |
+| Dropdown options | Short labels (`O(1)` / `O(n)` / `O(n²)`); rules via `title`, not essay options. |
+| Stats / field labels | Minimal (`Rule`, `Sticks`, `Steps`, `n`). No “Algorithm Complexity” / “Number of Boxes (n)” essays. |
+| Step cue | Short (`Box i × Box j`), not “Step k: Cross-Pairing…”. |
+
+Anti-pattern: teach paragraphs + expandable + intro + caption + long dropdowns all visible with the game.
+
 ## Non-goals
 
 O(log n) interactive mode, auto-play demos, replacing the #161 growth-curve default.

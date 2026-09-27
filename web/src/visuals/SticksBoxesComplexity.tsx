@@ -12,10 +12,10 @@ import cssText from "./SticksBoxesComplexity.module.css?inline";
 
 export type ComplexityMode = "O(1)" | "O(n)" | "O(n²)";
 
-const MODE_OPTIONS: { value: ComplexityMode; label: string }[] = [
-  { value: "O(1)", label: "O(1) Constant — Put 1 stick in first box" },
-  { value: "O(n)", label: "O(n) Linear — Put 1 stick in each box" },
-  { value: "O(n²)", label: "O(n²) Quadratic — Cross-pair every box with every box" },
+const MODE_OPTIONS: { value: ComplexityMode; label: string; title: string }[] = [
+  { value: "O(1)", label: "O(1)", title: "Constant — 1 stick in first box" },
+  { value: "O(n)", label: "O(n)", title: "Linear — 1 stick in each box" },
+  { value: "O(n²)", label: "O(n²)", title: "Quadratic — cross-pair every box" },
 ];
 
 const DEFAULT_N_MIN = 2;
@@ -80,7 +80,7 @@ export default function SticksBoxesComplexity({ frame }: { frame: SticksBoxesCom
 
   const stepLabel = useMemo(() => {
     if (mode !== "O(n²)" || finished || !pair) return null;
-    return `Step ${placed + 1}: Cross-Pairing Box ${pair.i} × Box ${pair.j}`;
+    return `Box ${pair.i} × Box ${pair.j}`;
   }, [mode, finished, pair, placed]);
 
   function resetProgress(nextN = n, _nextMode = mode) {
@@ -123,17 +123,12 @@ export default function SticksBoxesComplexity({ frame }: { frame: SticksBoxesCom
       aria-label={describeSticksBoxesComplexity(frame)}
     >
       <style>{cssText}</style>
-      <p className={styles.intro}>
-        You are the computer. Put sticks into boxes under each rule and watch how
-        the work adds up as <strong>n</strong> grows.
-      </p>
-
       <div className={styles.stage}>
         <div className={styles.dispenser}>
           <div className={styles.dispenserTray} aria-hidden="true">
             {!finished ? <div className={styles.dispenserStick} /> : null}
           </div>
-          <span className={styles.dispenserLabel}>Stick Dispenser</span>
+          <span className={styles.dispenserLabel}>Sticks</span>
         </div>
 
         <div className={styles.boxesRow}>
@@ -195,13 +190,13 @@ export default function SticksBoxesComplexity({ frame }: { frame: SticksBoxesCom
 
       <div className={styles.stats} data-testid="sticks-stats">
         <div className={styles.stat}>
-          <span className={styles.statLabel}>Complexity</span>
+          <span className={styles.statLabel}>Rule</span>
           <span className={styles.statValue} data-testid="sticks-stat-complexity">
             {mode}
           </span>
         </div>
         <div className={styles.stat}>
-          <span className={styles.statLabel}>Sticks Placed</span>
+          <span className={styles.statLabel}>Sticks</span>
           <span className={styles.statValue} data-testid="sticks-stat-placed">
             {placed} / {target}
           </span>
@@ -209,23 +204,24 @@ export default function SticksBoxesComplexity({ frame }: { frame: SticksBoxesCom
         <div className={styles.stat}>
           <span className={styles.statLabel}>Steps</span>
           <span className={styles.statValue} data-testid="sticks-stat-work">
-            {target} steps
+            {target}
           </span>
         </div>
       </div>
 
       <div className={styles.controls}>
         <label className={styles.field}>
-          <span className={styles.fieldLabel}>Algorithm Complexity</span>
+          <span className={styles.fieldLabel}>Rule</span>
           <select
             className={styles.select}
             value={mode}
             onChange={(e) => onModeChange(e.target.value as ComplexityMode)}
             data-testid="sticks-complexity-select"
-            aria-label="Algorithm Complexity"
+            aria-label="Complexity rule"
+            title={MODE_OPTIONS.find((o) => o.value === mode)?.title}
           >
             {MODE_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>
+              <option key={opt.value} value={opt.value} title={opt.title}>
                 {opt.label}
               </option>
             ))}
@@ -233,7 +229,7 @@ export default function SticksBoxesComplexity({ frame }: { frame: SticksBoxesCom
         </label>
 
         <label className={styles.field}>
-          <span className={styles.fieldLabel}>Number of Boxes (n)</span>
+          <span className={styles.fieldLabel}>n</span>
           <div className={styles.sliderRow}>
             <input
               className={styles.slider}
@@ -244,7 +240,7 @@ export default function SticksBoxesComplexity({ frame }: { frame: SticksBoxesCom
               value={n}
               onChange={(e) => onNChange(Number(e.target.value))}
               data-testid="sticks-n-slider"
-              aria-label="Number of Boxes (n)"
+              aria-label="Problem size n"
             />
             <span className={styles.sliderValue} data-testid="sticks-n-value">
               n = {n}

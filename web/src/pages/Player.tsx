@@ -248,6 +248,10 @@ export default function Player({ sessionId }: { sessionId: string }) {
   const progressPct = view.progress.total > 0 ? (view.progress.done / view.progress.total) * 100 : 0;
   const speakText = `${view.step.teach_md} ${view.step.probe?.prompt_md || ""}`;
   const probeOpen = view.phase === "probe" && !!view.step.probe;
+  // Interactive teach fills the step — hide curve glossary chrome (#195 golden density).
+  const interactiveTeach = (view.step.teach_frames || []).some(
+    (f) => f?.type === "sticks_boxes_complexity" || f?.type === "interactive_ops_boxes",
+  );
 
   return (
     <ErrorBoundary resetKey={sessionId} onRetry={retryLoad}>
@@ -278,7 +282,7 @@ export default function Player({ sessionId }: { sessionId: string }) {
               ) : (
                 <section className="teach card">
                   <Markdown text={view.step.teach_md} />
-                  {view.step.teach_expandable_hint && (
+                  {view.step.teach_expandable_hint && !interactiveTeach && (
                     <details className="teach-expandable-hint" data-testid="player.teach-expandable-hint">
                       <summary>{view.step.teach_expandable_hint.summary}</summary>
                       <div className="teach-expandable-hint-body">
