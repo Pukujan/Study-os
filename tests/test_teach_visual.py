@@ -38,10 +38,17 @@ class BigOWhyVisualTests(unittest.TestCase):
         self.assertEqual(frames[0]["n_values"], [2, 4, 8, 16])
 
     def test_flag_off_restores_raw_table_without_data_loss(self):
+        raw = self.teach["presentation_raw"]
         with mock.patch.dict(os.environ, {teach_visual.FLAG_ENV: "0"}):
             md, frames = presentation.effective(self.lesson, self.state)
-        raw = self.teach["presentation_raw"]
-        self.assertEqual(md, raw["md"])
+            # resolve_teach alone still returns raw md when flag is off.
+            resolved_md, resolved_frames = teach_visual.resolve_teach(self.teach)
+        self.assertEqual(resolved_md, raw["md"])
+        self.assertEqual(resolved_frames[0]["type"], "growth_table")
+        # Flag restores the table; plain-human rewrite still numbers serve-time copy.
+        self.assertIn("Big O", md)
+        self.assertIn("1)", md)
+        self.assertIn("how work grows", md.lower())
         self.assertEqual(frames[0]["type"], "growth_table")
         self.assertEqual(frames[0]["n_values"], [2, 4, 8, 16])
         # Upgraded frames remain in the lesson file.
