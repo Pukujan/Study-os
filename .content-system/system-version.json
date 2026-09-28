@@ -2,14 +2,15 @@
   "schema_version": "content-generation.adapter.v1",
   "system": "content-generation-modules",
   "helper_repository": "https://github.com/Pukujan/content-generation-modules",
-  "helper_version": "0.5.1",
-  "helper_commit": "9874b26dc46499137bf22e1ca163874ef2dd5e7a",
-  "helper_pin_note": "Pinned to CGM 0.5.1 for writing-direction README rebuild (issue #145). Load writing-direction for README; human-sounding-writing is listed to match the helper contract but is not applied to README bold rules.",
+  "helper_version": "0.5.7",
+  "helper_commit": "c069613ca8b3e02bcf5aba1960160583537f8a3a",
+  "helper_pin_note": "Pinned to CGM 0.5.7 (always-on HSW inject + human-output-naming). Load writing-direction for README/product entry; load human-sounding-writing for every other human-facing surface; load human-output-naming for generated artifact filenames. Paste acs_prompt_inject.system_block into agent boot docs.",
   "modules": [
     "brand-foundation",
     "content-context",
     "writing-direction",
     "human-sounding-writing",
+    "human-output-naming",
     "visual-direction",
     "image-generation",
     "html-demo"
@@ -25,5 +26,5 @@
     "docs/AUTHORITY.md"
   ],
   "review_outputs": [],
-  "adoption_status": "adapter pinned at 0.5.1; root README rebuilt with writing-direction for live web player (Refs #145)"
+  "adoption_status": "adapter pinned at 0.5.7; always-on HSW + hon (eight modules); AGENTS.md carries the always-on writing rule block"
 }

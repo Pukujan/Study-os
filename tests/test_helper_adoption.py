@@ -19,7 +19,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 
 PCM_COMMIT = "c18bfd6064d1249996bc00c45dbbc6721ec5dfd9"
-CGM_COMMIT = "9874b26dc46499137bf22e1ca163874ef2dd5e7a"
+CGM_COMMIT = "c069613ca8b3e02bcf5aba1960160583537f8a3a"
 PROTOCOL_VERSION = "0.1.0-draft"
 
 # SHA-256 of PCM schemas/v1/* at PCM_COMMIT; the directory must stay an exact copy.
@@ -40,6 +40,7 @@ CGM_MODULES = {
     "content-context",
     "writing-direction",
     "human-sounding-writing",
+    "human-output-naming",
     "visual-direction",
     "image-generation",
     "html-demo",
