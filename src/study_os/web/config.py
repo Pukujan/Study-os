@@ -65,6 +65,11 @@ class Settings:
     rate_signup_per_hour: int = 10
     decision_model_enabled: bool = True
     llm_enabled: bool = True
+    # TTS: browser (Web Speech) or kokoro (self-hosted OpenAI-compatible). Refs #180.
+    tts_engine: str = "browser"
+    kokoro_base_url: str = "http://kokoro:8880"
+    kokoro_voice: str = "af_heart"
+    kokoro_speed: float = 1.08
     extra: dict[str, str] = field(default_factory=dict)
 
     @property
@@ -110,4 +115,8 @@ def load_settings() -> Settings:
         rate_signup_per_hour=int(_float("RATE_SIGNUP_PER_HOUR", 10)),
         decision_model_enabled=_flag("DECISION_MODEL_ENABLED", True),
         llm_enabled=_flag("LLM_ENABLED", True),
+        tts_engine=(os.environ.get("STUDY_OS_TTS") or "browser").strip().lower(),
+        kokoro_base_url=(os.environ.get("KOKORO_BASE_URL") or "http://kokoro:8880").rstrip("/"),
+        kokoro_voice=(os.environ.get("KOKORO_VOICE") or "af_heart").strip(),
+        kokoro_speed=_float("KOKORO_SPEED", 1.08),
     )

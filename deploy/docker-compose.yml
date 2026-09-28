@@ -29,6 +29,7 @@ services:
     env_file: .env
     environment:
       DATABASE_URL: postgresql://study:${POSTGRES_PASSWORD}@postgres:5432/study_os
+      # Optional TTS (set in .env): STUDY_OS_TTS=kokoro, KOKORO_BASE_URL=http://kokoro:8880
     depends_on:
       postgres:
         condition: service_healthy
@@ -44,6 +45,13 @@ services:
       TUNNEL_TOKEN: ${TUNNEL_TOKEN:?set in .env}
     depends_on: [api]
     networks: [edge]
+
+  # Optional TTS (Refs #180). Start with: docker compose --profile tts up -d
+  kokoro:
+    profiles: ["tts"]
+    image: ghcr.io/remsky/kokoro-fastapi-cpu:latest
+    restart: unless-stopped
+    networks: [internal]
 
   backup:
     image: postgres:16-alpine

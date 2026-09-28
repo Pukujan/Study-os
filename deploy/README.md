@@ -78,3 +78,8 @@ Learning and UX events live in Postgres. Metabase (or `psql`) can read the views
 `analytics` schema: `v_learning_event` (xAPI-shaped), `v_decision`,
 `v_daily_active_learners`, `v_step_funnel`, `v_drop_off`, `v_hint_rate`,
 `v_accuracy_by_concept`, `v_time_on_step`.
+
+## Kokoro TTS (optional)
+
+Self-hosted tutor voice behind `STUDY_OS_TTS=kokoro`. See [`docs/ops/KOKORO_TTS_GRAVEBUSTER.md`](../docs/ops/KOKORO_TTS_GRAVEBUSTER.md).
+Start with `docker compose --profile tts up -d` after setting voice env in `/srv/study-os/.env`.

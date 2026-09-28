@@ -17,6 +17,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from . import WEB_API_VERSION, auth, e2e_stub, packs
+from .tts import synthesize_kokoro, tts_config_payload
 from .config import Settings, load_settings
 from .db import Database
 from .models import DecisionTransport, InferHubLLM, LLMTransport, OpenRouterJev, StubLLM
@@ -146,6 +147,10 @@ class ReactionBody(_Body):
 class EventsBody(_Body):
     events: list[dict[str, Any]] = Field(max_length=100)
 
+
+class TtsSpeechBody(_Body):
+    text: str = Field(max_length=4000)
+
 class DecomposerReviewBody(_Body):
     review_batch_id: str | None = Field(default=None, max_length=64)
     client_session: str = Field(max_length=64)
@@ -272,7 +277,27 @@ def create_app(
         with database().tx() as conn:
             conn.execute("SELECT 1")
         return {"ok": True, "version": WEB_API_VERSION, "google": settings.google_enabled,
-                "decision_model": bool(jev) and settings.decision_model_enabled, "llm": bool(llm) and settings.llm_enabled}
+                "decision_model": bool(jev) and settings.decision_model_enabled, "llm": bool(llm) and settings.llm_enabled,
+                "tts": tts_config_payload(settings)["engine"]}
+
+    # ---------- tts (Kokoro behind STUDY_OS_TTS=kokoro; Refs #180) ----------
+    @app.get("/api/tts/config")
+    def tts_config() -> dict[str, Any]:
+        return tts_config_payload(settings)
+
+    @app.post("/api/tts/speech")
+    def tts_speech(body: TtsSpeechBody, request: Request) -> Response:
+        if settings.tts_engine != "kokoro":
+            raise HTTPException(503, "tts_engine_not_kokoro")
+        if not limiter.allow("tts:" + _client_ip(request), settings.rate_per_ip_per_min, 60):
+            raise HTTPException(429, "rate_limited")
+        try:
+            audio, media = synthesize_kokoro(settings, body.text)
+        except ValueError:
+            raise HTTPException(400, "empty_text") from None
+        except httpx.HTTPError as exc:
+            raise HTTPException(502, f"kokoro_unreachable:{type(exc).__name__}") from exc
+        return Response(content=audio, media_type=media)
 
     # ---------- auth ----------
     @app.get("/api/auth/config")

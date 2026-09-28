@@ -1,3 +1,4 @@
+import { cancelSpeak, speakText as speakViaEngine } from "./tts";
 import { useEffect, useRef, useState } from "react";
 import { api, type PlayerView, type TutorReply } from "../api";
 import { Markdown } from "../markdown";
@@ -133,31 +134,28 @@ export default function CompanionPanel({
   }, [speaking]);
 
   const speakLatest = (text: string) => {
-    if (typeof window === "undefined" || !window.speechSynthesis) return;
     latestTutorRef.current = text;
-    window.speechSynthesis.cancel();
-    const utter = new SpeechSynthesisUtterance(text);
-    utter.onboundary = (e) => setSpokenTo(e.charIndex + e.charLength);
-    utter.onstart = () => {
-      setSpeaking(true);
-      onSpeakingChange?.(true);
-    };
-    utter.onend = () => {
-      setSpeaking(false);
-      onSpeakingChange?.(false);
-      setSpokenTo(text.length);
-    };
-    utter.onerror = () => {
-      setSpeaking(false);
-      onSpeakingChange?.(false);
-    };
-    window.speechSynthesis.speak(utter);
+    cancelSpeak();
+    void speakViaEngine(text, {
+      onBoundary: (charIndex, charLength) => setSpokenTo(charIndex + charLength),
+      onStart: () => {
+        setSpeaking(true);
+        onSpeakingChange?.(true);
+      },
+      onEnd: () => {
+        setSpeaking(false);
+        onSpeakingChange?.(false);
+        setSpokenTo(text.length);
+      },
+      onError: () => {
+        setSpeaking(false);
+        onSpeakingChange?.(false);
+      },
+    });
   };
 
   const stopSpeaking = () => {
-    if (typeof window !== "undefined" && window.speechSynthesis) {
-      window.speechSynthesis.cancel();
-    }
+    cancelSpeak();
     setSpeaking(false);
     onSpeakingChange?.(false);
   };
