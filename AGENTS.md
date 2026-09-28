@@ -81,7 +81,7 @@ For every substantive task:
 | Helper | Role here | Pin (never read moving `main` during work) | Adoption shape |
 | --- | --- | --- | --- |
 | [`Pukujan/project-continuity-modules`](https://github.com/Pukujan/project-continuity-modules) (PCM) | continuity protocol, validator, checkpoints | CLI `0.6.0`, protocol `0.1.0-draft`, commit `c18bfd6064d1249996bc00c45dbbc6721ec5dfd9` | mature-repository overlay ([`docs/TARGET_ADOPTION.md`](https://github.com/Pukujan/project-continuity-modules/blob/c18bfd6064d1249996bc00c45dbbc6721ec5dfd9/docs/TARGET_ADOPTION.md)) |
-| [`Pukujan/content-generation-modules`](https://github.com/Pukujan/content-generation-modules) (CGM) | README/brand/visual/image method and adapter validator | `0.5.1`, commit `9874b26dc46499137bf22e1ca163874ef2dd5e7a` (see `.content-system/system-version.json`) | target adapter in `.content-system/` |
+| [`Pukujan/content-generation-modules`](https://github.com/Pukujan/content-generation-modules) (CGM) | README/brand/visual/image method and adapter validator | `0.5.7`, commit `c069613ca8b3e02bcf5aba1960160583537f8a3a` (see `.content-system/system-version.json`) | target adapter in `.content-system/` |
 | [`Pukujan/agent-custom-setup`](https://github.com/Pukujan/agent-custom-setup) (ACS) | multi-agent hotloader pack (roles, boss lease, claim queue, watchdog) | commit `f9650936fd5fd66be3b0e2cf04e653f0a3cbb7e4` (ACS PR #12 tip until merged to ACS `main`) | git submodule at `third_party/agent-custom-setup`; load [`HOTLOAD.md`](third_party/agent-custom-setup/modules/coordination/multi-agent-hotload/v0.1.0/HOTLOAD.md) — see [`docs/ops/ACS_HOTLOAD.md`](docs/ops/ACS_HOTLOAD.md) |
 
 Rules:
@@ -102,6 +102,29 @@ Rules:
 - Private repositories (for example `Pukujan/private-study-log`) are never copied, quoted, or summarized into this public repository, its issues/PRs, or helper repositories.
 - ACS hotloader is a **git submodule** only (`third_party/agent-custom-setup`). Do not vendor-copy the pack. Init with `git submodule update --init --recursive third_party/agent-custom-setup`. Re-pin when ACS PR #12 lands on ACS `main`.
 - Moving a helper pin is its own issue-backed change: update the pin here, in `.continuity/config.json`/`schemas/v1/` or `.content-system/system-version.json`, run both validators, and record the result.
+
+
+### CGM always-on writing rule (0.5.7+)
+
+Paste target for agent boot. Exact text from the pinned helper `docs/writing-routing.json` → `acs_prompt_inject.system_block`:
+
+```text
+CGM ALWAYS-ON WRITING RULE (every adopter that pins this helper)
+
+Before you write ANY human-facing output — including HTML reports, compare HTML/UIs, appendable HTML, PR/issue/commit prose, docs, posts, papers, or other readable artifacts — you MUST load and apply modules/human-sounding-writing/SKILL.md (hsw).
+
+This rule is always on. Opt-in is forbidden. Do not wait for a per-task, per-report, or per-HTML flag.
+
+Exceptions (only these):
+- README.md / product entry pages → load modules/writing-direction/SKILL.md instead
+- Generated artifact filenames / asset-manifest paths / media basenames / filename legends → load modules/human-output-naming/SKILL.md (hon) for basenames; visible prose inside HTML still uses hsw
+
+HTML reports, compare HTML, and compare UIs have NO skip path. An exception reason is not allowed for those surfaces.
+
+If you cannot load the skill file from the pinned CGM checkout, stop and report that — do not draft jargon-heavy or tool-dump HTML instead.
+
+Filenames: use scripts/human_filename (speakable basenames; optional safe_twin) and keep a per-feature legend. Hash may stay a separate manifest field.
+```
 
 ## Handoff protocol
 

@@ -76,15 +76,13 @@ AI may diagnose and generate under constraints. It does **not** silently own cur
 
 **Boundaries:** no population learning-efficacy claims from subject-001 data; self-report ≠ mastery; no fixed “learning styles”; generative media is not canonical algorithm state; private transcripts stay out of the public repo; FOSSIL is optional export, not runtime authority.
 
-## Image generation and use
-
-Committed player/marketing art lives under `web/public/art/` with provenance in [`.content-system/asset-manifest.json`](.content-system/asset-manifest.json). Character refs and prompts are under `.content-system/characters/`. Helper method: CGM [`docs/IMAGE_GUIDE.md`](https://github.com/Pukujan/content-generation-modules/blob/9874b26dc46499137bf22e1ca163874ef2dd5e7a/docs/IMAGE_GUIDE.md) at pin `0.5.1`.
+Committed player/marketing art lives under `web/public/art/` with provenance in [`.content-system/asset-manifest.json`](.content-system/asset-manifest.json); character refs and prompts are under `.content-system/characters/`.
 
 ## Templates and guides
 
 | File | Role |
 | --- | --- |
-| [`.content-system/`](.content-system/) | CGM adapter (brief, brand, visual, assets, rubric) |
+| [`.content-system/`](.content-system/) | Content adapter (brief, brand, visual, assets, rubric) |
 | [`docs/HANDOFF.md`](docs/HANDOFF.md) | Current operational handoff |
 | [`docs/AUTHORITY.md`](docs/AUTHORITY.md) | Multi-agent arbiter rules |
 | [`docs/CURRENT_STATE.md`](docs/CURRENT_STATE.md) | Historical P4 state snapshot (may lag the live web track) |
@@ -93,9 +91,9 @@ Committed player/marketing art lives under `web/public/art/` with provenance in 
 
 ## Prior work and references
 
-- CGM writing-direction + README contract at helper **0.5.1** (`9874b26dc46499137bf22e1ca163874ef2dd5e7a`) — this README follows scan-first selective bold; **do not** apply HSW bold restraints here.
+- This README follows scan-first selective bold for product entry; helper pin and writing rules live in `AGENTS.md` / `.content-system/system-version.json` (**0.5.7**).
 - Early representation episodes and P4 controller design remain in `docs/` and historical issues (#63 research/runtime track).
-- Continuity overlays use PCM (see `AGENTS.md`); content method uses CGM via `.content-system/`.
+- Continuity overlays use PCM (see `AGENTS.md`); content method uses `.content-system/`.
 
 ## Try it
 

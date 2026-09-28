@@ -95,9 +95,9 @@ helpers:
     repository: Pukujan/content-generation-modules
     role: human_facing_content_method_and_adapter_validator
     adoption: target_adapter
-    helper_version: "0.5.1"
-    commit: 9874b26dc46499137bf22e1ca163874ef2dd5e7a
-    adapter_validation: readme_rebuilt_writing_direction_0_5_1
+    helper_version: "0.5.7"
+    commit: c069613ca8b3e02bcf5aba1960160583537f8a3a
+    adapter_validation: pin_0_5_7_always_on_hsw_hon_eight_modules
   private_repositories_copied_into_public_outputs: false
 
 runtime:
