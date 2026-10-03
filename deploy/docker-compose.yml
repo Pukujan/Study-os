@@ -1,6 +1,12 @@
 # Study OS on gravebuster (D018). Lives at /srv/study-os/docker-compose.yml with the repo
 # checked out at /srv/study-os/app and secrets in /srv/study-os/.env (chmod 600).
 #   cd /srv/study-os && docker compose up -d --build
+#
+# On-demand mode (cold starts): cloudflared (always on) -> gateway (wakegate, holds the
+# `api` alias on the edge network) -> api. The gateway stops the api container after
+# inactivity and wakes it on the next request (the request blocks until the api is
+# healthy). Sliding 30 min idle window, 60 min when traffic is sustained.
+# See deploy/ondemand/README.md.
 name: study-os
 
 services:
@@ -25,6 +31,7 @@ services:
       context: ./app
       dockerfile: deploy/Dockerfile
     image: study-os-api:local
+    # unless-stopped: crashes self-heal, but a stop issued by the gateway is respected.
     restart: unless-stopped
     env_file: .env
     environment:
@@ -32,9 +39,47 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/api/health', timeout=4).status == 200 else 1)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+      start_interval: 1s
+    labels:
+      - ondemand.group=study-os   # started/stopped by the gateway (wakegate)
+    # Host port kept for the CD health check (CD starts the api with `compose up`).
+    # Not on `edge`: public traffic goes through the gateway.
     ports:
       - "127.0.0.1:${API_HOST_PORT:-18400}:8000"
-    networks: [internal, edge]
+    networks:
+      internal: {}
+      app:
+        aliases: [study-os-api-upstream]
+
+  gateway:
+    # wakegate (deploy/ondemand/wakegate): wake-on-request proxy, ~10 MB RAM.
+    build:
+      context: ./app/deploy/ondemand/wakegate
+    image: study-os-wakegate:local
+    restart: unless-stopped
+    environment:
+      UPSTREAM: http://study-os-api-upstream:8000
+      TARGET_LABEL: ondemand.group=study-os
+      BASE_IDLE: 30m          # sliding: every request renews it
+      EXTENDED_IDLE: 60m      # used when traffic is sustained
+      SUSTAIN_SPAN: 10m       # sustained = requests spread over >= 10 min ...
+      SUSTAIN_CLIENTS: "3"    # ... or >= 3 distinct clients (CF-Connecting-IP)
+      WAKE_TIMEOUT: 90s       # block a cold request this long, then "starting up" 503
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    mem_limit: 64m
+    ports:
+      - "127.0.0.1:${GATEWAY_HOST_PORT:-18401}:8000"   # local wake-path testing
+    networks:
+      edge:
+        aliases: [api]   # cloudflared's remote ingress targets http://api:8000
+      app: {}
 
   cloudflared:
     image: cloudflare/cloudflared:${CLOUDFLARED_TAG:-2026.9.3}
@@ -70,3 +115,4 @@ networks:
   internal:
     internal: true
   edge: {}
+  app: {}

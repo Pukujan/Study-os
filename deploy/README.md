@@ -24,6 +24,12 @@ The API is published only on `127.0.0.1:18400` (for local health checks). Public
 arrives through `cloudflared` → `http://api:8000` on the compose network. Postgres is on an
 internal-only network.
 
+**On-demand mode:** `http://api:8000` on the `edge` network is the `gateway` service
+(`deploy/ondemand/wakegate`), not the API itself. It starts the `api` container on the first
+request (the request waits until the API is healthy, a few seconds) and stops it after
+30 min without requests, or 60 min when traffic has been sustained. Details and operations
+are in [`ondemand/README.md`](ondemand/README.md).
+
 ## Cloudflare (API tokens, no dashboard login)
 
 The tunnel `study-os-gravebuster` was created with the Cloudflare API
