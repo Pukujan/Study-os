@@ -1,0 +1,10 @@
+Nice. Let’s continue with that distinction in mind.
+
+```python
+nums = [10, 20, 30, 40]
+nums.insert(0, 5)
+```
+
+This inserts `5` at index `0`, so every existing element has to shift one position to the right.
+
+Before I give you the answer: do you think that makes it **O(1)** or **O(n)**?

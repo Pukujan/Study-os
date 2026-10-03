@@ -1,0 +1,17 @@
+You got the final answer right: **O(n)**.
+
+One correction to the reasoning: because the loops are nested, we **multiply**, not add.
+
+The outer loop runs `n` times. The inner loop always runs exactly `5` times, which is constant work: **O(1)**.
+
+So the total is:
+
+`O(n) × O(1) = O(n)`
+
+Another way to see it: the body runs about `5n` times. Big-O ignores the constant `5`, so `O(5n)` becomes **O(n)**.
+
+That distinction is important:
+- loops one after another → add
+- loops nested inside each other → multiply
+
+You’re ready to move on to **arrays and strings**.

@@ -1,0 +1,2 @@
+O(n)
+because even though its nested its a multiplication of O(n) + O(1) and here O(n) dominates

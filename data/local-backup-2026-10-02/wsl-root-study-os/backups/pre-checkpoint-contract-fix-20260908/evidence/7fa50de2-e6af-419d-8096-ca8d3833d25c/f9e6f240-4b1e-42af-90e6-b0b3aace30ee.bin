@@ -1,0 +1,1 @@
+O(n) because it has to reindex every single value after index 0 now

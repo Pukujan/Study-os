@@ -1,0 +1,20 @@
+Correct — `s[3]` returns **`"h"`**, and accessing that character is **O(1)**.
+
+One important distinction: writing `s[3] = "h"` would look like an assignment, and Python strings do **not** allow that because strings are immutable.
+
+So this works:
+
+```python
+s = "python"
+print(s[3])  # h
+```
+
+But this does not:
+
+```python
+s[3] = "x"  # error
+```
+
+If you want to change a string, Python has to create a new string instead.
+
+Let’s test that idea: if `s = "cat"`, can you directly do `s[0] = "b"` to turn it into `"bat"`?

@@ -1,0 +1,29 @@
+{
+  "backup_version": "0.1.0",
+  "schema_version": 1,
+  "contract_version": "0.1.0",
+  "created_at": "2026-09-03T18:42:21.299654Z",
+  "database_sha256": "3fd95382afe58378daf185f74938b6fb2d851e1332b15aeb0cface4d9ec4ec82",
+  "evidence_sha256": {},
+  "record_counts": {
+    "subjects": 2,
+    "projects": 3,
+    "domains": 4,
+    "concepts": 0,
+    "sessions": 4,
+    "raw_artifacts": 0,
+    "messages": 0,
+    "learning_events": 6,
+    "episodes": 0,
+    "attempts": 29,
+    "assessments": 1,
+    "representations": 0,
+    "interventions": 0,
+    "representation_outcomes": 0,
+    "checkpoints": 3,
+    "subject_current_checkpoint": 2,
+    "retention_probes": 0,
+    "fossil_exports": 0,
+    "idempotency_records": 43
+  }
+}

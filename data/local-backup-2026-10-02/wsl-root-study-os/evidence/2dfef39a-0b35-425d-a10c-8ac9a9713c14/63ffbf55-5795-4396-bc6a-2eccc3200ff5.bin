@@ -1,0 +1,21 @@
+We are trying to find two indexes in `nums` whose values add up to `target`.
+
+That is the whole problem. Everything else is just a way to hunt for that pair.
+
+- `nums` = the list
+- `target` = the sum we want
+- `i` = the index we are looking at now
+- `num` = `nums[i]`, the number at that index
+- `needed` = `target - num`, the partner that would complete the pair
+- `box` = numbers we already passed, mapped to their indexes
+
+So if `box` already has `needed`, we found the pair: the old index is `box[needed]`, the new index is `i`.
+
+Look at this:
+
+`index:  0  1  2`
+`value:  2  7 11`
+`target: 9`
+`box:    {2: 0}`
+
+We are at `i = 1`, so `num` is `7`. What is `needed`?

@@ -1,0 +1,14 @@
+Almost — `s[:4]` returns **`"pyth"`**.
+
+With:
+
+```text
+index:  0 1 2 3 4 5
+char:   p y t h o n
+```
+
+`s[:4]` means “start from the beginning and stop before index `4`,” so it takes indexes `0, 1, 2, 3` → **`"pyth"`**.
+
+Think of a missing left side as “start at 0.”
+
+Now try this one: if `s = "python"`, what does `s[3:]` return?

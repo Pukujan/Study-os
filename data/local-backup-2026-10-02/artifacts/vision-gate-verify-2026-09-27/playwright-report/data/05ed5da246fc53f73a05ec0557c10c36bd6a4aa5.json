@@ -1,0 +1,177 @@
+{
+  "schema": "study_os.e2e.vision_gate_receipt/v0.1",
+  "run_id": "227f6677-3253-45a3-a369-02fe3383a9d3",
+  "git_sha": "fd9b25edefb443a012036d8903f964453490e358",
+  "started_at": "2026-09-27T06:07:29.666Z",
+  "finished_at": "2026-09-27T06:09:59.777Z",
+  "projects": [
+    "mobile",
+    "desktop"
+  ],
+  "checkpoints": [
+    {
+      "id": "review.panel.initial",
+      "project": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "screenshot": ".artifacts/mobile/review.panel.initial.png",
+      "image_sha256": "afd110c071c55336546f1b9c3d928b06beca817ed1fab69c77ae815e44a5ca5f",
+      "deterministic": "PASS",
+      "vision_code": "VISION_PASS",
+      "vision_locator": "The bottom of the screen shows the \"How useful was this step?\" section with 1-5 rating buttons, a \"Why this rating?\" text input, and a Submit button.",
+      "vision_model": "ali/qwen3.8-flash",
+      "vision_latency_ms": 13267
+    },
+    {
+      "id": "review.receipt.after-submit",
+      "project": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "screenshot": ".artifacts/mobile/review.receipt.after-submit.png",
+      "image_sha256": "eebe8a4204282f90a54929cca6f9d7e474e56819eb28fa580cf4f0c19d16a40e",
+      "deterministic": "PASS",
+      "vision_code": "VISION_PASS",
+      "vision_locator": "Bottom panel shows rating controls 1–5, the \"Why this rating?\" text field, and the Submit button.",
+      "vision_model": "ali/qwen3.8-flash",
+      "vision_latency_ms": 9669
+    },
+    {
+      "id": "review.panel.after-regen",
+      "project": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "screenshot": ".artifacts/mobile/review.panel.after-regen.png",
+      "image_sha256": "92d75b22906ec79fc901cd7f42afb489f866d4b08017c1521c450869532f121c",
+      "deterministic": "PASS",
+      "vision_code": "VISION_PASS",
+      "vision_locator": "Bottom panel: numbered 1-5 rating circles, 'Why this rating?' text field, and purple Submit button.",
+      "vision_model": "ali/qwen3.8-flash",
+      "vision_latency_ms": 15422
+    },
+    {
+      "id": "review.panel.initial",
+      "project": "desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "screenshot": ".artifacts/desktop/review.panel.initial.png",
+      "image_sha256": "31880a5c1123f7e55c14b64d75034ade1832ad7939de5cca34c030371e0576b6",
+      "deterministic": "PASS",
+      "vision_code": "VISION_PASS",
+      "vision_locator": "Bottom panel: \"How useful was this step?\" with rating circles 1–5 (3 selected), \"Why this rating?\" text field, and purple Submit button all clearly rendered.",
+      "vision_model": "ali/qwen3.8-flash",
+      "vision_latency_ms": 11253
+    },
+    {
+      "id": "review.receipt.after-submit",
+      "project": "desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "screenshot": ".artifacts/desktop/review.receipt.after-submit.png",
+      "image_sha256": "4b530fcb530b7b95dcd9ad0eb977fe1cdb18f3ce2ea726e6ca24ee365d5a7eac",
+      "deterministic": "PASS",
+      "vision_code": "VISION_PASS",
+      "vision_locator": "Bottom panel: \"How useful was this step?\" with circular controls 1–5, the \"Why this rating?\" text field, and the Submit button below it.",
+      "vision_model": "ali/qwen3.8-flash",
+      "vision_latency_ms": 8044
+    },
+    {
+      "id": "review.panel.after-regen",
+      "project": "desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "screenshot": ".artifacts/desktop/review.panel.after-regen.png",
+      "image_sha256": "6a40c7e3a51a822c8093bdc56e95216b5166a0f89f7d353fc109e6677e96c5c3",
+      "deterministic": "PASS",
+      "vision_code": "VISION_PASS",
+      "vision_locator": "Bottom panel shows \"How useful was this step?\" with rating circles 1-5, a \"Why this rating?\" text field, and a Submit button.",
+      "vision_model": "ali/qwen3.8-flash",
+      "vision_latency_ms": 13228
+    }
+  ],
+  "holdout": {
+    "result": "OK",
+    "cases": [
+      {
+        "id": "holdout-blank-canvas",
+        "screenshot": ".artifacts/desktop/holdout-blank-canvas.png",
+        "expect": "VISION_FAIL_BLANK",
+        "vision_code": "VISION_FAIL_BLANK",
+        "vision_model": "ali/qwen3.8-flash",
+        "result": "OK"
+      },
+      {
+        "id": "holdout-review-panel-hidden",
+        "screenshot": ".artifacts/desktop/holdout-review-panel-hidden.png",
+        "expect": "VISION_FAIL_PARTIAL",
+        "vision_code": "VISION_FAIL_WRONG_TARGET",
+        "vision_model": "ali/qwen3.8-flash",
+        "result": "OK"
+      },
+      {
+        "id": "holdout-unrelated-screen",
+        "screenshot": ".artifacts/desktop/holdout-unrelated-screen.png",
+        "expect": "VISION_FAIL_WRONG_TARGET",
+        "vision_code": "VISION_FAIL_WRONG_TARGET",
+        "vision_model": "ali/qwen3.8-flash",
+        "result": "OK"
+      }
+    ]
+  },
+  "metamorphic": [
+    {
+      "id": "M-regen",
+      "project": "mobile",
+      "result": "PASS"
+    },
+    {
+      "id": "M-viewport",
+      "project": "mobile",
+      "result": "PASS"
+    },
+    {
+      "id": "M-submit",
+      "project": "mobile",
+      "result": "PASS"
+    },
+    {
+      "id": "M-noop",
+      "project": "mobile",
+      "result": "PASS"
+    },
+    {
+      "id": "M-regen",
+      "project": "desktop",
+      "result": "PASS"
+    },
+    {
+      "id": "M-viewport",
+      "project": "desktop",
+      "result": "PASS"
+    },
+    {
+      "id": "M-submit",
+      "project": "desktop",
+      "result": "PASS"
+    },
+    {
+      "id": "M-noop",
+      "project": "desktop",
+      "result": "PASS"
+    }
+  ],
+  "verdict": "GREEN",
+  "vision_run": true,
+  "notes": []
+}

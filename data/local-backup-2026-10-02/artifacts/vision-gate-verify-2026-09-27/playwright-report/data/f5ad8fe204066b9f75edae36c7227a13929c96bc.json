@@ -1,0 +1,111 @@
+{
+  "schema": "study_os.e2e.vision_gate_receipt/v0.1",
+  "run_id": "ce218016-1edb-47d8-b910-734e0779ba6b",
+  "git_sha": "fd9b25edefb443a012036d8903f964453490e358",
+  "started_at": "2026-09-27T06:07:29.666Z",
+  "finished_at": "2026-09-27T06:08:35.999Z",
+  "projects": [
+    "mobile"
+  ],
+  "checkpoints": [
+    {
+      "id": "review.panel.initial",
+      "project": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "screenshot": ".artifacts/mobile/review.panel.initial.png",
+      "image_sha256": "afd110c071c55336546f1b9c3d928b06beca817ed1fab69c77ae815e44a5ca5f",
+      "deterministic": "PASS",
+      "vision_code": "VISION_PASS",
+      "vision_locator": "The bottom of the screen shows the \"How useful was this step?\" section with 1-5 rating buttons, a \"Why this rating?\" text input, and a Submit button.",
+      "vision_model": "ali/qwen3.8-flash",
+      "vision_latency_ms": 13267
+    },
+    {
+      "id": "review.receipt.after-submit",
+      "project": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "screenshot": ".artifacts/mobile/review.receipt.after-submit.png",
+      "image_sha256": "eebe8a4204282f90a54929cca6f9d7e474e56819eb28fa580cf4f0c19d16a40e",
+      "deterministic": "PASS",
+      "vision_code": "VISION_PASS",
+      "vision_locator": "Bottom panel shows rating controls 1–5, the \"Why this rating?\" text field, and the Submit button.",
+      "vision_model": "ali/qwen3.8-flash",
+      "vision_latency_ms": 9669
+    },
+    {
+      "id": "review.panel.after-regen",
+      "project": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "screenshot": ".artifacts/mobile/review.panel.after-regen.png",
+      "image_sha256": "92d75b22906ec79fc901cd7f42afb489f866d4b08017c1521c450869532f121c",
+      "deterministic": "PASS",
+      "vision_code": "VISION_PASS",
+      "vision_locator": "Bottom panel: numbered 1-5 rating circles, 'Why this rating?' text field, and purple Submit button.",
+      "vision_model": "ali/qwen3.8-flash",
+      "vision_latency_ms": 15422
+    }
+  ],
+  "holdout": {
+    "result": "OK",
+    "cases": [
+      {
+        "id": "holdout-blank-canvas",
+        "screenshot": ".artifacts/mobile/holdout-blank-canvas.png",
+        "expect": "VISION_FAIL_BLANK",
+        "vision_code": "VISION_FAIL_BLANK",
+        "vision_model": "ali/qwen3.8-flash",
+        "result": "OK"
+      },
+      {
+        "id": "holdout-review-panel-hidden",
+        "screenshot": ".artifacts/mobile/holdout-review-panel-hidden.png",
+        "expect": "VISION_FAIL_PARTIAL",
+        "vision_code": "VISION_FAIL_WRONG_TARGET",
+        "vision_model": "ali/qwen3.8-flash",
+        "result": "OK"
+      },
+      {
+        "id": "holdout-unrelated-screen",
+        "screenshot": ".artifacts/mobile/holdout-unrelated-screen.png",
+        "expect": "VISION_FAIL_WRONG_TARGET",
+        "vision_code": "VISION_FAIL_WRONG_TARGET",
+        "vision_model": "ali/qwen3.8-flash",
+        "result": "OK"
+      }
+    ]
+  },
+  "metamorphic": [
+    {
+      "id": "M-regen",
+      "project": "mobile",
+      "result": "PASS"
+    },
+    {
+      "id": "M-viewport",
+      "project": "mobile",
+      "result": "PASS"
+    },
+    {
+      "id": "M-submit",
+      "project": "mobile",
+      "result": "PASS"
+    },
+    {
+      "id": "M-noop",
+      "project": "mobile",
+      "result": "PASS"
+    }
+  ],
+  "verdict": "RED",
+  "vision_run": true,
+  "notes": []
+}

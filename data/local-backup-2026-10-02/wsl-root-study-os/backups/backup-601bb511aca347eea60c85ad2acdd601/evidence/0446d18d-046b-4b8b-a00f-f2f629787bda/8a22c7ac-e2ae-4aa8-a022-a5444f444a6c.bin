@@ -1,0 +1,35 @@
+Exactly. That’s a real learning bottleneck: **representation mismatch**.
+
+If the underlying idea is simple but the answer is written in a style you don’t naturally think in, your working memory gets spent decoding syntax, naming, and control flow instead of solving the actual problem.
+
+That’s where an intermediate representation can be valuable. It can normalize different solutions into one consistent form like:
+
+```
+for each number:
+    know its index
+    compute what partner is needed
+    if partner was seen:
+        return both indices
+    otherwise remember this number and index
+```
+
+Then only after that do you map it into Python:
+
+```
+for i, num in enumerate(nums):
+    needed = target - num
+    ...
+```
+
+That separation matters because it lets you learn the **algorithmic invariant** first and the author-specific syntax second.
+
+So the useful role of Study OS + AI here isn’t just “explain code.” It’s more like:
+
+- preserve your preferred mental representation
+- translate external solutions into that representation
+- detect whether you’re stuck on the idea or just on someone else’s coding style
+- gradually expose alternate representations later, once the concept is stable
+
+That’s much closer to reducing cognitive translation cost than just giving more explanation.
+
+I also tried to log this as a learning insight, but Study OS is still returning a 502.

@@ -1,0 +1,16 @@
+Exactly — **O(1)**.
+
+Your reasoning is right: removing the last element doesn’t force the rest of the list to shift, so the amount of work stays constant even if the list gets much bigger.
+
+One tiny wording tweak: index `3` doesn’t really need to be “fixed”; that element is simply removed, and the remaining indexes stay where they are.
+
+You’ve got the core list-operation idea now. Let’s test one that mixes access and search:
+
+```python
+nums = [10, 20, 30, 40, 50]
+
+x = nums[2]
+print(50 in nums)
+```
+
+What is the overall time complexity of these two operations together?

@@ -1,0 +1,38 @@
+{
+  "schema_version": "ux-defect-report.v1",
+  "run_id": "jev-20260927-100511",
+  "source": "jev",
+  "started_at": "2026-09-27T14:05:12.119822Z",
+  "finished_at": "2026-09-27T14:05:20.612097Z",
+  "base_url": "https://study.design-bakery.com",
+  "agent": {
+    "name": "jev-ultrafast",
+    "model": "typesafe/jev-1.13",
+    "harness_version": "study-os-scout-1"
+  },
+  "controls_exercised": 0,
+  "pass": false,
+  "catch_rate": 0.0,
+  "artifacts": {
+    "actions_jsonl": "actions.jsonl",
+    "decisions_jsonl": "decisions.jsonl",
+    "report_md": "report.md",
+    "screenshots_dir": "screenshots"
+  },
+  "defects": [
+    {
+      "id": "UX-JEV-001",
+      "severity": "P0",
+      "component": "player-shell",
+      "control_label": "scout",
+      "url": "https://study.design-bakery.com",
+      "expected": "Scout completes without uncaught exception",
+      "actual": "_IPCResponseTimeout: Page.captureScreenshot timed out after 5s waiting for the daemon",
+      "repro_steps": [
+        "Run tools/ux-defect/Run-UltrafastScout.ps1 against https://study.design-bakery.com"
+      ],
+      "evidence": {},
+      "source": "jev"
+    }
+  ]
+}

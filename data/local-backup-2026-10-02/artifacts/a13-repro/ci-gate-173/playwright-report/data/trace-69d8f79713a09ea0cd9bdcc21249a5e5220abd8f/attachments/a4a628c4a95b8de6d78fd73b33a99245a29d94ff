@@ -1,0 +1,313 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: player-vision-gate.spec.ts >> learner step review: metamorphic relations >> M-regen regeneration keeps the whole review surface and posts nothing
+- Location: e2e/player-vision-gate.spec.ts:235:3
+
+# Error details
+
+```
+TimeoutError: page.waitForRequest: Timeout 30000ms exceeded while waiting for event "request"
+```
+
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - link "Study OS" [ref=e5] [cursor=pointer]:
+      - /url: /
+    - generic [ref=e6]:
+      - generic [ref=e7]:
+        - button "Switch to light appearance" [ref=e8] [cursor=pointer]: Dark
+        - button "Theme" [ref=e9] [cursor=pointer]
+      - button "Save progress" [ref=e10] [cursor=pointer]
+      - button "Sign out" [ref=e11] [cursor=pointer]
+  - main [ref=e12]:
+    - generic [ref=e13]:
+      - generic [ref=e15]:
+        - heading "Comparing fractions" [level=1] [ref=e16]
+        - navigation "Lesson progress map" [ref=e17]:
+          - list [ref=e18]:
+            - listitem [ref=e19]:
+              - generic [ref=e20]: "1"
+              - generic [ref=e21]: Step 1
+            - listitem [ref=e22]:
+              - generic [ref=e23]: "2"
+              - generic [ref=e24]: Step 2
+            - listitem [ref=e25]:
+              - generic [ref=e26]: "3"
+              - generic [ref=e27]: Step 3
+            - listitem [ref=e28]:
+              - generic [ref=e29]: "4"
+              - generic [ref=e30]: Step 4
+            - listitem [ref=e31]:
+              - generic [ref=e32]: "5"
+              - generic [ref=e33]: Step 5
+            - listitem [ref=e34]:
+              - generic [ref=e35]: "6"
+              - generic [ref=e36]: Step 6
+        - generic "Progress 0 of 6" [ref=e37]: 0/6
+        - generic [ref=e40]:
+          - paragraph [ref=e42]:
+            - text: Fractions name a share of the
+            - strong [ref=e43]: same whole
+            - text: .Compare the shaded lengths — the bars do the work.
+          - generic "Teach frames" [ref=e44]:
+            - figure "Bar cut into 12 equal parts, 9 shaded, labeled nine twelfths; Bar cut into 12 equal parts, 8 shaded, labeled eight twelfths" [ref=e45]:
+              - generic [ref=e47]:
+                - img "Bar cut into 12 equal parts, 9 shaded, labeled nine twelfths; Bar cut into 12 equal parts, 8 shaded, labeled eight twelfths" [ref=e48]:
+                  - generic [ref=e49]: nine twelfths
+                  - generic [ref=e84]: eight twelfths
+                - generic [ref=e118]: "Same-size twelfths: nine shaded beats eight."
+          - group "Show this step another way" [ref=e119]:
+            - button "Explain again" [ref=e120] [cursor=pointer]
+            - button "Worked example" [ref=e121] [cursor=pointer]
+        - generic [ref=e122]:
+          - paragraph [ref=e124]: Which fraction is bigger, 3/4 or 2/3?
+          - figure "Bar cut into 4 equal parts, 3 shaded, labeled 3/4; Bar cut into 3 equal parts, 2 shaded, labeled 2/3" [ref=e125]:
+            - img "Bar cut into 4 equal parts, 3 shaded, labeled 3/4; Bar cut into 3 equal parts, 2 shaded, labeled 2/3" [ref=e128]:
+              - generic [ref=e129]: 3/4
+              - generic [ref=e139]: 2/3
+          - group "Choices" [ref=e147]:
+            - button "3/4" [ref=e148] [cursor=pointer]
+            - button "2/3" [ref=e149] [cursor=pointer]
+          - group "Voice controls" [ref=e150]:
+            - button "Read aloud" [ref=e151] [cursor=pointer]: 🔊
+            - button "Voice input" [ref=e152] [cursor=pointer]: 🎤
+          - generic [ref=e153]:
+            - button "I’m confused" [ref=e154] [cursor=pointer]
+            - button "Ask the tutor" [ref=e155] [cursor=pointer]
+          - button "Back" [ref=e157] [cursor=pointer]
+        - form "Rate this step" [ref=e159]:
+          - group "How useful was this step?" [ref=e160]:
+            - group "Rate this step from 1 to 5" [ref=e162]:
+              - button "Rate 1 out of 5" [ref=e163] [cursor=pointer]: "1"
+              - button "Rate 2 out of 5" [ref=e164] [cursor=pointer]: "2"
+              - button "Rate 3 out of 5" [pressed] [ref=e165] [cursor=pointer]: "3"
+              - button "Rate 4 out of 5" [ref=e166] [cursor=pointer]: "4"
+              - button "Rate 5 out of 5" [ref=e167] [cursor=pointer]: "5"
+            - paragraph [ref=e168]: "3 out of 5: Useful"
+          - generic [ref=e169]:
+            - text: Why this rating?
+            - textbox "Why this rating?" [ref=e170]:
+              - /placeholder: What was right, wrong, or unclear about this step?
+              - text: The box helped; the index label was unclear.
+          - button "Submit" [ref=e171] [cursor=pointer]
+      - generic:
+        - button "Open study assistant" [ref=e172] [cursor=pointer]:
+          - img "Study buddy — idle" [ref=e173]
+        - button "Hide study buddy": Hide
+```
+
+# Test source
+
+```ts
+  153 |     deterministic,
+  154 |   }: { id: string; page: Page; deterministic: "PASS" | "FAIL" },
+  155 | ): Promise<VisionVerdict> {
+  156 |   const file = await shoot(page, project, id);
+  157 |   const viewport = page.viewportSize() ?? { width: 0, height: 0 };
+  158 |   const verdict = await judgeImage(file);
+  159 |   const checkpoint: ReceiptCheckpoint = {
+  160 |     id,
+  161 |     project,
+  162 |     viewport,
+  163 |     screenshot: artifactRelative(file),
+  164 |     image_sha256: await sha256(file),
+  165 |     deterministic,
+  166 |     vision_code: verdict.vision_code,
+  167 |     vision_locator: verdict.vision_locator,
+  168 |     vision_model: verdict.vision_model,
+  169 |     vision_latency_ms: verdict.vision_latency_ms,
+  170 |     note: verdict.note,
+  171 |   };
+  172 |   upsertCheckpoint(receipt, checkpoint);
+  173 |   if (verdict.vision_code === PASS_CODE) receipt.vision_run = true;
+  174 |   else if (verdict.vision_code === PROVIDER_ERROR_CODE) addNote(receipt, `vision provider error at ${id}`);
+  175 |   else if (verdict.vision_code === NOT_RUN_CODE) addNote(receipt, "vision not run: no credential configured");
+  176 |   else addNote(receipt, `vision ${verdict.vision_code} at ${id}`);
+  177 |   await test.info().attach(`${project}-${id}.png`, { path: file, contentType: "image/png" });
+  178 |   await saveProjectReceipt(receipt, project);
+  179 |   return verdict;
+  180 | }
+  181 | 
+  182 | /** V1/V2: a real checkpoint must be corroborated, unless vision is unavailable. */
+  183 | function expectVisionPass(verdict: VisionVerdict, checkpoint: string): void {
+  184 |   if (verdict.vision_code === PASS_CODE) return;
+  185 |   if (verdict.vision_code === PROVIDER_ERROR_CODE || verdict.vision_code === NOT_RUN_CODE) {
+  186 |     test.info().annotations.push({
+  187 |       type: "vision-not-run",
+  188 |       description: `${checkpoint}: ${verdict.vision_code} (${verdict.vision_locator})`,
+  189 |     });
+  190 |     return;
+  191 |   }
+  192 |   expect(
+  193 |     verdict.vision_code,
+  194 |     `${checkpoint}: the judge did not see the review surface (${verdict.vision_locator})`,
+  195 |   ).toBe(PASS_CODE);
+  196 | }
+  197 | 
+  198 | test.describe("learner step review: deterministic surface", () => {
+  199 |   test("D1/D2/D3/D5 panel, five ratings, why, Submit gate and a screenshot per checkpoint", async ({ page }) => {
+  200 |     test.setTimeout(JUDGE_TIMEOUT_MS);
+  201 |     const project = projectName();
+  202 |     const receipt = await loadProjectReceipt(project);
+  203 |     let posts = 0;
+  204 |     page.on("request", (request) => {
+  205 |       if (request.method() === "POST" && request.url().includes("/api/feedback")) posts += 1;
+  206 |     });
+  207 | 
+  208 |     await openPlayer(page);
+  209 |     await expectReviewControls(page, { submitEnabled: false });
+  210 | 
+  211 |     // D2: choosing a score marks it and still does not post anything.
+  212 |     await page.getByTestId("player.review.score-3").click();
+  213 |     await expect(page.getByTestId("player.review.score-3")).toHaveAttribute("aria-pressed", "true");
+  214 |     await expect(page.getByTestId(SUBMIT)).toBeDisabled();
+  215 | 
+  216 |     // D3: Submit stays closed until a nonblank why is typed.
+  217 |     await page.getByTestId(WHY).fill("   ");
+  218 |     await expect(page.getByTestId(SUBMIT)).toBeDisabled();
+  219 |     await page.getByTestId(WHY).fill(WHY_TEXT);
+  220 |     await expect(page.getByTestId(SUBMIT)).toBeEnabled();
+  221 |     expect(posts, "choosing a score or typing must not post a review").toBe(0);
+  222 | 
+  223 |     const verdict = await recordCheckpoint(project, receipt, {
+  224 |       id: "review.panel.initial",
+  225 |       page,
+  226 |       deterministic: "PASS",
+  227 |     });
+  228 |     expectVisionPass(verdict, "review.panel.initial");
+  229 |     projectFinished(receipt, project);
+  230 |     await saveProjectReceipt(receipt, project);
+  231 |   });
+  232 | });
+  233 | 
+  234 | test.describe("learner step review: metamorphic relations", () => {
+  235 |   test("M-regen regeneration keeps the whole review surface and posts nothing", async ({ page }) => {
+  236 |     test.setTimeout(JUDGE_TIMEOUT_MS);
+  237 |     const project = projectName();
+  238 |     const receipt = await loadProjectReceipt(project);
+  239 |     let posts = 0;
+  240 |     page.on("request", (request) => {
+  241 |       if (request.method() === "POST" && request.url().includes("/api/feedback")) posts += 1;
+  242 |     });
+  243 | 
+  244 |     await openPlayer(page);
+  245 |     await draftReview(page, 3);
+  246 |     const before = await page.locator(".teach.card").first().innerText();
+  247 |     const progressBefore = await progressLabel(page);
+  248 | 
+  249 |     // The regeneration control family is the chat path to a re-render.
+  250 |     const regen = page.locator('[data-testid^="player.step.regen-"]');
+  251 |     await expect(regen.first()).toBeVisible();
+  252 |     // The regeneration path asks the tutor for another render of the same step.
+> 253 |     const tutorCall = page.waitForRequest(
+      |                            ^ TimeoutError: page.waitForRequest: Timeout 30000ms exceeded while waiting for event "request"
+  254 |       (request) => request.method() === "POST" && request.url().includes("/api/player/sessions/") && request.url().endsWith("/tutor"),
+  255 |       { timeout: 30_000 },
+  256 |     );
+  257 |     await regen.first().click();
+  258 |     await tutorCall;
+  259 | 
+  260 |     await expect
+  261 |       .poll(async () => page.locator(".teach.card").first().innerText(), { timeout: 30_000 })
+  262 |       .not.toBe(before);
+  263 | 
+  264 |     await expectReviewControls(page, { submitEnabled: true });
+  265 |     await expect(page.getByTestId(SUBMITTED)).toHaveCount(0);
+  266 |     expect(await progressLabel(page)).toBe(progressBefore);
+  267 |     expect(posts, "regenerating a presentation must not post a review").toBe(0);
+  268 | 
+  269 |     const verdict = await recordCheckpoint(project, receipt, {
+  270 |       id: "review.panel.after-regen",
+  271 |       page,
+  272 |       deterministic: "PASS",
+  273 |     });
+  274 |     expectVisionPass(verdict, "review.panel.after-regen");
+  275 |     upsertMetamorphic(receipt, { id: "M-regen", project, result: "PASS" });
+  276 |     await saveProjectReceipt(receipt, project);
+  277 |   });
+  278 | 
+  279 |   test("M-viewport a mid-flow 1440x900 -> 390x844 swap keeps every control on canvas", async ({ page }) => {
+  280 |     const project = projectName();
+  281 |     const receipt = await loadProjectReceipt(project);
+  282 | 
+  283 |     await openPlayer(page);
+  284 |     await page.setViewportSize({ width: 1440, height: 900 });
+  285 |     await expectReviewControls(page, { submitEnabled: false });
+  286 | 
+  287 |     await page.setViewportSize({ width: 390, height: 844 });
+  288 |     await draftReview(page, 4);
+  289 | 
+  290 |     const box = await page.getByTestId(SUBMIT).boundingBox();
+  291 |     expect(box, "Submit must be laid out, not detached").not.toBeNull();
+  292 |     expect(box?.width ?? 0).toBeGreaterThan(0);
+  293 |     expect(box?.height ?? 0).toBeGreaterThan(0);
+  294 |     expect(box?.x ?? -1).toBeGreaterThanOrEqual(0);
+  295 |     expect((box?.x ?? 0) + (box?.width ?? 0)).toBeLessThanOrEqual(391);
+  296 |     expect(box?.y ?? -1).toBeGreaterThanOrEqual(0);
+  297 |     await page.getByTestId(SUBMIT).scrollIntoViewIfNeeded();
+  298 |     await expect(page.getByTestId(SUBMIT)).toBeInViewport();
+  299 | 
+  300 |     upsertMetamorphic(receipt, { id: "M-viewport", project, result: "PASS" });
+  301 |     await saveProjectReceipt(receipt, project);
+  302 |   });
+  303 | 
+  304 |   test("M-submit one Submit posts once and leaves a visible receipt", async ({ page }) => {
+  305 |     test.setTimeout(JUDGE_TIMEOUT_MS);
+  306 |     const project = projectName();
+  307 |     const receipt = await loadProjectReceipt(project);
+  308 |     const posts: string[] = [];
+  309 |     page.on("request", (request) => {
+  310 |       if (request.method() === "POST" && request.url().includes("/api/feedback")) posts.push(request.url());
+  311 |     });
+  312 | 
+  313 |     await openPlayer(page);
+  314 |     const progressBefore = await progressLabel(page);
+  315 |     await draftReview(page, 3);
+  316 |     await page.getByTestId(SUBMIT).click();
+  317 | 
+  318 |     await expect(page.getByTestId(SUBMITTED)).toBeVisible();
+  319 |     await expect(page.getByTestId(PANEL)).toBeVisible();
+  320 |     expect(await progressLabel(page)).toBe(progressBefore);
+  321 |     expect(posts.length, "one Submit is exactly one review request").toBe(1);
+  322 | 
+  323 |     const verdict = await recordCheckpoint(project, receipt, {
+  324 |       id: "review.receipt.after-submit",
+  325 |       page,
+  326 |       deterministic: "PASS",
+  327 |     });
+  328 |     expectVisionPass(verdict, "review.receipt.after-submit");
+  329 |     upsertMetamorphic(receipt, { id: "M-submit", project, result: "PASS" });
+  330 |     await saveProjectReceipt(receipt, project);
+  331 |   });
+  332 | 
+  333 |   test("M-noop an idle reload keeps the same control set and posts nothing", async ({ page }) => {
+  334 |     const project = projectName();
+  335 |     const receipt = await loadProjectReceipt(project);
+  336 |     let posts = 0;
+  337 |     page.on("request", (request) => {
+  338 |       if (request.method() === "POST" && request.url().includes("/api/feedback")) posts += 1;
+  339 |     });
+  340 | 
+  341 |     await openPlayer(page);
+  342 |     await expectReviewControls(page, { submitEnabled: false });
+  343 |     const before = await progressLabel(page);
+  344 | 
+  345 |     await page.reload();
+  346 |     await expect(page.getByTestId(PANEL)).toBeVisible();
+  347 |     await expectReviewControls(page, { submitEnabled: false });
+  348 |     await expect(page.getByTestId(SUBMITTED)).toHaveCount(0);
+  349 |     expect(await progressLabel(page)).toBe(before);
+  350 |     expect(posts, "an idle reload must not post a review").toBe(0);
+  351 | 
+  352 |     upsertMetamorphic(receipt, { id: "M-noop", project, result: "PASS" });
+  353 |     await saveProjectReceipt(receipt, project);
+```

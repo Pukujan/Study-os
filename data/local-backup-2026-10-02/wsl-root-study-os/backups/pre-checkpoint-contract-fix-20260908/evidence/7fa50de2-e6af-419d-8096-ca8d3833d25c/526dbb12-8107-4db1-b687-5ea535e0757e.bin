@@ -1,0 +1,21 @@
+Exactly: **O(n²)**.
+
+One small correction to the wording: it’s not exponential growth. **O(n²)** is *quadratic* growth.
+
+Why? The outer loop runs `n` times, and for each outer iteration the inner loop also runs `n` times, so the total work is roughly:
+
+`n × n = n²`
+
+For example, if `n = 10`, that’s about `100` iterations. If `n = 100`, that’s about `10,000` iterations.
+
+Your reasoning that the two full nested loops multiply together was right.
+
+Next quick check:
+```python
+for x in nums:
+    print(x)
+
+for y in nums:
+    print(y)
+```
+Is this **O(n)** or **O(n²)**?

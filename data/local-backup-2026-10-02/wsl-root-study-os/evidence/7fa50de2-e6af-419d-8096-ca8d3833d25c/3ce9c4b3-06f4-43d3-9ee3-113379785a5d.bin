@@ -1,0 +1,26 @@
+Correct — **O(n)**.
+
+Even though there are two loops, they are **one after another**, not nested:
+
+- first loop: `n` operations
+- second loop: `n` operations
+- total: `n + n = 2n`
+
+In Big-O, we ignore constant factors, so `O(2n)` becomes **O(n)**.
+
+A useful rule:
+- **Sequential loops add** → `O(n + n) = O(n)`
+- **Nested loops multiply** → `O(n × n) = O(n²)`
+
+Next one:
+
+```python
+for i in range(len(nums)):
+    print(nums[i])
+
+for i in range(len(nums)):
+    for j in range(len(nums)):
+        print(nums[i], nums[j])
+```
+
+What is the overall time complexity?

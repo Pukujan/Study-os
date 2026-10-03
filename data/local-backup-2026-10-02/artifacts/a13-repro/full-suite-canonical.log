@@ -1,0 +1,32 @@
+[WebServer] [e2e-server] serving D:\claude\Study-os\web\dist at http://127.0.0.1:4173 against a throwaway database
+
+Running 26 tests using 1 worker
+
+  ok  1 [mobile] › e2e\player-vision-gate.spec.ts:199:3 › learner step review: deterministic surface › D1/D2/D3/D5 panel, five ratings, why, Submit gate and a screenshot per checkpoint (844ms)
+  ok  2 [mobile] › e2e\player-vision-gate.spec.ts:235:3 › learner step review: metamorphic relations › M-regen regeneration keeps the whole review surface and posts nothing (896ms)
+  ok  3 [mobile] › e2e\player-vision-gate.spec.ts:279:3 › learner step review: metamorphic relations › M-viewport a mid-flow 1440x900 -> 390x844 swap keeps every control on canvas (672ms)
+  ok  4 [mobile] › e2e\player-vision-gate.spec.ts:304:3 › learner step review: metamorphic relations › M-submit one Submit posts once and leaves a visible receipt (1.2s)
+  ok  5 [mobile] › e2e\player-vision-gate.spec.ts:333:3 › learner step review: metamorphic relations › M-noop an idle reload keeps the same control set and posts nothing (683ms)
+  ok  6 [mobile] › e2e\player-vision-gate.spec.ts:358:3 › blank-canvas holdout › V3 the holdout images fail closed and a passing holdout voids the run (772ms)
+  ok  7 [mobile] › e2e\player-vision-gate.spec.ts:475:1 › the gate declares its artifact layout and holdout wiring (3ms)
+  ok  8 [mobile] › e2e\ux-defect-controls.spec.ts:40:3 › UX defect P0/P1 controls (stub server) › Worked example changes visible surface on HESI fractions (596ms)
+  ok  9 [mobile] › e2e\ux-defect-controls.spec.ts:58:3 › UX defect P0/P1 controls (stub server) › Exit/Back from play returns to home/menu (780ms)
+  ok 10 [mobile] › e2e\ux-defect-controls.spec.ts:69:3 › UX defect P0/P1 controls (stub server) › Companion Message send shows ack within timeout (671ms)
+  ok 11 [mobile] › e2e\ux-defect-controls.spec.ts:87:3 › UX defect P0/P1 controls (stub server) › Chat ack survives a slow tutor (no silent drop while in flight) (10.8s)
+  ok 12 [mobile] › e2e\ux-defect-controls.spec.ts:116:3 › UX defect P0/P1 controls (stub server) › Read aloud / Voice input / Open Message affordances are present (623ms)
+  ok 13 [mobile] › e2e\ux-defect-controls.spec.ts:146:3 › UX defect P0/P1 controls (stub server) › player.back or brand exit leaves no permanent blank play (1.3s)
+  ok 14 [desktop] › e2e\player-vision-gate.spec.ts:199:3 › learner step review: deterministic surface › D1/D2/D3/D5 panel, five ratings, why, Submit gate and a screenshot per checkpoint (786ms)
+  ok 15 [desktop] › e2e\player-vision-gate.spec.ts:235:3 › learner step review: metamorphic relations › M-regen regeneration keeps the whole review surface and posts nothing (834ms)
+  ok 16 [desktop] › e2e\player-vision-gate.spec.ts:279:3 › learner step review: metamorphic relations › M-viewport a mid-flow 1440x900 -> 390x844 swap keeps every control on canvas (515ms)
+  ok 17 [desktop] › e2e\player-vision-gate.spec.ts:304:3 › learner step review: metamorphic relations › M-submit one Submit posts once and leaves a visible receipt (720ms)
+  ok 18 [desktop] › e2e\player-vision-gate.spec.ts:333:3 › learner step review: metamorphic relations › M-noop an idle reload keeps the same control set and posts nothing (574ms)
+  ok 19 [desktop] › e2e\player-vision-gate.spec.ts:358:3 › blank-canvas holdout › V3 the holdout images fail closed and a passing holdout voids the run (789ms)
+  ok 20 [desktop] › e2e\player-vision-gate.spec.ts:475:1 › the gate declares its artifact layout and holdout wiring (3ms)
+  ok 21 [desktop] › e2e\ux-defect-controls.spec.ts:40:3 › UX defect P0/P1 controls (stub server) › Worked example changes visible surface on HESI fractions (485ms)
+  ok 22 [desktop] › e2e\ux-defect-controls.spec.ts:58:3 › UX defect P0/P1 controls (stub server) › Exit/Back from play returns to home/menu (600ms)
+  ok 23 [desktop] › e2e\ux-defect-controls.spec.ts:69:3 › UX defect P0/P1 controls (stub server) › Companion Message send shows ack within timeout (595ms)
+  ok 24 [desktop] › e2e\ux-defect-controls.spec.ts:87:3 › UX defect P0/P1 controls (stub server) › Chat ack survives a slow tutor (no silent drop while in flight) (10.6s)
+  ok 25 [desktop] › e2e\ux-defect-controls.spec.ts:116:3 › UX defect P0/P1 controls (stub server) › Read aloud / Voice input / Open Message affordances are present (510ms)
+  ok 26 [desktop] › e2e\ux-defect-controls.spec.ts:146:3 › UX defect P0/P1 controls (stub server) › player.back or brand exit leaves no permanent blank play (1.1s)
+
+  26 passed (43.0s)

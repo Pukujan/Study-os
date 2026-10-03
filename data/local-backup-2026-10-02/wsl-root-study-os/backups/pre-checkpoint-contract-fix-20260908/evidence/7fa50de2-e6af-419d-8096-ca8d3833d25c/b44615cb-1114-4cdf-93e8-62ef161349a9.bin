@@ -1,0 +1,27 @@
+Exactly — **no**, because strings are immutable.
+
+So this fails:
+
+```python
+s = "cat"
+s[0] = "b"
+```
+
+To get `"bat"`, you have to create a **new string**, for example:
+
+```python
+s = "cat"
+s = "b" + s[1:]
+```
+
+Here, `s[1:]` gives `"at"`, so the new string becomes `"bat"`.
+
+That brings us to another important string concept: **slicing**.
+
+If:
+
+```python
+s = "python"
+```
+
+what do you think `s[1:4]` returns?

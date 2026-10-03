@@ -1,0 +1,17 @@
+Correct — **O(n)**.
+
+Your breakdown is exactly right:
+- First loop: **O(n)** because it depends on the size of `nums`.
+- Second loop: **O(1)** because it always runs exactly 10 times, no matter how large `nums` gets.
+
+So the total is `O(n + 1)`, which simplifies to **O(n)** because the linear term dominates the constant.
+
+One last Big-O check before arrays:
+
+```python
+for i in range(len(nums)):
+    for j in range(5):
+        print(nums[i], j)
+```
+
+Is this **O(n)** or **O(n²)**? Explain why.

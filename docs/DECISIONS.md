@@ -315,3 +315,11 @@ Two product defects surfaced only once a real browser gate ran, and neither is v
 2. Guest account creation (`POST /api/try`) and local signup shared a hard-coded `10/hour` per-IP bucket, unlike the other two rate knobs which read the environment. A branch-local gate that starts many guest lessons in one process was throttled into a false `rate_limited` failure. The bucket size is now `Settings.rate_signup_per_hour` (`RATE_SIGNUP_PER_HOUR`, default `10`), so production behavior is unchanged and a gate run can raise it explicitly.
 
 Neither change relaxes an evidence invariant, a schema version, a research gate, or the append-only/self-report boundary of D019. Numeric opinion and rationale remain self-report, never mastery evidence.
+
+## D021 - Local Study OS data archived in the public repo; local WIP kept as patches only
+
+Status: **accepted** by Alex (owner) on 2026-10-03. Issue #199.
+
+- The local Study OS data from my PC (the WSL and Windows `.study-os` stores, artifacts, eval output, PCM worktree artifacts) is archived under `data/local-backup-2026-10-02/`. Study OS study data, transcripts included, is OK to be public. For this archive that overrides D002's private-by-default rule. Secrets (env files, tokens, API keys, cloudflared config) are still never committed.
+- The three local WIP pieces (the Sep 8 checkpoint WIP, the staged PCM task docs plus TASK-SOS-0019, and the player-arrows stash) are archived as patches only. They won't be built out.
+- The local Study-os copies on D: and C: will be deleted after this PR merges and the Google Drive backup is confirmed.

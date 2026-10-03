@@ -1,0 +1,232 @@
+diff --git a/AGENTS.md b/AGENTS.md
+index e142b50..0d55cb9 100644
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -263,3 +263,11 @@ Until Research Gate R0 passes, do not prioritize:
+ ## Teach visuals
+ 
+ - Big O step-1 diagrams: [`docs/ops/TEACH_VISUAL_V1.md`](docs/ops/TEACH_VISUAL_V1.md) (`STUDY_OS_TEACH_VISUAL_V1=0` restores legacy table).
++
++<!-- pcm:issue-log-format:start -->
++## Issue log format (issue-log-format 1.2.0)
++
++<!-- pcm:policy {"id":"issue-log-format","policy_version":"1.2.0","protocol_version":"0.1.0-draft"} -->
++
++Write issue logs, progress updates, and pull requests in one plain-language shape a newcomer can follow. Pick the tier by the kind of issue, not by preference. **Core tier (every issue log):** title states the problem and intended direction; a 1-3 paragraph summary naming who/what is affected, the consequence, and what this proposes; identity and lineage (leaf owning issue, parent ancestry or none, task ID, primary writer, branch); observed facts vs interpretation, with inferences labelled *inferred*; acceptance criteria with numeric thresholds marked *(proposed)* when untested; boundaries/non-goals and one next action. **Investigation tier (incidents, failures, research, design issues):** numbered symptoms; hypotheses with Status, confirm/refute, and experiment; evidence with provenance; a **Counter-signal** entry when one exists; honest caveat; problems-vs-gaps; a **Proposal** labelled *(proposal)* stating none of it exists unless named as existing. **Pull requests open reader-first:** problem and consequence, what changes, how to verify, and what stays unchanged; lineage links; evidence and one next action; long logs collapsed or linked; reference issues with "Refs #<number>" and use closing keywords only when closing at merge is intended. **Diagrams (mermaid):** when a record describes a flow with 4+ ordered steps or 2+ branches, add a fenced mermaid diagram *and* keep an adjacent text list or table so the record survives render failure; default to `graph TD` (vertical) because wide `LR` flows shrink to illegible strips on phones — reserve `LR` for 4 or fewer short nodes; cap 8 nodes and 6-word labels; wrap diagrams that may exceed the container width inside `<details>` (GitHub mounts the renderer lazily on expand); preview the rendered diagram before publishing (broken syntax shows a visible parse error) and never cite renderer URLs as standalone sources. **Readability rules:** give every SHA, comment id, flag, file path, or tool name a plain-word meaning in the same sentence before it carries load; write evidence as the claim first, numbers as support ("nothing this change could break failed (263 tests, same six machine-environment failures as before)"), never bare counts; no unexplained acronym or bare identifier on first use in any tier; PR openings and checkpoint Completed/Next lines start with one problem sentence a newcomer can follow; the rule set applies to CURRENT projections and checkpoint entries exactly as to issue logs. No private absolute paths or secrets; link rather than paste long logs. See `docs/ISSUE_LOG_FORMAT.md` for the full format, exemplar, and examples.
++<!-- pcm:issue-log-format:end -->
+diff --git a/tasks/TASK-SOS-0014-mascot-locomotion.md b/tasks/TASK-SOS-0014-mascot-locomotion.md
+index 372c7e0..a41eb8f 100644
+--- a/tasks/TASK-SOS-0014-mascot-locomotion.md
++++ b/tasks/TASK-SOS-0014-mascot-locomotion.md
+@@ -1,11 +1,14 @@
+ # TASK-SOS-0014 — Mascot Locomotion
+ 
+-<!-- continuity:task {"acceptance":["replace this with observable, task-specific acceptance checks"],"depends_on":[],"goal":"Mascot: non-empty one-shots, generated walk/turn sheets (CGM provenance), locomotion state machine, hover+tap","id":"SOS-0014","issue_url":"https://github.com/Pukujan/Study-os/issues/121","next_action":"define scope and observable acceptance checks, then begin bounded work","owner":"unassigned","priority":"P2","protocol_version":"0.1.0-draft","schema":"project-continuity.task.v1","status":"active","why":"Alex: pet slides/shakes, empty frames, unclear interaction (2026-09-25 goal)"} -->
++<!-- continuity:task {"acceptance":["Pure locomotion FSM in web/src/mascot/locomotion.ts owns no clock; reducePose is deterministic under a seeded sweep and covered by locomotion.test.ts","Walk and turn sheets are generated through the CGM image pipeline, and web/public/mascot/manifest.json records model, provider, and prompt/reference SHA-256 provenance for each","manifest.json conforms to schemas/mascot-sprite-manifest.v1.schema.json and tests/test_mascot_manifest.py proves no frame is empty","Sprite.tsx plays multi-row sheets via cols/frame/mirrored (a background-position keyframe can only walk one axis, so multi-row sheets need the explicit frame)","Hover and tap still open the study assistant, and the one-shot coach tip still shows once per session and dismisses on hover (Pet.test.tsx)","No sliding: the free-roam shell carries no CSS transform transition while the sheet plays (the transition competing with the idle loop was the live pet_jitter)","Playwright + vision gate is green on mobile 390x844 and desktop 1440x900"],"depends_on":[],"goal":"Mascot: non-empty one-shots, generated walk/turn sheets (CGM provenance), locomotion state machine, hover+tap","id":"SOS-0014","issue_url":"https://github.com/Pukujan/Study-os/issues/121","next_action":"Complete on main; no further work. Released worktree study-os-s4 on 2026-09-27 after byte-identical verification.","owner":"Pukujan (GitHub assignee); primary writer: [CC] on task/SOS-0014-mascot-locomotion","priority":"P2","protocol_version":"0.1.0-draft","schema":"project-continuity.task.v1","status":"completed","why":"Alex: pet slides/shakes, empty frames, unclear interaction (2026-09-25 goal)"} -->
+ 
+-- Status: active
+-- Owner: unassigned
++- Status: completed
++- Owner: Pukujan (GitHub assignee); primary writer: [CC] on task/SOS-0014-mascot-locomotion
+ - Priority: P2
+ - Depends on: none
++- Branch: `task/SOS-0014-mascot-locomotion` (worked in linked worktree `tmp-s4`)
++- GitHub issue (leaf): #121, parent: none; dependencies: none
++- Merged: PR #173, merge commit `6e88194`, 2026-09-27T08:48:46Z
+ 
+ ## Goal
+ 
+@@ -17,39 +20,123 @@ Alex: pet slides/shakes, empty frames, unclear interaction (2026-09-25 goal)
+ 
+ ## Allowed files
+ 
+-- define bounded paths before implementation.
++- `web/src/mascot/**` (FSM, Sprite, Pet, tests)
++- `web/public/mascot/**` (generated sheets + provenance manifest)
++- `schemas/mascot-sprite-manifest.v1.schema.json`, `tests/test_mascot_manifest.py`
++- `tools/generate_mascot_frames.py`
++- `.content-system/characters/**` (prompts and reference art)
++- `docs/benchmarks/sos-0014-mascot/**`, `docs/HANDOFF.md`, this task file
+ 
+ ## Human outcome
+ 
+-Describe what becomes easier, safer, clearer, or possible when this task is complete.
++The pet walks and turns to a place instead of sliding there, its one-shot
++animations play every frame and end cleanly, and the interaction reads as a
++deliberate character rather than a jittering sprite. Alex can judge the result
++from the committed frame strips and the live player.
+ 
+ ## Scope and boundaries
+ 
+-- In scope:
+-- Out of scope:
+-- Dependencies/uncertainty:
++- In scope: locomotion state machine, generated walk/turn sheets with recorded
++  provenance, multi-row spritesheet playback, hover/tap interaction, frame QC.
++- Out of scope: Live2D (A22b), Pixi runtime, other mascot characters.
++- Dependencies/uncertainty: CGM image-pipeline output quality. The sheets are
++  generated art, so frame alignment depends on the generator; the QC renders
++  and the empty-frame check bound that risk rather than removing it.
+ 
+ ## Acceptance criteria
+ 
+-- [ ] state observable, task-specific outcomes.
++- [x] Pure locomotion FSM in `web/src/mascot/locomotion.ts` owns no clock;
++      `reducePose` is deterministic under a seeded sweep and covered by
++      `locomotion.test.ts`
++- [x] Walk and turn sheets generated through the CGM image pipeline, with
++      model, provider, and prompt/reference SHA-256 provenance recorded per
++      sheet in `web/public/mascot/manifest.json`
++- [x] `manifest.json` conforms to `schemas/mascot-sprite-manifest.v1.schema.json`,
++      and `tests/test_mascot_manifest.py` proves no frame is empty
++- [x] `Sprite.tsx` plays multi-row sheets via `cols`/`frame`/`mirrored` — a
++      background-position keyframe can only walk one axis, so multi-row sheets
++      require the explicit-frame path
++- [x] Hover and tap still open the study assistant; the one-shot coach tip still
++      shows once per session and dismisses on hover (`Pet.test.tsx`)
++- [x] No sliding: the free-roam shell carries no CSS transform transition while
++      the sheet plays (the transition competing with the idle loop was the live
++      `pet_jitter`)
++- [x] Playwright + vision gate green on mobile 390×844 and desktop 1440×900
+ 
+ ## Evidence and sources
+ 
+-Link repository state at a revision and cite external factual claims directly. Record commands and results for claims that need verification.
++- PR #173 — https://github.com/Pukujan/Study-os/pull/173, merged
++  2026-09-27T08:48:46Z, merge commit `6e881946086a771b69efccdd41eb70b229d24429`.
++- CI on #173: "Playwright + vision gate", "Python 3.11 compatibility",
++  "Validate research harness", and "Web frontend" all pass.
++- Local verification: `tsc` clean; `npx vitest run src/mascot` 18/18;
++  `npx playwright test` 32/32 across mobile and desktop projects.
++- Generated-asset provenance: `web/public/mascot/manifest.json` records
++  `openai/gpt-image-2.5-flare` via OpenRouter, the prompt file and its SHA-256,
++  and the reference art SHA-256 for each sheet.
++- Frame QC renders: `docs/benchmarks/sos-0014-mascot/walk-frames.png` and
++  `turn-frames.png`.
+ 
+ ## Reproduction details (only when needed)
+ 
+-Starting revision, material inputs/configuration, runtime, exact command or prompt, observed result, and limitations.
++Regenerate the sheets with `tools/generate_mascot_frames.py` (chroma-key,
++grid-split, union-bbox align). Verify integrity with
++`python -m unittest tests.test_mascot_manifest` and
++`cd web && npx vitest run src/mascot`. Limitation: regeneration requires the
++image provider, so the committed sheets are the reproducible artifact and the
++raw generator output is retained under
++`D:\claude\archive\workspace-consolidation\study-os-s4-scratch-20260927\`.
+ 
+ ## Related records
+ 
+-- Required leaf owning issue, parent ancestry and dependencies (or explicitly none):
+-- Primary writer / branch / source issue revision / as-of status:
+-- Related PR/CI evidence and push receipt (request ID / SHA):
++- Leaf issue: #121; parent: none; dependencies: none.
++- Primary writer: [CC] / `task/SOS-0014-mascot-locomotion` (worktree `tmp-s4`)
++  / based on `main` at the time of the branch / merged and complete.
++- Related PR/CI evidence and push receipt (request ID / SHA): PR #173,
++  merge commit `6e881946086a771b69efccdd41eb70b229d24429`.
++- Related: A22a held-pose loops (#171) — complementary slice, both now on main;
++  see `docs/ops/A22A_HELD_POSE_PET.md`.
+ 
+ ## Checkpoint log
+ 
+-No checkpoints yet.
++### 2026-09-27 09:10:00 UTC — [CC]
++
++<!-- continuity:checkpoint {"agent":"[CC]","blocked":[],"changed":["web/src/mascot/locomotion.ts","web/src/mascot/locomotion.test.ts","web/src/mascot/Sprite.tsx","web/src/mascot/Pet.tsx","web/public/mascot/pet-walk.webp","web/public/mascot/pet-turn.webp","web/public/mascot/manifest.json","schemas/mascot-sprite-manifest.v1.schema.json","tools/generate_mascot_frames.py","tests/test_mascot_manifest.py"],"completed":["SOS-0014 mascot locomotion merged as PR #173 (merge commit 6e88194)","pure locomotion FSM web/src/mascot/locomotion.ts + deterministic locomotion.test.ts","walk/turn sheets generated via CGM pipeline; provenance in web/public/mascot/manifest.json","manifest schema + no-empty-frame test (tests/test_mascot_manifest.py)","Sprite.tsx multi-row cols/frame/mirrored support; Pet.tsx driven by the FSM"],"decisions":["A22a held-pose loops (#171) and SOS-0014 locomotion are complementary, not alternatives; merged to keep both","Sprite steps discrete poses in JS and accepts an explicit frame when the caller owns the clock (multi-row sheets need this)"],"evidence":["PR #173 https://github.com/Pukujan/Study-os/pull/173 merged 2026-09-27T08:48:46Z","CI on #173: Playwright + vision gate, Python 3.11 compatibility, Validate research harness, Web frontend all pass","local: tsc clean; web vitest 18/18 in src/mascot; Playwright gate 32/32 (mobile+desktop)"],"next_action":"Task complete on main; no further work. Worktree study-os-s4 released 2026-09-27 after byte-identical verification.","protocol_version":"0.1.0-draft","schema":"project-continuity.checkpoint.v1","task_id":"SOS-0014","timestamp":"2026-09-27T09:10:00Z"} -->
++<!-- continuity:checkpoint-operation {"payload_sha256":"54c2bfe695f2710248eafd5f6e1c0a4f3607f04b4b4961a73e57675219241e5e","request_id":"942bc7d0c0cb48b5af1b496a2bddbab6","schema":"project-continuity.checkpoint-operation.v1","task_id":"SOS-0014"} -->
++
++Completed:
++- SOS-0014 mascot locomotion merged as PR #173 (merge commit `6e88194`)
++- Pure locomotion FSM `web/src/mascot/locomotion.ts` + deterministic `locomotion.test.ts`
++- Walk/turn sheets generated via the CGM pipeline; provenance in `web/public/mascot/manifest.json`
++- Manifest schema + no-empty-frame test (`tests/test_mascot_manifest.py`)
++- `Sprite.tsx` multi-row `cols`/`frame`/`mirrored` support; `Pet.tsx` driven by the FSM
++
++Evidence:
++- PR #173 merged 2026-09-27T08:48:46Z
++- CI on #173: all four required checks pass
++- Local: `tsc` clean; vitest 18/18 in `src/mascot`; Playwright gate 32/32
++
++Decisions:
++- A22a held-pose loops (#171) and SOS-0014 locomotion are complementary, not
++  alternatives; the merge keeps both rather than picking one
++- `Sprite` steps discrete poses in JS and accepts an explicit `frame` when the
++  caller owns the clock, because multi-row sheets cannot be driven by a
++  single-axis background-position keyframe
++
++Changed:
++- `web/src/mascot/locomotion.ts`, `web/src/mascot/locomotion.test.ts`
++- `web/src/mascot/Sprite.tsx`, `web/src/mascot/Pet.tsx`
++- `web/public/mascot/pet-walk.webp`, `web/public/mascot/pet-turn.webp`,
++  `web/public/mascot/manifest.json`
++- `schemas/mascot-sprite-manifest.v1.schema.json`,
++  `tests/test_mascot_manifest.py`, `tools/generate_mascot_frames.py`
++
++Blocked/uncertain:
++- none
++
++Next:
++- Task complete on main; no further work. Worktree `study-os-s4` released
++  2026-09-27 after byte-identical verification.
+ 
+ ## Handoff
+ 
+diff --git a/tasks/TASK-SOS-0017-pcm-issue-log-format.md b/tasks/TASK-SOS-0017-pcm-issue-log-format.md
+new file mode 100644
+index 0000000..93670e8
+--- /dev/null
++++ b/tasks/TASK-SOS-0017-pcm-issue-log-format.md
+@@ -0,0 +1,52 @@
++# TASK-SOS-0017 — PCM issue-log-format marker and task-projection closeout
++
++<!-- continuity:task {"acceptance":["AGENTS.md carries the issue-log-format 1.2.0 block (START/END markers, pcm:policy line, guidance text) copied verbatim from the pinned PCM CLI, with no existing policy rewritten","tasks/TASK-SOS-0014-mascot-locomotion.md is status completed with real acceptance criteria and a checkpoint entry","No additional Git worktree exists outside <canonical-root>/pcm/worktree/<TASK-ID>","continuity validate --root . returns VALID with no errors and no warnings","continuity preflight --root . returns MODE: TARGET_VALID","python -m unittest discover -s tests -v passes"],"depends_on":[],"goal":"Continuity hygiene: satisfy the PCM 0.6.0 issue-log-format check and bring task projections and worktree layout back to VALID","id":"SOS-0017","issue_url":"https://github.com/Pukujan/Study-os/issues/175","next_action":"Open PR from task/SOS-0017-pcm-issue-log-format with the AGENTS.md and task-file changes; run the pinned validator; merge","owner":"Pukujan (GitHub assignee); primary writer: [CC] on task/SOS-0017-pcm-issue-log-format","priority":"P3","protocol_version":"0.1.0-draft","schema":"project-continuity.task.v1","status":"active","why":"PCM CLI 0.6.0 validate reports a missing issue-log-format policy marker in AGENTS.md plus three worktrees outside the canonical checkout (2026-09-27)"} -->
++
++- Status: active
++- Owner: Pukujan (GitHub assignee); primary writer: [CC] on task/SOS-0017-pcm-issue-log-format
++- Priority: P3
++- Depends on: none
++- Branch: `task/SOS-0017-pcm-issue-log-format`
++- GitHub issue (leaf): #175, parent: none; dependencies: none
++
++## Goal
++
++Continuity hygiene: satisfy the PCM 0.6.0 issue-log-format check and bring task projections and worktree layout back to VALID
++
++## Why
++
++PCM CLI 0.6.0 `validate` reports a missing issue-log-format policy marker in `AGENTS.md` plus three worktrees outside the canonical checkout (2026-09-27). The marker check is new in 0.6.0 and the pin landed via #128/#129, so this is the follow-through.
++
++## Allowed files
++
++- `AGENTS.md`
++- `tasks/TASK-SOS-0014-mascot-locomotion.md`, this task file
++- `docs/HANDOFF.md` (only if a projection update is required)
++
++## Human outcome
++
++A maintainer running the pinned continuity validator sees `VALID` with no warnings, so a real violation is not buried in known noise.
++
++## Scope and boundaries
++
++- In scope: the issue-log-format guidance block in `AGENTS.md`, the SOS-0014 task projection, and the worktree layout.
++- Out of scope: any product or UI change; anything from #126; moving the PCM pin (already at `c18bfd60`).
++
++## Acceptance criteria
++
++- [ ] `AGENTS.md` carries the issue-log-format 1.2.0 block (START/END markers, `pcm:policy` line, guidance text) copied verbatim from the pinned PCM CLI, with no existing policy rewritten
++- [ ] `tasks/TASK-SOS-0014-mascot-locomotion.md` is `status: completed` with real acceptance criteria and a checkpoint entry
++- [ ] No additional Git worktree exists outside `<canonical-root>/pcm/worktree/<TASK-ID>`
++- [ ] `continuity validate --root .` returns `VALID` with no errors and no warnings
++- [ ] `continuity preflight --root .` returns `MODE: TARGET_VALID`
++- [ ] `python -m unittest discover -s tests -v` passes
++
++## Evidence and sources
++
++- Leaf issue #175 — https://github.com/Pukujan/Study-os/issues/175
++- Pin provenance: #128 / PR #129, merge commit `838bae6e89be7a677cb4c62f95a5d6fcbad7a692`
++- Canonical marker source: pinned PCM CLI `c18bfd6064d1249996bc00c45dbbc6721ec5dfd9`, `ISSUE_LOG_FORMAT_GUIDANCE`
++
++## Handoff
++
++Read PROJECT → CURRENT → this task → minimum relevant spec. Checkpoint before stopping.

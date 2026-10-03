@@ -1,0 +1,184 @@
+{
+  "base_url": "https://study.design-bakery.com",
+  "started_at": "2026-09-27T05:59:21.7914185Z",
+  "finished_at": "2026-09-27T05:59:59.956Z",
+  "artifact_dir": "D:\\claude\\Study-os\\artifacts\\study-os-pw-defect\\20260927-055921",
+  "counts": {
+    "checks": 19,
+    "defects": 0,
+    "P0": 0,
+    "P1": 0,
+    "P2": 0,
+    "controls_tried": 10,
+    "passes": 19,
+    "fails": 0
+  },
+  "defects": [],
+  "checks": [
+    {
+      "id": "A-home-start-resume",
+      "ok": true,
+      "detail": "Guest Start/Resume/Try controls visible: 4",
+      "severity": "P0"
+    },
+    {
+      "id": "A23-no-classic-dsa-pir-primary",
+      "ok": true,
+      "detail": "classic track attrs=0 primary=0 textPrimary=false",
+      "severity": "P1"
+    },
+    {
+      "id": "catalog-hesi-fractions",
+      "ok": true,
+      "detail": "listed on guest home/try",
+      "severity": "P1"
+    },
+    {
+      "id": "catalog-dsa-big-o",
+      "ok": true,
+      "detail": "listed on guest home/try",
+      "severity": "P1"
+    },
+    {
+      "id": "catalog-sliding-window",
+      "ok": true,
+      "detail": "listed on guest home/try",
+      "severity": "P2"
+    },
+    {
+      "id": "A18-no-blank-white-play",
+      "ok": true,
+      "detail": "play chrome ok; textLen=516",
+      "severity": "P0"
+    },
+    {
+      "id": "player-phase-snapshot",
+      "ok": true,
+      "detail": "teach=true probe=true continue=true url=https://study.design-bakery.com/play/93b6ef24-4ce1-4ffe-aa16-f6019dae8e65",
+      "severity": "info"
+    },
+    {
+      "id": "player-teach-or-probe",
+      "ok": true,
+      "detail": "teach=true probe=true continue=true",
+      "severity": "P0"
+    },
+    {
+      "id": "A12c-teach-no-spoil-probe",
+      "ok": true,
+      "detail": "No obvious spoil; choices=0",
+      "severity": "P1"
+    },
+    {
+      "id": "A12-numberline",
+      "ok": true,
+      "detail": "No number-line SVG on this step (arrowish=0)",
+      "severity": "info"
+    },
+    {
+      "id": "regen-explain-again-changes-teach",
+      "ok": true,
+      "detail": "Teach content changed (textLen 261->261)",
+      "severity": "P0"
+    },
+    {
+      "id": "regen-worked-example-changes",
+      "ok": true,
+      "detail": "Worked example surfaced (tag=true)",
+      "severity": "P0"
+    },
+    {
+      "id": "companion",
+      "ok": true,
+      "detail": "Companion panel did not open",
+      "severity": "info"
+    },
+    {
+      "id": "review-no-persist-before-submit",
+      "ok": true,
+      "detail": "No submitted receipt before Submit",
+      "severity": "P1"
+    },
+    {
+      "id": "review-persist-after-submit",
+      "ok": true,
+      "detail": "Submitted receipt visible after Submit",
+      "severity": "P1"
+    },
+    {
+      "id": "A20-back-exit-home",
+      "ok": true,
+      "detail": "Returned to menu/home at https://study.design-bakery.com/",
+      "severity": "P0"
+    },
+    {
+      "id": "player-back-control",
+      "ok": true,
+      "detail": "player.back not shown on sampled step (can_go_back may be false)",
+      "severity": "info"
+    },
+    {
+      "id": "A12-numberline-readable",
+      "ok": true,
+      "detail": "number-lines=2 ok",
+      "severity": "P2"
+    },
+    {
+      "id": "console-errors",
+      "ok": true,
+      "detail": "Loading the script 'https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495' violates the following Content Security Policy directive: \"script-src 'self'\". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback. The action has been blocked. | Failed to load resource: the server responded with a status of 401 () | Loading the script 'https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495' violates the following Content Security Policy directive: \"script-src 'self'\". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback. The action has been blocked.",
+      "severity": "info"
+    }
+  ],
+  "controls_tried": [
+    {
+      "t": "2026-09-27T05:59:24.879Z",
+      "name": "home.start-or-resume",
+      "count": 4
+    },
+    {
+      "t": "2026-09-27T05:59:24.896Z",
+      "name": "try.start-big-o",
+      "action": "click"
+    },
+    {
+      "t": "2026-09-27T05:59:28.132Z",
+      "name": "Explain again",
+      "action": "click"
+    },
+    {
+      "t": "2026-09-27T05:59:30.785Z",
+      "name": "Worked example",
+      "action": "click"
+    },
+    {
+      "t": "2026-09-27T05:59:43.162Z",
+      "name": "open-companion-pet",
+      "action": "click"
+    },
+    {
+      "t": "2026-09-27T05:59:51.179Z",
+      "name": "open-companion-pet",
+      "action": "click-fail",
+      "error": "locator.click: Timeout 8000ms exceeded.\nCall log:\n  - waiting for locator('[aria-label=\"Open study assistant\"], button.pet-button, .pet-float button.pet-button').first()\n    - locator resolved to <button type=\"button\" class=\"pet-button\" aria-label=\"Open study assistant\">…</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is not stable\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is not stable\n    - retrying click action\n      - waiting 100ms\n    15 × waiting for element to be visible, enabled and stable\n       - element is not stable\n     - retrying click action\n       - waiting 500ms\n"
+    },
+    {
+      "t": "2026-09-27T05:59:52.119Z",
+      "name": "review-score-3"
+    },
+    {
+      "t": "2026-09-27T05:59:52.489Z",
+      "name": "review-submit"
+    },
+    {
+      "t": "2026-09-27T05:59:54.162Z",
+      "name": "nav-home-brand",
+      "action": "click"
+    },
+    {
+      "t": "2026-09-27T05:59:57.071Z",
+      "name": "start-fractions",
+      "action": "click"
+    }
+  ]
+}

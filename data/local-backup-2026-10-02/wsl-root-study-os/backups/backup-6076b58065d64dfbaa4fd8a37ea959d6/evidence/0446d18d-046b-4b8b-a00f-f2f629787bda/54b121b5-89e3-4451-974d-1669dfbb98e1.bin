@@ -1,0 +1,32 @@
+Yes — that’s the source of the confusion.
+
+`seen` is just a variable name. It is **not inherently a set**.
+
+```
+seen = set()   # set
+seen = {}      # dictionary
+```
+
+So in Two Sum, instead of:
+
+```
+seen = {}
+```
+
+we can use a clearer name:
+
+```
+index_by_num = {}
+```
+
+Then:
+
+```
+index_by_num[7] = 1
+```
+
+means “the number `7` was at index `1`.”
+
+I’ll avoid using `seen` for dictionaries with you because it clashes with how you learned sets.
+
+Study OS still failed with a 502, so I couldn’t save this clarification there.

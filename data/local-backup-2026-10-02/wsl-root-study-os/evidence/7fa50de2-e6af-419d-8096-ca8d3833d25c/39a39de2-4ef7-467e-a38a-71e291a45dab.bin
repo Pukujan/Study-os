@@ -1,0 +1,7 @@
+`index:  0  1  2`
+`value:  2  7 11`
+`box:    {2: 0}`
+
+`box[needed]` looks up that number in `box` and gives its old index.
+
+If `needed` is `2`, what is `box[needed]`?

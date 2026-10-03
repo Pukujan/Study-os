@@ -1,0 +1,317 @@
+diff --git a/src/study_os/web/player/engine.py b/src/study_os/web/player/engine.py
+index 6cd9e80..e34b8fb 100644
+--- a/src/study_os/web/player/engine.py
++++ b/src/study_os/web/player/engine.py
+@@ -109,7 +109,15 @@ def view(lesson: dict[str, Any], state: dict[str, Any]) -> dict[str, Any]:
+ 
+     worked_example = None
+     if state.get("card_mode") == "worked_example":
+-        worked_example = _strip_server_only(state.get("worked_example"))
++        # The worked-example card exists precisely to reveal the solution, so
++        # ``solution_md`` is public *here* (unlike a probe's hidden answer).
++        # ``_strip_server_only`` would drop it and leave a shape the UI cannot
++        # render, which is what made the "Worked example" control look dead.
++        raw_example = state.get("worked_example") or {}
++        worked_example = {
++            "md": raw_example.get("solution_md", ""),
++            "frames": raw_example.get("frames", []),
++        }
+         public_probe = None
+ 
+     return {
+diff --git a/src/study_os/web/player/lessons/fractions-compare.v1.json b/src/study_os/web/player/lessons/fractions-compare.v1.json
+index c108a91..029ac65 100644
+--- a/src/study_os/web/player/lessons/fractions-compare.v1.json
++++ b/src/study_os/web/player/lessons/fractions-compare.v1.json
+@@ -18,7 +18,7 @@
+         "frames": [
+           {
+             "type": "fraction_bar",
+-            "caption": "Which is bigger, 3/4 or 2/3?",
++            "caption": "Both bars show the same whole. Compare the shaded length to see which fraction covers more.",
+             "bars": [{"parts": 4, "shaded": 3, "label": "3/4", "highlight": [0, 1, 2]}, {"parts": 3, "shaded": 2, "label": "2/3", "highlight": [0, 1]}],
+             "number_line": null
+           }
+@@ -163,8 +163,8 @@
+         "frames": [
+           {
+             "type": "fraction_bar",
+-            "caption": "A whole split into 4 equal parts.",
+-            "bars": [{"parts": 4, "shaded": 0, "label": "denominator = 4", "highlight": []}],
++            "caption": "The denominator counts every equal part of one whole.",
++            "bars": [{"parts": 5, "shaded": 0, "label": "denominator = number of equal parts", "highlight": []}],
+             "number_line": null
+           }
+         ]
+@@ -287,8 +287,8 @@
+         "frames": [
+           {
+             "type": "fraction_bar",
+-            "caption": "3 out of 4 parts are shaded.",
+-            "bars": [{"parts": 4, "shaded": 3, "label": "3/4", "highlight": [0, 1, 2]}],
++            "caption": "The shaded parts give the numerator; the total parts give the denominator.",
++            "bars": [{"parts": 5, "shaded": 2, "label": "numerator = shaded parts", "highlight": [0, 1]}],
+             "number_line": null
+           }
+         ]
+diff --git a/tests/test_web_player_engine.py b/tests/test_web_player_engine.py
+index 172d824..cd06a25 100644
+--- a/tests/test_web_player_engine.py
++++ b/tests/test_web_player_engine.py
+@@ -46,6 +46,52 @@ class PlayerEngineTests(unittest.TestCase):
+             errors = check_lesson(lesson)
+             self.assertEqual(errors, [], f"{lid} failed validation: {errors}")
+ 
++    def test_teach_content_does_not_duplicate_or_spoil_the_probe(self):
++        from study_os.web.player import engine
++
++        for lid, lesson in self._load_lessons():
++            for step in lesson["steps"]:
++                probe = step.get("probe")
++                if not probe:
++                    continue
++                step_id = step["step_id"]
++                teach = step.get("teach") or {}
++                prompt = (probe.get("prompt_md") or "").strip()
++                accepted = [str(a) for a in probe.get("accept", [])]
++
++                # The teach card must explain the concept, not restate the
++                # probe's question.
++                self.assertNotEqual(
++                    (teach.get("md") or "").strip(),
++                    prompt,
++                    f"{lid}/{step_id}: teach.md duplicates the probe prompt",
++                )
++
++                teach_texts = [teach.get("md") or ""]
++                for frame in teach.get("frames") or []:
++                    teach_texts.append(frame.get("caption") or "")
++
++                # The teach card must not state the probe's accepted answer.
++                for text in teach_texts:
++                    for answer in accepted:
++                        self.assertNotIn(
++                            answer,
++                            text,
++                            f"{lid}/{step_id}: teach text {text!r} spoils answer {answer!r}",
++                        )
++
++                # When the probe's answer is a count (e.g. "how many equal
++                # parts?"), the teach demo must not show a bar whose part count
++                # is that answer -- that would reveal it on the same shape.
++                if probe.get("answer_kind") == "integer":
++                    for frame in teach.get("frames") or []:
++                        for bar in frame.get("bars") or []:
++                            self.assertNotIn(
++                                str(bar.get("parts")),
++                                accepted,
++                                f"{lid}/{step_id}: teach bar part count reveals the answer",
++                            )
++
+     def test_view_never_leaks_server_only_fields(self):
+         from study_os.web.player import engine
+ 
+@@ -666,8 +712,28 @@ class AdaptTests(unittest.TestCase):
+         view = engine.view(lesson, state)
+         self.assertEqual(view["card_mode"], "worked_example")
+         self.assertIsNotNone(view["worked_example"])
++        # The worked-example card must be renderable by the client: the public
++        # shape carries the solution markdown (this card exists to reveal it),
++        # not just a stripped frames list.
++        self.assertEqual(view["worked_example"]["md"], "Main solution: 1 + 2 = 3.")
++        self.assertIn("frames", view["worked_example"])
+         self.assertIsNone(view["step"]["probe"])
+ 
++    def test_worked_example_view_is_public_and_probe_stays_hidden(self):
++        from study_os.web.player import engine
++
++        lesson = self._lesson()
++        state = engine.start(lesson)
++        state, _ = engine.adapt(lesson, state, "example")
++        view = engine.view(lesson, state)
++        dumped = json.dumps(view)
++        # The solution is intentionally visible on this card...
++        self.assertIn("Main solution", dumped)
++        # ...but the probe and its hidden grading data stay stripped.
++        self.assertIsNone(view["step"]["probe"])
++        for forbidden in ("accept", "misconceptions", "hint_md"):
++            self.assertNotIn(f'"{forbidden}"', dumped)
++
+     def test_back_restores_previous_mode(self):
+         from study_os.web.player import engine
+ 
+diff --git a/web/src/api.ts b/web/src/api.ts
+index f6fdd9f..01f6941 100644
+--- a/web/src/api.ts
++++ b/web/src/api.ts
+@@ -125,7 +125,7 @@ export type Feedback = {
+   next_action: "continue" | "retry_same";
+ };
+ 
+-export type WorkedExample = { steps_md: string[] } | { md: string };
++export type WorkedExample = { md?: string; frames?: Frame[]; steps_md?: string[] };
+ 
+ export type PlayerView = {
+   session_id: string;
+diff --git a/web/src/pages/Player.tsx b/web/src/pages/Player.tsx
+index 4788f8f..f043513 100644
+--- a/web/src/pages/Player.tsx
++++ b/web/src/pages/Player.tsx
+@@ -42,6 +42,9 @@ export default function Player({ sessionId }: { sessionId: string }) {
+     return localStorage.getItem("sos.pet.hidden") === "true";
+   });
+   const [companionSpeaking, setCompanionSpeaking] = useState(false);
++  // Bumped to force the teach frame stepper to remount, which replays the
++  // teach frames deterministically when the tutor has nothing new to render.
++  const [teachReplayKey, setTeachReplayKey] = useState(0);
+   const [claimEmail, setClaimEmail] = useState("");
+   const [claimPass, setClaimPass] = useState("");
+   const [claimed, setClaimed] = useState(false);
+@@ -134,9 +137,30 @@ export default function Player({ sessionId }: { sessionId: string }) {
+     setBusy(true);
+     setError(null);
+     try {
+-      const reply = await api.tutor(sessionId, REGEN_PROMPTS[kind]);
+-      const next = applyPresentation(view, reply.regenerate_presentation);
+-      if (next !== view) setView(next);
++      let next = view;
++      try {
++        const reply = await api.tutor(sessionId, REGEN_PROMPTS[kind]);
++        next = applyPresentation(view, reply.regenerate_presentation);
++      } catch {
++        // The tutor is optional; fall through to the deterministic path below
++        // instead of surfacing a dead control.
++        next = view;
++      }
++      if (next !== view) {
++        setView(next);
++        return;
++      }
++      // Deterministic fallback. A text-only tutor reply (or no tutor at all)
++      // leaves the view untouched, which used to make these buttons a silent
++      // no-op. Never depend on the model to make the control do something.
++      if (kind === "example") {
++        setView(await api.adapt(sessionId, "example"));
++      } else if (view.phase === "probe" && view.step.probe) {
++        setView(await api.playerConfused(sessionId));
++      } else {
++        setShowTeach(true);
++        setTeachReplayKey((k) => k + 1);
++      }
+     } catch (e) {
+       setError(e instanceof ApiError ? e.code : "error");
+     } finally {
+@@ -192,7 +216,11 @@ export default function Player({ sessionId }: { sessionId: string }) {
+               ) : (
+                 <section className="teach card">
+                   <Markdown text={view.step.teach_md} />
+-                  <FrameStepper frames={view.step.teach_frames} label="Teach frames" />
++                  <FrameStepper
++                    key={`teach-${view.step.step_id}-${view.step.variant}-${teachReplayKey}`}
++                    frames={view.step.teach_frames}
++                    label="Teach frames"
++                  />
+                   <div className="regen-controls" role="group" aria-label="Show this step another way">
+                     {(Object.keys(REGEN_PROMPTS) as RegenKind[]).map((kind) => (
+                       <button
+@@ -221,9 +249,11 @@ export default function Player({ sessionId }: { sessionId: string }) {
+                 )}
+                 {view.card_mode === "worked_example" && view.worked_example && (
+                   <div className="worked-example">
+-                    {"md" in view.worked_example ? (
+-                      <Markdown text={view.worked_example.md} />
+-                    ) : (
++                    {view.worked_example.md ? <Markdown text={view.worked_example.md} /> : null}
++                    {view.worked_example.frames && view.worked_example.frames.length > 0 && (
++                      <FrameStepper frames={view.worked_example.frames} label="Worked example frames" />
++                    )}
++                    {view.worked_example.steps_md && view.worked_example.steps_md.length > 0 && (
+                       <ol>
+                         {view.worked_example.steps_md.map((step, i) => (
+                           <li key={i}>
+diff --git a/web/src/player/CompanionPanel.tsx b/web/src/player/CompanionPanel.tsx
+index 83b8f81..c12d934 100644
+--- a/web/src/player/CompanionPanel.tsx
++++ b/web/src/player/CompanionPanel.tsx
+@@ -205,9 +205,16 @@ export default function CompanionPanel({
+     setBusy(true);
+     try {
+       if (kind === "reexplain") {
+-        pushSystem("Explained again.");
+-        const v = await api.playerConfused(sessionId);
+-        onViewChange(v);
++        // Deterministic first: re-explain from the lesson content. The engine
++        // only serves this while a probe is open, so fall back to replaying the
++        // visible teach card rather than swallowing the error and doing nothing.
++        try {
++          const v = await api.playerConfused(sessionId);
++          pushSystem("Explained again.");
++          onViewChange(v);
++        } catch {
++          pushSystem("Replaying this step's explanation.");
++        }
+       } else {
+         pushSystem(`Updated the card: ${chipLabel(kind).toLowerCase()}.`);
+         const v = await api.adapt(sessionId, kind);
+diff --git a/web/src/visuals/BoxIndex.tsx b/web/src/visuals/BoxIndex.tsx
+index 0714b0e..5fc22fd 100644
+--- a/web/src/visuals/BoxIndex.tsx
++++ b/web/src/visuals/BoxIndex.tsx
+@@ -61,7 +61,9 @@ export default function BoxIndex({ frame, onSelectIndex }: BoxIndexProps) {
+ 
+   // Up arrows below numbers row.
+   const arrowUpY = upArrows.length > 0 ? y + 4 : y;
+-  if (upArrows.length > 0) y += 18;
++  // Reserve a full band (shaft + label) for the up arrows so the brace below
++  // never collides with them and the arrows stay clear of the numbers row.
++  if (upArrows.length > 0) y += 40;
+ 
+   const box = frame.box;
+   const braceTop = y;
+@@ -232,9 +234,12 @@ export default function BoxIndex({ frame, onSelectIndex }: BoxIndexProps) {
+       {/* Up arrows (from below, pointing up) */}
+       {upArrows.map((arrow, i) => {
+         const x = cx(arrow.at);
+-        const startY = numbersY + 10;
+-        const tipY = numbersY - 4;
+-        const labelY = arrowUpY + 18;
++        // Keep the entire arrow BELOW the numbers row. The number cell chrome
++        // spans numbersY-18..numbersY+10, so the old tip at numbersY-4 painted
++        // the arrowhead straight through the digit glyphs.
++        const tipY = numbersY + 18;
++        const startY = numbersY + 32;
++        const labelY = arrowUpY + 26;
+         return (
+           <g key={`up-${i}`}>
+             <line x1={x} y1={startY} x2={x} y2={tipY} stroke="var(--accent)" strokeWidth={2} markerEnd="url(#arrowhead-up)" />
+diff --git a/web/src/visuals/visuals.test.tsx b/web/src/visuals/visuals.test.tsx
+index 643a56b..7b21ddc 100644
+--- a/web/src/visuals/visuals.test.tsx
++++ b/web/src/visuals/visuals.test.tsx
+@@ -45,6 +45,26 @@ describe("visuals", () => {
+     expect(html).toContain("↑");
+   });
+ 
++  it("BoxIndex draws circles around circled indices", () => {
++    const frame = {
++      type: "box_index" as const,
++      array: [4, 7, 2],
++      show_positions: false,
++      show_indices: true,
++      box: null,
++      arrows: [{ at: 1, label: "k", row: "numbers" as const, dir: "up" as const }],
++    };
++    const html = renderToStaticMarkup(<BoxIndex frame={frame} />);
++    const upLine = html.match(/<line[^>]*marker-end="url\(#arrowhead-up\)"[^>]*>/)?.[0] ?? "";
++    const tipY = Number(upLine.match(/y2="([-\d.]+)"/)?.[1]);
++    const numbersBaseline = Number(html.match(/<text x="10" y="(\d+)"[^>]*>numbers\(a\)<\/text>/)?.[1]);
++    expect(Number.isFinite(tipY)).toBe(true);
++    expect(Number.isFinite(numbersBaseline)).toBe(true);
++    // The number cell chrome bottom sits at numbersY + 10, so an up-arrow tip
++    // above that line would paint the arrowhead through the digit glyphs.
++    expect(tipY).toBeGreaterThan(numbersBaseline + 10);
++  });
++
+   it("BoxIndex draws circles around circled indices", () => {
+     const frame = {
+       type: "box_index" as const,

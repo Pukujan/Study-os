@@ -1,0 +1,12 @@
+Yes. Study OS has a durable checkpoint plus newer source evidence from your recent sessions.
+
+Your accepted checkpoint says:
+- Current focus: `sliding-window`
+- State prediction: `pass_unaided`
+- Python implementation: `not_tested`
+- Assistance level: none
+- Next action: `implement without scaffold`
+
+There is also newer source evidence showing you were working on dictionaries and Two Sum, including `enumerate`, dictionary lookup/storage, and the idea that variable names like `seen` were making other people’s solutions harder for you to decode. That newer transcript is source evidence only, so I’m not treating it as a mastery update.
+
+So the cleanest place to resume is: **implement a sliding-window solution without a scaffold**, while keeping the code representation very explicit and low-decoding.

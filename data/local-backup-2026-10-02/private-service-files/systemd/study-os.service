@@ -1,0 +1,15 @@
+[Unit]
+Description=Study OS local MCP HTTP runtime
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/mnt/d/Study-os
+EnvironmentFile=%h/.config/study-os/runtime.env
+ExecStart=/usr/bin/python3 /mnt/d/Study-os/cli/study_os.py mcp-http --host 127.0.0.1 --port 18765 --path /mcp --actions-path /actions
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

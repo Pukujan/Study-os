@@ -1,0 +1,29 @@
+Sounds good — we’ll keep this session focused on the refresher.
+
+Next up: **arrays and strings**.
+
+In Python, the closest thing to a typical interview “array” is usually a list:
+
+```python
+nums = [10, 20, 30, 40]
+```
+
+Important operations:
+- `nums[i]` → access by index: **O(1)**
+- `nums.append(x)` → add to the end: usually **O(1)** amortized
+- `nums.pop()` → remove from the end: **O(1)**
+- `nums.insert(0, x)` → insert at the front: **O(n)**
+- `nums.pop(0)` → remove from the front: **O(n)**
+- searching with `x in nums` → **O(n)**
+
+The key idea is that accessing an index is fast, but inserting/removing near the front can force many elements to shift.
+
+First check:
+
+```python
+nums = [4, 8, 15, 16, 23, 42]
+print(nums[4])
+```
+
+1. What value gets printed?
+2. What is the time complexity of `nums[4]`?

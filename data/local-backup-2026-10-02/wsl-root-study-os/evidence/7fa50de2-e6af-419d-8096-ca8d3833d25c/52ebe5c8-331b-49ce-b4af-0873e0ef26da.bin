@@ -1,0 +1,19 @@
+Correct — **O(n)**.
+
+And your explanation is solid: after removing index `0`, every remaining element has to shift one position left. That shifting work grows with the size of the list.
+
+So far, the array/list pattern is:
+
+- access by known index → **O(1)**
+- search by value → **O(n)**
+- append to end → usually **O(1)** amortized
+- insert/remove at front → **O(n)**
+
+Now let’s make sure the “end vs front” idea is clear:
+
+```python
+nums = [10, 20, 30, 40]
+nums.pop()
+```
+
+What is the time complexity here: **O(1)** or **O(n)**? Why?

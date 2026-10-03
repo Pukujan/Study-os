@@ -1,0 +1,3 @@
+Yeah, that’s a meaningful resilience gap. A later appendable transcript would solve exactly the outage problem we just hit: raw conversation could be preserved separately, then backfilled into Study OS once MCP recovers instead of losing the learning sequence.
+
+I also saved this gap successfully in Study OS now as a durable learning/system-design event: `db1a3ae2-b74b-471b-b136-0298baa54a38`.

@@ -1,0 +1,17 @@
+Close — `s[3:]` returns **`"hon"`**.
+
+With:
+
+```text
+index:  0 1 2 3 4 5
+char:   p y t h o n
+```
+
+`s[3:]` means “start at index `3` and continue all the way to the end.” Since the start index is included, it takes indexes `3, 4, 5` → **`"hon"`**.
+
+So the three slicing forms to lock in are:
+- `s[a:b]` → start at `a`, stop before `b`
+- `s[:b]` → start from the beginning, stop before `b`
+- `s[a:]` → start at `a`, go to the end
+
+Try this one: if `s = "python"`, what does `s[1:3]` return?
