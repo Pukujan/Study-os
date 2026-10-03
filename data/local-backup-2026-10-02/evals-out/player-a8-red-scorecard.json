@@ -1,0 +1,2388 @@
+{
+  "schema_version": "study-os.player-agent-evals.v1",
+  "mode": "stub",
+  "synthetic_only": true,
+  "oracle": {
+    "path": "domains/dsa/sliding-window/golden/conformance-oracle.v0.1.json",
+    "sha256": "1a813c7610bb051d9eee1afbc4ddc5f9ea105a22e3a9f71af27e2ab8f5dbc81b",
+    "expected_player_prefix": [
+      "problem",
+      "position",
+      "index",
+      "box_size_k",
+      "box_start_i",
+      "window_sum"
+    ],
+    "canonical_asset_conforms": true
+  },
+  "runs": 4,
+  "violations_by_code": {
+    "INVALID_STEP_REVIEW_EVENT": 4,
+    "STEP_REVIEW_HTTP_ERROR": 4
+  },
+  "passed": false,
+  "runs_detail": [
+    {
+      "persona": "golden",
+      "seed": 0,
+      "session_id": "46e568e4-deff-4d52-98d1-2d636ff4d900",
+      "observed_path": [
+        "problem",
+        "position",
+        "index",
+        "box_size_k",
+        "box_start_i",
+        "window_sum"
+      ],
+      "violations": [
+        {
+          "code": "STEP_REVIEW_HTTP_ERROR",
+          "detail": "{\"detail\":[{\"type\":\"string_type\",\"loc\":[\"body\",\"rating\"],\"msg\":\"Input should be a valid string\",\"input\":3},{\"type\":\"extra_forbidden\",\"loc\":[\"body\",\"presentation_version\"],\"msg\":\"Extra inputs are not p"
+        },
+        {
+          "code": "INVALID_STEP_REVIEW_EVENT",
+          "detail": "review is not bound to the rendered golden step"
+        }
+      ],
+      "end_phase": "done"
+    },
+    {
+      "persona": "wrong_then_right",
+      "seed": 0,
+      "session_id": "48cc7790-898f-430f-8015-76e2a45e9112",
+      "observed_path": [
+        "problem",
+        "position",
+        "index",
+        "box_size_k",
+        "box_start_i",
+        "window_sum"
+      ],
+      "violations": [
+        {
+          "code": "STEP_REVIEW_HTTP_ERROR",
+          "detail": "{\"detail\":[{\"type\":\"string_type\",\"loc\":[\"body\",\"rating\"],\"msg\":\"Input should be a valid string\",\"input\":3},{\"type\":\"extra_forbidden\",\"loc\":[\"body\",\"presentation_version\"],\"msg\":\"Extra inputs are not p"
+        },
+        {
+          "code": "INVALID_STEP_REVIEW_EVENT",
+          "detail": "review is not bound to the rendered golden step"
+        }
+      ],
+      "end_phase": "done"
+    },
+    {
+      "persona": "partial_then_right",
+      "seed": 0,
+      "session_id": "63b5f80b-dd08-4a21-adb0-9f041c5804ef",
+      "observed_path": [
+        "problem",
+        "position",
+        "index",
+        "box_size_k",
+        "box_start_i",
+        "window_sum"
+      ],
+      "violations": [
+        {
+          "code": "STEP_REVIEW_HTTP_ERROR",
+          "detail": "{\"detail\":[{\"type\":\"string_type\",\"loc\":[\"body\",\"rating\"],\"msg\":\"Input should be a valid string\",\"input\":3},{\"type\":\"extra_forbidden\",\"loc\":[\"body\",\"presentation_version\"],\"msg\":\"Extra inputs are not p"
+        },
+        {
+          "code": "INVALID_STEP_REVIEW_EVENT",
+          "detail": "review is not bound to the rendered golden step"
+        }
+      ],
+      "end_phase": "done"
+    },
+    {
+      "persona": "confused_then_right",
+      "seed": 0,
+      "session_id": "e3603ab8-692b-4bad-85b8-36b483415692",
+      "observed_path": [
+        "problem",
+        "position",
+        "index",
+        "box_size_k",
+        "box_start_i",
+        "window_sum"
+      ],
+      "violations": [
+        {
+          "code": "STEP_REVIEW_HTTP_ERROR",
+          "detail": "{\"detail\":[{\"type\":\"string_type\",\"loc\":[\"body\",\"rating\"],\"msg\":\"Input should be a valid string\",\"input\":3},{\"type\":\"extra_forbidden\",\"loc\":[\"body\",\"presentation_version\"],\"msg\":\"Extra inputs are not p"
+        },
+        {
+          "code": "INVALID_STEP_REVIEW_EVENT",
+          "detail": "review is not bound to the rendered golden step"
+        }
+      ],
+      "end_phase": "done"
+    }
+  ],
+  "transcripts": [
+    {
+      "persona": "golden",
+      "seed": 0,
+      "session_id": "46e568e4-deff-4d52-98d1-2d636ff4d900",
+      "observed_path": [
+        "problem",
+        "position",
+        "index",
+        "box_size_k",
+        "box_start_i",
+        "window_sum"
+      ],
+      "events": [
+        {
+          "kind": "view",
+          "step_id": "problem",
+          "phase": "probe",
+          "variant": -1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "position",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "position",
+          "phase": "probe",
+          "variant": -1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "tutor",
+          "step_id": "position",
+          "reply_md": "Point to one part of the box. What do you notice?",
+          "suggested_action": null,
+          "regenerate_presentation": {
+            "schema_version": "study-os.player-presentation.v1",
+            "operation": "regenerate_presentation",
+            "lesson_id": "sliding-window-box",
+            "lesson_revision": "sliding-window-box.v1",
+            "step_id": "position",
+            "concept_id": "sliding-window.position",
+            "variant": -1,
+            "phase": "probe",
+            "card_mode": "probe",
+            "scaffold": 0,
+            "previous_version": 0,
+            "version": 1,
+            "teach_md": "Look at the same box from another angle. Track how the left edge and the index describe one position.",
+            "teach_frames": [
+              {
+                "type": "box_index",
+                "array": [
+                  4,
+                  7,
+                  2,
+                  6,
+                  1,
+                  9
+                ],
+                "show_positions": true,
+                "show_indices": false,
+                "box": null,
+                "arrows": [
+                  {
+                    "at": 2,
+                    "label": "p = 3",
+                    "row": "positions",
+                    "dir": "down"
+                  }
+                ],
+                "sum_label": null
+              }
+            ],
+            "provenance": {
+              "prompt_version": "tutor.v3",
+              "model": "cb/glm-5.3",
+              "route": "cb/glm-5.3",
+              "served": "generated"
+            }
+          },
+          "presentation_version_after": 1
+        },
+        {
+          "kind": "review",
+          "step_id": "position",
+          "golden_concept": "position",
+          "presentation_version": 1,
+          "rating": 3,
+          "why": "The box helped; the index label was unclear.",
+          "http_status": 422
+        },
+        {
+          "kind": "attempt",
+          "step_id": "position",
+          "response": "4",
+          "outcome": "correct",
+          "next_action": "continue"
+        },
+        {
+          "kind": "view",
+          "step_id": "position",
+          "phase": "feedback",
+          "variant": -1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "index",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "index",
+          "phase": "probe",
+          "variant": -1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "index",
+          "response": "2",
+          "outcome": "incorrect",
+          "next_action": "retry"
+        },
+        {
+          "kind": "view",
+          "step_id": "index",
+          "phase": "feedback",
+          "variant": -1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "index",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "index",
+          "phase": "probe",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "index",
+          "response": "2",
+          "outcome": "incorrect",
+          "next_action": "retry"
+        },
+        {
+          "kind": "view",
+          "step_id": "index",
+          "phase": "feedback",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "index",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "index",
+          "phase": "probe",
+          "variant": 1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "index",
+          "response": "2",
+          "outcome": "incorrect",
+          "next_action": "continue"
+        },
+        {
+          "kind": "view",
+          "step_id": "index",
+          "phase": "feedback",
+          "variant": 1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "box-size",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-size",
+          "phase": "probe",
+          "variant": -1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "box-size",
+          "response": "3",
+          "outcome": "incorrect",
+          "next_action": "retry"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-size",
+          "phase": "feedback",
+          "variant": -1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "box-size",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-size",
+          "phase": "probe",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "box-size",
+          "response": "3",
+          "outcome": "incorrect",
+          "next_action": "retry"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-size",
+          "phase": "feedback",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "box-size",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-size",
+          "phase": "probe",
+          "variant": 1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "box-size",
+          "response": "3",
+          "outcome": "incorrect",
+          "next_action": "continue"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-size",
+          "phase": "feedback",
+          "variant": 1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "box-start",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-start",
+          "phase": "probe",
+          "variant": -1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "box-start",
+          "response": "2",
+          "outcome": "incorrect",
+          "next_action": "retry"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-start",
+          "phase": "feedback",
+          "variant": -1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "box-start",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-start",
+          "phase": "probe",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "box-start",
+          "response": "2",
+          "outcome": "incorrect",
+          "next_action": "retry"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-start",
+          "phase": "feedback",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "box-start",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-start",
+          "phase": "probe",
+          "variant": 1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "box-start",
+          "response": "2",
+          "outcome": "incorrect",
+          "next_action": "continue"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-start",
+          "phase": "feedback",
+          "variant": 1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "window-sum",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "probe",
+          "variant": -1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "window-sum",
+          "response": "9",
+          "outcome": "correct",
+          "next_action": "check"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "feedback",
+          "variant": -1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "window-sum",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "probe",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "window-sum",
+          "response": "9",
+          "outcome": "incorrect",
+          "next_action": "retry"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "feedback",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "window-sum",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "probe",
+          "variant": 1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "window-sum",
+          "response": "9",
+          "outcome": "correct",
+          "next_action": "check"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "feedback",
+          "variant": 1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "window-sum",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "probe",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "window-sum",
+          "response": "9",
+          "outcome": "incorrect",
+          "next_action": "retry"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "feedback",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "window-sum",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "probe",
+          "variant": 1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "window-sum",
+          "response": "9",
+          "outcome": "correct",
+          "next_action": "check"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "feedback",
+          "variant": 1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "window-sum",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "probe",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "window-sum",
+          "response": "9",
+          "outcome": "incorrect",
+          "next_action": "continue"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "feedback",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "window-sum",
+          "phase": "done"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "done",
+          "variant": 0,
+          "representation": "box_index"
+        }
+      ],
+      "violations": [
+        {
+          "code": "STEP_REVIEW_HTTP_ERROR",
+          "detail": "{\"detail\":[{\"type\":\"string_type\",\"loc\":[\"body\",\"rating\"],\"msg\":\"Input should be a valid string\",\"input\":3},{\"type\":\"extra_forbidden\",\"loc\":[\"body\",\"presentation_version\"],\"msg\":\"Extra inputs are not p"
+        },
+        {
+          "code": "INVALID_STEP_REVIEW_EVENT",
+          "detail": "review is not bound to the rendered golden step"
+        }
+      ],
+      "end_phase": "done"
+    },
+    {
+      "persona": "wrong_then_right",
+      "seed": 0,
+      "session_id": "48cc7790-898f-430f-8015-76e2a45e9112",
+      "observed_path": [
+        "problem",
+        "position",
+        "index",
+        "box_size_k",
+        "box_start_i",
+        "window_sum"
+      ],
+      "events": [
+        {
+          "kind": "view",
+          "step_id": "problem",
+          "phase": "probe",
+          "variant": -1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "position",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "position",
+          "phase": "probe",
+          "variant": -1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "tutor",
+          "step_id": "position",
+          "reply_md": "Point to one part of the box. What do you notice?",
+          "suggested_action": null,
+          "regenerate_presentation": {
+            "schema_version": "study-os.player-presentation.v1",
+            "operation": "regenerate_presentation",
+            "lesson_id": "sliding-window-box",
+            "lesson_revision": "sliding-window-box.v1",
+            "step_id": "position",
+            "concept_id": "sliding-window.position",
+            "variant": -1,
+            "phase": "probe",
+            "card_mode": "probe",
+            "scaffold": 0,
+            "previous_version": 0,
+            "version": 1,
+            "teach_md": "Look at the same box from another angle. Track how the left edge and the index describe one position.",
+            "teach_frames": [
+              {
+                "type": "box_index",
+                "array": [
+                  4,
+                  7,
+                  2,
+                  6,
+                  1,
+                  9
+                ],
+                "show_positions": true,
+                "show_indices": false,
+                "box": null,
+                "arrows": [
+                  {
+                    "at": 2,
+                    "label": "p = 3",
+                    "row": "positions",
+                    "dir": "down"
+                  }
+                ],
+                "sum_label": null
+              }
+            ],
+            "provenance": {
+              "prompt_version": "tutor.v3",
+              "model": "cb/glm-5.3",
+              "route": "cb/glm-5.3",
+              "served": "generated"
+            }
+          },
+          "presentation_version_after": 1
+        },
+        {
+          "kind": "review",
+          "step_id": "position",
+          "golden_concept": "position",
+          "presentation_version": 1,
+          "rating": 3,
+          "why": "The box helped; the index label was unclear.",
+          "http_status": 422
+        },
+        {
+          "kind": "attempt",
+          "step_id": "position",
+          "response": "not this",
+          "outcome": "incorrect",
+          "next_action": "retry"
+        },
+        {
+          "kind": "view",
+          "step_id": "position",
+          "phase": "feedback",
+          "variant": -1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "position",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "position",
+          "phase": "probe",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "position",
+          "response": "4",
+          "outcome": "incorrect",
+          "next_action": "retry"
+        },
+        {
+          "kind": "view",
+          "step_id": "position",
+          "phase": "feedback",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "position",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "position",
+          "phase": "probe",
+          "variant": 1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "position",
+          "response": "4",
+          "outcome": "incorrect",
+          "next_action": "continue"
+        },
+        {
+          "kind": "view",
+          "step_id": "position",
+          "phase": "feedback",
+          "variant": 1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "index",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "index",
+          "phase": "probe",
+          "variant": -1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "index",
+          "response": "not this",
+          "outcome": "incorrect",
+          "next_action": "retry"
+        },
+        {
+          "kind": "view",
+          "step_id": "index",
+          "phase": "feedback",
+          "variant": -1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "index",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "index",
+          "phase": "probe",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "index",
+          "response": "2",
+          "outcome": "incorrect",
+          "next_action": "retry"
+        },
+        {
+          "kind": "view",
+          "step_id": "index",
+          "phase": "feedback",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "index",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "index",
+          "phase": "probe",
+          "variant": 1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "index",
+          "response": "2",
+          "outcome": "incorrect",
+          "next_action": "continue"
+        },
+        {
+          "kind": "view",
+          "step_id": "index",
+          "phase": "feedback",
+          "variant": 1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "box-size",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-size",
+          "phase": "probe",
+          "variant": -1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "box-size",
+          "response": "not this",
+          "outcome": "incorrect",
+          "next_action": "retry"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-size",
+          "phase": "feedback",
+          "variant": -1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "box-size",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-size",
+          "phase": "probe",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "box-size",
+          "response": "3",
+          "outcome": "incorrect",
+          "next_action": "retry"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-size",
+          "phase": "feedback",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "box-size",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-size",
+          "phase": "probe",
+          "variant": 1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "box-size",
+          "response": "3",
+          "outcome": "incorrect",
+          "next_action": "continue"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-size",
+          "phase": "feedback",
+          "variant": 1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "box-start",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-start",
+          "phase": "probe",
+          "variant": -1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "box-start",
+          "response": "not this",
+          "outcome": "incorrect",
+          "next_action": "retry"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-start",
+          "phase": "feedback",
+          "variant": -1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "box-start",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-start",
+          "phase": "probe",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "box-start",
+          "response": "2",
+          "outcome": "incorrect",
+          "next_action": "retry"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-start",
+          "phase": "feedback",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "box-start",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-start",
+          "phase": "probe",
+          "variant": 1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "box-start",
+          "response": "2",
+          "outcome": "incorrect",
+          "next_action": "continue"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-start",
+          "phase": "feedback",
+          "variant": 1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "window-sum",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "probe",
+          "variant": -1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "window-sum",
+          "response": "not this",
+          "outcome": "incorrect",
+          "next_action": "retry"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "feedback",
+          "variant": -1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "window-sum",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "probe",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "window-sum",
+          "response": "9",
+          "outcome": "incorrect",
+          "next_action": "retry"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "feedback",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "window-sum",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "probe",
+          "variant": 1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "window-sum",
+          "response": "9",
+          "outcome": "correct",
+          "next_action": "check"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "feedback",
+          "variant": 1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "window-sum",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "probe",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "window-sum",
+          "response": "9",
+          "outcome": "incorrect",
+          "next_action": "continue"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "feedback",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "window-sum",
+          "phase": "done"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "done",
+          "variant": 0,
+          "representation": "box_index"
+        }
+      ],
+      "violations": [
+        {
+          "code": "STEP_REVIEW_HTTP_ERROR",
+          "detail": "{\"detail\":[{\"type\":\"string_type\",\"loc\":[\"body\",\"rating\"],\"msg\":\"Input should be a valid string\",\"input\":3},{\"type\":\"extra_forbidden\",\"loc\":[\"body\",\"presentation_version\"],\"msg\":\"Extra inputs are not p"
+        },
+        {
+          "code": "INVALID_STEP_REVIEW_EVENT",
+          "detail": "review is not bound to the rendered golden step"
+        }
+      ],
+      "end_phase": "done"
+    },
+    {
+      "persona": "partial_then_right",
+      "seed": 0,
+      "session_id": "63b5f80b-dd08-4a21-adb0-9f041c5804ef",
+      "observed_path": [
+        "problem",
+        "position",
+        "index",
+        "box_size_k",
+        "box_start_i",
+        "window_sum"
+      ],
+      "events": [
+        {
+          "kind": "view",
+          "step_id": "problem",
+          "phase": "probe",
+          "variant": -1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "position",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "position",
+          "phase": "probe",
+          "variant": -1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "tutor",
+          "step_id": "position",
+          "reply_md": "Point to one part of the box. What do you notice?",
+          "suggested_action": null,
+          "regenerate_presentation": {
+            "schema_version": "study-os.player-presentation.v1",
+            "operation": "regenerate_presentation",
+            "lesson_id": "sliding-window-box",
+            "lesson_revision": "sliding-window-box.v1",
+            "step_id": "position",
+            "concept_id": "sliding-window.position",
+            "variant": -1,
+            "phase": "probe",
+            "card_mode": "probe",
+            "scaffold": 0,
+            "previous_version": 0,
+            "version": 1,
+            "teach_md": "Look at the same box from another angle. Track how the left edge and the index describe one position.",
+            "teach_frames": [
+              {
+                "type": "box_index",
+                "array": [
+                  4,
+                  7,
+                  2,
+                  6,
+                  1,
+                  9
+                ],
+                "show_positions": true,
+                "show_indices": false,
+                "box": null,
+                "arrows": [
+                  {
+                    "at": 2,
+                    "label": "p = 3",
+                    "row": "positions",
+                    "dir": "down"
+                  }
+                ],
+                "sum_label": null
+              }
+            ],
+            "provenance": {
+              "prompt_version": "tutor.v3",
+              "model": "cb/glm-5.3",
+              "route": "cb/glm-5.3",
+              "served": "generated"
+            }
+          },
+          "presentation_version_after": 1
+        },
+        {
+          "kind": "review",
+          "step_id": "position",
+          "golden_concept": "position",
+          "presentation_version": 1,
+          "rating": 3,
+          "why": "The box helped; the index label was unclear.",
+          "http_status": 422
+        },
+        {
+          "kind": "attempt",
+          "step_id": "position",
+          "response": "4",
+          "outcome": "correct",
+          "next_action": "continue"
+        },
+        {
+          "kind": "view",
+          "step_id": "position",
+          "phase": "feedback",
+          "variant": -1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "index",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "index",
+          "phase": "probe",
+          "variant": -1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "index",
+          "response": "2",
+          "outcome": "incorrect",
+          "next_action": "retry"
+        },
+        {
+          "kind": "view",
+          "step_id": "index",
+          "phase": "feedback",
+          "variant": -1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "index",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "index",
+          "phase": "probe",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "index",
+          "response": "2",
+          "outcome": "incorrect",
+          "next_action": "retry"
+        },
+        {
+          "kind": "view",
+          "step_id": "index",
+          "phase": "feedback",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "index",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "index",
+          "phase": "probe",
+          "variant": 1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "index",
+          "response": "2",
+          "outcome": "incorrect",
+          "next_action": "continue"
+        },
+        {
+          "kind": "view",
+          "step_id": "index",
+          "phase": "feedback",
+          "variant": 1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "box-size",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-size",
+          "phase": "probe",
+          "variant": -1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "box-size",
+          "response": "3",
+          "outcome": "incorrect",
+          "next_action": "retry"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-size",
+          "phase": "feedback",
+          "variant": -1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "box-size",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-size",
+          "phase": "probe",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "box-size",
+          "response": "3",
+          "outcome": "incorrect",
+          "next_action": "retry"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-size",
+          "phase": "feedback",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "box-size",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-size",
+          "phase": "probe",
+          "variant": 1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "box-size",
+          "response": "3",
+          "outcome": "incorrect",
+          "next_action": "continue"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-size",
+          "phase": "feedback",
+          "variant": 1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "box-start",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-start",
+          "phase": "probe",
+          "variant": -1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "box-start",
+          "response": "2",
+          "outcome": "incorrect",
+          "next_action": "retry"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-start",
+          "phase": "feedback",
+          "variant": -1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "box-start",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-start",
+          "phase": "probe",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "box-start",
+          "response": "2",
+          "outcome": "incorrect",
+          "next_action": "retry"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-start",
+          "phase": "feedback",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "box-start",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-start",
+          "phase": "probe",
+          "variant": 1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "box-start",
+          "response": "2",
+          "outcome": "incorrect",
+          "next_action": "continue"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-start",
+          "phase": "feedback",
+          "variant": 1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "window-sum",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "probe",
+          "variant": -1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "window-sum",
+          "response": "2 6 1",
+          "outcome": "partial",
+          "next_action": "retry_same"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "feedback",
+          "variant": -1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "window-sum",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "probe",
+          "variant": -1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "window-sum",
+          "response": "9",
+          "outcome": "correct",
+          "next_action": "check"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "feedback",
+          "variant": -1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "window-sum",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "probe",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "window-sum",
+          "response": "9",
+          "outcome": "incorrect",
+          "next_action": "retry"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "feedback",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "window-sum",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "probe",
+          "variant": 1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "window-sum",
+          "response": "9",
+          "outcome": "correct",
+          "next_action": "check"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "feedback",
+          "variant": 1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "window-sum",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "probe",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "window-sum",
+          "response": "9",
+          "outcome": "incorrect",
+          "next_action": "retry"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "feedback",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "window-sum",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "probe",
+          "variant": 1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "window-sum",
+          "response": "9",
+          "outcome": "correct",
+          "next_action": "check"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "feedback",
+          "variant": 1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "window-sum",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "probe",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "window-sum",
+          "response": "9",
+          "outcome": "incorrect",
+          "next_action": "continue"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "feedback",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "window-sum",
+          "phase": "done"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "done",
+          "variant": 0,
+          "representation": "box_index"
+        }
+      ],
+      "violations": [
+        {
+          "code": "STEP_REVIEW_HTTP_ERROR",
+          "detail": "{\"detail\":[{\"type\":\"string_type\",\"loc\":[\"body\",\"rating\"],\"msg\":\"Input should be a valid string\",\"input\":3},{\"type\":\"extra_forbidden\",\"loc\":[\"body\",\"presentation_version\"],\"msg\":\"Extra inputs are not p"
+        },
+        {
+          "code": "INVALID_STEP_REVIEW_EVENT",
+          "detail": "review is not bound to the rendered golden step"
+        }
+      ],
+      "end_phase": "done"
+    },
+    {
+      "persona": "confused_then_right",
+      "seed": 0,
+      "session_id": "e3603ab8-692b-4bad-85b8-36b483415692",
+      "observed_path": [
+        "problem",
+        "position",
+        "index",
+        "box_size_k",
+        "box_start_i",
+        "window_sum"
+      ],
+      "events": [
+        {
+          "kind": "view",
+          "step_id": "problem",
+          "phase": "probe",
+          "variant": -1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "position",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "position",
+          "phase": "probe",
+          "variant": -1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "tutor",
+          "step_id": "position",
+          "reply_md": "Point to one part of the box. What do you notice?",
+          "suggested_action": null,
+          "regenerate_presentation": {
+            "schema_version": "study-os.player-presentation.v1",
+            "operation": "regenerate_presentation",
+            "lesson_id": "sliding-window-box",
+            "lesson_revision": "sliding-window-box.v1",
+            "step_id": "position",
+            "concept_id": "sliding-window.position",
+            "variant": -1,
+            "phase": "probe",
+            "card_mode": "probe",
+            "scaffold": 0,
+            "previous_version": 0,
+            "version": 1,
+            "teach_md": "Look at the same box from another angle. Track how the left edge and the index describe one position.",
+            "teach_frames": [
+              {
+                "type": "box_index",
+                "array": [
+                  4,
+                  7,
+                  2,
+                  6,
+                  1,
+                  9
+                ],
+                "show_positions": true,
+                "show_indices": false,
+                "box": null,
+                "arrows": [
+                  {
+                    "at": 2,
+                    "label": "p = 3",
+                    "row": "positions",
+                    "dir": "down"
+                  }
+                ],
+                "sum_label": null
+              }
+            ],
+            "provenance": {
+              "prompt_version": "tutor.v3",
+              "model": "cb/glm-5.3",
+              "route": "cb/glm-5.3",
+              "served": "generated"
+            }
+          },
+          "presentation_version_after": 1
+        },
+        {
+          "kind": "review",
+          "step_id": "position",
+          "golden_concept": "position",
+          "presentation_version": 1,
+          "rating": 3,
+          "why": "The box helped; the index label was unclear.",
+          "http_status": 422
+        },
+        {
+          "kind": "confused",
+          "step_id": "position",
+          "variant": -1
+        },
+        {
+          "kind": "view",
+          "step_id": "position",
+          "phase": "feedback",
+          "variant": -1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "position",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "position",
+          "phase": "probe",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "position",
+          "response": "4",
+          "outcome": "incorrect",
+          "next_action": "retry"
+        },
+        {
+          "kind": "view",
+          "step_id": "position",
+          "phase": "feedback",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "position",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "position",
+          "phase": "probe",
+          "variant": 1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "position",
+          "response": "4",
+          "outcome": "incorrect",
+          "next_action": "retry"
+        },
+        {
+          "kind": "view",
+          "step_id": "position",
+          "phase": "feedback",
+          "variant": 1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "position",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "position",
+          "phase": "probe",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "position",
+          "response": "4",
+          "outcome": "incorrect",
+          "next_action": "continue"
+        },
+        {
+          "kind": "view",
+          "step_id": "position",
+          "phase": "feedback",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "index",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "index",
+          "phase": "probe",
+          "variant": -1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "confused",
+          "step_id": "index",
+          "variant": -1
+        },
+        {
+          "kind": "view",
+          "step_id": "index",
+          "phase": "feedback",
+          "variant": -1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "index",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "index",
+          "phase": "probe",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "index",
+          "response": "2",
+          "outcome": "incorrect",
+          "next_action": "retry"
+        },
+        {
+          "kind": "view",
+          "step_id": "index",
+          "phase": "feedback",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "index",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "index",
+          "phase": "probe",
+          "variant": 1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "index",
+          "response": "2",
+          "outcome": "incorrect",
+          "next_action": "retry"
+        },
+        {
+          "kind": "view",
+          "step_id": "index",
+          "phase": "feedback",
+          "variant": 1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "index",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "index",
+          "phase": "probe",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "index",
+          "response": "2",
+          "outcome": "incorrect",
+          "next_action": "continue"
+        },
+        {
+          "kind": "view",
+          "step_id": "index",
+          "phase": "feedback",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "box-size",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-size",
+          "phase": "probe",
+          "variant": -1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "confused",
+          "step_id": "box-size",
+          "variant": -1
+        },
+        {
+          "kind": "view",
+          "step_id": "box-size",
+          "phase": "feedback",
+          "variant": -1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "box-size",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-size",
+          "phase": "probe",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "box-size",
+          "response": "3",
+          "outcome": "incorrect",
+          "next_action": "retry"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-size",
+          "phase": "feedback",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "box-size",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-size",
+          "phase": "probe",
+          "variant": 1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "box-size",
+          "response": "3",
+          "outcome": "incorrect",
+          "next_action": "retry"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-size",
+          "phase": "feedback",
+          "variant": 1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "box-size",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-size",
+          "phase": "probe",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "box-size",
+          "response": "3",
+          "outcome": "incorrect",
+          "next_action": "continue"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-size",
+          "phase": "feedback",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "box-start",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-start",
+          "phase": "probe",
+          "variant": -1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "confused",
+          "step_id": "box-start",
+          "variant": -1
+        },
+        {
+          "kind": "view",
+          "step_id": "box-start",
+          "phase": "feedback",
+          "variant": -1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "box-start",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-start",
+          "phase": "probe",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "box-start",
+          "response": "2",
+          "outcome": "incorrect",
+          "next_action": "retry"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-start",
+          "phase": "feedback",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "box-start",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-start",
+          "phase": "probe",
+          "variant": 1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "box-start",
+          "response": "2",
+          "outcome": "incorrect",
+          "next_action": "retry"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-start",
+          "phase": "feedback",
+          "variant": 1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "box-start",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-start",
+          "phase": "probe",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "box-start",
+          "response": "2",
+          "outcome": "incorrect",
+          "next_action": "continue"
+        },
+        {
+          "kind": "view",
+          "step_id": "box-start",
+          "phase": "feedback",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "window-sum",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "probe",
+          "variant": -1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "confused",
+          "step_id": "window-sum",
+          "variant": -1
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "feedback",
+          "variant": -1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "window-sum",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "probe",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "window-sum",
+          "response": "9",
+          "outcome": "incorrect",
+          "next_action": "retry"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "feedback",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "window-sum",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "probe",
+          "variant": 1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "window-sum",
+          "response": "9",
+          "outcome": "correct",
+          "next_action": "check"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "feedback",
+          "variant": 1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "window-sum",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "probe",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "window-sum",
+          "response": "9",
+          "outcome": "incorrect",
+          "next_action": "retry"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "feedback",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "window-sum",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "probe",
+          "variant": 1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "window-sum",
+          "response": "9",
+          "outcome": "correct",
+          "next_action": "check"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "feedback",
+          "variant": 1,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "window-sum",
+          "phase": "probe"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "probe",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "attempt",
+          "step_id": "window-sum",
+          "response": "9",
+          "outcome": "incorrect",
+          "next_action": "continue"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "feedback",
+          "variant": 0,
+          "representation": "box_index"
+        },
+        {
+          "kind": "next",
+          "step_id": "window-sum",
+          "phase": "done"
+        },
+        {
+          "kind": "view",
+          "step_id": "window-sum",
+          "phase": "done",
+          "variant": 0,
+          "representation": "box_index"
+        }
+      ],
+      "violations": [
+        {
+          "code": "STEP_REVIEW_HTTP_ERROR",
+          "detail": "{\"detail\":[{\"type\":\"string_type\",\"loc\":[\"body\",\"rating\"],\"msg\":\"Input should be a valid string\",\"input\":3},{\"type\":\"extra_forbidden\",\"loc\":[\"body\",\"presentation_version\"],\"msg\":\"Extra inputs are not p"
+        },
+        {
+          "code": "INVALID_STEP_REVIEW_EVENT",
+          "detail": "review is not bound to the rendered golden step"
+        }
+      ],
+      "end_phase": "done"
+    }
+  ]
+}

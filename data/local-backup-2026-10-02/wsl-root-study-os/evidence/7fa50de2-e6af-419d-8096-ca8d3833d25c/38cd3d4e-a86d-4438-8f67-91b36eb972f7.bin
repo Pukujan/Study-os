@@ -1,0 +1,23 @@
+Exactly — **O(n)**.
+
+Your reason is the important part: inserting at the front changes the position of every existing element, so the amount of work grows with the list size.
+
+Compare these two:
+
+```python
+nums.append(50)      # add at the end
+nums.insert(0, 50)   # add at the front
+```
+
+`append(50)` is usually **O(1) amortized** because Python can place the new value at the end without shifting the existing elements.
+
+`insert(0, 50)` is **O(n)** because the existing elements must shift right.
+
+Now try the reverse operation:
+
+```python
+nums = [10, 20, 30, 40]
+nums.pop(0)
+```
+
+Would removing the first element be **O(1)** or **O(n)**? Why?

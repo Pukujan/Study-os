@@ -1,0 +1,11 @@
+Yes — that’s the right place to continue.
+
+Your last accepted checkpoint specifically says the next step is to implement a sliding-window solution without a scaffold, so we can use that as a clean test of whether the pattern is actually sticking.
+
+I’ll give you one problem and stay hands-off unless you ask for help:
+
+Given a string `s`, return the length of the longest substring without repeating characters.
+
+Example: `s = "abcabcbb"` → `3` because `"abc"` is the longest substring with no repeats.
+
+Write the Python solution from scratch. You can send incomplete code too.

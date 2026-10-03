@@ -1,0 +1,221 @@
+{
+  "base_url": "https://study.design-bakery.com",
+  "started_at": "2026-09-27T15:06:07.4471556Z",
+  "finished_at": "2026-09-27T15:06:36.495Z",
+  "artifact_dir": "D:\\claude\\Study-os\\pcm\\worktree\\SOS-126-sw-multirep\\artifacts\\ux-defect-playwright\\20260927-110607",
+  "counts": {
+    "checks": 23,
+    "defects": 0,
+    "P0": 0,
+    "P1": 0,
+    "P2": 0,
+    "controls_tried": 13,
+    "passes": 23,
+    "fails": 0
+  },
+  "defects": [],
+  "checks": [
+    {
+      "id": "A-home-start-resume",
+      "ok": true,
+      "detail": "Guest Start/Resume/Try controls visible: 4",
+      "severity": "P0"
+    },
+    {
+      "id": "A23-no-classic-dsa-pir-primary",
+      "ok": true,
+      "detail": "classic track attrs=0 primary=0 textPrimary=false",
+      "severity": "P1"
+    },
+    {
+      "id": "catalog-hesi-fractions",
+      "ok": true,
+      "detail": "listed on guest home/try",
+      "severity": "P1"
+    },
+    {
+      "id": "catalog-dsa-big-o",
+      "ok": true,
+      "detail": "listed on guest home/try",
+      "severity": "P1"
+    },
+    {
+      "id": "catalog-sliding-window",
+      "ok": true,
+      "detail": "listed on guest home/try",
+      "severity": "P2"
+    },
+    {
+      "id": "A18-no-blank-white-play",
+      "ok": true,
+      "detail": "play chrome ok; textLen=446",
+      "severity": "P0"
+    },
+    {
+      "id": "player-phase-snapshot",
+      "ok": true,
+      "detail": "teach=true probe=true continue=true url=https://study.design-bakery.com/play/09e25911-6365-42af-8e4e-2edd7d5664eb",
+      "severity": "info"
+    },
+    {
+      "id": "player-teach-or-probe",
+      "ok": true,
+      "detail": "teach=true probe=true continue=true",
+      "severity": "P0"
+    },
+    {
+      "id": "A12c-teach-no-spoil-probe",
+      "ok": true,
+      "detail": "No obvious spoil; choices=0",
+      "severity": "P1"
+    },
+    {
+      "id": "A12-numberline",
+      "ok": true,
+      "detail": "No number-line SVG on this step (arrowish=0)",
+      "severity": "info"
+    },
+    {
+      "id": "regen-explain-again-changes-teach",
+      "ok": true,
+      "detail": "Teach content changed (textLen 178->178)",
+      "severity": "P0"
+    },
+    {
+      "id": "regen-worked-example-changes",
+      "ok": true,
+      "detail": "Worked example surfaced (tag=true)",
+      "severity": "P0"
+    },
+    {
+      "id": "companion-chips-count",
+      "ok": true,
+      "detail": "5",
+      "severity": "info"
+    },
+    {
+      "id": "companion-chips-work",
+      "ok": true,
+      "detail": "Chip click changed surface",
+      "severity": "P1"
+    },
+    {
+      "id": "A13-chat-ack",
+      "ok": true,
+      "detail": "Tutor/system ack within 20000ms",
+      "severity": "P1"
+    },
+    {
+      "id": "A14-voice-ok",
+      "ok": true,
+      "detail": "Control \"Voice input\" toggled state",
+      "severity": "info"
+    },
+    {
+      "id": "A14-voice-ok",
+      "ok": true,
+      "detail": "Control \"Turn on read aloud\" toggled state",
+      "severity": "info"
+    },
+    {
+      "id": "review-no-persist-before-submit",
+      "ok": true,
+      "detail": "No submitted receipt before Submit",
+      "severity": "P1"
+    },
+    {
+      "id": "review-persist-after-submit",
+      "ok": true,
+      "detail": "Submitted receipt visible after Submit",
+      "severity": "P1"
+    },
+    {
+      "id": "A20-back-exit-home",
+      "ok": true,
+      "detail": "Returned to menu/home at https://study.design-bakery.com/",
+      "severity": "P0"
+    },
+    {
+      "id": "player-back-control",
+      "ok": true,
+      "detail": "player.back not shown on sampled step (can_go_back may be false)",
+      "severity": "info"
+    },
+    {
+      "id": "A12-fractions-step-0",
+      "ok": true,
+      "detail": "lines=0 arrows=0 fracBar=false",
+      "severity": "info"
+    },
+    {
+      "id": "console-errors",
+      "ok": true,
+      "detail": "Executing inline script violates the following Content Security Policy directive 'script-src 'self''. Either the 'unsafe-inline' keyword, a hash ('sha256-5wpErWKRYpcEecHyzvbxJbcb9NpW5dq5CyMWDstRxtA='), or a nonce ('nonce-...') is required to enable inline execution. The action has been blocked. | Loading the script 'https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495' violates the following Content Security Policy directive: \"script-src 'self'\". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback. The action has been blocked. | Failed to load resource: the server responded with a status of 401 () | Executing inline script violates the following Content Security Policy directive 'script-src 'self''. Either the 'unsafe-inline' keyword, a hash ('sha256-5wpErWKRYpcEecHyzvbxJbcb9NpW5dq5CyMWDstRxtA='), or a nonce ('nonce-...') is required to enable inline execution. The action has been blocked. | Loading the script 'https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495' violates the following Content Security Policy directive: \"script-src 'self'\". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback. The action has been blocked.",
+      "severity": "info"
+    }
+  ],
+  "controls_tried": [
+    {
+      "t": "2026-09-27T15:06:13.817Z",
+      "name": "home.start-or-resume",
+      "count": 4
+    },
+    {
+      "t": "2026-09-27T15:06:13.827Z",
+      "name": "try.start-big-o",
+      "action": "click"
+    },
+    {
+      "t": "2026-09-27T15:06:17.490Z",
+      "name": "Explain again",
+      "action": "click"
+    },
+    {
+      "t": "2026-09-27T15:06:20.134Z",
+      "name": "Worked example",
+      "action": "click"
+    },
+    {
+      "t": "2026-09-27T15:06:23.813Z",
+      "name": "open-companion-pet",
+      "action": "click"
+    },
+    {
+      "t": "2026-09-27T15:06:24.855Z",
+      "name": "companion-chip-first",
+      "text": "Show a worked example\nEasier\nHarder\nExplain again"
+    },
+    {
+      "t": "2026-09-27T15:06:27.422Z",
+      "name": "companion-chat-send"
+    },
+    {
+      "t": "2026-09-27T15:06:27.664Z",
+      "name": "voice-control",
+      "label": "Voice input"
+    },
+    {
+      "t": "2026-09-27T15:06:28.132Z",
+      "name": "voice-control",
+      "label": "Turn on read aloud"
+    },
+    {
+      "t": "2026-09-27T15:06:28.745Z",
+      "name": "review-score-3"
+    },
+    {
+      "t": "2026-09-27T15:06:29.106Z",
+      "name": "review-submit"
+    },
+    {
+      "t": "2026-09-27T15:06:30.774Z",
+      "name": "nav-home-brand",
+      "action": "click"
+    },
+    {
+      "t": "2026-09-27T15:06:33.660Z",
+      "name": "start-fractions",
+      "action": "click"
+    }
+  ]
+}

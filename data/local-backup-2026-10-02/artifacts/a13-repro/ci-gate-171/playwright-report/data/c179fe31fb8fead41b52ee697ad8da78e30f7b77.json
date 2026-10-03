@@ -1,0 +1,91 @@
+{
+  "schema": "study_os.e2e.vision_gate_receipt/v0.1",
+  "run_id": "d15f5c4d-12b8-49e2-8e09-42a2542e6de7",
+  "git_sha": "89c271230a4aee742cbfbc89506a0b372c84fc24",
+  "started_at": "2026-09-27T07:43:31.843Z",
+  "finished_at": "2026-09-27T07:45:44.047Z",
+  "projects": [
+    "mobile"
+  ],
+  "checkpoints": [
+    {
+      "id": "review.panel.initial",
+      "project": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "screenshot": ".artifacts/mobile/review.panel.initial.png",
+      "image_sha256": "38be6be8cd8e01e90602928e720e35cab5ca04ff54eb76b16769902cca95fe3f",
+      "deterministic": "PASS",
+      "vision_code": "VISION_PASS",
+      "vision_locator": "Bottom step-review panel shows 1–5 rating controls, Why this rating? field, and Submit button.",
+      "vision_model": "ali/qwen3.8-flash",
+      "vision_latency_ms": 23109
+    },
+    {
+      "id": "review.receipt.after-submit",
+      "project": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "screenshot": ".artifacts/mobile/review.receipt.after-submit.png",
+      "image_sha256": "3f24b3866238792f1be82fc9755c5a2c5975a0d8b6654ce8312c299d5d933aeb",
+      "deterministic": "PASS",
+      "vision_code": "VISION_PASS",
+      "vision_locator": "Bottom panel shows \"How useful was this step?\" with numbered circles 1-5, a \"Why this rating?\" text field, and a Submit button.",
+      "vision_model": "ali/qwen3.8-flash",
+      "vision_latency_ms": 7685
+    }
+  ],
+  "holdout": {
+    "result": "OK",
+    "cases": [
+      {
+        "id": "holdout-blank-canvas",
+        "screenshot": ".artifacts/mobile/holdout-blank-canvas.png",
+        "expect": "VISION_FAIL_BLANK",
+        "vision_code": "VISION_FAIL_BLANK",
+        "vision_model": "ali/qwen3.8-flash",
+        "result": "OK"
+      },
+      {
+        "id": "holdout-review-panel-hidden",
+        "screenshot": ".artifacts/mobile/holdout-review-panel-hidden.png",
+        "expect": "VISION_FAIL_PARTIAL",
+        "vision_code": "VISION_FAIL_WRONG_TARGET",
+        "vision_model": "ali/qwen3.8-flash",
+        "result": "OK"
+      },
+      {
+        "id": "holdout-unrelated-screen",
+        "screenshot": ".artifacts/mobile/holdout-unrelated-screen.png",
+        "expect": "VISION_FAIL_WRONG_TARGET",
+        "vision_code": "VISION_FAIL_WRONG_TARGET",
+        "vision_model": "ali/qwen3.8-flash",
+        "result": "OK"
+      }
+    ]
+  },
+  "metamorphic": [
+    {
+      "id": "M-viewport",
+      "project": "mobile",
+      "result": "PASS"
+    },
+    {
+      "id": "M-submit",
+      "project": "mobile",
+      "result": "PASS"
+    },
+    {
+      "id": "M-noop",
+      "project": "mobile",
+      "result": "PASS"
+    }
+  ],
+  "verdict": "RED",
+  "vision_run": true,
+  "notes": []
+}

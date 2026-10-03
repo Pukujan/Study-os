@@ -1,0 +1,25 @@
+This one is **O(1)**.
+
+`-1` is still an **index**, not a value to search for. In Python, negative indexes are just positions counted from the end:
+
+```python
+nums = [4, 8, 15, 16, 23, 42]
+
+nums[-1]  # 42
+nums[-2]  # 23
+```
+
+Python can calculate where `-1` points directly, so it does not scan through the list.
+
+The distinction to lock in is:
+- `nums[index]` → direct access → **O(1)**
+- `value in nums` → search by value → **O(n)**
+
+Try this one:
+
+```python
+nums = [10, 20, 30, 40]
+nums.insert(0, 5)
+```
+
+Would `insert(0, 5)` be **O(1)** or **O(n)**? Why?

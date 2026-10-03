@@ -1,0 +1,21 @@
+Right now, Study OS is reachable, but what it returns as the **canonical saved learner state is surprisingly small and clearly stale** compared with what we actually did in this chat.
+
+What it currently has saved at the active checkpoint is:
+
+- Focus: **basic Python and DSA foundations**
+- Python level: **unknown_baseline**
+- DSA level: **unknown_baseline**
+- Assistance mode: **guided discovery**
+- DSA visuals: **enabled**
+- Solution policy: **hints before full solution**
+- Next action: **baseline Python exercise, then a visual DSA introduction**
+- Current checkpoint: `20642652-a5a6-4d5f-9008-88e140daea36`
+- Current session: `24a10bc6-a3e2-4fe4-a7a7-eb0efb8b8036`
+
+So the important finding is: **Study OS did not durably capture most of the learning sequence we went through while the MCP was returning 502s.**
+
+That includes a lot of the meaningful progress around dictionaries, API-request exercises, `enumerate`, Two Sum precursors, and especially the representation insights like `seen` vs `box`.
+
+As for **exactly how much data** is stored—number of attempts, events, assessments, rows, etc.—the Study OS actions I have access to do **not expose a database count/statistics endpoint**, so I can’t honestly give you a number like “47 events” or “12 KB.” I can only inspect the current canonical state it returns.
+
+The good news is that the MCP is back now, so we can start repairing the stale state by recording the important durable learning moments from this conversation.

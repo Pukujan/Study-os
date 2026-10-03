@@ -1,0 +1,40 @@
+{
+  "backup_version": "0.1.0",
+  "schema_version": 1,
+  "contract_version": "0.1.0",
+  "created_at": "2026-09-04T02:11:34.452231Z",
+  "database_sha256": "530794cbb1ff130e8a200f246ddc604e8800fb5a3bbbcbdd50e0fd657e8d98bc",
+  "evidence_sha256": {
+    "0446d18d-046b-4b8b-a00f-f2f629787bda/064016f6-ef29-4c6d-87c6-193f9135954a.bin": "3be549c1b88d7d9b98cedb16c31d2d0dcef7fcce1515ea19c0e07a78bd381a19",
+    "0446d18d-046b-4b8b-a00f-f2f629787bda/0bd99142-1e52-461a-b067-f9050db7e73a.bin": "bf4e6f26fa7714d95f68efcd5fede7fe47bee5ab6966e60b5dd8c09095ed23b8",
+    "0446d18d-046b-4b8b-a00f-f2f629787bda/e5c1e21d-796e-4750-b39d-0861929afbf2.bin": "108467158587979d1465bd164a178f70c8d47d05f3ced3dc67a6bb6c02fed832",
+    "0446d18d-046b-4b8b-a00f-f2f629787bda/e6e7f791-20e7-40ea-af67-803e2306ba4b.bin": "32f011c5bd20b1a8fdb1695c5da36f4c24e54f46c6fa856b2801e4a5f27588d5",
+    "86c11f52-823c-4ecf-9609-9f3de5d1b59d/4717f581-d94e-4482-bace-923a3baa10ef.bin": "133e2c810b91913cd4032986865dc4df989ca556b6c09b2612fb235e22228b14",
+    "86c11f52-823c-4ecf-9609-9f3de5d1b59d/b365b4c6-abf8-45ea-8447-03850bda6e8d.bin": "c1542834b6685e3a4104b6cba80f043f62c204b219e363ec15cea252592e42e6",
+    "967e7531-cc21-470a-8746-00370932b540/45077574-41de-4d39-abbc-c6b3249916ab.bin": "85db0129b5658ae5b9eca59ad85ba01ebfca62bcd41e2c7cb8d98da04133cb0f",
+    "967e7531-cc21-470a-8746-00370932b540/84010903-ed0a-437b-92f4-c4f8a91c2373.bin": "3c0cec1996188c178fef976b5ab2f07a2f6628b4d1363f930930fbee0d321bcf",
+    "967e7531-cc21-470a-8746-00370932b540/f0d29214-f4bd-40ff-a9c6-96b0a91e0330.bin": "d7bab2bff009a1f91b87e131b6c5d2095c9cf96ddec28d648c116a5eb374f046",
+    "967e7531-cc21-470a-8746-00370932b540/fda09a3e-6736-43a1-8d09-5c97fcfecdfa.bin": "d9d59def16ad83379581a806a09a34b2e3e18d37fcf03def70bf1f45c44de33c"
+  },
+  "record_counts": {
+    "subjects": 3,
+    "projects": 4,
+    "domains": 5,
+    "concepts": 0,
+    "sessions": 6,
+    "raw_artifacts": 10,
+    "messages": 10,
+    "learning_events": 6,
+    "episodes": 0,
+    "attempts": 29,
+    "assessments": 1,
+    "representations": 0,
+    "interventions": 0,
+    "representation_outcomes": 0,
+    "checkpoints": 3,
+    "subject_current_checkpoint": 2,
+    "retention_probes": 0,
+    "fossil_exports": 0,
+    "idempotency_records": 55
+  }
+}

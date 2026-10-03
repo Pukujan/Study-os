@@ -1,0 +1,45 @@
+No problem — slicing is just “take a chunk from this sequence.”
+
+The basic form is:
+
+```python
+s[start:end]
+```
+
+It includes the `start` index, but stops **before** the `end` index.
+
+For:
+
+```python
+s = "python"
+```
+
+the indexes are:
+
+```text
+index:  0 1 2 3 4 5
+char:   p y t h o n
+```
+
+So:
+
+```python
+s[1:4]
+```
+
+means “start at index 1, stop before index 4,” which gives:
+
+```text
+y t h
+```
+
+So the result is **"yth"**.
+
+A few useful patterns:
+- `s[:3]` → from the beginning up to, but not including, index 3
+- `s[2:]` → from index 2 to the end
+- `s[:]` → the whole string
+
+The rule to remember is: **start included, end excluded**.
+
+Quick check: if `s = "python"`, what does `s[2:5]` return?

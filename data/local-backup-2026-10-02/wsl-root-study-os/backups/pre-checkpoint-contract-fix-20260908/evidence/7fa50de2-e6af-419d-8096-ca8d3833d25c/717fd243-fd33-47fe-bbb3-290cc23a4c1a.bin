@@ -1,0 +1,17 @@
+Exactly — **O(n)**.
+
+You broke it down correctly:
+- `nums[2]` → **O(1)**
+- `50 in nums` → **O(n)**
+- together → `O(1 + n)` → **O(n)**
+
+That means you’ve got the core array/list complexity ideas down.
+
+Next, let’s move into **strings**. In Python, strings are also indexable:
+
+```python
+s = "hello"
+print(s[1])
+```
+
+What gets printed, and what is the time complexity of `s[1]`?

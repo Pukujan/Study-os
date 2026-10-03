@@ -1,0 +1,31 @@
+Yes — strings have indexes too.
+
+Think of a string as a sequence of characters. `"hello"` is one string value, but inside that string are five characters:
+
+```text
+index:  0 1 2 3 4
+char:   h e l l o
+```
+
+So:
+
+```python
+s = "hello"
+
+s[0]  # 'h'
+s[1]  # 'e'
+s[2]  # 'l'
+s[4]  # 'o'
+```
+
+That means `s[1]` prints **`e`**.
+
+And just like list indexing, accessing a character by a known index is **O(1)**.
+
+The important mental model is:
+- a list is a sequence of elements
+- a string is a sequence of characters
+
+One major difference we’ll get to next: Python strings are **immutable**, meaning you can read `s[1]`, but you cannot directly do `s[1] = "a"`.
+
+Quick check: if `s = "python"`, what does `s[3]` return?

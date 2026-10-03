@@ -1,0 +1,14 @@
+Correct — `nums[4]` is **O(1)** because Python can jump directly to that index instead of scanning through the list.
+
+The value printed is **23** because indexing starts at `0`:
+
+`0→4, 1→8, 2→15, 3→16, 4→23`
+
+Next check:
+
+```python
+nums = [4, 8, 15, 16, 23, 42]
+print(23 in nums)
+```
+
+What is the time complexity of `23 in nums`, and why?

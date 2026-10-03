@@ -1,0 +1,26 @@
+Not as a true append-only raw transcript, at least not through the Study OS actions I currently have.
+
+What Study OS exposes is durable structured storage for things like:
+
+- learning events
+- attempts
+- assessments
+- representation interventions/outcomes
+- checkpoints
+- retention probes
+
+But I do **not** have an action like `append_transcript`, `store_message`, or `get_full_transcript`.
+
+So right now the distinction is:
+
+```
+Chat transcript
+→ verbatim conversation history
+
+Study OS
+→ structured durable learner evidence/state
+```
+
+We *could* store important transcript moments as `record_learning_event` payloads, including quoted snippets, but that would be a derived record, not a guaranteed complete appendable transcript.
+
+If you want Study OS itself to become the durable conversation substrate, then yes, adding an append-only transcript/event-log primitive would be a pretty important capability.

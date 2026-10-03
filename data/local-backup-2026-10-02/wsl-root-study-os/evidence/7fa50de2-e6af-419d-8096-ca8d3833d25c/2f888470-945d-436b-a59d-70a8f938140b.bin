@@ -1,0 +1,5 @@
+Got it — we’ll stop here.
+
+Your turns were durably captured, but the new checkpoint failed to save, so I won’t pretend it was updated. The last accepted checkpoint is still `5785adfd-d159-4df8-a8d4-8264313a2aff` with next action `implement without scaffold`.
+
+For this refresher session, the practical resume point is **string slicing**, starting again with `s[1:3]`, then continuing arrays and strings.

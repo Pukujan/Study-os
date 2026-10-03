@@ -1,0 +1,17 @@
+Great — try this one:
+
+```python
+for i in range(len(nums)):
+    print(nums[i])
+
+for i in range(10):
+    print(i)
+```
+
+What is the overall time complexity?
+
+A) **O(1)**
+B) **O(n)**
+C) **O(n²)**
+
+And tell me why.

@@ -1,0 +1,137 @@
+{
+  "schema": "study_os.e2e.vision_gate_receipt/v0.1",
+  "run_id": "d032e1c9-cf2a-4b1f-9aa1-6a01ac1043db",
+  "git_sha": "d48151a92df5f040ebbd517940d7d96b3a4147eb",
+  "started_at": "2026-09-27T07:52:05.386Z",
+  "finished_at": "2026-09-27T07:55:46.065Z",
+  "projects": [
+    "mobile",
+    "desktop"
+  ],
+  "checkpoints": [
+    {
+      "id": "review.panel.initial",
+      "project": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "screenshot": ".artifacts/mobile/review.panel.initial.png",
+      "image_sha256": "bfe3309188a7f8f0283e5b0a5fd1168b6abad6f0b2afb3211ad4fcaa9ab24dce",
+      "deterministic": "PASS",
+      "vision_code": "VISION_PASS",
+      "vision_locator": "Bottom panel: \"How useful was this step?\" with rating circles 1-5, \"Why this rating?\" text field, and Submit button all visible.",
+      "vision_model": "ali/qwen3.8-flash",
+      "vision_latency_ms": 7424
+    },
+    {
+      "id": "review.receipt.after-submit",
+      "project": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "screenshot": ".artifacts/mobile/review.receipt.after-submit.png",
+      "image_sha256": "79730a74013689f8bf62fd934423103cbc4a1e0927f40f62743b0f60adce8f53",
+      "deterministic": "PASS",
+      "vision_code": "VISION_PASS",
+      "vision_locator": "Bottom panel titled \"How useful was this step?\" shows five numbered circular controls (1–5), a \"Why this rating?\" text field with placeholder, and a Submit button.",
+      "vision_model": "ali/qwen3.8-flash",
+      "vision_latency_ms": 18515
+    },
+    {
+      "id": "review.panel.initial",
+      "project": "desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "screenshot": ".artifacts/desktop/review.panel.initial.png",
+      "image_sha256": "2b93b18d6fe1a681231fc4c8c11f37b10bc0f50065ab31751b3854a3f45ae3ac",
+      "deterministic": "PASS",
+      "vision_code": "VISION_PASS",
+      "vision_locator": "Bottom panel \"How useful was this step?\" shows rating circles 1-5, the \"Why this rating?\" text field, and a Submit button.",
+      "vision_model": "ali/qwen3.8-flash",
+      "vision_latency_ms": 8260
+    },
+    {
+      "id": "review.receipt.after-submit",
+      "project": "desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "screenshot": ".artifacts/desktop/review.receipt.after-submit.png",
+      "image_sha256": "381170c4caebbc0a411105fb39713cb69822f58a5b0b475b1d9b6c6a5f8f2cb0",
+      "deterministic": "PASS",
+      "vision_code": "VISION_PASS",
+      "vision_locator": "Step-review panel at bottom: five numbered rating circles (1-5), \"Why this rating?\" text field, and Submit button all visible.",
+      "vision_model": "ali/qwen3.8-flash",
+      "vision_latency_ms": 10892
+    }
+  ],
+  "holdout": {
+    "result": "OK",
+    "cases": [
+      {
+        "id": "holdout-blank-canvas",
+        "screenshot": ".artifacts/desktop/holdout-blank-canvas.png",
+        "expect": "VISION_FAIL_BLANK",
+        "vision_code": "VISION_FAIL_BLANK",
+        "vision_model": "ali/qwen3.8-flash",
+        "result": "OK"
+      },
+      {
+        "id": "holdout-review-panel-hidden",
+        "screenshot": ".artifacts/desktop/holdout-review-panel-hidden.png",
+        "expect": "VISION_FAIL_PARTIAL",
+        "vision_code": "VISION_FAIL_WRONG_TARGET",
+        "vision_model": "ali/qwen3.8-flash",
+        "result": "OK"
+      },
+      {
+        "id": "holdout-unrelated-screen",
+        "screenshot": ".artifacts/desktop/holdout-unrelated-screen.png",
+        "expect": "VISION_FAIL_WRONG_TARGET",
+        "vision_code": "VISION_FAIL_WRONG_TARGET",
+        "vision_model": "ali/qwen3.8-flash",
+        "result": "OK"
+      }
+    ]
+  },
+  "metamorphic": [
+    {
+      "id": "M-viewport",
+      "project": "mobile",
+      "result": "PASS"
+    },
+    {
+      "id": "M-submit",
+      "project": "mobile",
+      "result": "PASS"
+    },
+    {
+      "id": "M-noop",
+      "project": "mobile",
+      "result": "PASS"
+    },
+    {
+      "id": "M-viewport",
+      "project": "desktop",
+      "result": "PASS"
+    },
+    {
+      "id": "M-submit",
+      "project": "desktop",
+      "result": "PASS"
+    },
+    {
+      "id": "M-noop",
+      "project": "desktop",
+      "result": "PASS"
+    }
+  ],
+  "verdict": "GREEN",
+  "vision_run": true,
+  "notes": []
+}

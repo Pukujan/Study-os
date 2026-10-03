@@ -1,0 +1,2 @@
+for i, num in enumerate(nums):
+ if seen[num] == num? like this?

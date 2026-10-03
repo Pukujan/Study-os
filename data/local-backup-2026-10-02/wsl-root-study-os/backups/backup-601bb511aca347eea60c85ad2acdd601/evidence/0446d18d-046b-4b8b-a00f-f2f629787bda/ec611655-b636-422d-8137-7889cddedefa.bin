@@ -1,0 +1,33 @@
+Yeah, and for your learning style I’d avoid that version for now.
+
+Use this instead:
+
+```
+for i, num in enumerate(nums):
+```
+
+because it gives you both things directly:
+
+```
+i   = index
+num = value
+```
+
+Then Two Sum becomes:
+
+```
+for i, num in enumerate(nums):
+    for j in range(i + 1, len(nums)):
+        if nums[j] == target - num:
+            return [i, j]
+```
+
+That removes one extra mental translation:
+
+```
+nums[i]
+```
+
+You already have the value as `num`.
+
+So when we practice, I’ll prefer the clearest version first, not necessarily the version LeetCode happens to show.

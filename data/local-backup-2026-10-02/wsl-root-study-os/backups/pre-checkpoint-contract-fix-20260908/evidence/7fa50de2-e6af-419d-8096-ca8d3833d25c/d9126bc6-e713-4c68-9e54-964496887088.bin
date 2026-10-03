@@ -1,0 +1,41 @@
+That makes sense. We’ll restart from the foundations instead of forcing sliding window before the basics feel solid again.
+
+Here’s the order I suggest:
+1. What DSA is + time/space complexity
+2. Arrays and strings
+3. Hash maps / dictionaries and sets
+4. Two pointers
+5. Sliding window
+6. Stacks and queues
+7. Linked lists
+8. Recursion
+9. Trees / BSTs
+10. Heaps
+11. Graphs
+12. Sorting, binary search, and common patterns
+
+We’ll keep it practical: short explanation → tiny example → you try one small problem. I’ll only increase difficulty when the previous idea looks comfortable.
+
+Let’s begin with the very first foundation: **time complexity**.
+
+If you have a list with `n` items:
+- Looking at one known index, like `arr[3]`, is **O(1)**.
+- Looping through the whole list once is **O(n)**.
+- A loop inside another full loop is usually **O(n²)**.
+
+Example:
+```python
+for x in nums:
+    print(x)
+```
+This is **O(n)** because the amount of work grows with the number of items.
+
+Now your first refresher question:
+
+```python
+for i in range(len(nums)):
+    for j in range(len(nums)):
+        print(nums[i], nums[j])
+```
+
+What time complexity do you think this is: **O(1), O(n), or O(n²)**?

@@ -1,0 +1,49 @@
+Yes — this is an important concept, and it’s worth slowing down here.
+
+The key difference is **index lookup vs value search**.
+
+If you write:
+
+```python
+nums = [4, 8, 15, 16, 23, 42]
+nums[4]
+```
+
+you are telling Python exactly **where** to look: index `4`. A Python list stores its elements in an ordered sequence, so Python can calculate the location of index `4` directly. It does not need to inspect indexes `0`, `1`, `2`, and `3` first.
+
+That is why `nums[4]` is **O(1)**.
+
+But if you write:
+
+```python
+23 in nums
+```
+
+you are not giving Python the position. You are asking: **“Does the value 23 exist somewhere in this list?”**
+
+Python may have to check:
+
+```text
+index 0 → is 4 equal to 23? no
+index 1 → is 8 equal to 23? no
+index 2 → is 15 equal to 23? no
+index 3 → is 16 equal to 23? no
+index 4 → is 23 equal to 23? yes
+```
+
+If the value were at the very end—or not present at all—it could have to inspect all `n` elements. That makes list membership/search **O(n)** in the worst case.
+
+Think of it like hotel rooms:
+
+- `nums[4]` = “Go to room 4.” You already know the room number → **O(1)**.
+- `23 in nums` = “Find the guest named 23, but I don’t know their room.” You may need to check room after room → **O(n)**.
+
+One subtle point: when we say something like `nums[n]`, `n` here is being used as an **index value**. The letter `n` does not automatically mean the operation is O(n). Big-O is about how much work the operation performs as the input gets larger.
+
+So the rule to remember is:
+
+**Known index → direct access → O(1)**
+
+**Known value but unknown position in a list → search → O(n)**
+
+That distinction is foundational for understanding why arrays/lists behave differently from hash maps later.

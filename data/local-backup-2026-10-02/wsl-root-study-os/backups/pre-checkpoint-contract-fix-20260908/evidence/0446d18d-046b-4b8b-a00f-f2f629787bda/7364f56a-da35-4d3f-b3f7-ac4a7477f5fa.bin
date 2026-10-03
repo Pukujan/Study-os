@@ -1,0 +1,8 @@
+Yep, that lines up. The screenshot is from LeetCode, and the version you saw is just one valid coding style for Two Sum.
+
+What matters for us is separating:
+
+- the **problem-solving idea**
+- the **LeetCode author’s representation of that idea**
+
+So when we use LeetCode going forward, I can translate their solution into your preferred style first, then show the original form afterward. That should make it easier to learn the algorithm without getting stuck decoding someone else’s syntax.

@@ -1,0 +1,36 @@
+No, Two Sum is actually **very close now**. You already know almost everything it needs:
+
+- `for i, num in enumerate(nums)`
+- dictionaries
+- `if x in seen`
+- storing something like `seen[num] = i`
+
+The only extra idea is:
+
+```
+needed = target - num
+```
+
+So I’d put Two Sum right after a couple more tiny dictionary/index drills—not way later.
+
+Study OS is still returning a 502, so I can’t sync the canonical checkpoint yet.
+
+Let’s continue with the exact precursor to Two Sum:
+
+```
+nums = [4, 7, 2, 9]
+seen = {}
+```
+
+Write only the loop that stores:
+
+```
+{
+    4: 0,
+    7: 1,
+    2: 2,
+    9: 3
+}
+```
+
+Use `enumerate()`.

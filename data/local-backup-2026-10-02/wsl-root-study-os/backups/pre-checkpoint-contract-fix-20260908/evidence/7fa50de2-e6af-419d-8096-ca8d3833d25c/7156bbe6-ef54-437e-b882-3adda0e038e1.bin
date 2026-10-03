@@ -1,0 +1,15 @@
+Yes — you identified both parts correctly.
+
+The first loop is **O(n)** and the nested loops are **O(n²)**. So together we get:
+
+`O(n + n²)`
+
+When Big-O terms are added, we keep the term that grows fastest. Since `n²` grows much faster than `n`, the overall complexity is:
+
+**O(n²)**
+
+So a good rule is: when different sequential sections have different complexities, the **largest-growing term dominates**.
+
+For example, `O(n) + O(n²) + O(1)` becomes **O(n²)**.
+
+Want to try one more Big-O example before we move on to arrays?

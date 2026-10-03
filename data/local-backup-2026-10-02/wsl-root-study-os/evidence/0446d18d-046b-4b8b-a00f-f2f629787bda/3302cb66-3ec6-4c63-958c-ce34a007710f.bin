@@ -1,0 +1,41 @@
+Yeah, `box` is clearer. We’ll stick with that for now.
+
+```
+box = {}
+box[7] = 1
+```
+
+Just think:
+
+```
+box[7] = 1
+```
+
+means “put `1` in the box under label `7`.”
+
+So for Two Sum we can literally use:
+
+```
+box = {}
+
+for i, num in enumerate(nums):
+    box[num] = i
+```
+
+No fancy name yet.
+
+Tiny check:
+
+```
+box = {}
+box[4] = 0
+box[7] = 1
+```
+
+What does:
+
+```
+print(box[7])
+```
+
+print?

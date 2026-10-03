@@ -1,0 +1,5 @@
+The **new Study OS checkpoint** for today’s refresher failed to save — not the conversation itself.
+
+Your actual chat turns were captured. What failed was the separate summary snapshot I tried to create at the end, which would have recorded things like: “Big-O refreshed, array/list basics refreshed, string slicing still needs review, resume from slicing next time.”
+
+So nothing you said was lost; it just means Study OS did not accept that new end-of-session progress checkpoint.

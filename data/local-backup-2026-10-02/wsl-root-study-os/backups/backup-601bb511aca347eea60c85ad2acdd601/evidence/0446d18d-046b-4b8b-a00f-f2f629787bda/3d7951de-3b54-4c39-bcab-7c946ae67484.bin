@@ -1,0 +1,28 @@
+Correct.
+
+```
+print(box[7])
+```
+
+prints:
+
+```
+1
+```
+
+Study OS still returned a 502, so this wasn’t saved there.
+
+Next tiny one:
+
+```
+box = {}
+box[4] = 0
+box[7] = 1
+box[2] = 2
+```
+
+What does this print?
+
+```
+print(box[2])
+```

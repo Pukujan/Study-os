@@ -1,0 +1,21 @@
+Not quite. Since `seen` starts empty, don’t check `seen[num]` yet — first store the number and its index:
+
+```
+for i, num in enumerate(nums):
+    seen[num] = i
+```
+
+That gives:
+
+```
+{
+    4: 0,
+    7: 1,
+    2: 2,
+    9: 3
+}
+```
+
+Study OS still returned a 502, so I couldn’t save this attempt.
+
+Try one tiny variation: with the same `seen` dictionary, how would you get the index where `7` was seen?

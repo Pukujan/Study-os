@@ -1,0 +1,14 @@
+Yep. Study OS says continuity is `checkpoint_plus_recent_evidence`.
+
+The **canonical checkpoint** is still on **sliding window**:
+- state prediction: passed unaided
+- Python implementation: not tested
+- next action: **implement without scaffold**
+
+But the **recent chat evidence** shows we had moved into **dictionaries / Two Sum prep** after that:
+- you were using `for i, num in enumerate(nums)`
+- using `seen` for a dictionary was confusing because you associate `seen` with sets
+- `index_by_num` also felt too abstract; the **box example** was much clearer to you
+- your last point was that decoding someone else’s variable names can distract from actually solving the problem, which is exactly where an intermediate representation can help
+
+So the best place to resume is **right before Two Sum**, using the box/plain-language model instead of opaque dictionary names. I’m treating that recent transcript as source evidence only, not as a mastery claim.

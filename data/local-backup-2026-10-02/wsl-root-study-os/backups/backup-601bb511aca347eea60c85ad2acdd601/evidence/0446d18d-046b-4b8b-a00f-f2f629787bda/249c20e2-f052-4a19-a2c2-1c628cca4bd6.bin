@@ -1,0 +1,14 @@
+Okay. Forget `seen`, forget Two Sum, forget `enumerate` for a second.
+
+Just this:
+
+```
+box = {}
+box[7] = 1
+
+print(box)
+```
+
+What do you think it prints?
+
+Don’t explain why—just guess.

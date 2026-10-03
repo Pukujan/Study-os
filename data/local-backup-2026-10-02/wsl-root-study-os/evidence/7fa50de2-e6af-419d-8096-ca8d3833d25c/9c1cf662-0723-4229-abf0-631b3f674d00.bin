@@ -1,0 +1,19 @@
+Close — `s[2:5]` returns **`"tho"`**, not `"thon"`.
+
+Here are the indexes again:
+
+```text
+index:  0 1 2 3 4 5
+char:   p y t h o n
+```
+
+`s[2:5]` means:
+- start at index `2` → `t`
+- include indexes `2`, `3`, and `4`
+- stop **before** index `5`
+
+So you get `t + h + o` → **`"tho"`**.
+
+The easiest slicing rule to memorize is: **left side included, right side excluded**.
+
+Try one more: what does `s[:4]` return if `s = "python"`?

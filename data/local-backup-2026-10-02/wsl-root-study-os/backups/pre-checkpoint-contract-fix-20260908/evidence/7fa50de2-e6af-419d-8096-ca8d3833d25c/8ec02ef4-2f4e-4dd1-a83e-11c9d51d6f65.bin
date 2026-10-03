@@ -1,0 +1,17 @@
+This one is actually **O(n)**.
+
+The important difference is:
+- `nums[4]` means “go directly to index 4” → **O(1)**
+- `23 in nums` means “search the list until you find 23” → **O(n)** in the worst case
+
+Python doesn’t know where `23` is ahead of time, so it may have to check many elements one by one.
+
+For example, in:
+```python
+nums = [4, 8, 15, 16, 23, 42]
+```
+it checks `4`, then `8`, then `15`, and so on until it finds `23`.
+
+So the shortcut is: **known index = O(1), searching a list by value = O(n)**.
+
+Quick check: what about `nums[-1]` — **O(1)** or **O(n)**?

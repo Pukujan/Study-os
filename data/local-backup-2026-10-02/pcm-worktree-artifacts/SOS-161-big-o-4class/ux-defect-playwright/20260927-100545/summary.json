@@ -1,0 +1,20 @@
+{
+  "schema_version": "ux-defect-report.v1",
+  "run_id": "pw-20260927-100545",
+  "source": "playwright",
+  "started_at": "2026-09-27T14:05:45.1190604Z",
+  "finished_at": "2026-09-27T14:06:14.770Z",
+  "base_url": "https://study.design-bakery.com",
+  "agent": {
+    "name": "ux-defect-pass.cjs",
+    "harness_version": "1.0.0"
+  },
+  "controls_exercised": 13,
+  "pass": true,
+  "catch_rate": 0,
+  "artifacts": {
+    "report_md": "report.md",
+    "screenshots_dir": "screenshots"
+  },
+  "defects": []
+}

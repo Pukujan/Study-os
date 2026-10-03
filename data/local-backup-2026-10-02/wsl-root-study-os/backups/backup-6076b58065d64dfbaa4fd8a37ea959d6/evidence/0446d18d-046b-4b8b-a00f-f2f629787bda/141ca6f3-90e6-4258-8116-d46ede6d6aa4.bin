@@ -1,0 +1,39 @@
+`seen` is just a normal dictionary name. The name itself is probably what’s throwing you off.
+
+Rename it:
+
+```
+index_by_num = {}
+```
+
+Then this:
+
+```
+for i, num in enumerate(nums):
+    index_by_num[num] = i
+```
+
+means:
+
+```
+4 → 0
+7 → 1
+2 → 2
+9 → 3
+```
+
+So:
+
+```
+index_by_num[7]
+```
+
+gives:
+
+```
+1
+```
+
+For now, forget the word `seen`. Think **number → index**.
+
+Study OS is still 502ing, so I couldn’t save this learning intervention there.
