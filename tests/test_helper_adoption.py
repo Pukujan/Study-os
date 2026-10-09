@@ -18,8 +18,8 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 
-PCM_COMMIT = "c18bfd6064d1249996bc00c45dbbc6721ec5dfd9"
-CGM_COMMIT = "c069613ca8b3e02bcf5aba1960160583537f8a3a"
+PCM_COMMIT = "776b468db56cbbe3e251b2583d41f1f0caebd9ba"
+CGM_COMMIT = "78385ff2ba31051128208ddc7f08dc5de0f0b570"
 PROTOCOL_VERSION = "0.1.0-draft"
 
 # SHA-256 of PCM schemas/v1/* at PCM_COMMIT; the directory must stay an exact copy.

@@ -48,7 +48,7 @@ Learner-visible teach / explain-again / worked-example / pack-decomposition mark
 
 For cross-agent task claims and verdicts, follow [`docs/AUTHORITY.md`](docs/AUTHORITY.md). `grok-bot@study-os` is the sole arbiter; Claude Code + InferHub sessions are claimable workers and must not self-arbitrate or merge to `main`.
 
-For the ACS multi-agent **hotloader** install surface (join-order roles, boss lease, claim queue, watchdog), use the git submodule at `third_party/agent-custom-setup` and start from [`docs/ops/ACS_HOTLOAD.md`](docs/ops/ACS_HOTLOAD.md) → pack [`HOTLOAD.md`](third_party/agent-custom-setup/modules/coordination/multi-agent-hotload/v0.1.0/HOTLOAD.md). ACS does not replace PCM/CGM or Study OS authority.
+For the ACS multi-agent **hotloader** install surface (join-order roles, boss lease, claim queue, watchdog), use the git submodule at `third_party/agent-custom-setup` and start from [`docs/ops/ACS_HOTLOAD.md`](docs/ops/ACS_HOTLOAD.md) → pack [`HOTLOAD.md`](third_party/agent-custom-setup/modules/coordination/multi-agent-hotload/v0.1.0/HOTLOAD.md). ACS includes the full PCM/CGM/OIO coordination install; it does not replace Study OS authority. The initial ACS boss lease is vacant, and agent role seeds do not grant verdict or merge authority.
 
 ## Agent change protocol
 
@@ -80,9 +80,9 @@ For every substantive task:
 
 | Helper | Role here | Pin (never read moving `main` during work) | Adoption shape |
 | --- | --- | --- | --- |
-| [`Pukujan/project-continuity-modules`](https://github.com/Pukujan/project-continuity-modules) (PCM) | continuity protocol, validator, checkpoints | CLI `0.6.0`, protocol `0.1.0-draft`, commit `c18bfd6064d1249996bc00c45dbbc6721ec5dfd9` | mature-repository overlay ([`docs/TARGET_ADOPTION.md`](https://github.com/Pukujan/project-continuity-modules/blob/c18bfd6064d1249996bc00c45dbbc6721ec5dfd9/docs/TARGET_ADOPTION.md)) |
-| [`Pukujan/content-generation-modules`](https://github.com/Pukujan/content-generation-modules) (CGM) | README/brand/visual/image method and adapter validator | `0.5.7`, commit `c069613ca8b3e02bcf5aba1960160583537f8a3a` (see `.content-system/system-version.json`) | target adapter in `.content-system/` |
-| [`Pukujan/agent-custom-setup`](https://github.com/Pukujan/agent-custom-setup) (ACS) | multi-agent hotloader pack (roles, boss lease, claim queue, watchdog) | commit `f9650936fd5fd66be3b0e2cf04e653f0a3cbb7e4` (ACS PR #12 tip until merged to ACS `main`) | git submodule at `third_party/agent-custom-setup`; load [`HOTLOAD.md`](third_party/agent-custom-setup/modules/coordination/multi-agent-hotload/v0.1.0/HOTLOAD.md) — see [`docs/ops/ACS_HOTLOAD.md`](docs/ops/ACS_HOTLOAD.md) |
+| [`Pukujan/project-continuity-modules`](https://github.com/Pukujan/project-continuity-modules) (PCM) | continuity protocol, validator, checkpoints | CLI `0.7.0`, protocol `0.1.0-draft`, commit `776b468db56cbbe3e251b2583d41f1f0caebd9ba` | mature-repository overlay ([`docs/TARGET_ADOPTION.md`](https://github.com/Pukujan/project-continuity-modules/blob/776b468db56cbbe3e251b2583d41f1f0caebd9ba/docs/TARGET_ADOPTION.md)) |
+| [`Pukujan/content-generation-modules`](https://github.com/Pukujan/content-generation-modules) (CGM) | README/brand/visual/image method and adapter validator | `0.5.12`, commit `78385ff2ba31051128208ddc7f08dc5de0f0b570` (see `.content-system/system-version.json`) | target adapter in `.content-system/` |
+| [`Pukujan/agent-custom-setup`](https://github.com/Pukujan/agent-custom-setup) (ACS) | multi-agent hotloader pack (roles, boss lease, claim queue, watchdog) | commit `264117398e7754d7e91076481cd664b5e197c1d4` (certified ACS release) | git submodule at `third_party/agent-custom-setup`; load [`HOTLOAD.md`](third_party/agent-custom-setup/modules/coordination/multi-agent-hotload/v0.1.0/HOTLOAD.md) — see [`docs/ops/ACS_HOTLOAD.md`](docs/ops/ACS_HOTLOAD.md) |
 
 Rules:
 
@@ -92,19 +92,19 @@ Rules:
 - Before relying on continuity state, run the pinned PCM validator against this root and require `MODE: TARGET_VALID`:
 
   ```bash
-  git clone https://github.com/Pukujan/project-continuity-modules /tmp/pcm && git -C /tmp/pcm checkout c18bfd6064d1249996bc00c45dbbc6721ec5dfd9
+  git clone https://github.com/Pukujan/project-continuity-modules /tmp/pcm && git -C /tmp/pcm checkout 776b468db56cbbe3e251b2583d41f1f0caebd9ba
   PYTHONPATH=/tmp/pcm/src python -m continuity preflight --root .
   ```
 
-- GitHub issues own task scope, acceptance, priority, owner, dependencies, and lifecycle; merged `main` owns accepted code/docs; PR/check records own delivery facts. `tasks/TASK-SOS-*.md` and the `continuity:current` marker are versioned projections of that state (PCM [SPEC section 8](https://github.com/Pukujan/project-continuity-modules/blob/c18bfd6064d1249996bc00c45dbbc6721ec5dfd9/SPEC.md#8-authority)). Every PCM task needs an owning issue (`issue_url`); every progress update names the leaf issue, parent (or "none"), and dependencies (or "none").
+- GitHub issues own task scope, acceptance, priority, owner, dependencies, and lifecycle; merged `main` owns accepted code/docs; PR/check records own delivery facts. `tasks/TASK-SOS-*.md` and the `continuity:current` marker are versioned projections of that state (PCM [SPEC section 8](https://github.com/Pukujan/project-continuity-modules/blob/776b468db56cbbe3e251b2583d41f1f0caebd9ba/SPEC.md#8-authority)). Every PCM task needs an owning issue (`issue_url`); every progress update names the leaf issue, parent (or "none"), and dependencies (or "none").
 - Work one task per branch (`task/SOS-XXXX-slug`), one primary writer per task. Commit product changes first, then `continuity checkpoint` (it commits and pushes the task branch), then open/update the PR and post a receipt on the leaf issue with the pushed SHA. Never push to `main` or force-push.
 - Human-facing deliverables (README, product docs, image briefs, demos) follow the pinned CGM contract and `.content-system/` adapter. Claims in `.content-system/project-brief.json` must cite exact Study OS revisions and state what each source supports and leaves unproven. Generated imagery remains deferred until Research Gate R0 (see "Explicitly deferred").
 - Private repositories (for example `Pukujan/private-study-log`) are never copied, quoted, or summarized into this public repository, its issues/PRs, or helper repositories.
-- ACS hotloader is a **git submodule** only (`third_party/agent-custom-setup`). Do not vendor-copy the pack. Init with `git submodule update --init --recursive third_party/agent-custom-setup`. Re-pin when ACS PR #12 lands on ACS `main`.
+- ACS hotloader is a **git submodule** only (`third_party/agent-custom-setup`). Do not vendor-copy the pack. Init with `git submodule update --init --recursive third_party/agent-custom-setup`. Re-pin only via an issue-backed PR when the certified agent-stack-train release changes; use the real ACS installer and its full validation gates.
 - Moving a helper pin is its own issue-backed change: update the pin here, in `.continuity/config.json`/`schemas/v1/` or `.content-system/system-version.json`, run both validators, and record the result.
 
 
-### CGM always-on writing rule (0.5.7+)
+### CGM always-on writing rule (0.5.12+)
 
 Paste target for agent boot. Exact text from the pinned helper `docs/writing-routing.json` → `acs_prompt_inject.system_block`:
 
@@ -294,3 +294,7 @@ Until Research Gate R0 passes, do not prioritize:
 ## Teach visuals
 
 - Big O step-1 diagrams: [`docs/ops/TEACH_VISUAL_V1.md`](docs/ops/TEACH_VISUAL_V1.md) (`STUDY_OS_TEACH_VISUAL_V1=0` restores legacy table).
+
+<!-- oio:issue-log-guidance:start -->
+Before filing an observational or operational issue log, read `.oio/ontology/ISSUE_LOG_ONTOLOGY.md`, `.oio/ontology/project.json`, and `.oio/ontology/AGENT_GUIDE.md`. Confirm the exact destination and filing action are authorized. On OIO, ACS, CGM, and PCM, do not submit an issue or write files without explicit human direction for that destination and action. A proposal can remain a local draft until directed. Never treat adoption as permission to write to an adopter or sibling repository.
+<!-- oio:issue-log-guidance:end -->

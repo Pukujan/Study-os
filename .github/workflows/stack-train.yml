@@ -1,0 +1,16 @@
+name: Certified agent stack
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  manifest:
+    name: Release train compatibility
+    uses: Pukujan/agent-stack-train/.github/workflows/check-adopter.yml@main
+    with:
+      manifest: stack-manifest.json
