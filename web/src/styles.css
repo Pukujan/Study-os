@@ -777,3 +777,6 @@ pre.chart { font-family: var(--font-mono); background: var(--surface-subtle); pa
   color: var(--text, inherit);
   font-size: 0.95rem;
 }
+
+/* Isolated, opt-in learner v2 sandbox. No change to classic player widths. Refs #204. */
+.shell-v2 { max-width: 1160px; width: 100%; }

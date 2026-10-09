@@ -62,7 +62,7 @@ function emptyCounts(n: number): number[] {
   return Array.from({ length: n }, () => 0);
 }
 
-export default function SticksBoxesComplexity({ frame }: { frame: SticksBoxesComplexityFrame }) {
+export default function SticksBoxesComplexity({ frame, onChange, onProgress }: { frame: SticksBoxesComplexityFrame; onChange?: (mode: ComplexityMode, n: number) => void; onProgress?: (placed: number) => void }) {
   const nMin = frame.n_min ?? DEFAULT_N_MIN;
   const nMax = frame.n_max ?? DEFAULT_N_MAX;
   const startN = clamp(frame.initial_n ?? nMin, nMin, nMax);
@@ -86,17 +86,20 @@ export default function SticksBoxesComplexity({ frame }: { frame: SticksBoxesCom
   function resetProgress(nextN = n, _nextMode = mode) {
     setCounts(emptyCounts(nextN));
     setPlaced(0);
+    onProgress?.(0);
   }
 
   function onModeChange(next: ComplexityMode) {
     setMode(next);
     resetProgress(n, next);
+    onChange?.(next, n);
   }
 
   function onNChange(nextN: number) {
     const clamped = clamp(nextN, nMin, nMax);
     setN(clamped);
     resetProgress(clamped, mode);
+    onChange?.(mode, clamped);
   }
 
   function putNextStick() {
@@ -109,6 +112,7 @@ export default function SticksBoxesComplexity({ frame }: { frame: SticksBoxesCom
       return next;
     });
     setPlaced((p) => p + 1);
+    onProgress?.(placed + 1);
   }
 
   return (
