@@ -1,0 +1,57 @@
+name: V2 interactive reviewer
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: v2-review-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  offline-review:
+    name: Build offline reviewer
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - name: Check out PR commit
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install locked frontend dependencies
+        run: npm ci
+      - name: Bundle self-contained v2 interactive preview
+        run: node scripts/build-v2-review.mjs
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Verify offline preview at desktop and mobile viewports
+        run: node scripts/test-v2-review.mjs
+      - name: Reviewer instructions
+        if: success()
+        run: |
+          echo '### Study OS v2 interactive reviewer' >> "$GITHUB_STEP_SUMMARY"
+          echo '1. Open this workflow run, scroll to **Artifacts**, and download **study-os-v2-offline-review**.' >> "$GITHUB_STEP_SUMMARY"
+          echo '2. Unzip and double-click **review.html**. No Node, local server, credentials, account, or network connection required.' >> "$GITHUB_STEP_SUMMARY"
+          echo '3. Play Big O on desktop or phone; review term definitions, game / equation / graph matching, and feedback.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'This is an isolated frontend proof, not a deployed API/login/AI tutor. Production is never touched.' >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload self-contained interactive preview and screenshots
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: study-os-v2-offline-review
+          path: |
+            web/dist-review/review.html
+            web/dist-review/screenshots/
+          retention-days: 30
+          if-no-files-found: error

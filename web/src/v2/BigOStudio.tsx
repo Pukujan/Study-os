@@ -77,7 +77,7 @@ function BigOGraph({ mode, n }: { mode: ComplexityMode; n: number }) {
  * mastery claim. The route is disabled unless VITE_STUDY_OS_V2=1 at build time.
  * Refs #204. Keep the legacy player intact until journey+golden gates pass.
  */
-export default function BigOStudio() {
+export default function BigOStudio({ onExit = () => navigate("/") }: { onExit?: () => void } = {}) {
   const [started, setStarted] = useState(false);
   const [mode, setMode] = useState<ComplexityMode>("O(n)");
   const [n, setN] = useState(3);
@@ -115,7 +115,7 @@ export default function BigOStudio() {
             <button type="button" className={styles.primary} onClick={() => setStarted(true)} data-testid="v2-start">
               Start with three boxes
             </button>
-            <button type="button" className={styles.secondary} onClick={() => navigate("/")}>Return to Study OS</button>
+            <button type="button" className={styles.secondary} onClick={onExit}>Return to Study OS</button>
           </div>
         </div>
         <section className={styles.overview} aria-label="What you will learn">
@@ -137,7 +137,7 @@ export default function BigOStudio() {
           ← Overview
         </button>
         <span>Big O · Explore</span>
-        <button type="button" className={styles.back} onClick={() => navigate("/")}>Study OS home</button>
+        <button type="button" className={styles.back} onClick={onExit}>Study OS home</button>
       </nav>
       <header className={styles.intro}>
         <span className={styles.eyebrow}>One idea at a time</span>
