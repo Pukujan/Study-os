@@ -68,7 +68,7 @@ jobs:
 
       - name: Validate PCM continuity overlay at pinned helper commit
         env:
-          PCM_COMMIT: c18bfd6064d1249996bc00c45dbbc6721ec5dfd9
+          PCM_COMMIT: 776b468db56cbbe3e251b2583d41f1f0caebd9ba
         run: |
           git init -q /tmp/pcm
           git -C /tmp/pcm fetch -q --depth 1 https://github.com/Pukujan/project-continuity-modules "$PCM_COMMIT"
