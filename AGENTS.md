@@ -48,7 +48,7 @@ Learner-visible teach / explain-again / worked-example / pack-decomposition mark
 
 For cross-agent task claims and verdicts, follow [`docs/AUTHORITY.md`](docs/AUTHORITY.md). `grok-bot@study-os` is the sole arbiter; Claude Code + InferHub sessions are claimable workers and must not self-arbitrate or merge to `main`.
 
-For the ACS multi-agent **hotloader** install surface (join-order roles, boss lease, claim queue, watchdog), use the git submodule at `third_party/agent-custom-setup` and start from [`docs/ops/ACS_HOTLOAD.md`](docs/ops/ACS_HOTLOAD.md) → pack [`HOTLOAD.md`](third_party/agent-custom-setup/modules/coordination/multi-agent-hotload/v0.1.0/HOTLOAD.md). ACS does not replace PCM/CGM or Study OS authority.
+For the ACS multi-agent **hotloader** install surface (join-order roles, boss lease, claim queue, watchdog), use the git submodule at `third_party/agent-custom-setup` and start from [`docs/ops/ACS_HOTLOAD.md`](docs/ops/ACS_HOTLOAD.md) → pack [`HOTLOAD.md`](third_party/agent-custom-setup/modules/coordination/multi-agent-hotload/v0.1.0/HOTLOAD.md). ACS includes the full PCM/CGM/OIO coordination install; it does not replace Study OS authority. The initial ACS boss lease is vacant, and agent role seeds do not grant verdict or merge authority.
 
 ## Agent change protocol
 
@@ -100,7 +100,7 @@ Rules:
 - Work one task per branch (`task/SOS-XXXX-slug`), one primary writer per task. Commit product changes first, then `continuity checkpoint` (it commits and pushes the task branch), then open/update the PR and post a receipt on the leaf issue with the pushed SHA. Never push to `main` or force-push.
 - Human-facing deliverables (README, product docs, image briefs, demos) follow the pinned CGM contract and `.content-system/` adapter. Claims in `.content-system/project-brief.json` must cite exact Study OS revisions and state what each source supports and leaves unproven. Generated imagery remains deferred until Research Gate R0 (see "Explicitly deferred").
 - Private repositories (for example `Pukujan/private-study-log`) are never copied, quoted, or summarized into this public repository, its issues/PRs, or helper repositories.
-- ACS hotloader is a **git submodule** only (`third_party/agent-custom-setup`). Do not vendor-copy the pack. Init with `git submodule update --init --recursive third_party/agent-custom-setup`. Re-pin when ACS PR #12 lands on ACS `main`.
+- ACS hotloader is a **git submodule** only (`third_party/agent-custom-setup`). Do not vendor-copy the pack. Init with `git submodule update --init --recursive third_party/agent-custom-setup`. Re-pin only via an issue-backed PR when the certified agent-stack-train release changes; use the real ACS installer and its full validation gates.
 - Moving a helper pin is its own issue-backed change: update the pin here, in `.continuity/config.json`/`schemas/v1/` or `.content-system/system-version.json`, run both validators, and record the result.
 
 
