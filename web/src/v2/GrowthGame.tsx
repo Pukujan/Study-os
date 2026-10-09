@@ -5,11 +5,13 @@ import styles from "./GrowthGame.module.css";
 export default function GrowthGame({
   mission,
   onProgress,
+  initialFilled = [],
 }: {
   mission: GrowthMission;
-  onProgress: (count: number, finished: boolean) => void;
+  initialFilled?: readonly string[];
+  onProgress: (filled: string[], finished: boolean) => void;
 }) {
-  const [filled, setFilled] = useState<string[]>([]);
+  const [filled, setFilled] = useState<string[]>(() => [...initialFilled]);
   const [armed, setArmed] = useState(false);
   const [feedback, setFeedback] = useState("Pick up a stick, then drop or tap a target.");
   const completed = missionComplete(mission, filled);
@@ -30,7 +32,7 @@ export default function GrowthGame({
     const next = [...filled, target];
     const done = missionComplete(mission, next);
     setFilled(next);
-    onProgress(next.length, done);
+    onProgress(next, done);
     setFeedback(done
       ? "Nice work. Your actions completed this rule! Notice the finished graph beside the board."
       : "Correct placement. Watch the graph rise as the work counter increases.");
@@ -112,7 +114,7 @@ export default function GrowthGame({
       <p className={styles.hint}>{mission.actionHint}</p>
       <button
         type="button" className={styles.reset} data-testid="v2-restart"
-        onClick={() => { setFilled([]); setArmed(false); setFeedback("Board reset. Pick up a stick and try the mission again."); onProgress(0, false); }}
+        onClick={() => { setFilled([]); setArmed(false); setFeedback("Board reset. Pick up a stick and try the mission again."); onProgress([], false); }}
       >Start this board over</button>
     </div>
   );

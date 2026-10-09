@@ -79,7 +79,7 @@ export default function App() {
       </header>
       <main className="shell">
         <ErrorBoundary resetKey={path}>
-        {route.name === "v2" && (import.meta.env.VITE_STUDY_OS_V2 === "1" ? <BigOStudio /> : <p>V2 learning preview is not enabled on this deployment.</p>)}
+        {route.name === "v2" && <BigOStudio />}
         {route.name === "login" && <Login onSignedIn={(m) => { setMe(m); navigate("/"); }} />}
         {me && route.name === "home" && <HomeLanes me={me} />}
         {me && route.name === "try" && <TryPage onSignedIn={(m) => { setMe(m); navigate("/"); }} />}

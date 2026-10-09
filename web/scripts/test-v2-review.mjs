@@ -25,23 +25,29 @@ try {
     await page.goto(review);
     await page.getByTestId("v2-start").waitFor();
     assert.match(await page.title(), /Study OS v2/);
-    assert.equal(await page.getByTestId("v2-start").isVisible(), true);
     await page.getByTestId("v2-start").click();
-    const game = page.getByTestId("sticks-boxes-complexity");
-    assert.equal(await game.getAttribute("data-n"), "3");
+    const board = page.getByTestId("v2-growth-game");
+    assert.equal(await board.getAttribute("data-mission"), "cover-three");
+    assert.equal(await page.getByTestId("v2-curve").getAttribute("data-live-work"), "0");
+
+    await page.getByTestId("v2-stick").click();
+    await page.getByTestId("v2-target-box:0").click();
+    assert.equal(await board.getAttribute("data-placed"), "1");
+    assert.equal(await page.getByTestId("v2-curve").getAttribute("data-live-work"), "1");
+    assert.equal(await page.getByTestId("v2-rule-reveal").count(), 0);
+
+    await page.getByTestId("v2-stick").click();
+    await page.getByTestId("v2-target-box:0").click();
+    assert.equal(await board.getAttribute("data-placed"), "1");
+    await page.getByTestId("v2-stick").click();
+    await page.getByTestId("v2-target-box:1").click();
+    await page.getByTestId("v2-stick").click();
+    await page.getByTestId("v2-target-box:2").click();
+    assert.equal(await board.getAttribute("data-complete"), "true");
     assert.equal((await page.getByTestId("v2-equation").textContent())?.trim(), "W(3) = 3");
-    await game.getByTestId("sticks-primary-btn").click();
-    assert.equal(await game.getAttribute("data-placed"), "1");
-    await game.getByTestId("sticks-complexity-select").selectOption("O(n²)");
-    assert.equal((await page.getByTestId("v2-equation").textContent())?.trim(), "W(3) = 3 × 3 = 9");
-    assert.equal(await game.getAttribute("data-placed"), "0");
-    await page.getByLabel("Number of stick placements").fill("15");
-    await page.getByTestId("v2-check").click();
-    assert.match(await page.getByTestId("v2-result").textContent(), /Not quite/);
-    await page.getByLabel("Number of stick placements").fill("16");
-    await page.getByTestId("v2-check").click();
-    assert.match(await page.getByTestId("v2-result").textContent(), /Yes\./);
     await page.screenshot({ path: resolve(screenshots, `v2-${label}-game.png`), fullPage: true, animations: "disabled" });
+    await page.getByTestId("v2-next").click();
+    assert.equal(await page.getByTestId("v2-growth-game").getAttribute("data-mission"), "cover-four");
     await page.getByTestId("v2-back").click();
     assert.equal(await page.getByTestId("v2-start").isVisible(), true);
     await page.screenshot({ path: resolve(screenshots, `v2-${label}-overview.png`), fullPage: true, animations: "disabled" });
@@ -50,6 +56,4 @@ try {
     console.log(`PASS offline v2 reviewer ${label} ${width}×${height}`);
     await page.close();
   }
-} finally {
-  await browser.close();
-}
+} finally { await browser.close(); }

@@ -4,36 +4,63 @@ import { render } from "../test-utils";
 import BigOStudio from "./BigOStudio";
 import { matchRoute } from "../router";
 
-describe("v2 Big O guest learner journey (Refs #204)", () => {
-  it("has an explicit preview route and a no-signin entry screen", () => {
+function click(container: HTMLElement, testid: string) {
+  const button = container.querySelector<HTMLButtonElement>(`[data-testid="${testid}"]`);
+  if (!button) throw new Error("Missing button: " + testid);
+  act(() => button.click());
+}
+
+describe("v2 Big O learner journey (#204)", () => {
+  it("is a public React route with a no-signin game entry", () => {
     expect(matchRoute("/v2")).toEqual({ name: "v2" });
     const { container, cleanup } = render(<BigOStudio />);
-    expect(container.textContent).toContain("Big O");
     expect(container.textContent).toContain("No account");
-    expect(container.querySelector('[data-testid="v2-start"]')).toBeTruthy();
+    expect(container.querySelector('[data-testid="v2-start"]')).not.toBeNull();
     cleanup();
   });
 
-  it("teaches terms before an algebra-linked interactive and supports back navigation", () => {
+  it("computer picks the mission; every move updates a side-by-side graph", () => {
     const { container, cleanup } = render(<BigOStudio />);
-    act(() => (container.querySelector('[data-testid="v2-start"]') as HTMLButtonElement).click());
-    expect(container.querySelector('[data-testid="sticks-boxes-complexity"]')).toBeTruthy();
-    expect(container.textContent).toContain("number of boxes");
-    expect(container.textContent).toContain("exact count");
+    click(container, "v2-start");
+    expect(container.querySelector('[data-testid="sticks-complexity-select"]')).toBeNull();
+    expect(container.querySelector('[data-testid="v2-equation"]')).toBeNull();
+    expect(container.querySelector('[data-testid="v2-curve"]')?.getAttribute("data-live-work")).toBe("0");
+
+    click(container, "v2-stick");
+    click(container, "v2-target-box:0");
+    expect(container.querySelector('[data-testid="v2-live-work"]')?.textContent).toContain("1 step");
+    expect(container.querySelector('[data-testid="v2-curve"]')?.getAttribute("data-live-work")).toBe("1");
+    expect(container.querySelector('[data-testid="v2-equation"]')).toBeNull();
+
+    click(container, "v2-stick");
+    click(container, "v2-target-box:0");
+    expect(container.querySelector('[data-testid="v2-growth-game"]')?.getAttribute("data-placed")).toBe("1");
+    expect(container.querySelector('[data-testid="v2-game-feedback"]')?.textContent).toContain("Already filled");
+
+    click(container, "v2-stick");
+    click(container, "v2-target-box:1");
+    click(container, "v2-stick");
+    click(container, "v2-target-box:2");
+
+    expect(container.querySelector('[data-testid="v2-growth-game"]')?.getAttribute("data-complete")).toBe("true");
+    expect(container.querySelector('[data-testid="v2-rule-reveal"]')?.textContent).toContain("O(n)");
     expect(container.querySelector('[data-testid="v2-equation"]')?.textContent).toContain("W(3) = 3");
-    expect(container.querySelector('[data-testid="v2-curve"]')).toBeTruthy();
-    act(() => (container.querySelector('[data-testid="sticks-primary-btn"]') as HTMLButtonElement).click());
-    expect(container.querySelector('[data-testid="v2-progress"]')?.textContent).toContain("1 of 3");
-    act(() => (container.querySelector('[data-testid="v2-back"]') as HTMLButtonElement).click());
-    expect(container.querySelector('[data-testid="v2-start"]')).toBeTruthy();
+    click(container, "v2-next");
+    expect(container.querySelector('[data-testid="v2-growth-game"]')?.getAttribute("data-mission")).toBe("cover-four");
+    expect(container.querySelector('[data-testid="v2-graph-caption"]')?.textContent).toContain("0 work");
     cleanup();
   });
 
-  it("requires an actual prediction instead of auto-completing the lesson", () => {
+  it("restores the physical board and graph together after overview navigation", () => {
     const { container, cleanup } = render(<BigOStudio />);
-    act(() => (container.querySelector('[data-testid="v2-start"]') as HTMLButtonElement).click());
-    expect(container.querySelector('[data-testid="v2-check"]')?.hasAttribute("disabled")).toBe(true);
-    expect(container.querySelector('[data-testid="v2-result"]')).toBeNull();
+    click(container, "v2-start");
+    click(container, "v2-stick");
+    click(container, "v2-target-box:1");
+    click(container, "v2-back");
+    click(container, "v2-start");
+    expect(container.querySelector('[data-testid="v2-growth-game"]')?.getAttribute("data-placed")).toBe("1");
+    expect(container.querySelector('[data-testid="v2-target-box:1"]')?.getAttribute("data-filled")).toBe("true");
+    expect(container.querySelector('[data-testid="v2-curve"]')?.getAttribute("data-live-work")).toBe("1");
     cleanup();
   });
 });

@@ -94,6 +94,7 @@ export default function BigOStudio({ onExit = () => navigate("/") }: { onExit?: 
   const [started, setStarted] = useState(false);
   const [missionIndex, setMissionIndex] = useState(0);
   const [count, setCount] = useState(0);
+  const [filledKeys, setFilledKeys] = useState<string[]>([]);
   const [finished, setFinished] = useState(false);
   const [history, setHistory] = useState<Measurement[]>([]);
   const mission = GROWTH_MISSIONS[missionIndex];
@@ -111,6 +112,7 @@ export default function BigOStudio({ onExit = () => navigate("/") }: { onExit?: 
     if (!isLast) {
       setMissionIndex(missionIndex + 1);
       setCount(0);
+      setFilledKeys([]);
       setFinished(false);
     }
   }
@@ -157,8 +159,8 @@ export default function BigOStudio({ onExit = () => navigate("/") }: { onExit?: 
             <h2>Do the job</h2>
             <p>Drag the stick to a tile, or tap the stick then tap a tile. The game checks each move.</p>
           </div></div>
-          <GrowthGame key={mission.id} mission={mission}
-            onProgress={(placed, done) => { setCount(placed); setFinished(done); }} />
+          <GrowthGame key={mission.id} mission={mission} initialFilled={filledKeys}
+            onProgress={(keys, done) => { setFilledKeys(keys); setCount(keys.length); setFinished(done); }} />
         </section>
         <section className={styles.explainPanel} aria-label="Live work graph">
           <div className={styles.heading}><span className={styles.number}>02</span><div>
