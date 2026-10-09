@@ -192,7 +192,7 @@ export default function BigOStudio({ onExit = () => navigate("/") }: { onExit?: 
           <GrowthGame key={mission.id} mission={mission} initialFilled={filledKeys}
             onProgress={(keys, done) => { setFilledKeys(keys); setCount(keys.length); setFinished(done); }} />
         </section>
-        <section className={styles.explainPanel} aria-label="Live work graph">
+        <section className={finished ? styles.explainPanel : styles.explainPanelEmpty} aria-label="Live work graph">
           <div className={styles.heading}><span className={styles.number}>02</span><div>
             <h2>See what changed</h2>
             <p>Each valid stick moves the graph.</p>

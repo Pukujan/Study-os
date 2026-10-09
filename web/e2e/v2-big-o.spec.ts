@@ -35,6 +35,10 @@ test("v2: computer sets a mission, drag or tap validates live and unlocks algebr
   await page.getByTestId("v2-target-box:0").click();
   await expect(page.getByTestId("v2-curve")).toHaveAttribute("data-current-n", "4");
   await expect(page.getByTestId("v2-mobile-graph")).toBeAttached();
+  if (test.info().project.name === "mobile") {
+    await expect(page.getByTestId("v2-mobile-graph")).toBeVisible();
+    await expect(page.getByTestId("v2-curve")).toBeHidden();
+  }
 
   await page.getByTestId("v2-back").click();
   await page.getByTestId("v2-start").click();

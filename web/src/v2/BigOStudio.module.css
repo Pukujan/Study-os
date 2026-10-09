@@ -1,5 +1,5 @@
 .root { display:grid; gap:1.15rem; width:100%; min-width:0; padding-bottom:2.5rem; color:var(--ink); }
-.hero,.overview,.gamePanel,.explainPanel,.nextPanel { min-width:0; border:1px solid var(--line); border-radius:var(--radius); padding:clamp(1rem,2vw,1.65rem); background:var(--card); }
+.hero,.overview,.gamePanel,.explainPanel,.explainPanelEmpty,.nextPanel { min-width:0; border:1px solid var(--line); border-radius:var(--radius); padding:clamp(1rem,2vw,1.65rem); background:var(--card); }
 .hero { padding:clamp(1.5rem,4vw,2.5rem); background:var(--surface-subtle); }
 .hero h1,.intro h1 { margin:.35rem 0 .7rem; font-size:clamp(1.6rem,3.5vw,2.5rem); line-height:1.18; }
 .hero p,.intro p { max-width:65ch; line-height:1.55; }
@@ -47,4 +47,11 @@
   .miniGraph svg { display:block; width:100%; max-width:340px; height:90px; margin:0 auto; }
   .intro { padding:.1rem .2rem; }
   .heading { margin-bottom:.45rem; }
+}
+
+@media(max-width:860px) {
+  /* The compact sticky graph is the only during-play chart on phones.
+     The detailed chart remains on desktop; mobile sees the result afterward. */
+  .explainPanelEmpty, .explainPanel .graph, .explainPanel .heading { display: none; }
+  .explainPanel { padding: .65rem; }
 }
