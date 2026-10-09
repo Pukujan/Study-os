@@ -5,6 +5,12 @@
 Last updated: 2026-09-26
 Primary tracker: #63 (runtime) · #82 (web app epic)
 
+## ACS installation update (issue #202)
+
+On task/SOS-0202-install-acs-hotloader, the certified ACS 0.2.0 submodule and full PCM 0.7.0 / CGM 0.5.12 / OIO 0.1.0 stack were installed with upstream acs_install.py. The installer wrote .coord/ with state READY, stack-manifest.json, and the OIO issue-log package; it passed the upstream checker, OIO --check, CGM validation, train manifest check, eight helper-adoption tests, and repository validation in GitHub Actions run 37870106445. The PR (#203) is not merged; branch CI and ACS/OIO verification are required before release.
+
+Study OS authority remains with grok-bot@study-os. The ACS boss lease is deliberately vacant until a GitHub-canonical, authorized check-in. The watchdog contract is not an active scheduled job. The OIO project ontology still needs owner review of generic priority mappings before it can drive authority-ranked triage. No learner data was migrated by this helper install.
+
 ## Web app track (D017 accepted, D018 amendment) — slice 1 live
 
 - Active: SOS-0005 (#101) lesson player redesign prototype on `task/SOS-0005-lesson-player-redesign`; not merged/deployed until Alex approves.
