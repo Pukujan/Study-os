@@ -6,6 +6,7 @@ import re
 from dataclasses import dataclass
 
 from .privacy import contains_pii
+from .notation_guard import notation_violations
 
 VALIDATOR_VERSION = "study-os.web-validator.v1"
 MASTERY_PATTERNS = (
@@ -46,6 +47,7 @@ def validate_generated(
     required_blocks: tuple[str, ...],
     word_budget: int = 140,
     new_relations: int = 1,
+    allowed_notation: tuple[str, ...] | None = None,
 ) -> ValidationResult:
     codes: list[str] = []
     text = markdown or ""
@@ -74,6 +76,8 @@ def validate_generated(
         codes.append("PII")
     if not prose.strip():
         codes.append("EMPTY")
+    if allowed_notation is not None:
+        codes.extend(notation_violations(prose, allowed_notation))
     return ValidationResult(ok=not codes, codes=tuple(codes))
 
 

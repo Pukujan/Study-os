@@ -18,6 +18,7 @@ from ..validator import validate_generated
 from . import render_text
 from . import presentation
 from . import teach_visual
+from ..notation_guard import approved_symbols
 from . import engine as _engine
 
 
@@ -43,6 +44,7 @@ GOLDEN_RULES = """Golden rules for this reply:
 - Do not claim mastery.
 - For fraction pictures, numerator = shaded parts and denominator = equal parts.
 - For box-index pictures, use the variables a, p, i, k, box, and sum[i].
+- Never introduce new function or indexed-symbol notation; only use the explicitly approved math symbols in context.
 The context field regeneration_allowed tells you whether this step may be re-rendered in place right now.
 When it is true you MUST return regenerate_presentation: a fresh answer-free explanation of this same step
 (teach_md, 90 words or fewer, no code fences) plus unique frame_indices into teach_frames, selecting at
@@ -170,6 +172,7 @@ def _render_proposal(
         "teach_frames": [render_text.frame_to_text(frame) for frame in authored],
         "preferred_explain_frame_indices": teach_visual.explain_frame_indices(teach),
         "forbidden_answers": list(forbidden),
+        "approved_math_symbols": approved_symbols(lesson, state),
     }
     messages = [
         {"role": "system", "content": RENDER_PROMPT},
@@ -241,6 +244,7 @@ def build_messages(
         "solution_md": solution_md,
         "forbidden_answers": forbidden,
         "regeneration_allowed": presentation.regeneration_allowed(lesson, state),
+        "approved_math_symbols": approved_symbols(lesson, state),
         "recent_chat_history": history[-6:],
     }
 
@@ -376,7 +380,8 @@ def reply(
         )
 
     reply_md, suggested_action = _extract(response)
-    result = validate_generated(reply_md, forbidden_answers=forbidden, required_blocks=(), word_budget=90)
+    result = validate_generated(reply_md, forbidden_answers=forbidden, required_blocks=(),
+                                word_budget=90, allowed_notation=approved_symbols(lesson, state))
     update, update_codes = presentation.validate_proposal(
         (response.args or {}).get("regenerate_presentation"), lesson, state, forbidden
     )
@@ -432,7 +437,8 @@ def reply(
         )
 
     reply_md2, suggested_action2 = _extract(response2)
-    result2 = validate_generated(reply_md2, forbidden_answers=forbidden, required_blocks=(), word_budget=90)
+    result2 = validate_generated(reply_md2, forbidden_answers=forbidden, required_blocks=(),
+                                 word_budget=90, allowed_notation=approved_symbols(lesson, state))
     update2, update_codes2 = presentation.validate_proposal(
         (response2.args or {}).get("regenerate_presentation"), lesson, state, forbidden
     )
