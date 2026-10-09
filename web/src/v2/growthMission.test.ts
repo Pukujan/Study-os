@@ -4,7 +4,7 @@ import { exampleWork } from "./bigOModel";
 
 describe("computer-led growth missions (#204)", () => {
   it("assigns rules without a learner-selectable difficulty or Big O mode", () => {
-    expect(GROWTH_MISSIONS.map((mission) => mission.mode)).toEqual(["O(n)", "O(n)", "O(n²)", "O(n²)", "O(1)"]);
+    expect(GROWTH_MISSIONS.map((mission) => mission.mode)).toEqual(["O(n)", "O(n)", "O(n²)", "O(n²)", "O(1)", "O(1)"]);
     expect(GROWTH_MISSIONS.every((mission) => !!mission.instruction && mission.n >= 3)).toBe(true);
   });
   it("requires every valid unique placement and rejects duplicate/invalid moves", () => {
