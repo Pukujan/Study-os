@@ -1,6 +1,6 @@
 .root { display: grid; gap: 1rem; min-width: 0; }
 .toolRow { display: flex; flex-wrap: wrap; align-items: stretch; gap: .8rem; }
-.stick, .stickActive { display: flex; align-items: center; gap: .55rem; border: 1px solid var(--primary); border-radius: .8rem; padding: .7rem 1rem; background: var(--surface-subtle); color: var(--ink); cursor: grab; font-weight: 750; touch-action: manipulation; }
+.stick, .stickActive { display: flex; align-items: center; gap: .55rem; border: 1px solid var(--primary); border-radius: .8rem; padding: .7rem 1rem; background: var(--surface-subtle); color: var(--ink); cursor: grab; font-weight: 750; touch-action: none; user-select: none; -webkit-user-select: none; }
 .stickActive { background: var(--primary); color: var(--on-primary, white); }
 .stickIcon { display: inline-grid; place-items: center; width: 1.65rem; height: 2.05rem; border-radius: .3rem; background: #e9b86d; color: #4c361a; font-size: 1.35rem; font-weight: 900; }
 .stick:disabled { cursor: default; opacity: .5; }
@@ -13,12 +13,19 @@
 .pairGrid { display: grid; gap: .45rem; }
 .target, .filled { min-height: 6rem; min-width: 0; display: grid; place-content: center; gap: .5rem; border: 2px dashed var(--line); color: var(--ink); border-radius: .85rem; background: var(--surface-subtle); font: inherit; cursor: pointer; touch-action: manipulation; }
 .boxBoard .target, .boxBoard .filled { flex: 1 1 6rem; max-width: 9rem; min-width: 5rem; min-height: 7rem; }
-.target:hover, .target:focus-visible { border-color: var(--primary); }
+.target:hover, .target:focus-visible, .hoverTarget { border-color: var(--primary); }
+.hoverTarget { min-height: 6rem; min-width: 0; display: grid; place-content: center; gap: .5rem; color: var(--ink); border: 2px solid var(--primary); border-radius: .85rem; background: var(--surface-subtle); font: inherit; cursor: pointer; }
+.boxBoard .hoverTarget { flex: 1 1 6rem; max-width: 9rem; min-width: 5rem; min-height: 7rem; }
 .filled { background: color-mix(in srgb, var(--primary) 14%, var(--surface-subtle)); border-style: solid; border-color: var(--primary); }
 .targetSymbol { font-size: 1.5rem; color: var(--muted); font-weight: 800; line-height: 1; }
 .filled .targetSymbol { color: var(--primary); }
 .targetLabel { font-size: .85rem; font-weight: 700; }
 .feedback { background: var(--surface-subtle); border-radius: .6rem; padding: .8rem 1rem; margin: 0; line-height: 1.5; min-height: 2.5rem; }
 .hint { margin: 0; font-size: .85rem; color: var(--muted); }
+.hint summary { cursor: pointer; }
+.hint p { margin: .35rem 0; }
+.dragGhost { position: fixed; transform: translate(-50%,-65%); pointer-events: none; z-index: 100;
+  padding: .15rem .45rem; border-radius: .3rem; background: #e9b86d; color:#4c361a;
+  box-shadow: 0 6px 18px #0004; font-size: 2rem; font-weight: 900; }
 .reset { justify-self: start; padding: .4rem .6rem; border: 0; background: transparent; color: var(--muted); text-decoration: underline; font: inherit; cursor: pointer; }
 @media(max-width:450px) { .pairGrid { gap: .25rem; } .pairGrid .target, .pairGrid .filled { min-height: 4.35rem; } .targetLabel { font-size: .72rem; } .boxBoard .target, .boxBoard .filled { min-height: 5rem; } }

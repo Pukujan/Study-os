@@ -25,11 +25,13 @@ describe("v2 Big O learner journey (#204)", () => {
     expect(container.querySelector('[data-testid="sticks-complexity-select"]')).toBeNull();
     expect(container.querySelector('[data-testid="v2-equation"]')).toBeNull();
     expect(container.querySelector('[data-testid="v2-curve"]')?.getAttribute("data-live-work")).toBe("0");
+    expect(container.querySelector('[data-testid="v2-mobile-graph"]')).toBeTruthy();
 
     click(container, "v2-stick");
     click(container, "v2-target-box:0");
     expect(container.querySelector('[data-testid="v2-live-work"]')?.textContent).toContain("1 step");
     expect(container.querySelector('[data-testid="v2-curve"]')?.getAttribute("data-live-work")).toBe("1");
+    expect(container.querySelector('[data-testid="v2-mobile-graph"] svg')?.getAttribute("data-live-work")).toBe("1");
     expect(container.querySelector('[data-testid="v2-equation"]')).toBeNull();
 
     click(container, "v2-stick");
@@ -43,11 +45,17 @@ describe("v2 Big O learner journey (#204)", () => {
     click(container, "v2-target-box:2");
 
     expect(container.querySelector('[data-testid="v2-growth-game"]')?.getAttribute("data-complete")).toBe("true");
-    expect(container.querySelector('[data-testid="v2-rule-reveal"]')?.textContent).toContain("O(n)");
-    expect(container.querySelector('[data-testid="v2-equation"]')?.textContent).toContain("W(3) = 3");
+    expect(container.querySelector('[data-testid="v2-rule-reveal"]')?.textContent).not.toContain("O(n)");
+    expect(container.querySelector('[data-testid="v2-equation"]')?.textContent).toContain("3 boxes → 3 sticks");
     click(container, "v2-next");
     expect(container.querySelector('[data-testid="v2-growth-game"]')?.getAttribute("data-mission")).toBe("cover-four");
     expect(container.querySelector('[data-testid="v2-graph-caption"]')?.textContent).toContain("0 work");
+    for (const box of ["0", "1", "2", "3"]) {
+      click(container, "v2-stick");
+      click(container, `v2-target-box:${box}`);
+    }
+    expect(container.querySelector('[data-testid="v2-rule-reveal"]')?.textContent).toContain("O(n)");
+    expect(container.querySelector('[data-testid="v2-equation"]')?.textContent).toContain("4 boxes → 4 sticks");
     cleanup();
   });
 

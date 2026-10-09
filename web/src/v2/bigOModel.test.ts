@@ -6,7 +6,7 @@ const modes: ComplexityMode[] = ["O(1)", "O(n)", "O(n²)"];
 
 describe("v2 Big O shared semantic model (Refs #204)", () => {
   it("defines the input, illustrative work and asymptotic notation before use", () => {
-    expect(BIG_O_TERMS.map((term) => term.symbol)).toEqual(["n", "W(n)", "O(…)"]);
+    expect(BIG_O_TERMS.map((term) => term.symbol)).toEqual(["n", "O(…)"]);
     expect(BIG_O_TERMS.every((term) => term.definition.length > 20)).toBe(true);
   });
 

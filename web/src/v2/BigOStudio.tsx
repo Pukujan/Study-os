@@ -19,6 +19,31 @@ const COLORS: Record<ComplexityMode, string> = {
  * Completed runs alone enter the observed curve. Never plot a fake oracle
  * answer ahead of a learner's independent action.
  */
+function MiniWorkGraph({ n, count, history }: { n: number; count: number; history: readonly Measurement[] }) {
+  const x = (size: number) => 52 + (size - 2) * 94;
+  const y = (steps: number) => 92 - (steps / 16) * 72;
+  return (
+    <aside className={styles.miniGraph} aria-label="Live work chart" data-testid="v2-mobile-graph">
+      <div className={styles.miniLabels}>
+        <strong data-testid="v2-mobile-work">{count} stick{count === 1 ? "" : "s"} placed</strong>
+        <span>{n} boxes</span>
+      </div>
+      <svg viewBox="0 0 320 116" role="img" data-live-work={count}
+        aria-label={`Live work: ${count} placements for ${n} boxes. Dots show completed rounds.`}>
+        <line x1="42" x2="302" y1="92" y2="92" stroke="currentColor" opacity=".4"/>
+        <line x1="42" x2="42" y1="11" y2="92" stroke="currentColor" opacity=".4"/>
+        {[0,8,16].map(v=><text key={v} x="35" y={y(v)+4} textAnchor="end" fontSize="10" fill="currentColor">{v}</text>)}
+        {[2,3,4].map(v=><text key={v} x={x(v)} y="105" textAnchor="middle" fontSize="11" fill="currentColor">{v}</text>)}
+        <text x="295" y="111" fontSize="10" fill="currentColor" textAnchor="end">boxes</text>
+        {history.map(sample=><circle key={sample.id} cx={x(sample.n)} cy={y(sample.work)}
+          r="4.5" fill={COLORS[sample.mode]}/>)}
+        <rect x={x(n)-12} width="24" y={y(count)} height={Math.max(1,y(0)-y(count))}
+          rx="3" fill="#8eb4ff" opacity=".75" data-testid="v2-mobile-live-bar"/>
+      </svg>
+    </aside>
+  );
+}
+
 function LiveGrowthGraph({
   n, count, finished, history,
 }: { n: number; count: number; finished: boolean; history: readonly Measurement[] }) {
@@ -99,6 +124,8 @@ export default function BigOStudio({ onExit = () => navigate("/") }: { onExit?: 
   const [history, setHistory] = useState<Measurement[]>([]);
   const mission = GROWTH_MISSIONS[missionIndex];
   const isLast = missionIndex === GROWTH_MISSIONS.length - 1;
+  const earlierSameRule = history.filter((sample) => sample.mode === mission.mode);
+  const hasCompared = earlierSameRule.length > 0;
 
   function nextMission() {
     if (!finished) return;
@@ -122,7 +149,7 @@ export default function BigOStudio({ onExit = () => navigate("/") }: { onExit?: 
       <section className={styles.hero}>
         <span className={styles.eyebrow}>Study OS v2 · live game preview</span>
         <h1>Don't pick a formula. Discover it.</h1>
-        <p>The computer gives you a job. You drag sticks onto boxes or pairs of boxes. The graph grows with every correct move. The game checks your work immediately.</p>
+        <p>Drag sticks. Watch the graph. Find the pattern.</p>
         <p className={styles.muted}>No account needed. This preview does not save results or claim mastery.</p>
         <div className={styles.actions}>
           <button type="button" data-testid="v2-start" className={styles.primary}
@@ -131,11 +158,11 @@ export default function BigOStudio({ onExit = () => navigate("/") }: { onExit?: 
         </div>
       </section>
       <section className={styles.overview}>
-        <h2>Just three pieces of language to start</h2>
+        <h2>One term to know</h2>
         <dl className={styles.glossary}>
-          {BIG_O_TERMS.map((term) => <div key={term.symbol}><dt>{term.symbol}</dt><dd>{term.definition}</dd></div>)}
+          {BIG_O_TERMS.filter((term) => term.symbol === "n").map((term) => <div key={term.symbol}><dt>{term.symbol}</dt><dd>{term.definition}</dd></div>)}
         </dl>
-        <p className={styles.muted}>You won't need to pick O(1), O(n), or O(n²). Those are names we'll attach after you've played.</p>
+        <p className={styles.muted}>The computer picks the task. We'll name the pattern after you compare rounds.</p>
       </section>
     </div>
   );
@@ -156,43 +183,46 @@ export default function BigOStudio({ onExit = () => navigate("/") }: { onExit?: 
       <div className={styles.columns}>
         <section className={styles.gamePanel} aria-label="Live game board">
           <div className={styles.heading}><span className={styles.number}>01</span><div>
-            <h2>Do the job</h2>
-            <p>Drag the stick to a tile, or tap the stick then tap a tile. The game checks each move.</p>
+            <h2>Place the sticks</h2>
+            <p>Drag a stick, or tap stick → box.</p>
           </div></div>
+          <div className={styles.mobileGraphSlot}>
+            <MiniWorkGraph n={mission.n} count={count} history={history}/>
+          </div>
           <GrowthGame key={mission.id} mission={mission} initialFilled={filledKeys}
             onProgress={(keys, done) => { setFilledKeys(keys); setCount(keys.length); setFinished(done); }} />
         </section>
-        <section className={styles.explainPanel} aria-label="Live work graph">
+        <section className={finished ? styles.explainPanel : styles.explainPanelEmpty} aria-label="Live work graph">
           <div className={styles.heading}><span className={styles.number}>02</span><div>
-            <h2>Watch the graph grow</h2>
-            <p>Every valid placement is one work step. Only finished boards count as complete measurements.</p>
+            <h2>See what changed</h2>
+            <p>Each valid stick moves the graph.</p>
           </div></div>
           <LiveGrowthGraph n={mission.n} count={count} finished={finished} history={history} />
           {finished ? (
             <div className={styles.reveal} data-testid="v2-rule-reveal" role="status">
-              <span>The pattern you just made has a name</span>
-              <strong>{mission.mode}</strong>
-              <p data-testid="v2-equation">{exactEquation(mission.mode, mission.n)}</p>
-              <p>Here W(n) means the exact number of sticks placed in <em>this game</em>. Big O names the way a pattern grows, not the exact runtime of all programs.</p>
+              <span>What you did</span>
+              <p data-testid="v2-equation"><strong>{exactEquation(mission.mode, mission.n)}</strong></p>
+              {hasCompared ? (
+                <>
+                  <p>Compare: {earlierSameRule[earlierSameRule.length - 1].n} boxes took {earlierSameRule[earlierSameRule.length - 1].work} sticks.</p>
+                  <p><strong>{mission.mode}</strong> names this growth pattern.</p>
+                </>
+              ) : <p>Try another size before naming the pattern.</p>}
             </div>
-          ) : (
-            <p className={styles.muted} data-testid="v2-rule-hidden">
-              The growth label and complete equation will appear after you finish the task. For now, watch your work counter.
-            </p>
-          )}
+          ) : null}
         </section>
       </div>
       <section className={styles.nextPanel}>
         <div>
-          <h2>{finished ? "Good work—your board was checked as you played." : "The board is your answer."}</h2>
+          <h2>{finished ? "Round complete" : "Keep going"}</h2>
           <p data-testid="v2-progress">
-            {finished ? `You completed ${count} valid placements. The graph and equation now match the board.`
-              : `${count} valid placement${count === 1 ? "" : "s"} so far. Keep filling the required spaces.`}
+            {finished ? `${count} sticks placed. Ready for the next task.`
+              : `${count} sticks placed.`}
           </p>
         </div>
         {finished && !isLast ? (
           <button type="button" className={styles.primary} data-testid="v2-next"
-            onClick={nextMission}>Let the computer choose the next job →</button>
+            onClick={nextMission}>Next task →</button>
         ) : finished && isLast ? (
           <p role="status" data-testid="v2-finished-all">You've played every rule! These are observed game examples, not a claim that you've mastered Big O.</p>
         ) : null}

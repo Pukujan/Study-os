@@ -11,10 +11,6 @@ export const BIG_O_TERMS = [
     definition: "The number of boxes (input items) in this small example. Increasing n makes the example bigger.",
   },
   {
-    symbol: "W(n)",
-    definition: "The exact count of stick-placement steps in this game at size n. It is not a measurement of computer time.",
-  },
-  {
     symbol: "O(…)",
     definition: "A growth class: how work scales for larger inputs. It does not promise an exact number of real CPU operations.",
   },
@@ -47,9 +43,9 @@ export function exampleWork(mode: ComplexityMode, n: number): number {
 
 export function exactEquation(mode: ComplexityMode, n: number): string {
   const count = exampleWork(mode, n);
-  if (mode === "O(1)") return `W(${n}) = 1`;
-  if (mode === "O(n)") return `W(${n}) = ${n}`;
-  return `W(${n}) = ${n} × ${n} = ${count}`;
+  if (mode === "O(1)") return `${n} boxes → 1 stick`;
+  if (mode === "O(n)") return `${n} boxes → ${count} sticks`;
+  return `${n} × ${n} pairs = ${count} sticks`;
 }
 
 export function curvePoints(mode: ComplexityMode): { n: number; work: number }[] {

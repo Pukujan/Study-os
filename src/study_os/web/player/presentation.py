@@ -6,6 +6,7 @@ from copy import deepcopy
 from typing import Any
 
 from ..validator import validate_generated
+from ..notation_guard import approved_symbols, notation_violations
 from . import human_rewrite, teach_visual
 
 SCHEMA_VERSION = "study-os.player-presentation.v1"
@@ -85,6 +86,10 @@ def validate_proposal(
         return None, ("INVALID_PRESENTATION",)
     md, indices = proposal["teach_md"], proposal["frame_indices"]
     if isinstance(md, str):
+        bad_symbols = notation_violations(md, approved_symbols(lesson, state))
+        if bad_symbols:
+            return None, bad_symbols
+
         md = human_rewrite.rewrite(md, kind="teach")
     frames = step.get("teach", {}).get("frames", [])
     if (not isinstance(md, str) or not isinstance(indices, list) or len(indices) > len(frames)
@@ -94,7 +99,8 @@ def validate_proposal(
     # Fences are not allowed: the general prose validator excludes fenced code.
     if "```" in md or "~~~" in md:
         return None, ("INVALID_PRESENTATION",)
-    result = validate_generated(md, forbidden_answers=forbidden, required_blocks=(), word_budget=50)
+    result = validate_generated(md, forbidden_answers=forbidden, required_blocks=(), word_budget=50,
+                                allowed_notation=approved_symbols(lesson, state))
     if not result.ok:
         return None, result.codes
     return {"teach_md": md, "teach_frames": deepcopy(_usable_frames([frames[i] for i in indices]))}, ()

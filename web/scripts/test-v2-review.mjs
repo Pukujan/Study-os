@@ -44,7 +44,7 @@ try {
     await page.getByTestId("v2-stick").click();
     await page.getByTestId("v2-target-box:2").click();
     assert.equal(await board.getAttribute("data-complete"), "true");
-    assert.equal((await page.getByTestId("v2-equation").textContent())?.trim(), "W(3) = 3");
+    assert.equal((await page.getByTestId("v2-equation").textContent())?.trim(), "3 boxes → 3 sticks");
     await page.screenshot({ path: resolve(screenshots, `v2-${label}-game.png`), fullPage: true, animations: "disabled" });
     await page.getByTestId("v2-next").click();
     assert.equal(await page.getByTestId("v2-growth-game").getAttribute("data-mission"), "cover-four");
