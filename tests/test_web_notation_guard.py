@@ -3,6 +3,7 @@ from __future__ import annotations
 import copy
 import sys
 import unittest
+from types import SimpleNamespace
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
@@ -53,6 +54,28 @@ class NotationGuardTests(unittest.TestCase):
         )
         self.assertIsNone(update)
         self.assertIn("UNAPPROVED_NOTATION:W", codes)
+
+    def test_tutor_rejects_invented_notation_even_after_repair(self):
+        from study_os.web.player import tutor
+
+        class RepeatedBadLLM:
+            def complete(self, **kwargs):
+                return SimpleNamespace(
+                    args={"reply_md": "W(3) = 3."}, route="test",
+                    tokens_in=10, tokens_out=5, cost_usd=0.0, latency_ms=4,
+                )
+
+        settings = SimpleNamespace(
+            tutor_prompt_version="tutor.v3",
+            llm_primary_route="test", llm_fallback_route="test",
+        )
+        result = tutor.reply(
+            RepeatedBadLLM(), settings, self.lesson,
+            {**self.state, "phase": "done"}, "Explain again."
+        )
+        self.assertEqual(result.served, "fallback")
+        self.assertIn("UNAPPROVED_NOTATION:W", result.validation_codes)
+        self.assertNotIn("W(", result.reply_md)
 
     def test_presentation_accepts_plain_words(self):
         update, codes = presentation.validate_proposal(
