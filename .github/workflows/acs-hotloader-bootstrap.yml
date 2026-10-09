@@ -39,6 +39,9 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
+          # The Actions token has no workflows permission. Commit the other files
+          # here; the connected GitHub maintainer will apply CI and OIO workflows.
+          git reset -q -- .github/workflows/ci.yml .github/workflows/issue-triage.yml
           if git diff --cached --quiet; then
             echo "No installation changes were produced."
             exit 1
