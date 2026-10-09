@@ -35,18 +35,16 @@ try {
     await game.getByTestId("sticks-complexity-select").selectOption("O(n²)");
     assert.equal((await page.getByTestId("v2-equation").textContent())?.trim(), "W(3) = 3 × 3 = 9");
     assert.equal(await game.getAttribute("data-placed"), "0");
-    await page.getByLabel("Number of stick placements").fill("16");
+    await page.getByLabel("Number of stick placements").fill("15");
     await page.getByTestId("v2-check").click();
     assert.match(await page.getByTestId("v2-result").textContent(), /Not quite/);
     await page.getByLabel("Number of stick placements").fill("16");
     await page.getByTestId("v2-check").click();
-    assert.match(await page.getByTestId("v2-result").textContent(), /Not quite/);
-    await page.getByLabel("Number of stick placements").fill("16");
-    // Deliberately wrong prediction for n=4? Under O(n²), 16 IS correct.
-    assert.match(await page.getByTestId("v2-result").textContent(), /Not quite/);
+    assert.match(await page.getByTestId("v2-result").textContent(), /Yes\./);
+    await page.screenshot({ path: resolve(screenshots, `v2-${label}-game.png`), fullPage: true, animations: "disabled" });
     await page.getByTestId("v2-back").click();
     assert.equal(await page.getByTestId("v2-start").isVisible(), true);
-    await page.screenshot({ path: resolve(screenshots, `v2-${label}.png`), fullPage: true, animations: "disabled" });
+    await page.screenshot({ path: resolve(screenshots, `v2-${label}-overview.png`), fullPage: true, animations: "disabled" });
     assert.deepEqual(problems, [], `${label}: JavaScript runtime errors`);
     assert.deepEqual(externalRequests, [], `${label}: offline review must make zero network calls`);
     console.log(`PASS offline v2 reviewer ${label} ${width}×${height}`);
