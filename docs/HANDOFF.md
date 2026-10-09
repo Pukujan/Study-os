@@ -355,3 +355,13 @@ As of 2026-09-24 (SOS-0003 completed; PR #96 merge pending, live result on #83):
 ## SOS-0005 visuals slice (in progress on `sos5-visuals`)
 
 Added `box_index` enhancements (brace, arrows with direction, circles, interactive cells) and two new player frame types: `mermaid_flow` (progressive reveal, responsive TD/LR, zoom/pan) and `code_tree` (line highlights, underlines, expandable tree). Wired the sliding-window lesson to a `LessonMap` in `Player.tsx`. Engine `check_lesson` now forbids `circles` on probe frames alongside arrows/highlight. Next: Alex/orchestrator review, then screenshots/dogfooding.
+
+
+## Study OS v2 experience reset — preview only (2026-10-08 ET)
+
+Owner accepted moving forward with the end-to-end rebuild proposal in [#204](https://github.com/Pukujan/Study-os/issues/204). Draft [PR #205](https://github.com/Pukujan/Study-os/pull/205) contains an isolated `/v2` Big O teaching preview, guarded by build flag `VITE_STUDY_OS_V2=1` (default disabled), plus deterministic model/learner-entry tests and a Playwright mobile/desktop flow. This is **not** a production launch or a replacement for the current auth/controller/decomposer; nothing is merged. Full acceptance requires verified decomposition, term and symbol ontology, guest/account/resume journey, cross-representation correctness and learner review. See [V2_VERTICAL_SLICE.md](../docs/webapp/V2_VERTICAL_SLICE.md). ACS installer PR #203 is separate.
+
+
+### V2 PR hands-on review pipeline (2026-10-09 UTC)
+
+[Draft PR #205](https://github.com/Pukujan/Study-os/pull/205) now auto-builds an offline `study-os-v2-offline-review` artifact after each PR update, with independently executed mobile/desktop Chromium interaction verification. Reviewer downloads `review.html` via PR Checks → V2 interactive reviewer → Artifacts; no server/production credentials are required. First reviewer job green: [run 37873051045](https://github.com/Pukujan/Study-os/actions/runs/37873051045). This is *not* a hosted preview or a deployment gate for CD; `main` still deploys automatically to gravebuster, so keep v2 work on draft PR until authorized promotion. Details in `docs/CI_CD.md` and `docs/webapp/V2_VERTICAL_SLICE.md`.

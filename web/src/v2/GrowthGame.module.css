@@ -1,0 +1,24 @@
+.root { display: grid; gap: 1rem; min-width: 0; }
+.toolRow { display: flex; flex-wrap: wrap; align-items: stretch; gap: .8rem; }
+.stick, .stickActive { display: flex; align-items: center; gap: .55rem; border: 1px solid var(--primary); border-radius: .8rem; padding: .7rem 1rem; background: var(--surface-subtle); color: var(--ink); cursor: grab; font-weight: 750; touch-action: manipulation; }
+.stickActive { background: var(--primary); color: var(--on-primary, white); }
+.stickIcon { display: inline-grid; place-items: center; width: 1.65rem; height: 2.05rem; border-radius: .3rem; background: #e9b86d; color: #4c361a; font-size: 1.35rem; font-weight: 900; }
+.stick:disabled { cursor: default; opacity: .5; }
+.counter { display: grid; align-content: center; gap: .15rem; background: var(--surface-subtle); padding: .65rem .95rem; border-radius: .8rem; }
+.counter span { color: var(--muted); font-size: .75rem; }
+.counter strong { font-size: 1.15rem; font-variant-numeric: tabular-nums; }
+.boxBoard { display: flex; flex-wrap: wrap; gap: .7rem; justify-content: center; margin: .8rem 0; }
+.pairBoard { display: grid; gap: .5rem; }
+.pairBoard p { color: var(--muted); margin: 0; font-size: .9rem; }
+.pairGrid { display: grid; gap: .45rem; }
+.target, .filled { min-height: 6rem; min-width: 0; display: grid; place-content: center; gap: .5rem; border: 2px dashed var(--line); color: var(--ink); border-radius: .85rem; background: var(--surface-subtle); font: inherit; cursor: pointer; touch-action: manipulation; }
+.boxBoard .target, .boxBoard .filled { flex: 1 1 6rem; max-width: 9rem; min-width: 5rem; min-height: 7rem; }
+.target:hover, .target:focus-visible { border-color: var(--primary); }
+.filled { background: color-mix(in srgb, var(--primary) 14%, var(--surface-subtle)); border-style: solid; border-color: var(--primary); }
+.targetSymbol { font-size: 1.5rem; color: var(--muted); font-weight: 800; line-height: 1; }
+.filled .targetSymbol { color: var(--primary); }
+.targetLabel { font-size: .85rem; font-weight: 700; }
+.feedback { background: var(--surface-subtle); border-radius: .6rem; padding: .8rem 1rem; margin: 0; line-height: 1.5; min-height: 2.5rem; }
+.hint { margin: 0; font-size: .85rem; color: var(--muted); }
+.reset { justify-self: start; padding: .4rem .6rem; border: 0; background: transparent; color: var(--muted); text-decoration: underline; font: inherit; cursor: pointer; }
+@media(max-width:450px) { .pairGrid { gap: .25rem; } .pairGrid .target, .pairGrid .filled { min-height: 4.35rem; } .targetLabel { font-size: .72rem; } .boxBoard .target, .boxBoard .filled { min-height: 5rem; } }

@@ -20,6 +20,7 @@ export type Route =
   | { name: "login" }
   | { name: "home" }
   | { name: "try" }
+  | { name: "v2" }
   | { name: "lesson"; id: string }
   | { name: "summary"; id: string }
   | { name: "play"; id: string }
@@ -32,6 +33,7 @@ export function matchRoute(path: string): Route {
   if (path === "/" || path === "") return { name: "home" };
   if (path === "/login") return { name: "login" };
   if (path === "/try") return { name: "try" };
+  if (path === "/v2") return { name: "v2" };
   if (path === "/admin/feedback") return { name: "admin_feedback" };
   const play = path.match(/^\/play\/([0-9a-f-]{36})$/);
   if (play && UUID_RE.test(play[1])) return { name: "play", id: play[1] };

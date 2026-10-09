@@ -1,0 +1,13 @@
+/* Standalone offline reviewer only; the production app does not import this. */
+*, *::before, *::after { box-sizing: border-box; }
+html { min-height: 100%; }
+body { min-width: 320px; margin: 0; background: var(--bg); color: var(--ink); }
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; }
+.v2-review-banner { display: flex; align-items: center; justify-content: space-between; gap: .5rem 1rem; flex-wrap: wrap; padding: .72rem max(1rem, calc((100vw - 1160px)/2)); background: var(--surface-subtle); border-bottom: 1px solid var(--line); font-size: .83rem; }
+.v2-review-banner strong { color: var(--ink); }
+.v2-review-banner span { color: var(--muted); }
+.shell-v2 { max-width: 1160px; width: 100%; margin: 0 auto; padding: clamp(.8rem, 2.5vw, 1.5rem); }
+.v2-review-footer { text-align: center; padding: 1.25rem; border-top: 1px solid var(--line); color: var(--muted); font-size: .8rem; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+@media (max-width: 700px) { .v2-review-banner { align-items: start; } }

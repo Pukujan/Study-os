@@ -9,6 +9,7 @@ import Summary from "./pages/Summary";
 import TryPage from "./pages/Try";
 import Player from "./pages/Player";
 import AdminFeedback from "./pages/AdminFeedback";
+import BigOStudio from "./v2/BigOStudio";
 import ErrorBoundary from "./ErrorBoundary";
 import { ThemeProvider, ThemeToggle } from "./theme";
 
@@ -34,7 +35,7 @@ export default function App() {
 
   useEffect(() => {
     if (checked && !me) {
-      const publicRoute = route.name === "home" || route.name === "try";
+      const publicRoute = route.name === "home" || route.name === "try" || route.name === "v2";
       if (!publicRoute && route.name !== "login") navigate("/login");
     }
   }, [checked, me, route.name]);
@@ -50,7 +51,7 @@ export default function App() {
   if (!checked) {
     return (
       <ThemeProvider>
-        <main className="shell"><p className="muted">Loading…</p></main>
+        <main className={route.name === "v2" ? "shell shell-v2" : "shell"}><p className="muted">Loading…</p></main>
       </ThemeProvider>
     );
   }
@@ -78,6 +79,7 @@ export default function App() {
       </header>
       <main className="shell">
         <ErrorBoundary resetKey={path}>
+        {route.name === "v2" && <BigOStudio />}
         {route.name === "login" && <Login onSignedIn={(m) => { setMe(m); navigate("/"); }} />}
         {me && route.name === "home" && <HomeLanes me={me} />}
         {me && route.name === "try" && <TryPage onSignedIn={(m) => { setMe(m); navigate("/"); }} />}
