@@ -41,10 +41,16 @@ export const GROWTH_MISSIONS: readonly GrowthMission[] = [
     actionHint: "Compare the growth of the pair board with the one-stick-per-box rounds.",
   },
   {
-    id: "first-only", n: 4, mode: "O(1)",
+    id: "first-only-three", n: 3, mode: "O(1)",
     heading: "Only the first box matters",
-    instruction: "The computer only needs a stick in Box 1, no matter how many other boxes exist.",
-    actionHint: "Try choosing another box first. The board will explain why it is not allowed.",
+    instruction: "Put one stick in Box 1. The other boxes don't need one.",
+    actionHint: "Only Box 1 counts.",
+  },
+  {
+    id: "first-only-four", n: 4, mode: "O(1)",
+    heading: "Now with four boxes",
+    instruction: "Put one stick in Box 1, just like last time.",
+    actionHint: "More boxes, but the same work.",
   },
 ] as const;
 
