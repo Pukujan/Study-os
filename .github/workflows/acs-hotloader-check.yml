@@ -1,0 +1,57 @@
+name: ACS hotloader verification
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Validate ACS and OIO installation
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Check out Study OS and its ACS submodule
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install validator dependencies
+        run: python -m pip install jsonschema
+
+      - name: Fetch the certified CGM checkout into the runner cache
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone -q --depth 1 https://github.com/Pukujan/agent-stack-train "$RUNNER_TEMP/agent-stack-train"
+          CGM_COMMIT=$(python -c 'import json,os; d=json.load(open(os.path.join(os.environ["RUNNER_TEMP"],"agent-stack-train/stack-releases.json"))); print(d["certified"]["content-generation-modules"]["commit"])')
+          mkdir -p "$RUNNER_TEMP/content-generation-modules"
+          git -C "$RUNNER_TEMP/content-generation-modules" init -q
+          git -C "$RUNNER_TEMP/content-generation-modules" fetch -q --depth 1 https://github.com/Pukujan/content-generation-modules.git "$CGM_COMMIT"
+          git -C "$RUNNER_TEMP/content-generation-modules" checkout -q --detach FETCH_HEAD
+          test "$(git -C "$RUNNER_TEMP/content-generation-modules" rev-parse HEAD)" = "$CGM_COMMIT"
+
+      - name: Verify the ACS coordination state and CGM adapter
+        run: |
+          python third_party/agent-custom-setup/modules/coordination/multi-agent-hotload/v0.1.0/scripts/hotload_check.py \
+            --adopter-root . \
+            --assignment .coord/assignment.json \
+            --cgm-root "$RUNNER_TEMP/content-generation-modules"
+          python -c 'import json; lock=json.load(open(".coord/hotload.lock.json")); assert lock["state"] == "READY" and lock["hotload_check"] == "OK" and lock["oio_install"] == "OK"'
+
+      - name: Verify the installed OIO issue-log package
+        run: python .github/scripts/oio_installer.py --target . --project-id Pukujan/Study-os --check
+
+      - name: Verify the adopter against the release train
+        run: |
+          python "$RUNNER_TEMP/agent-stack-train/scripts/check_manifest.py" \
+            --manifest stack-manifest.json \
+            --train "$RUNNER_TEMP/agent-stack-train/stack-releases.json"
