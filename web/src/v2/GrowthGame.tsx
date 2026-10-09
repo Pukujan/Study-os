@@ -1,4 +1,4 @@
-import { useState, type DragEvent } from "react";
+import { useRef, useState, type PointerEvent } from "react";
 import { missionComplete, requiredTargets, validatePlacement, type GrowthMission } from "./growthMission";
 import styles from "./GrowthGame.module.css";
 
@@ -13,7 +13,12 @@ export default function GrowthGame({
 }) {
   const [filled, setFilled] = useState<string[]>(() => [...initialFilled]);
   const [armed, setArmed] = useState(false);
-  const [feedback, setFeedback] = useState("Pick up a stick, then drop or tap a target.");
+  const [feedback, setFeedback] = useState("Drag a stick to a box, or tap to place it.");
+  const [dragPoint, setDragPoint] = useState<{ x: number; y: number } | null>(null);
+  const [hoverTarget, setHoverTarget] = useState<string | null>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const gestureRef = useRef<{ x: number; y: number; moved: boolean } | null>(null);
+  const suppressNextClick = useRef(false);
   const completed = missionComplete(mission, filled);
   const targets = requiredTargets(mission);
 
@@ -22,11 +27,11 @@ export default function GrowthGame({
     const verdict = validatePlacement(mission, filled, target);
     setArmed(false);
     if (verdict === "duplicate") {
-      setFeedback("Already filled! Look for a different empty space.");
+      setFeedback("Already filled. Pick an empty space.");
       return;
     }
     if (verdict === "not-allowed") {
-      setFeedback("That box is not part of the computer's rule. Re-read the mission and try again.");
+      setFeedback(mission.mode === "O(1)" ? "Only Box 1 needs a stick." : "That space isn't part of this task.");
       return;
     }
     const next = [...filled, target];
@@ -34,14 +39,54 @@ export default function GrowthGame({
     setFilled(next);
     onProgress(next, done);
     setFeedback(done
-      ? "Nice work. Your actions completed this rule! Notice the finished graph beside the board."
-      : "Correct placement. Watch the graph rise as the work counter increases.");
+      ? "Finished! See the graph."
+      : `${next.length} stick${next.length === 1 ? "" : "s"} placed.`);
   }
 
-  function drop(event: DragEvent<HTMLButtonElement>, target: string) {
-    event.preventDefault();
-    if (event.dataTransfer.getData("text/plain") !== "study-os-stick") return;
-    place(target);
+  // Pointer events work on touchscreens as well as mice; HTML5 drag/drop does not.
+  // The stick captures the pointer, while elementFromPoint identifies the real
+  // drop zone underneath. Clicking/tapping remains available for accessibility.
+  function targetAt(x: number, y: number): string | null {
+    const element = document.elementFromPoint(x, y)?.closest("[data-v2-drop-target]") as HTMLElement | null;
+    if (!element || !rootRef.current?.contains(element)) return null;
+    return element.dataset.v2DropTarget || null;
+  }
+
+  function pointerDown(event: PointerEvent<HTMLButtonElement>) {
+    if (event.button !== 0 || completed) return;
+    gestureRef.current = { x: event.clientX, y: event.clientY, moved: false };
+    event.currentTarget.setPointerCapture(event.pointerId);
+  }
+
+  function pointerMove(event: PointerEvent<HTMLButtonElement>) {
+    const gesture = gestureRef.current;
+    if (!gesture) return;
+    if (!gesture.moved && Math.hypot(event.clientX - gesture.x, event.clientY - gesture.y) <= 6) return;
+    gesture.moved = true;
+    setDragPoint({ x: event.clientX, y: event.clientY });
+    setHoverTarget(targetAt(event.clientX, event.clientY));
+  }
+
+  function pointerUp(event: PointerEvent<HTMLButtonElement>) {
+    const gesture = gestureRef.current;
+    gestureRef.current = null;
+    if (!gesture) return;
+    if (gesture.moved) {
+      suppressNextClick.current = true;
+      const target = targetAt(event.clientX, event.clientY);
+      if (target) place(target);
+      else setFeedback("Drop the stick into an empty box.");
+      setDragPoint(null);
+      setHoverTarget(null);
+      setArmed(false);
+    }
+  }
+
+  function pointerCancel() {
+    gestureRef.current = null;
+    setDragPoint(null);
+    setHoverTarget(null);
+    setArmed(false);
   }
 
   function targetButton(target: string, label: string) {
@@ -50,14 +95,14 @@ export default function GrowthGame({
       <button
         key={target}
         type="button"
-        className={isFilled ? styles.filled : styles.target}
+        className={isFilled ? styles.filled : hoverTarget === target ? styles.hoverTarget : styles.target}
         data-testid={`v2-target-${target}`}
         data-filled={isFilled ? "true" : "false"}
+        data-v2-drop-target={target}
         aria-label={`${label}, ${isFilled ? "filled" : "empty"}`}
         aria-pressed={isFilled}
         onClick={() => armed ? place(target) : setFeedback("Pick up a stick first, then tap the target. You can also drag the stick here.")}
-        onDragOver={(event) => event.preventDefault()}
-        onDrop={(event) => drop(event, target)}
+
       >
         <span className={styles.targetLabel}>{label}</span>
         <span className={styles.targetSymbol} aria-hidden="true">{isFilled ? "┃" : "+"}</span>
@@ -66,24 +111,24 @@ export default function GrowthGame({
   }
 
   return (
-    <div className={styles.root} role="group" aria-label="Drag-and-drop growth game"
+    <div ref={rootRef} className={styles.root} role="group" aria-label="Drag-and-drop growth game"
       data-testid="v2-growth-game" data-mission={mission.id} data-placed={filled.length}
       data-complete={completed ? "true" : "false"}>
       <div className={styles.toolRow}>
         <button
           className={armed ? styles.stickActive : styles.stick}
           type="button"
-          draggable={!completed}
           disabled={completed}
+          onPointerDown={pointerDown}
+          onPointerMove={pointerMove}
+          onPointerUp={pointerUp}
+          onPointerCancel={pointerCancel}
           data-testid="v2-stick"
           aria-pressed={armed}
-          onClick={() => setArmed(true)}
-          onDragStart={(event) => {
-            event.dataTransfer.setData("text/plain", "study-os-stick");
-            event.dataTransfer.effectAllowed = "copy";
+          onClick={() => {
+            if (suppressNextClick.current) { suppressNextClick.current = false; return; }
             setArmed(true);
           }}
-          onDragEnd={() => setArmed(false)}
         >
           <span aria-hidden="true" className={styles.stickIcon}>┃</span>
           {armed ? "Stick selected" : "Pick up a stick"}
@@ -94,6 +139,10 @@ export default function GrowthGame({
         </div>
       </div>
 
+      {dragPoint ? (
+        <div className={styles.dragGhost} aria-hidden="true"
+          style={{ left: dragPoint.x, top: dragPoint.y }}>┃</div>
+      ) : null}
       {mission.mode === "O(n²)" ? (
         <div className={styles.pairBoard} aria-label="Ordered-pair board">
           <p>Each tile represents one pair of boxes. Directions count separately.</p>
@@ -111,7 +160,7 @@ export default function GrowthGame({
       )}
 
       <p className={styles.feedback} role="status" aria-live="polite" data-testid="v2-game-feedback">{feedback}</p>
-      <p className={styles.hint}>{mission.actionHint}</p>
+      <details className={styles.hint}><summary>Need a hint?</summary><p>{mission.actionHint}</p></details>
       <button
         type="button" className={styles.reset} data-testid="v2-restart"
         onClick={() => { setFilled([]); setArmed(false); setFeedback("Board reset. Pick up a stick and try the mission again."); onProgress([], false); }}
