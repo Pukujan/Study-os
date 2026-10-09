@@ -48,7 +48,7 @@ jobs:
           python -c 'import json; lock=json.load(open(".coord/hotload.lock.json")); assert lock["state"] == "READY" and lock["hotload_check"] == "OK" and lock["oio_install"] == "OK"'
 
       - name: Verify the installed OIO issue-log package
-        run: python .github/scripts/oio_installer.py --target . --project-id Pukujan/Study-os --check
+        run: python .github/scripts/oio_installer.py --target "$GITHUB_WORKSPACE" --project-id Pukujan/Study-os --check
 
       - name: Verify the adopter against the release train
         run: |
