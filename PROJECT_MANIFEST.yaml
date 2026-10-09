@@ -86,17 +86,17 @@ helpers:
     repository: Pukujan/project-continuity-modules
     role: continuity_protocol_and_validator
     adoption: mature_repository_overlay
-    cli_version: "0.6.0"
+    cli_version: "0.7.0"
     protocol_version: "0.1.0-draft"
-    commit: c18bfd6064d1249996bc00c45dbbc6721ec5dfd9
+    commit: 776b468db56cbbe3e251b2583d41f1f0caebd9ba
     task_prefix: SOS
     github_issue_authority: true
   content_generation_modules:
     repository: Pukujan/content-generation-modules
     role: human_facing_content_method_and_adapter_validator
     adoption: target_adapter
-    helper_version: "0.5.7"
-    commit: c069613ca8b3e02bcf5aba1960160583537f8a3a
+    helper_version: "0.5.12"
+    commit: 78385ff2ba31051128208ddc7f08dc5de0f0b570
     adapter_validation: pin_0_5_7_always_on_hsw_hon_eight_modules
   private_repositories_copied_into_public_outputs: false
 
