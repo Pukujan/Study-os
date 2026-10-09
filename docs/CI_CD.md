@@ -1,6 +1,22 @@
 # CI/CD Strategy
 
-## Current decision
+## Current operational pipeline (verified 2026-10-09 UTC)
+
+The repository has **CI, production CD, and a new PR review artifact**:
+
+| Trigger | GitHub Actions workflow | Verified role |
+| --- | --- | --- |
+| Every pull request, every push to `main` | [CI](../.github/workflows/ci.yml) | Python 3.11/3.12 validation, schema/privacy/test gate, frontend typecheck/unit/build, Playwright browser/vision gate |
+| Every pull request update | [V2 interactive reviewer](../.github/workflows/v2-review-preview.yml) | Bundle one self-contained `review.html`; launch via `file://` and exercise it on 390×844 mobile and 1440×900 desktop without requests or an API; attach HTML and screenshots to the workflow run |
+| Push to `main` (or manual dispatch) | [CD](../.github/workflows/cd.yml) | **Production** deployment on self-hosted gravebuster runner via Docker Compose, then localhost and public API health checks |
+
+**To review any v2 PR revision:** open that PR → **Checks** → **V2 interactive reviewer** → latest successful workflow run → **Artifacts** → download `study-os-v2-offline-review`, unzip, double-click `review.html`. This artifact is retained 30 days, requires no node server or account, and does not touch the production database. Screenshots are in the same artifact. The preview is a narrow, isolated learning UI proof; it does not simulate login, saved sessions, or live AI calls. CI must still pass separately.
+
+**Existing production deploy is not gated by a staging environment.** Merges to `main` currently trigger the live deploy, so do not merge for review. The desired follow-on is an independently hosted PR/staging URL with a disposable isolated database, proper auth test accounts, scoped secrets and automated smoke checks, plus a human promotion gate. That is **not currently implemented**. Respect [agent authority](AUTHORITY.md); only authorized reviewers can approve/merge.
+
+Note: The historical Research Gate R0 strategy retained below predates the live site and **must not be interpreted as current runtime status**.
+
+## Historical R0 decision (superseded operationally)
 
 Study OS needs **continuous integration now** and **continuous deployment later**.
 

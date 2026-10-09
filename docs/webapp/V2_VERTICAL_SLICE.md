@@ -27,3 +27,12 @@ The accepted #185 sticks-and-boxes interactive remains the action surface. It no
 Next: owner/learner review of entry→game→explanation→prediction at desktop/mobile; revise according to observed confusion. Freeze the shared semantic contract, then test Two Sum, sliding window and fractions using it before migrating the existing routes.
 
 The classic frontend, database, controller, ACS PR and live deployment are not modified by this preview.
+
+
+## Automatic PR review pipeline (2026-10-09 UTC)
+
+Each update to the draft PR automatically triggers [V2 interactive reviewer](../../.github/workflows/v2-review-preview.yml). The workflow runs `node scripts/build-v2-review.mjs` to emit a **single-file, offline** React preview containing inlined CSS and JavaScript (no requests to API, AI providers or analytics). It then opens that file in real Chromium at mobile **390×844** and desktop **1440×900**, exercises game→equation→prediction→back, rejects runtime errors and network requests, and uploads `review.html` and screenshots as the 30-day artifact `study-os-v2-offline-review`.
+
+**How to review:** on [draft PR #205](https://github.com/Pukujan/Study-os/pull/205) open Checks → V2 interactive reviewer → latest successful run → Artifacts → `study-os-v2-offline-review`. Unzip, double-click `review.html`. On any desktop browser, no local server, login, credentials or install is necessary. This preview is a standalone copy of **only** the Big O v2 teaching surface. It is **not** a deploy of the complete app and cannot validate API login, actual learner progress/resume or LLM-driven explanation behavior.
+
+Latest first green reviewer receipt: [run 37873051045](https://github.com/Pukujan/Study-os/actions/runs/37873051045) at `2c2993476a856b455be992421b3cbd9756eb17e6`. The earlier whole-app E2E CI [run 37872265819](https://github.com/Pukujan/Study-os/actions/runs/37872265819) passed 34 browser tests, including the v2 route. Reviewers must evaluate clarity and pedagogy manually; checks cannot prove the explanation is understandable.
