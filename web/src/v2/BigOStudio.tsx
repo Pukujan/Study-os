@@ -1,218 +1,200 @@
-import { useId, useState, type FormEvent } from "react";
+import { useId, useState } from "react";
 import { navigate } from "../router";
-import SticksBoxesComplexity, { type ComplexityMode } from "../visuals/SticksBoxesComplexity";
-import { BIG_O_RULES, BIG_O_TERMS, challengeSize, curvePoints, exactEquation, exampleWork } from "./bigOModel";
+import GrowthGame from "./GrowthGame";
+import { BIG_O_TERMS, exactEquation, exampleWork } from "./bigOModel";
+import { GROWTH_MISSIONS } from "./growthMission";
+import type { ComplexityMode } from "../visuals/SticksBoxesComplexity";
 import styles from "./BigOStudio.module.css";
 
-const MODES: ComplexityMode[] = ["O(1)", "O(n)", "O(n²)"];
-const SERIES_COLORS: Record<ComplexityMode, string> = {
-  "O(1)": "var(--chart-1, #22a7a7)",
-  "O(n)": "var(--chart-2, #688bea)",
-  "O(n²)": "var(--chart-4, #df9b42)",
+type Measurement = { id: string; mode: ComplexityMode; n: number; work: number };
+const COLORS: Record<ComplexityMode, string> = {
+  "O(1)": "#86e4cc",
+  "O(n)": "#8eb4ff",
+  "O(n²)": "#ffbf78",
 };
 
-function BigOGraph({ mode, n }: { mode: ComplexityMode; n: number }) {
+/**
+ * Shows the number of accepted operations live. Until the board is finished,
+ * the animated bar is only *partial work*, not a measured complexity sample.
+ * Completed runs alone enter the observed curve. Never plot a fake oracle
+ * answer ahead of a learner's independent action.
+ */
+function LiveGrowthGraph({
+  n, count, finished, history,
+}: { n: number; count: number; finished: boolean; history: readonly Measurement[] }) {
   const titleId = useId();
   const descId = useId();
-  const x = (size: number) => 44 + (size - 1) * 60;
-  const y = (work: number) => 220 - (work / 64) * 172;
-  const current = exampleWork(mode, n);
+  const x = (size: number) => 68 + (size - 1) * 97;
+  const y = (work: number) => 238 - (work / 16) * 190;
+  const all: Measurement[] = [...history];
+  const byMode = (mode: ComplexityMode) => all.filter((sample) => sample.mode === mode)
+    .sort((a, b) => a.n - b.n);
+  const modes: ComplexityMode[] = ["O(1)", "O(n)", "O(n²)"];
 
   return (
-    <figure className={styles.graph} aria-label="Work growth graph">
-      <svg
-        viewBox="0 0 510 270"
-        role="img"
-        aria-labelledby={`${titleId} ${descId}`}
-        data-testid="v2-curve"
-      >
-        <title id={titleId}>Illustrative work by input size</title>
-        <desc id={descId}>
-          O(1) stays at 1, O(n) rises with n and O(n²) rises with n squared.
-          Selected {mode} at n={n} has {current} placements in this game.
-        </desc>
-        {[0, 16, 32, 48, 64].map((work) => (
-          <g key={work}>
-            <line x1="44" x2="464" y1={y(work)} y2={y(work)} stroke="currentColor" opacity=".15" />
-            <text x="37" y={y(work) + 4} textAnchor="end" fontSize="11" fill="currentColor">{work}</text>
+    <figure className={styles.graph}>
+      <svg viewBox="0 0 505 300" role="img" aria-labelledby={`${titleId} ${descId}`}
+        data-testid="v2-curve" data-live-work={count} data-current-n={n}>
+        <title id={titleId}>Growth of work observed in the game</title>
+        <desc id={descId}>The current board uses {n} boxes and has {count} valid placements.
+          Previous points represent completed boards only; this bar is
+          {finished ? " finished" : " still growing"}.</desc>
+        {[0, 4, 8, 12, 16].map((steps) => (
+          <g key={steps}>
+            <line x1="60" y1={y(steps)} x2="478" y2={y(steps)} stroke="currentColor" opacity=".16" />
+            <text x="52" y={y(steps) + 4} textAnchor="end" fill="currentColor" fontSize="13">{steps}</text>
           </g>
         ))}
-        <line x1="44" y1="220" x2="480" y2="220" stroke="currentColor" opacity=".55" />
-        <line x1="44" y1="220" x2="44" y2="34" stroke="currentColor" opacity=".55" />
-        {Array.from({ length: 8 }, (_, i) => i + 1).map((size) => (
-          <text key={size} x={x(size)} y="237" textAnchor="middle" fontSize="11" fill="currentColor">{size}</text>
+        <line x1="60" y1="238" x2="478" y2="238" stroke="currentColor" opacity=".5" />
+        <line x1="60" y1="238" x2="60" y2="42" stroke="currentColor" opacity=".5" />
+        {[2, 3, 4].map((size) => (
+          <text key={size} x={x(size)} y="257" textAnchor="middle" fill="currentColor" fontSize="13">
+            {size}
+          </text>
         ))}
-        <text x="250" y="258" textAnchor="middle" fontSize="12" fill="currentColor">n — number of boxes</text>
-        <text x="44" y="17" fontSize="12" fill="currentColor">W(n) — placements</text>
-        {MODES.map((candidate) => (
-          <polyline
-            key={candidate}
-            points={curvePoints(candidate).map((point) => `${x(point.n)},${y(point.work)}`).join(" ")}
-            fill="none"
-            stroke={SERIES_COLORS[candidate]}
-            strokeWidth={candidate === mode ? 4 : 2}
-            opacity={candidate === mode ? 1 : 0.38}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
+        <text x="266" y="286" textAnchor="middle" fill="currentColor" fontSize="13">
+          n — boxes in the task
+        </text>
+        <text x="63" y="22" fill="currentColor" fontSize="13">Work — sticks placed</text>
+        {modes.map((mode) => {
+          const points = byMode(mode);
+          return points.length >= 2 ? (
+            <polyline key={mode}
+              points={points.map((p) => `${x(p.n)},${y(p.work)}`).join(" ")}
+              fill="none" stroke={COLORS[mode]} strokeWidth="2.5" />
+          ) : null;
+        })}
+        {history.map((p) => (
+          <circle key={p.id} cx={x(p.n)} cy={y(p.work)} r="6" fill={COLORS[p.mode]}
+            stroke="var(--card)" strokeWidth="2" />
         ))}
-        <line x1={x(n)} y1="34" x2={x(n)} y2="220" stroke="currentColor" opacity=".25" strokeDasharray="4 4" />
-        <circle cx={x(n)} cy={y(current)} r="7" stroke="var(--card)" strokeWidth="2" fill={SERIES_COLORS[mode]} />
+        <rect data-testid="v2-live-bar" x={x(n) - 15} width="30"
+          y={y(count)} height={Math.max(0, y(0) - y(count))} rx="5"
+          fill={COLORS["O(n²)"]} opacity=".64" />
+        <circle cx={x(n)} cy={y(count)} r="7" fill={COLORS["O(n²)"]}
+          stroke="var(--card)" strokeWidth="2" />
       </svg>
-      <figcaption className={styles.graphCaption}>
-        {MODES.map((candidate) => (
-          <span key={candidate} className={candidate === mode ? styles.activeLegend : styles.legend}>
-            <span className={styles.legendDot} style={{ background: SERIES_COLORS[candidate] }} aria-hidden="true" />
-            {candidate}
-          </span>
-        ))}
+      <figcaption className={styles.graphCaption} data-testid="v2-graph-caption" aria-live="polite">
+        <strong>{count} work step{count === 1 ? "" : "s"} so far</strong> with {n} boxes.
+        {finished ? " This board is complete." : " This board is still in progress."}
       </figcaption>
-      <p className={styles.graphNote}>Selected: {mode} at n = {n}, so W(n) = {current} placements.</p>
+      {history.length ? (
+        <div className={styles.legend} aria-label="Completed example measurements">
+          {modes.filter((mode) => byMode(mode).length > 0).map((mode) => (
+            <span key={mode}><i style={{ background: COLORS[mode] }} /> Completed {mode} examples</span>
+          ))}
+        </div>
+      ) : null}
     </figure>
   );
 }
 
-/**
- * An isolated, guest-safe experience proof. No API writes, model generation or
- * mastery claim. The route is disabled unless VITE_STUDY_OS_V2=1 at build time.
- * Refs #204. Keep the legacy player intact until journey+golden gates pass.
- */
+/** Entire v2 lives at /v2. No API writes, accounts, model calls or mastery claims. */
 export default function BigOStudio({ onExit = () => navigate("/") }: { onExit?: () => void } = {}) {
   const [started, setStarted] = useState(false);
-  const [mode, setMode] = useState<ComplexityMode>("O(n)");
-  const [n, setN] = useState(3);
-  const [placed, setPlaced] = useState(0);
-  const [prediction, setPrediction] = useState("");
-  const [checked, setChecked] = useState(false);
-  const total = exampleWork(mode, n);
-  const nextN = challengeSize(n);
-  const expected = exampleWork(mode, nextN);
-  const isValidAnswer = /^\d+$/.test(prediction.trim());
-  const isCorrect = checked && Number(prediction) === expected;
+  const [missionIndex, setMissionIndex] = useState(0);
+  const [count, setCount] = useState(0);
+  const [finished, setFinished] = useState(false);
+  const [history, setHistory] = useState<Measurement[]>([]);
+  const mission = GROWTH_MISSIONS[missionIndex];
+  const isLast = missionIndex === GROWTH_MISSIONS.length - 1;
 
-  function changeExample(nextMode: ComplexityMode, nextN: number) {
-    setMode(nextMode);
-    setN(nextN);
-    setPlaced(0);
-    setPrediction("");
-    setChecked(false);
+  function nextMission() {
+    if (!finished) return;
+    const measured: Measurement = {
+      id: mission.id, mode: mission.mode, n: mission.n,
+      work: exampleWork(mission.mode, mission.n),
+    };
+    if (!history.some((existing) => existing.id === mission.id)) {
+      setHistory([...history, measured]);
+    }
+    if (!isLast) {
+      setMissionIndex(missionIndex + 1);
+      setCount(0);
+      setFinished(false);
+    }
   }
 
-  function checkPrediction(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (isValidAnswer) setChecked(true);
-  }
-
-  if (!started) {
-    return (
-      <div className={styles.root} data-testid="v2-welcome">
-        <div className={styles.hero}>
-          <span className={styles.eyebrow}>Study OS v2 / preview</span>
-          <h1>Understand Big O by doing</h1>
-          <p>Before formulas or quizzes, try a tiny game. See what the boxes, equation and graph are showing you.</p>
-          <p className={styles.small}>No account needed. This is a sandbox preview; no learning progress is saved or graded.</p>
-          <div className={styles.heroActions}>
-            <button type="button" className={styles.primary} onClick={() => setStarted(true)} data-testid="v2-start">
-              Start with three boxes
-            </button>
-            <button type="button" className={styles.secondary} onClick={onExit}>Return to Study OS</button>
-          </div>
+  if (!started) return (
+    <div className={styles.root} data-testid="v2-welcome">
+      <section className={styles.hero}>
+        <span className={styles.eyebrow}>Study OS v2 · live game preview</span>
+        <h1>Don't pick a formula. Discover it.</h1>
+        <p>The computer gives you a job. You drag sticks onto boxes or pairs of boxes. The graph grows with every correct move. The game checks your work immediately.</p>
+        <p className={styles.muted}>No account needed. This preview does not save results or claim mastery.</p>
+        <div className={styles.actions}>
+          <button type="button" data-testid="v2-start" className={styles.primary}
+            onClick={() => setStarted(true)}>Play the first mission</button>
+          <button type="button" className={styles.secondary} onClick={onExit}>Study OS home</button>
         </div>
-        <section className={styles.overview} aria-label="What you will learn">
-          <h2>First, what do these symbols mean?</h2>
-          <dl className={styles.glossary}>
-            {BIG_O_TERMS.map((term) => (
-              <div key={term.symbol}><dt>{term.symbol}</dt><dd>{term.definition}</dd></div>
-            ))}
-          </dl>
-        </section>
-      </div>
-    );
-  }
+      </section>
+      <section className={styles.overview}>
+        <h2>Just three pieces of language to start</h2>
+        <dl className={styles.glossary}>
+          {BIG_O_TERMS.map((term) => <div key={term.symbol}><dt>{term.symbol}</dt><dd>{term.definition}</dd></div>)}
+        </dl>
+        <p className={styles.muted}>You won't need to pick O(1), O(n), or O(n²). Those are names we'll attach after you've played.</p>
+      </section>
+    </div>
+  );
 
   return (
     <div className={styles.root} data-testid="v2-studio">
-      <nav className={styles.navigation} aria-label="Learning preview navigation">
-        <button type="button" className={styles.back} data-testid="v2-back" onClick={() => setStarted(false)}>
-          ← Overview
-        </button>
-        <span>Big O · Explore</span>
-        <button type="button" className={styles.back} onClick={onExit}>Study OS home</button>
+      <nav className={styles.navigation} aria-label="Preview navigation">
+        <button className={styles.secondary} type="button" data-testid="v2-back"
+          onClick={() => setStarted(false)}>← Overview</button>
+        <span>Mission {missionIndex + 1} of {GROWTH_MISSIONS.length}</span>
+        <button className={styles.secondary} type="button" onClick={onExit}>Study OS home</button>
       </nav>
       <header className={styles.intro}>
-        <span className={styles.eyebrow}>One idea at a time</span>
-        <h1>How does work change when a problem gets bigger?</h1>
-        <p>Each box is one input item. You are the computer: place sticks to count the work a rule requires.</p>
+        <span className={styles.eyebrow}>The computer's task · {mission.n} boxes</span>
+        <h1>{mission.heading}</h1>
+        <p>{mission.instruction}</p>
       </header>
       <div className={styles.columns}>
-        <section className={styles.gamePanel} aria-label="Interactive example">
-          <div className={styles.heading}>
-            <span className={styles.number}>01</span>
-            <div><h2>Try the rule</h2><p>{BIG_O_RULES[mode].action}</p></div>
-          </div>
-          <div className={styles.gameArea}>
-            <SticksBoxesComplexity
-              frame={{ type: "sticks_boxes_complexity", initial_complexity: mode, initial_n: n, n_min: 2, n_max: 8 }}
-              onChange={changeExample}
-              onProgress={setPlaced}
-            />
-          </div>
-          <p className={styles.progress} data-testid="v2-progress" aria-live="polite">
-            {placed} of {total} stick placements completed. {placed === total ? "You completed this example." : "Put in the next stick to see the count change."}
-          </p>
+        <section className={styles.gamePanel} aria-label="Live game board">
+          <div className={styles.heading}><span className={styles.number}>01</span><div>
+            <h2>Do the job</h2>
+            <p>Drag the stick to a tile, or tap the stick then tap a tile. The game checks each move.</p>
+          </div></div>
+          <GrowthGame key={mission.id} mission={mission}
+            onProgress={(placed, done) => { setCount(placed); setFinished(done); }} />
         </section>
-
-        <section className={styles.explainPanel} aria-label="Meaning of the example">
-          <div className={styles.heading}>
-            <span className={styles.number}>02</span>
-            <div><h2>Connect the meaning</h2><p>{BIG_O_RULES[mode].pattern}</p></div>
-          </div>
-          <dl className={styles.glossary}>
-            {BIG_O_TERMS.map((term) => (
-              <div key={term.symbol}>
-                <dt>{term.symbol}</dt>
-                <dd>{term.definition}</dd>
-              </div>
-            ))}
-          </dl>
-          <div className={styles.equation}>
-            <span>For the selected boxes and rule</span>
-            <strong data-testid="v2-equation">{exactEquation(mode, n)}</strong>
-            <p>This is the game's <em>exact count</em>. Big O describes a growth family, not exact runtime.</p>
-          </div>
-          <BigOGraph mode={mode} n={n} />
+        <section className={styles.explainPanel} aria-label="Live work graph">
+          <div className={styles.heading}><span className={styles.number}>02</span><div>
+            <h2>Watch the graph grow</h2>
+            <p>Every valid placement is one work step. Only finished boards count as complete measurements.</p>
+          </div></div>
+          <LiveGrowthGraph n={mission.n} count={count} finished={finished} history={history} />
+          {finished ? (
+            <div className={styles.reveal} data-testid="v2-rule-reveal" role="status">
+              <span>The pattern you just made has a name</span>
+              <strong>{mission.mode}</strong>
+              <p data-testid="v2-equation">{exactEquation(mission.mode, mission.n)}</p>
+              <p>Here W(n) means the exact number of sticks placed in <em>this game</em>. Big O names the way a pattern grows, not the exact runtime of all programs.</p>
+            </div>
+          ) : (
+            <p className={styles.muted} data-testid="v2-rule-hidden">
+              The growth label and complete equation will appear after you finish the task. For now, watch your work counter.
+            </p>
+          )}
         </section>
       </div>
-      <section className={styles.practice} aria-label="Predict without placing sticks">
-        <div className={styles.heading}>
-          <span className={styles.number}>03</span>
-          <div><h2>Now predict</h2><p>Keep the {mode} rule, but imagine {nextN} boxes. How many placements would that take?</p></div>
-        </div>
-        <form className={styles.answerForm} onSubmit={checkPrediction}>
-          <label htmlFor="v2-prediction">Your prediction (a whole number)</label>
-          <div className={styles.answerRow}>
-            <input
-              id="v2-prediction"
-              type="number"
-              inputMode="numeric"
-              min="0"
-              step="1"
-              value={prediction}
-              onChange={(event) => { setPrediction(event.target.value); setChecked(false); }}
-              aria-label="Number of stick placements"
-            />
-            <button type="submit" className={styles.primary} data-testid="v2-check" disabled={!isValidAnswer}>Check answer</button>
-          </div>
-        </form>
-        {checked && (
-          <p role="status" data-testid="v2-result" className={styles.result}>
-            {isCorrect
-              ? `Yes. ${exactEquation(mode, nextN)}. You applied the same rule to a new input size.`
-              : `Not quite. For ${nextN} boxes, the rule gives ${exactEquation(mode, nextN)}. Try another size in the game and compare.`}
+      <section className={styles.nextPanel}>
+        <div>
+          <h2>{finished ? "Good work—your board was checked as you played." : "The board is your answer."}</h2>
+          <p data-testid="v2-progress">
+            {finished ? `You completed ${count} valid placements. The graph and equation now match the board.`
+              : `${count} valid placement${count === 1 ? "" : "s"} so far. Keep filling the required spaces.`}
           </p>
-        )}
+        </div>
+        {finished && !isLast ? (
+          <button type="button" className={styles.primary} data-testid="v2-next"
+            onClick={nextMission}>Let the computer choose the next job →</button>
+        ) : finished && isLast ? (
+          <p role="status" data-testid="v2-finished-all">You've played every rule! These are observed game examples, not a claim that you've mastered Big O.</p>
+        ) : null}
       </section>
-      <p className={styles.footnote}>Preview only: all displayed counts come from the original sticks-and-boxes game rule. No generative model supplies equations or assessment answers.</p>
     </div>
   );
 }
