@@ -213,6 +213,9 @@ jobs:
           --health-retries 10
     env:
       TEST_DATABASE_URL: postgresql://sos:sos@localhost:5432/sos_test
+      # This flag is enabled ONLY for the test build on a disposable database.
+      # Production build/deploy remains disabled by default.
+      VITE_STUDY_OS_V2: "1"
       # The cheap-vision judge is optional-but-recorded: with no secret the run
       # reports VISION_NOT_RUN, never a pass. Set the repository secret to get a
       # real corroborating verdict.

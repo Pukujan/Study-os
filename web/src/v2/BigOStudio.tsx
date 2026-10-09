@@ -152,7 +152,7 @@ export default function BigOStudio() {
           </div>
           <div className={styles.gameArea}>
             <SticksBoxesComplexity
-              frame={{ type: "sticks_boxes_complexity", initial_complexity: "O(n)", initial_n: 3, n_min: 2, n_max: 8 }}
+              frame={{ type: "sticks_boxes_complexity", initial_complexity: mode, initial_n: n, n_min: 2, n_max: 8 }}
               onChange={changeExample}
               onProgress={setPlaced}
             />
